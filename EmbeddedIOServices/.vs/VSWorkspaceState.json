@@ -9,9 +9,7 @@
     "\\src\\IOServices",
     "\\src\\IOServices\\BooleanInputService",
     "\\src\\IOServices\\BooleanOutputService",
-    "\\src\\IOServices\\FloatInputService",
-    "\\src\\IOServices\\FloatOutputService",
-    "\\src\\IOServices\\StepperOutputService"
+    "\\src\\IOServices\\FloatInputService"
   ],
   "SelectedNode": "\\CMakeLists.txt",
   "PreviewInSolutionExplorer": false

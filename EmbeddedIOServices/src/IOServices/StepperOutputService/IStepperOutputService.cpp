@@ -13,6 +13,15 @@ namespace IOServices
 		
 		switch (stepperServiceId)
 		{
+#ifdef STEPPERSERVICE_STEPDIRECTIONCONTROL_H
+		case 1:
+			outputService = new StepperService_StepDirectionControl(config);
+#endif
+			
+#ifdef STEPPERSERVICE_COILCONTROL_H
+		case 2:
+			outputService = new StepperService_CoilControl(config);
+#endif
 		}
 		
 		return outputService;
