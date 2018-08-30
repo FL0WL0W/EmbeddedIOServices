@@ -3,15 +3,14 @@
     "",
     "\\libs",
     "\\libs\\EmbeddedIOServices",
-    "\\libs\\EmbeddedIOServicesUnitTests",
-    "\\libs\\EmbeddedIOServicesUnitTests\\include",
-    "\\libs\\EmbeddedIOServicesUnitTests\\src",
-    "\\libs\\EmbeddedIOServices\\include",
-    "\\libs\\EmbeddedIOServices\\include\\HardwareAbstraction",
-    "\\libs\\EmbeddedIOServices\\include\\IOServices",
-    "\\libs\\EmbeddedIOServices\\include\\IOServices\\FloatInputService",
-    "\\libs\\EmbeddedIOServices\\include\\IOServices\\FloatOutputService"
+    "\\libs\\EmbeddedIOServices\\src",
+    "\\libs\\EmbeddedIOServices\\src\\IOServices",
+    "\\libs\\EmbeddedIOServices\\src\\IOServices\\BooleanInputService",
+    "\\libs\\EmbeddedIOServices\\src\\IOServices\\BooleanOutputService",
+    "\\libs\\EmbeddedIOServices\\src\\IOServices\\FloatInputService",
+    "\\libs\\EmbeddedIOServices\\src\\IOServices\\FloatOutputService",
+    "\\libs\\EmbeddedIOServices\\src\\IOServices\\StepperOutputService"
   ],
-  "SelectedNode": "\\libs\\EmbeddedIOServices\\include\\HardwareAbstraction\\ITimerService.h",
+  "SelectedNode": "\\libs\\EmbeddedIOServices\\src\\IOServices\\StepperOutputService\\IStepperOutputService.cpp",
   "PreviewInSolutionExplorer": false
 }

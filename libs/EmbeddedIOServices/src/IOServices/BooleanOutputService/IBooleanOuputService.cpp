@@ -18,7 +18,7 @@ namespace IOServices
 	{
 		unsigned char outputServiceId = *((unsigned char*)config);
 		config = ((unsigned char *)config + 1);
-		*size = sizeof(unsigned char);
+		*sizeOut = sizeof(unsigned char);
 		
 		IBooleanOutputService *outputService = 0;
 		
@@ -28,7 +28,7 @@ namespace IOServices
 		case 1:
 			{
 				BooleanOutputServiceConfig *booleanOutputServiceConfig = BooleanOutputServiceConfig::Cast((unsigned char*)config);
-				*size += booleanOutputServiceConfig->Size();
+				*sizeOut += booleanOutputServiceConfig->Size();
 				outputService = new BooleanOutputService(hardwareAbstractionCollection, booleanOutputServiceConfig);
 				break;
 			}

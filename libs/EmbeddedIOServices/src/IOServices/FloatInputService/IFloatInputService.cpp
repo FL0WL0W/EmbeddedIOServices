@@ -15,7 +15,7 @@ namespace IOServices
 	{
 		unsigned char inputServiceId = *((unsigned char*)config);
 		config = ((unsigned char *)config + 1);
-		*size = sizeof(unsigned char);
+		*sizeOut = sizeof(unsigned char);
 		
 		IFloatInputService *inputService = 0;
 
@@ -23,7 +23,7 @@ namespace IOServices
 		{
 #ifdef FLOATINPUTSERVICE_STATIC_H
 		case 1:
-			*size += 2 * sizeof(float);
+			*sizeOut += 2 * sizeof(float);
 			inputService = new FloatInputService_Static(*((float *)config), *((float *)config + 1));
 			break;
 #endif
@@ -32,7 +32,7 @@ namespace IOServices
 		case 2:
 			{
 				FloatInputService_AnalogPolynomialConfig<4> *analogPolynomialConfig = FloatInputService_AnalogPolynomialConfig<4>::Cast(config);
-				*size += analogPolynomialConfig->Size();
+				*sizeOut += analogPolynomialConfig->Size();
 				inputService = new FloatInputService_AnalogPolynomial<4>(hardwareAbstractionCollection, analogPolynomialConfig);
 				break;
 			}
