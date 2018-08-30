@@ -42,7 +42,7 @@ namespace IOServices
 		case 3:
 			{
 				FloatInputService_FrequencyPolynomialConfig<4> *frequencyPolynomialConfig = FloatInputService_FrequencyPolynomialConfig<4>::Cast(config);
-				*size += frequencyPolynomialConfig->Size();
+				*sizeOut += frequencyPolynomialConfig->Size();
 				inputService = new FloatInputService_FrequencyPolynomial<4>(hardwareAbstractionCollection, frequencyPolynomialConfig);
 				break;
 			}

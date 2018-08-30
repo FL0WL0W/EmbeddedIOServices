@@ -3,14 +3,14 @@
     "",
     "\\libs",
     "\\libs\\EmbeddedIOServices",
+    "\\libs\\EmbeddedIOServices\\include",
+    "\\libs\\EmbeddedIOServices\\include\\IOServices",
+    "\\libs\\EmbeddedIOServices\\include\\IOServices\\FloatOutputService",
     "\\libs\\EmbeddedIOServices\\src",
     "\\libs\\EmbeddedIOServices\\src\\IOServices",
     "\\libs\\EmbeddedIOServices\\src\\IOServices\\BooleanInputService",
-    "\\libs\\EmbeddedIOServices\\src\\IOServices\\BooleanOutputService",
-    "\\libs\\EmbeddedIOServices\\src\\IOServices\\FloatInputService",
-    "\\libs\\EmbeddedIOServices\\src\\IOServices\\FloatOutputService",
-    "\\libs\\EmbeddedIOServices\\src\\IOServices\\StepperOutputService"
+    "\\libs\\EmbeddedIOServices\\src\\IOServices\\BooleanOutputService"
   ],
-  "SelectedNode": "\\libs\\EmbeddedIOServices\\src\\IOServices\\StepperOutputService\\IStepperOutputService.cpp",
+  "SelectedNode": "\\libs\\EmbeddedIOServices\\src\\IOServices\\FloatOutputService\\IFloatOutputService.cpp",
   "PreviewInSolutionExplorer": false
 }
