@@ -1,7 +1,16 @@
 {
   "ExpandedNodes": [
     "",
-    "\\EmbeddedIOServices"
+    "\\libs",
+    "\\libs\\EmbeddedIOServices",
+    "\\libs\\EmbeddedIOServicesUnitTests",
+    "\\libs\\EmbeddedIOServicesUnitTests\\include",
+    "\\libs\\EmbeddedIOServicesUnitTests\\src",
+    "\\libs\\EmbeddedIOServices\\include",
+    "\\libs\\EmbeddedIOServices\\include\\HardwareAbstraction",
+    "\\libs\\EmbeddedIOServices\\include\\IOServices",
+    "\\libs\\EmbeddedIOServices\\include\\IOServices\\FloatInputService"
   ],
+  "SelectedNode": "\\libs\\EmbeddedIOServicesUnitTests\\src\\BooleanOutputServiceTests.cpp",
   "PreviewInSolutionExplorer": false
 }
