@@ -1,9 +1,11 @@
 # EmbeddedIOServices
 
 TODO:
-Move unit tests to IDE independent cmake project
-Move unit tests for IO Services over from EFIGenie
-Move STM32F103C8 Hardware Abstractions over
-Create integration tests on the STM32F103C8
-Create Stepper Services
-Create Lookup Table IO Services
+<ul>
+  <li>Create Unit Tests For>
+  <li>Move STM32F103C8 Hardware Abstractions over</li>
+  <li>Create integration tests on the STM32F103C8</li>
+  <li>Create Stepper Services</li>
+  <li>Create Lookup Table IO Services</li>
+</ul>
+  
