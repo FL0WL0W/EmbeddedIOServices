@@ -10,7 +10,7 @@ namespace IOServices
 		((IBooleanInputService *)booleanInputService)->ReadValue();
 	}
 
-	IBooleanInputService* IBooleanInputService::CreateBooleanInputService(const HardwareAbstractionCollection *hardwareAbstractionCollection, void *config, unsigned int *size)
+	IBooleanInputService* IBooleanInputService::CreateBooleanInputService(const HardwareAbstractionCollection *hardwareAbstractionCollection, void *config, unsigned int *sizeOut)
 	{
 		unsigned char inputServiceId = *((unsigned char*)config);
 		config = ((unsigned char *)config + 1);

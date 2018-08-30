@@ -11,7 +11,7 @@ namespace IOServices
 		((IFloatInputService *)floatInputService)->ReadValue();
 	}
 
-	IFloatInputService* IFloatInputService::CreateFloatInputService(const HardwareAbstractionCollection *hardwareAbstractionCollection, void *config, unsigned int *size)
+	IFloatInputService* IFloatInputService::CreateFloatInputService(const HardwareAbstractionCollection *hardwareAbstractionCollection, void *config, unsigned int *sizeOut)
 	{
 		unsigned char inputServiceId = *((unsigned char*)config);
 		config = ((unsigned char *)config + 1);

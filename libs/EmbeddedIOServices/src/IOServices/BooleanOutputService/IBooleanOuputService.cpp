@@ -14,7 +14,7 @@ namespace IOServices
 		((IBooleanOutputService *)parameters)->OutputReset();
 	}
 	
-	IBooleanOutputService *IBooleanOutputService::CreateBooleanOutputService(const HardwareAbstractionCollection *hardwareAbstractionCollection, void *config, unsigned int *size)
+	IBooleanOutputService *IBooleanOutputService::CreateBooleanOutputService(const HardwareAbstractionCollection *hardwareAbstractionCollection, void *config, unsigned int *sizeOut)
 	{
 		unsigned char outputServiceId = *((unsigned char*)config);
 		config = ((unsigned char *)config + 1);

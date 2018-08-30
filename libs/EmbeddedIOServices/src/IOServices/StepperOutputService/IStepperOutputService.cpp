@@ -3,7 +3,7 @@
 #ifdef ISTEPPEROUTPUTSERVICE_H
 namespace IOServices
 {
-	IStepperOutputService* IStepperOutputService::CreateStepperOutputService(const HardwareAbstraction::HardwareAbstractionCollection *hardwareAbstractionCollection, void *config, unsigned int *size)
+	IStepperOutputService* IStepperOutputService::CreateStepperOutputService(const HardwareAbstraction::HardwareAbstractionCollection *hardwareAbstractionCollection, void *config, unsigned int *sizeOut)
 	{
 		unsigned char stepperServiceId = *((unsigned char*)config);
 		config = ((unsigned char *)config + 1);

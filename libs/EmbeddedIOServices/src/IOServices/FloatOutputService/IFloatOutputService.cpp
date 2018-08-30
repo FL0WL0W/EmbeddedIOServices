@@ -5,7 +5,7 @@
 #ifdef IFLOATOUTPUTSERVICE_H
 namespace IOServices
 {
-	IFloatOutputService* IFloatOutputService::CreateFloatOutputService(const HardwareAbstraction::HardwareAbstractionCollection *hardwareAbstractionCollection, void *config, unsigned int *size)
+	IFloatOutputService* IFloatOutputService::CreateFloatOutputService(const HardwareAbstraction::HardwareAbstractionCollection *hardwareAbstractionCollection, void *config, unsigned int *sizeOut)
 	{
 		unsigned char outputServiceId = *((unsigned char*)config);
 		config = ((unsigned char *)config + 1);
