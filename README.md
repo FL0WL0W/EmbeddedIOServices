@@ -1,7 +1,7 @@
 # EmbeddedIOServices
 This is a unit tested hardware abstraction for embedded systems. The timer service has a built in scheduling system that can be used to trigger callbacks at precise times. The services are configurable for translating raw inputs and outputs to their meaning. I.E. sensor voltage -> sensor value (temperature, pressure, etc.).
 
-# Interfaces that need to be implemented when adding new hardware.
+# Interfaces that need to be implemented when adding new hardware
 <ul>
   <li>IAnalogService</li>
   <ul>
@@ -28,6 +28,28 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
   </ul>
 </ul>
 
+# Available IO Services
+<ul>
+  <li>BooleanInputService</li>
+  <ul>
+    <li>Digital Pin</li>
+    <li>Static Value</li>
+  </ul>
+  <li>BooleanOutputService</li>
+  <ul>
+    <li>Digital Pin</li>
+  </ul>
+  <li>FloatInputService</li>
+  <ul>
+    <li>Analog Polynomial Translation</li>
+    <li>PWM Polynomial Translation</li>
+    <li>Static Value</li>
+  </ul>
+  <li>FloatOutputService</li>
+  <ul>
+    <li>PWM Polynomial Translation</li>
+  </ul>
+</ul>
 
 # TODO:
 <ul>
