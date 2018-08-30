@@ -1,9 +1,37 @@
 # EmbeddedIOServices
 This is a unit tested hardware abstraction for embedded systems. The timer service has a built in scheduling system that can be used to trigger callbacks at precise times. The services are configurable for translating raw inputs and outputs to their meaning. I.E. sensor voltage -> sensor value (temperature, pressure, etc.).
 
-TODO:
+# Interfaces that need to be implemented when adding new hardware.
 <ul>
-  <li>Create Unit Tests For>
+  <li>IAnalogService</li>
+  <ul>
+    <li>InitPin(uint8 pin)</li>
+    <li>ReadPin(uint8 pin)</li>
+  </ul>
+  <li>IDigitalService</li>
+  <ul>
+    <li>InitPin(uint8 pin, PinDirection direction)</li>
+    <li>ReadPin(uint8 pin)</li>
+    <li>WritePin(uint8 pin, bool value)</li>
+  </ul>
+  <li>IPwmService</li>
+  <ul>
+    <li>InitPin(uint8 pin, PinDirection direction, uint16 minFrequency)</li>
+    <li>ReadPin(uint8 pin)</li>
+    <li>WritePin(uint8 pin, PwmValue value)</li>
+  </ul>
+  <li>ITimerService</li>
+  <ul>
+    <li>GetTick()</li>
+    <li>GetTicksPerSecond()</li>
+    <li>ScheduleCallBack(uint32 tick) <= this is to call ReturnCallBack() at that tick</li>
+  </ul>
+</ul>
+
+
+# TODO:
+<ul>
+  <li>Create Unit Tests For</li>
   <ul>
     <li>BooleanInputService</li>
     <li>BooleanInputService_Static</li>
