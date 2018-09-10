@@ -1,6 +1,7 @@
 #include "IOServices/BooleanOutputService/IBooleanOutputService.h"
 
 #ifndef MOCKBOOLEANOUTPUTSERVICE_H
+#define MOCKBOOLEANOUTPUTSERVICE_H
 namespace IOService
 {
 	class MockBooleanOutputService : public IBooleanOutputService

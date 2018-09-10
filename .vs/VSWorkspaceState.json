@@ -6,11 +6,11 @@
     "\\libs\\EmbeddedIOServicesMockedObjects",
     "\\libs\\EmbeddedIOServicesMockedObjects\\include",
     "\\libs\\EmbeddedIOServicesUnitTests",
-    "\\libs\\EmbeddedIOServicesUnitTests\\include",
     "\\libs\\EmbeddedIOServicesUnitTests\\src",
+    "\\libs\\EmbeddedIOServices\\include",
     "\\libs\\EmbeddedIOServices\\include\\IOServices",
     "\\libs\\EmbeddedIOServices\\include\\IOServices\\FloatOutputService"
   ],
-  "SelectedNode": "\\CMakeLists.txt",
+  "SelectedNode": "\\libs\\EmbeddedIOServicesUnitTests\\src\\TimerServiceTests.cpp",
   "PreviewInSolutionExplorer": false
 }

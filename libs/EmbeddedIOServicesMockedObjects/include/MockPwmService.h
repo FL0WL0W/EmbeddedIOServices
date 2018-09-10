@@ -1,3 +1,7 @@
+#include "HardwareAbstraction/IPwmService.h"
+
+#ifndef MOCKPWMSERVICE_H
+#define MOCKPWNSERVICE_H
 namespace HardwareAbstraction
 {
 	class MockPwmService : public IPwmService
@@ -8,3 +12,4 @@ namespace HardwareAbstraction
 		MOCK_METHOD2(WritePin, void(unsigned char, PwmValue));
 	};
 }
+#endif

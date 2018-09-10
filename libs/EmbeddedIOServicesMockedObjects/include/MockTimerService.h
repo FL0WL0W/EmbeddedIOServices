@@ -1,4 +1,7 @@
+#include "HardwareAbstraction/ITimerService.h"
 
+#ifndef MOCKTIMERSERVICE_H
+#define MOCKTIMERSERVICE_H
 namespace HardwareAbstraction
 {
 	class MockTimerService : public ITimerService
@@ -10,3 +13,4 @@ namespace HardwareAbstraction
 		MOCK_METHOD0(GetTicksPerSecond, unsigned int());
 	};
 }
+#endif

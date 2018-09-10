@@ -1,6 +1,7 @@
 #include "HardwareAbstraction/IDigitalService.h"
 
 #ifndef MOCKDIGITALSERVICE_H
+#define MOCKDIGITALSERVICE_H
 namespace HardwareAbstraction
 {
 	class MockDigitalService : public IDigitalService

@@ -1,6 +1,7 @@
 #include "IOServices/FloatInputService/IFloatInputService.h"
 
 #ifndef MOCKFLOATINPUTSERVICE_H
+#define MOCKFLOATINPUTSERVICE_H
 namespace IOService
 {
 	class MockFloatInputService : public IFloatInputService
