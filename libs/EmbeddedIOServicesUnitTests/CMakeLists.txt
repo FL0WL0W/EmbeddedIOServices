@@ -20,7 +20,5 @@ add_executable(${TARGET} ${SRCS})
 
 # link static libraries
 target_link_libraries(${TARGET} EmbeddedIOServices)
+target_link_libraries(${TARGET} EmbeddedIOServicesMockedObjects)
 target_link_libraries(${TARGET} gtest gtest_main gmock)
-
-#add_test(TimerService_WhenAddingLaterTaskFirstTaskIsCalledFirst ${TARGET})
-#add_test(FloatInputService_FrequencyPolynomial_WhenGettingValueThenCorrectValueIsReturned ${TARGET})

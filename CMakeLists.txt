@@ -14,4 +14,5 @@ add_subdirectory (${LIBRARIES}/EmbeddedIOServices)
 add_subdirectory (${LIBRARIES}/googletest)
 enable_testing()
 
+add_subdirectory (${LIBRARIES}/EmbeddedIOServicesMockedObjects)
 add_subdirectory (${LIBRARIES}/EmbeddedIOServicesUnitTests)

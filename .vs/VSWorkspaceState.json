@@ -3,14 +3,14 @@
     "",
     "\\libs",
     "\\libs\\EmbeddedIOServices",
-    "\\libs\\EmbeddedIOServices\\include",
+    "\\libs\\EmbeddedIOServicesMockedObjects",
+    "\\libs\\EmbeddedIOServicesMockedObjects\\include",
+    "\\libs\\EmbeddedIOServicesUnitTests",
+    "\\libs\\EmbeddedIOServicesUnitTests\\include",
+    "\\libs\\EmbeddedIOServicesUnitTests\\src",
     "\\libs\\EmbeddedIOServices\\include\\IOServices",
-    "\\libs\\EmbeddedIOServices\\include\\IOServices\\FloatOutputService",
-    "\\libs\\EmbeddedIOServices\\src",
-    "\\libs\\EmbeddedIOServices\\src\\IOServices",
-    "\\libs\\EmbeddedIOServices\\src\\IOServices\\BooleanInputService",
-    "\\libs\\EmbeddedIOServices\\src\\IOServices\\BooleanOutputService"
+    "\\libs\\EmbeddedIOServices\\include\\IOServices\\FloatOutputService"
   ],
-  "SelectedNode": "\\libs\\EmbeddedIOServices\\src\\IOServices\\FloatOutputService\\IFloatOutputService.cpp",
+  "SelectedNode": "\\CMakeLists.txt",
   "PreviewInSolutionExplorer": false
 }
