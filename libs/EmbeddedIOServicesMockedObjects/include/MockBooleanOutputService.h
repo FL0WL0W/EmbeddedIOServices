@@ -2,7 +2,7 @@
 
 #ifndef MOCKBOOLEANOUTPUTSERVICE_H
 #define MOCKBOOLEANOUTPUTSERVICE_H
-namespace IOService
+namespace IOServices
 {
 	class MockBooleanOutputService : public IBooleanOutputService
 	{

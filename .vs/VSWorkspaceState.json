@@ -8,9 +8,10 @@
     "\\libs\\EmbeddedIOServicesUnitTests",
     "\\libs\\EmbeddedIOServicesUnitTests\\src",
     "\\libs\\EmbeddedIOServices\\include",
-    "\\libs\\EmbeddedIOServices\\include\\IOServices",
-    "\\libs\\EmbeddedIOServices\\include\\IOServices\\FloatOutputService"
+    "\\libs\\EmbeddedIOServices\\include\\HardwareAbstraction",
+    "\\libs\\EmbeddedIOServices\\src",
+    "\\libs\\EmbeddedIOServices\\src\\HardwareAbstraction"
   ],
-  "SelectedNode": "\\libs\\EmbeddedIOServicesUnitTests\\src\\TimerServiceTests.cpp",
+  "SelectedNode": "\\libs\\EmbeddedIOServices\\include\\HardwareAbstraction\\ITimerService.h",
   "PreviewInSolutionExplorer": false
 }

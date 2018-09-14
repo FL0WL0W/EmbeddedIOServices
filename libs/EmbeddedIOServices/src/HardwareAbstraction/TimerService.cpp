@@ -35,6 +35,11 @@ namespace HardwareAbstraction
 	{
 		_callBackList.remove(callBack);
 	}
+	
+	void CallBackGroup::Clear()
+	{
+		_callBackList.clear();
+	}
 
 	void ITimerService::ReturnCallBack(void)
 	{

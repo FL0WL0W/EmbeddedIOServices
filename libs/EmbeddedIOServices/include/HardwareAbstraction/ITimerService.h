@@ -40,6 +40,7 @@ namespace HardwareAbstraction
 		void Add(ICallBack *callBack);
 		void Add(void(*callBackPointer)(void *), void *parameters);
 		void Remove(ICallBack *callBack);
+		void Clear();
 	};
 
 	struct Task

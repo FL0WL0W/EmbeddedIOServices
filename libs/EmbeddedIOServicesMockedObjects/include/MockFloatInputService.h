@@ -2,7 +2,7 @@
 
 #ifndef MOCKFLOATINPUTSERVICE_H
 #define MOCKFLOATINPUTSERVICE_H
-namespace IOService
+namespace IOServices
 {
 	class MockFloatInputService : public IFloatInputService
 	{
