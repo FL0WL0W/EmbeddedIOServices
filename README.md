@@ -61,8 +61,8 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
     <li>FloatOutputService_PwmPolynomial</li>
     <li>FloatOutputService_StepperPolynomial</li>
   </ul>
-  <li>Move STM32F103C8 Hardware Abstractions over</li>
-  <li>Create integration tests on the STM32F103C8</li>
+  <li>Move Stm32F103Cx Hardware Abstractions over</li>
+  <li>Create integration tests on the Stm32F103Cx</li>
   <li>Create Stepper Services</li>
   <li>Create Lookup Table IO Services</li>
   <li>Create a way to schedule interrupt callbacks for digital inputs.</li>
