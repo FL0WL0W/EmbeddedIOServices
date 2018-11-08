@@ -130,4 +130,15 @@ namespace Stm32
 			break;
 		}
 	}
+
+	void ScheduleRecurringInterrupt(Task *, unsigned char pin)
+	{
+		//TODO
+		//Setup Interrupt
+	}
+
+	void ScheduleNextInterrupt(Task *, unsigned char pin)
+	{
+		//TODO
+	}
 }

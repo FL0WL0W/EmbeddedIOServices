@@ -42,29 +42,34 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
   <li>FloatInputService</li>
   <ul>
     <li>Analog Polynomial Translation</li>
+    <li>Analog Lookup Table Translation</li>
     <li>PWM Polynomial Translation</li>
+    <li>PWM Lookup Table Translation</li>
     <li>Static Value</li>
   </ul>
   <li>FloatOutputService</li>
   <ul>
     <li>PWM Polynomial Translation</li>
+    <li>PWM Lookup Table Translation</li>
   </ul>
 </ul>
 
 # TODO:
 <ul>
+  <li>Config Editor</li>
   <li>Create Unit Tests For</li>
   <ul>
     <li>BooleanInputService</li>
     <li>BooleanInputService_Static</li>
     <li>FloatInputService_Static</li>
+    <li>FloatInputService_AnalogInterpolatedTable</li>
+    <li>FloatInputService_FrequencyInterpolatedTable</li>
     <li>FloatOutputService_PwmPolynomial</li>
+    <li>FloatOutputService_PwmInterpolatedTable</li>
     <li>FloatOutputService_StepperPolynomial</li>
+    <li>FloatOutputService_StepperInterpolatedTable</li>
   </ul>
-  <li>Move Stm32F103Cx Hardware Abstractions over</li>
-  <li>Create integration tests on the Stm32F103Cx</li>
   <li>Create Stepper Services</li>
-  <li>Create Lookup Table IO Services</li>
   <li>Create a way to schedule interrupt callbacks for digital inputs.</li>
 </ul>
   

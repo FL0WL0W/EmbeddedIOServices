@@ -1,6 +1,8 @@
 #include "IOServices/FloatOutputService/IFloatOutputService.h"
 #include "IOServices/FloatOutputService/FloatOutputService_PwmPolynomial.h"
+#include "IOServices/FloatOutputService/FloatOutputService_PwmInterpolatedTable.h"
 #include "IOServices/FloatOutputService/FloatOutputService_StepperPolynomial.h"
+#include "IOServices/FloatOutputService/FloatOutputService_StepperInterpolatedTable.h"
 
 #ifdef IFLOATOUTPUTSERVICE_H
 namespace IOServices
@@ -31,6 +33,26 @@ namespace IOServices
 				FloatOutputService_StepperPolynomialConfig<3> *stepperConfig = FloatOutputService_StepperPolynomialConfig<3>::Cast((unsigned char*)config);
 				*sizeOut += stepperConfig->Size();
 				outputService = new FloatOutputService_StepperPolynomial<3>(hardwareAbstractionCollection, stepperConfig);
+				break;
+			}
+#endif
+
+#ifdef FLOATOUTPUTSERVICE_PWMINTERPOLATEDTABLE_H
+		case 3:
+			{
+				FloatOutputService_PwmInterpolatedTableConfig *pwmConfig = FloatOutputService_PwmInterpolatedTableConfig::Cast((unsigned char*)config);
+				*sizeOut += pwmConfig->Size();
+				outputService = new FloatOutputService_PwmInterpolatedTable(hardwareAbstractionCollection, pwmConfig);
+				break;
+			}
+#endif
+
+#ifdef FLOATOUTPUTSERVICE_STEPPERINTERPOLATEDTABLE_H
+		case 4:
+			{
+				FloatOutputService_StepperInterpolatedTableConfig *stepperConfig = FloatOutputService_StepperInterpolatedTableConfig::Cast((unsigned char*)config);
+				*sizeOut += stepperConfig->Size();
+				outputService = new FloatOutputService_StepperInterpolatedTable(hardwareAbstractionCollection, stepperConfig);
 				break;
 			}
 #endif
