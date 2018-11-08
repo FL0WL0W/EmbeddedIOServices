@@ -70,6 +70,6 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
     <li>FloatOutputService_StepperInterpolatedTable</li>
   </ul>
   <li>Create Stepper Services</li>
-  <li>Create a way to schedule interrupt callbacks for digital inputs.</li>
+  <li>Implement STM32F103C8 interrupt callbacks for digital inputs.</li>
 </ul>
   
