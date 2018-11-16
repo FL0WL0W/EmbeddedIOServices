@@ -12,7 +12,7 @@ namespace Stm32
 		void InitPin(uint8_t pin, HardwareAbstraction::PinDirection direction);
 		bool ReadPin(uint8_t pin);
 		void WritePin(uint8_t pin, bool value);
-		void ScheduleRecurringInterrupt(unsigned char pin, Task *);
-		void ScheduleNextInterrupt(unsigned char pin, Task *);
+		void ScheduleRecurringInterrupt(unsigned char pin, ICallBack *);
+		void ScheduleNextInterrupt(unsigned char pin, ICallBack *);
 	};
 }

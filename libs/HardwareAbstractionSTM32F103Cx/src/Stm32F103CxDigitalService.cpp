@@ -131,13 +131,13 @@ namespace Stm32
 		}
 	}
 
-	void ScheduleRecurringInterrupt(unsigned char pin, Task *)
+	void ScheduleRecurringInterrupt(unsigned char pin, ICallBack *)
 	{
 		//TODO
 		//Setup Interrupt
 	}
 
-	void ScheduleNextInterrupt(unsigned char pin, Task *)
+	void ScheduleNextInterrupt(unsigned char pin, ICallBack *)
 	{
 		//TODO
 	}

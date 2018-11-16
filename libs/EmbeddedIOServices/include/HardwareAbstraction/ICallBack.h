@@ -38,31 +38,5 @@ namespace HardwareAbstraction
 		void Remove(ICallBack *callBack);
 		void Clear();
 	};
-
-	struct Task
-	{
-	public:
-		Task() {}
-		Task(void(*callBack)(void *), void *parameters, bool deleteOnExecution)
-		{
-			CallBackInstance = new CallBack(callBack, parameters);
-			DeleteOnExecution = deleteOnExecution;
-		}
-		Task(ICallBack *callBack, bool deleteOnExecution)
-		{
-			CallBackInstance = callBack;
-			DeleteOnExecution = deleteOnExecution;
-		}
-
-		void Execute()
-		{
-			CallBackInstance->Execute();
-		}
-
-		ICallBack *CallBackInstance;
-		bool DeleteOnExecution;
-		//only let TimerService edit these values
-		unsigned int Tick;
-	};
 }
 #endif
