@@ -1,4 +1,5 @@
 #include "IOServices/FloatOutputService/FloatOutputService_StepperInterpolatedTable.h"
+#include "Interpolation.h"
 
 #ifdef FLOATOUTPUTSERVICE_STEPPERINTERPOLATEDTABLE_H
 namespace IOServices

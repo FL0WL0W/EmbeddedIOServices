@@ -31,7 +31,7 @@ namespace IOServices
 		unsigned int Size()
 		{
 			return sizeof(FloatOutputService_PwmInterpolatedTableConfig) +
-				(sizeof(float) * Table);
+				(sizeof(float) * Resolution);
 		}
 		
 		unsigned char PwmPin;

@@ -1,4 +1,5 @@
 #include "HardwareAbstraction/HardwareAbstractionCollection.h"
+#include "IOServices/StepperOutputService/IStepperOutputService.h"
 #include "IFloatOutputService.h"
 #include "math.h"
 #include "Packed.h"
@@ -31,7 +32,7 @@ namespace IOServices
 		unsigned int Size()
 		{
 			return sizeof(FloatOutputService_StepperInterpolatedTableConfig) +
-				(sizeof(int) * Table);
+				(sizeof(int) * Resolution);
 		}
 		
 		float MinValue;

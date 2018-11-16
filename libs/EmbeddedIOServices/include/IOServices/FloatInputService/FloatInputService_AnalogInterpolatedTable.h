@@ -32,7 +32,7 @@ namespace IOServices
 		unsigned int Size()
 		{
 			return sizeof(FloatInputService_AnalogInterpolatedTableConfig) +
-				(sizeof(float) * Table);
+				(sizeof(float) * Resolution);
 		}
 		
 		unsigned char AdcPin;

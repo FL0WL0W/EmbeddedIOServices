@@ -71,7 +71,7 @@ namespace UnitTests
 		}
 	};
 
-	TEST_F(BooleanOutputServiceTest, BooleanOutputService_WhenGettingValueThenCorrectValueIsReturned)
+	TEST_F(BooleanOutputServiceTest, BooleanOutputService_WhenSettingValueThenCorrectPinAndValueIsSet)
 	{
 		EXPECT_CALL(_digitalService, WritePin(1, true)).Times(1);
 		IBooleanOutputService::OutputSetCallBack(_booleanOutputService0);

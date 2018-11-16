@@ -1,4 +1,5 @@
 #include "IOServices/FloatOutputService/FloatOutputService_PwmInterpolatedTable.h"
+#include "Interpolation.h"
 
 #ifdef FLOATOUTPUTSERVICE_PWMINTERPOLATEDTABLE_H
 namespace IOServices
@@ -13,7 +14,7 @@ namespace IOServices
 
 	void FloatOutputService_PwmInterpolatedTable::SetOutput(float value)
 	{
-		pwmValue = Interpolation::InterpolateTable1<float>(value, _config->MaxValue, _config->MinValue, _config->Resolution, _config->Table);
+		float pwmValue = Interpolation::InterpolateTable1<float>(value, _config->MaxValue, _config->MinValue, _config->Resolution, _config->Table);
 		
 		_hardwareAbstractionCollection->PwmService->WritePin(_config->PwmPin, { 1.0f / _config->Frequency, pwmValue / _config->Frequency });
 	}
