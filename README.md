@@ -13,6 +13,8 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
     <li>InitPin(uint8 pin, PinDirection direction)</li>
     <li>ReadPin(uint8 pin)</li>
     <li>WritePin(uint8 pin, bool value)</li>
+    <li>ScheduleRecurringInterrupt(uint8 pin, Task task)
+    <li>ScheduleNextInterrupt(uint8 pin, Task task)
   </ul>
   <li>IPwmService</li>
   <ul>
@@ -59,7 +61,6 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
   <li>Config Editor</li>
   <li>Create Unit Tests For</li>
   <ul>
-    <li>BooleanInputService</li>
     <li>BooleanInputService_Static</li>
     <li>FloatInputService_Static</li>
     <li>FloatInputService_AnalogInterpolatedTable</li>
