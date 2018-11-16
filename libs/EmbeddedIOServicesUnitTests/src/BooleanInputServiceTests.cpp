@@ -2,8 +2,7 @@
 #include "gtest/gtest.h"
 #include "MockDigitalService.h"
 #include "HardwareAbstraction/HardwareAbstractionCollection.h"
-#include "IOServices/BooleanOutputService/IBooleanOutputService.h"
-#include "IOServices/BooleanOutputService/BooleanOutputService.h"
+#include "IOServices/BooleanInputService/BooleanInputService.h"
 using ::testing::AtLeast;
 using ::testing::Return;
 
@@ -17,10 +16,10 @@ namespace UnitTests
 		protected:
 		MockDigitalService _digitalService;
 		HardwareAbstractionCollection _hardwareAbstractionCollection;
-		IBooleanOutputService *_booleanInputService0;
-		IBooleanOutputService *_booleanInputService1;
+		BooleanInputService *_booleanInputService0;
+		BooleanInputService *_booleanInputService1;
 
-		BooleanOutputServiceTest() 
+		BooleanInputServiceTest() 
 		{
 			_hardwareAbstractionCollection.DigitalService = &_digitalService;
 
@@ -34,17 +33,17 @@ namespace UnitTests
 			memcpy(((unsigned char *)config + 1), inputConfig, inputConfig->Size());
 
 			unsigned int size = 0;
-			_booleanInputService0 = IBooleanInputService::CreateBooleanInputService(&_hardwareAbstractionCollection, config, &size);
+			_booleanInputService0 = (BooleanInputService *)IBooleanInputService::CreateBooleanInputService(&_hardwareAbstractionCollection, config, &size);
 
 			inputConfig->Pin = 2;
 			inputConfig->Inverted = true;
 			config = malloc(inputConfig->Size() + 1);
 			*(unsigned char *)config = 2;
 			memcpy(((unsigned char *)config + 1), inputConfig, inputConfig->Size());
-			_booleanInputService2 = IBooleanInputService::CreateBooleanInputService(&_hardwareAbstractionCollection, config, &size);
+			_booleanInputService1 = (BooleanInputService *)IBooleanInputService::CreateBooleanInputService(&_hardwareAbstractionCollection, config, &size);
 		}
 
-		~BooleanOutputServiceTest() override 
+		~BooleanInputServiceTest() override 
 		{
 			free(_booleanInputService0);
 			free(_booleanInputService1);
@@ -53,10 +52,20 @@ namespace UnitTests
 
 	TEST_F(BooleanInputServiceTest, BooleanInputService_WhenGettingValueThenCorrectValueIsReturned)
 	{
-		EXPECT_CALL(_digitalService, ReadPin(1)).Times(1);
-		_booleanInputService0.ReadValue();
+		EXPECT_CALL(_digitalService, ReadPin(1)).Times(1).WillOnce(Return(true));
+		_booleanInputService0->ReadValue();
+		ASSERT_EQ(true, _booleanInputService0->Value);
 
-		EXPECT_CALL(_digitalService, ReadPin(2)).Times(1);
-		_booleanInputService1.ReadValue();
+		EXPECT_CALL(_digitalService, ReadPin(1)).Times(1).WillOnce(Return(false));
+		_booleanInputService0->ReadValue();
+		ASSERT_EQ(false, _booleanInputService0->Value);
+
+		EXPECT_CALL(_digitalService, ReadPin(2)).Times(1).WillOnce(Return(true));
+		_booleanInputService1->ReadValue();
+		ASSERT_EQ(false, _booleanInputService1->Value);
+
+		EXPECT_CALL(_digitalService, ReadPin(2)).Times(1).WillOnce(Return(false));
+		_booleanInputService1->ReadValue();
+		ASSERT_EQ(true, _booleanInputService1->Value);
 	}
 }
