@@ -56,6 +56,11 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
   </ul>
 </ul>
 
+# Currently Supported Microcontroller
+<ul>
+  <li>STM32F103C8</li>
+ </ul>
+
 # TODO:
 <ul>
   <li>Config Editor</li>
