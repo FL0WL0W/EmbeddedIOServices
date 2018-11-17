@@ -16,8 +16,8 @@ namespace UnitTests
 		protected:
 		MockDigitalService _digitalService;
 		HardwareAbstractionCollection _hardwareAbstractionCollection;
-		BooleanInputService *_booleanInputService0;
-		BooleanInputService *_booleanInputService1;
+		IBooleanInputService *_booleanInputService0;
+		IBooleanInputService *_booleanInputService1;
 
 		BooleanInputServiceTest() 
 		{
@@ -33,14 +33,14 @@ namespace UnitTests
 			memcpy(((unsigned char *)config + 1), inputConfig, inputConfig->Size());
 
 			unsigned int size = 0;
-			_booleanInputService0 = (BooleanInputService *)IBooleanInputService::CreateBooleanInputService(&_hardwareAbstractionCollection, config, &size);
+			_booleanInputService0 = IBooleanInputService::CreateBooleanInputService(&_hardwareAbstractionCollection, config, &size);
 
 			inputConfig->Pin = 2;
 			inputConfig->Inverted = true;
 			config = malloc(inputConfig->Size() + 1);
 			*(unsigned char *)config = 2;
 			memcpy(((unsigned char *)config + 1), inputConfig, inputConfig->Size());
-			_booleanInputService1 = (BooleanInputService *)IBooleanInputService::CreateBooleanInputService(&_hardwareAbstractionCollection, config, &size);
+			_booleanInputService1 = IBooleanInputService::CreateBooleanInputService(&_hardwareAbstractionCollection, config, &size);
 		}
 
 		~BooleanInputServiceTest() override 
