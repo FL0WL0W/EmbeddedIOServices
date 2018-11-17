@@ -1,8 +1,7 @@
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
-#include "MockDigitalService.h"
 #include "HardwareAbstraction/HardwareAbstractionCollection.h"
-#include "IOServices/BooleanInputService/BooleanInputService.h"
+#include "IOServices/BooleanInputService/IBooleanInputService.h"
 using ::testing::AtLeast;
 using ::testing::Return;
 
@@ -11,18 +10,15 @@ using namespace IOServices;
 
 namespace UnitTests
 {
-	class BooleanInputService_StaticTests : public ::testing::Test 
+	class BooleanInputService_StaticTest : public ::testing::Test 
 	{
 		protected:
-		MockDigitalService _digitalService;
 		HardwareAbstractionCollection _hardwareAbstractionCollection;
 		IBooleanInputService *_booleanInputService0;
 		IBooleanInputService *_booleanInputService1;
 
-		BooleanInputService_StaticTests() 
+		BooleanInputService_StaticTest() 
 		{
-			_hardwareAbstractionCollection.DigitalService = &_digitalService;
-
 			bool *inputConfig = (bool *)malloc(sizeof(bool));
 
 			unsigned int size = 0;
@@ -40,14 +36,14 @@ namespace UnitTests
 			_booleanInputService1 = IBooleanInputService::CreateBooleanInputService(&_hardwareAbstractionCollection, config, &size);
 		}
 
-		~BooleanInputService_StaticTests() override 
+		~BooleanInputService_StaticTest() override 
 		{
 			free(_booleanInputService0);
 			free(_booleanInputService1);
 		}
 	};
 
-	TEST_F(BooleanInputService_StaticTests, BooleanInputService_Static_WhenGettingValueThenCorrectValueIsReturned)
+	TEST_F(BooleanInputService_StaticTest, BooleanInputService_Static_WhenGettingValueThenCorrectValueIsReturned)
 	{
 		_booleanInputService0->ReadValue();
 		ASSERT_EQ(false, _booleanInputService0->Value);
