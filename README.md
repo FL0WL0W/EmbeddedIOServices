@@ -45,8 +45,8 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
   <ul>
     <li>Analog Polynomial Translation</li>
     <li>Analog Lookup Table Translation</li>
-    <li>PWM Polynomial Translation</li>
-    <li>PWM Lookup Table Translation</li>
+    <li>Frequency Polynomial Translation</li>
+    <li>Frequency Lookup Table Translation</li>
     <li>Static Value</li>
   </ul>
   <li>FloatOutputService</li>
