@@ -74,5 +74,6 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
   </ul>
   <li>Create Stepper Services</li>
   <li>Implement STM32F103C8 interrupt callbacks for digital inputs.</li>
+  <li>Implement STM32F103C8 tick overhead compensation</li>
 </ul>
   
