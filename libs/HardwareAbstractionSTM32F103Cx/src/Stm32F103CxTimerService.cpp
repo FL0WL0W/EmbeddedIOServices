@@ -127,7 +127,8 @@ namespace Stm32
 
 	void Stm32F103CxTimerService::ScheduleCallBack(unsigned int tick)
 	{
-		//1 tick of overhead
+		//1 tick of overhead compensation
+		//TODO: tick overhead compensation
 		tick--;
 		unsigned int counter = _tick | TIM->CNT;
 		if (_tick == (tick & 0xFFFF0000))
