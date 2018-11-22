@@ -77,13 +77,13 @@ namespace UnitTests
 		EXPECT_CALL(_timerService, GetTick()).Times(1).WillOnce(Return(15));
 		EXPECT_CALL(_analogService, ReadPin(1)).Times(1).WillOnce(Return(0.5));
 		_floatInputService->ReadValue();
-		ASSERT_FLOAT_EQ(-1.25f, _floatInputService->Value, 0.001f);
+		ASSERT_FLOAT_EQ(-1.25f, _floatInputService->Value);
 		ASSERT_FLOAT_EQ(10000.0f, _floatInputService->ValueDot);
 
 		EXPECT_CALL(_timerService, GetTick()).Times(2).WillRepeatedly(Return(20));
 		EXPECT_CALL(_analogService, ReadPin(1)).Times(1).WillOnce(Return(0.5));
 		_floatInputService->ReadValue();
-		ASSERT_FLOAT_EQ(-1.25f, _floatInputService->Value, 0.001f);
+		ASSERT_FLOAT_EQ(-1.25f, _floatInputService->Value);
 		ASSERT_FLOAT_EQ(-10625.0f, _floatInputService->ValueDot);
 
 		EXPECT_CALL(_timerService, GetTick()).Times(2).WillRepeatedly(Return(30));
