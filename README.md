@@ -47,6 +47,7 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
     <li>Analog Lookup Table Translation</li>
     <li>Frequency Polynomial Translation</li>
     <li>Frequency Lookup Table Translation</li>
+    <li>Fault Detection</li>
     <li>Static Value</li>
   </ul>
   <li>FloatOutputService</li>
@@ -63,10 +64,10 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
 
 # TODO:
 <ul>
-  <li>Sensor Fault Detection Wrapper</li>
   <li>Config Editor</li>
   <li>Create Unit Tests For</li>
   <ul>
+    <li>FloatInputService_FaultDetection</li>
     <li>FloatOutputService_PwmPolynomial</li>
     <li>FloatOutputService_PwmInterpolatedTable</li>
     <li>FloatOutputService_StepperPolynomial</li>
