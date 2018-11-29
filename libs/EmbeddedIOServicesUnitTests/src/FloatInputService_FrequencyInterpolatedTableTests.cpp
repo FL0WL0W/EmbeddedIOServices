@@ -90,30 +90,30 @@ namespace UnitTests
 		ASSERT_FLOAT_EQ(20.0f, _floatInputService->Value);
 		ASSERT_FLOAT_EQ(10000.0f, _floatInputService->ValueDot);
 
-		//pwmValue = { 0.05f, 0.04f };
-		//EXPECT_CALL(_timerService, GetTick()).Times(1).WillOnce(Return(15));
-		//EXPECT_CALL(_pwmService, ReadPin(1)).Times(1).WillOnce(Return(pwmValue));
-		//_floatInputService->ReadValue();
-		//ASSERT_NEAR(0.0f, _floatInputService->Value, 0.001f);
-		//ASSERT_FLOAT_EQ(10000.0f, _floatInputService->ValueDot);
-//
-		//pwmValue = { 0.05739f, 0.04f };
-		//EXPECT_CALL(_timerService, GetTick()).Times(2).WillRepeatedly(Return(20));
-		//EXPECT_CALL(_pwmService, ReadPin(1)).Times(1).WillOnce(Return(pwmValue));
-		//_floatInputService->ReadValue();
-		//ASSERT_NEAR(-1.25f, _floatInputService->Value, 0.001f);
-		//ASSERT_NEAR(-10625.0f, _floatInputService->ValueDot, 0.001f);
-//
-		//pwmValue = { 0.0001f, 0.04f };
-		//EXPECT_CALL(_timerService, GetTick()).Times(2).WillRepeatedly(Return(30));
-		//EXPECT_CALL(_pwmService, ReadPin(1)).Times(1).WillOnce(Return(pwmValue));
-		//_floatInputService->ReadValue();
-		//ASSERT_FLOAT_EQ(90, _floatInputService->Value);
-//
-		//pwmValue = { 1.0f, 0.04f };
-		//EXPECT_CALL(_timerService, GetTick()).Times(1).WillOnce(Return(30));
-		//EXPECT_CALL(_pwmService, ReadPin(1)).Times(1).WillOnce(Return(pwmValue));
-		//_floatInputService->ReadValue();
-		//ASSERT_FLOAT_EQ(-10, _floatInputService->Value);
+		pwmValue = { 0.05f, 0.04f };
+		EXPECT_CALL(_timerService, GetTick()).Times(1).WillOnce(Return(15));
+		EXPECT_CALL(_pwmService, ReadPin(1)).Times(1).WillOnce(Return(pwmValue));
+		_floatInputService->ReadValue();
+		ASSERT_NEAR(0.0f, _floatInputService->Value, 0.001f);
+		ASSERT_FLOAT_EQ(10000.0f, _floatInputService->ValueDot);
+
+		pwmValue = { 0.05333333333333f, 0.04f };
+		EXPECT_CALL(_timerService, GetTick()).Times(2).WillRepeatedly(Return(20));
+		EXPECT_CALL(_pwmService, ReadPin(1)).Times(1).WillOnce(Return(pwmValue));
+		_floatInputService->ReadValue();
+		ASSERT_NEAR(-1.25f, _floatInputService->Value, 0.001f);
+		ASSERT_NEAR(-10625.0f, _floatInputService->ValueDot, 0.001f);
+
+		pwmValue = { 0.0001f, 0.04f };
+		EXPECT_CALL(_timerService, GetTick()).Times(2).WillRepeatedly(Return(30));
+		EXPECT_CALL(_pwmService, ReadPin(1)).Times(1).WillOnce(Return(pwmValue));
+		_floatInputService->ReadValue();
+		ASSERT_FLOAT_EQ(90, _floatInputService->Value);
+
+		pwmValue = { 1.0f, 0.04f };
+		EXPECT_CALL(_timerService, GetTick()).Times(1).WillOnce(Return(30));
+		EXPECT_CALL(_pwmService, ReadPin(1)).Times(1).WillOnce(Return(pwmValue));
+		_floatInputService->ReadValue();
+		ASSERT_FLOAT_EQ(-10, _floatInputService->Value);
 	}
 }
