@@ -2,7 +2,7 @@
 
 #ifndef MOCKSTEPPERSERVICE_H
 #define MOCKSTEPPERSERVICE_H
-namespace HardwareAbstraction
+namespace IOServices
 {
 	class MockStepperOutputService : public IStepperOutputService
 	{

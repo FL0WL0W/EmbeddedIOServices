@@ -32,7 +32,11 @@ namespace IOServices
 			{
 				FloatOutputService_StepperPolynomialConfig<3> *stepperConfig = FloatOutputService_StepperPolynomialConfig<3>::Cast((unsigned char*)config);
 				*sizeOut += stepperConfig->Size();
-				outputService = new FloatOutputService_StepperPolynomial<3>(hardwareAbstractionCollection, stepperConfig);
+				config = (void*)((unsigned char *)config + stepperConfig->Size());
+				unsigned int stepperSize = 0;
+				IStepperOutputService *stepperService = IStepperOutputService::CreateStepperOutputService(hardwareAbstractionCollection, config, &stepperSize);
+				*sizeOut += stepperSize;
+				outputService = new FloatOutputService_StepperPolynomial<3>(stepperConfig, stepperService);
 				break;
 			}
 #endif
@@ -52,7 +56,11 @@ namespace IOServices
 			{
 				FloatOutputService_StepperInterpolatedTableConfig *stepperConfig = FloatOutputService_StepperInterpolatedTableConfig::Cast((unsigned char*)config);
 				*sizeOut += stepperConfig->Size();
-				outputService = new FloatOutputService_StepperInterpolatedTable(hardwareAbstractionCollection, stepperConfig);
+				config = (void*)((unsigned char *)config + stepperConfig->Size());
+				unsigned int stepperSize = 0;
+				IStepperOutputService *stepperService = IStepperOutputService::CreateStepperOutputService(hardwareAbstractionCollection, config, &stepperSize);
+				*sizeOut += stepperSize;
+				outputService = new FloatOutputService_StepperInterpolatedTable(stepperConfig, stepperService);
 				break;
 			}
 #endif
