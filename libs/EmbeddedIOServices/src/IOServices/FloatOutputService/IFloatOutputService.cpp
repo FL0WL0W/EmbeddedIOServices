@@ -20,9 +20,9 @@ namespace IOServices
 #ifdef FLOATOUTPUTSERVICE_PWMPOLYNOMIAL_H
 		case 1:
 			{
-				FloatOutputService_PwmPolynomialConfig<3> *pwmConfig = FloatOutputService_PwmPolynomialConfig<3>::Cast((unsigned char*)config);
+				FloatOutputService_PwmPolynomialConfig<4> *pwmConfig = FloatOutputService_PwmPolynomialConfig<4>::Cast((unsigned char*)config);
 				*sizeOut += pwmConfig->Size();
-				outputService = new FloatOutputService_PwmPolynomial<3>(hardwareAbstractionCollection, pwmConfig);
+				outputService = new FloatOutputService_PwmPolynomial<4>(hardwareAbstractionCollection, pwmConfig);
 				break;
 			}
 #endif
@@ -30,13 +30,13 @@ namespace IOServices
 #ifdef FLOATOUTPUTSERVICE_STEPPERPOLYNOMIAL_H
 		case 2:
 			{
-				FloatOutputService_StepperPolynomialConfig<3> *stepperConfig = FloatOutputService_StepperPolynomialConfig<3>::Cast((unsigned char*)config);
+				FloatOutputService_StepperPolynomialConfig<4> *stepperConfig = FloatOutputService_StepperPolynomialConfig<4>::Cast((unsigned char*)config);
 				*sizeOut += stepperConfig->Size();
 				config = (void*)((unsigned char *)config + stepperConfig->Size());
 				unsigned int stepperSize = 0;
 				IStepperOutputService *stepperService = IStepperOutputService::CreateStepperOutputService(hardwareAbstractionCollection, config, &stepperSize);
 				*sizeOut += stepperSize;
-				outputService = new FloatOutputService_StepperPolynomial<3>(stepperConfig, stepperService);
+				outputService = new FloatOutputService_StepperPolynomial<4>(stepperConfig, stepperService);
 				break;
 			}
 #endif

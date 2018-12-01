@@ -2,10 +2,11 @@
 #include "IOServices/StepperOutputService/IStepperOutputService.h"
 #include "IFloatOutputService.h"
 #include "math.h"
+#include "Packed.h"
 
 using namespace HardwareAbstraction;
 
-#if !defined(FLOATOUTPUTSERVICE_STEPPERPOLYNOMIAL_H) && defined(IFLOATOUTPUTSERVICE_H)
+#if !defined(FLOATOUTPUTSERVICE_STEPPERPOLYNOMIAL_H) && defined(IFLOATOUTPUTSERVICE_H) && defined(ISTEPPEROUTPUTSERVICE_H)
 #define FLOATOUTPUTSERVICE_STEPPERPOLYNOMIAL_H
 namespace IOServices
 {
@@ -62,6 +63,8 @@ namespace IOServices
 				newStepPosition = _config->MaxStepPosition;
 			else if (newStepPosition < _config->MinStepPosition)
 				newStepPosition = _config->MinStepPosition;
+
+			newStepPosition = round(newStepPosition);
 		
 			_stepperService->Step(newStepPosition - _currentStepPosition);
 		

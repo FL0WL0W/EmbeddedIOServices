@@ -50,10 +50,10 @@ namespace UnitTests
 		EXPECT_CALL(_stepperService, Step(-10)).Times(1);
 		_floatOutputService->SetOutput(10);
 
-		EXPECT_CALL(_stepperService, Step(10)).Times(1);
-		_floatOutputService->SetOutput(20);
+		EXPECT_CALL(_stepperService, Step(9)).Times(1);
+		_floatOutputService->SetOutput(19.25);
 
-		EXPECT_CALL(_stepperService, Step(90)).Times(1);
+		EXPECT_CALL(_stepperService, Step(91)).Times(1);
 		_floatOutputService->SetOutput(110);
 
 		EXPECT_CALL(_stepperService, Step(-100)).Times(1);
