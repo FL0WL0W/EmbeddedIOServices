@@ -40,6 +40,9 @@ namespace UnitTests
 
 	TEST_F(FloatOutputService_StepperPolynomialTests, FloatOutputService_StepperPolynomial_WhenGettingValueThenCorrectValueIsReturned)
 	{
+		EXPECT_CALL(_stepperService, Calibrate()).Times(1);
+		_floatOutputService->Calibrate();
+
 		EXPECT_CALL(_stepperService, Step(-10)).Times(1);
 		_floatOutputService->SetOutput(0);
 

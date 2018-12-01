@@ -19,5 +19,10 @@ namespace IOServices
 
 		_currentStepPosition = newStepPosition;
 	}
+
+	void FloatOutputService_StepperInterpolatedTable::Calibrate() 
+	{ 
+		_stepperService->Calibrate();
+	}
 }
 #endif

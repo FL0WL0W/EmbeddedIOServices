@@ -8,6 +8,7 @@ namespace IOServices
 	{
 	public:
 		MOCK_METHOD1(Step, void(int));
+		MOCK_METHOD0(Calibrate, void());
 	};
 }
 #endif

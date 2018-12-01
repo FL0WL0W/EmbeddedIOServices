@@ -53,6 +53,7 @@ namespace IOServices
 		FloatOutputService_StepperInterpolatedTable(const FloatOutputService_StepperInterpolatedTableConfig *config, IStepperOutputService *stepperService);
 		
 		void SetOutput(float value);
+		void Calibrate();
 	};
 }
 #endif

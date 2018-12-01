@@ -70,6 +70,11 @@ namespace IOServices
 		
 			_currentStepPosition = newStepPosition;
 		}
+
+		void Calibrate() 
+		{ 
+			_stepperService->Calibrate();
+		}
 	};
 }
 #endif
