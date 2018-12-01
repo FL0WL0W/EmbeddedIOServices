@@ -74,6 +74,14 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
     <li>FloatOutputService_StepperInterpolatedTable</li>
   </ul>
   <li>Create Stepper Services</li>
+  <ul>
+    <li>Bipolar Stepper</li>
+    <li>Step/Direction Stepper</li>
+    <li>Stepper Feedback Limit Calibration Wrapper</li>
+    <li>Stepper Static Step Calibration Wrapper</li>
+  </ul>
+  <li>Analog Feedback Float Output Service Wrapper</li>
+  <li>Analog Feedback Stepper Float Output Service Wrapper</li>
   <li>Implement STM32F103C8 interrupt callbacks for digital inputs.</li>
   <li>Implement STM32F103C8 tick overhead compensation</li>
   <li>*Test Stm32F103 Services</li>
