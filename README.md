@@ -70,7 +70,6 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
     <li>FloatInputService_FaultDetectionWrapper</li>
     <li>FloatOutputService_PwmPolynomial</li>
     <li>FloatOutputService_PwmInterpolatedTable</li>
-    <li>FloatOutputService_StepperPolynomial</li>
   </ul>
   <li>Create Stepper Services</li>
   <ul>
