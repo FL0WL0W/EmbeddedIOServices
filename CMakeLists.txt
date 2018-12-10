@@ -18,4 +18,3 @@ add_subdirectory (${LIBRARIES}/EmbeddedIOServicesMockedObjects)
 add_subdirectory (${LIBRARIES}/EmbeddedIOServicesUnitTests)
 
 # Compile all the abstractions
-add_subdirectory (${LIBRARIES}/HardwareAbstractionStm32F103Cx)

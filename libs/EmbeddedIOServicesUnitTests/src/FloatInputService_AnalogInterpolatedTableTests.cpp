@@ -27,7 +27,7 @@ namespace UnitTests
 			FloatInputService_AnalogInterpolatedTableConfig *analogConfig = (FloatInputService_AnalogInterpolatedTableConfig *)malloc(sizeof(FloatInputService_AnalogInterpolatedTableConfig) + 4 * 11);
 			
 			//adcPin
-			// unsigned char AdcPin;
+			// unsigned short AdcPin;
 			// float MinInputValue;
 			// float MaxInputValue;
 			// unsigned short DotSampleRate;

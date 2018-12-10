@@ -7,16 +7,10 @@
     "\\libs\\EmbeddedIOServicesUnitTests\\src",
     "\\libs\\EmbeddedIOServices\\include",
     "\\libs\\EmbeddedIOServices\\include\\IOServices",
-    "\\libs\\EmbeddedIOServices\\include\\IOServices\\FloatInputService",
-    "\\libs\\EmbeddedIOServices\\src",
-    "\\libs\\EmbeddedIOServices\\src\\HardwareAbstraction",
-    "\\libs\\EmbeddedIOServices\\src\\IOServices",
-    "\\libs\\EmbeddedIOServices\\src\\IOServices\\BooleanInputService",
-    "\\libs\\EmbeddedIOServices\\src\\IOServices\\BooleanOutputService",
-    "\\libs\\EmbeddedIOServices\\src\\IOServices\\FloatInputService",
     "\\libs\\HardwareAbstractionSTM32F103Cx",
+    "\\libs\\HardwareAbstractionSTM32F103Cx\\include",
     "\\libs\\HardwareAbstractionSTM32F103Cx\\src"
   ],
-  "SelectedNode": "\\libs\\HardwareAbstractionSTM32F103Cx\\src\\Stm32F103CxTimerService.cpp",
+  "SelectedNode": "\\libs\\HardwareAbstractionSTM32F103Cx\\include\\Stm32F103CxDigitalService.h",
   "PreviewInSolutionExplorer": false
 }
