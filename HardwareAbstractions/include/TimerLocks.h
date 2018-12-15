@@ -1,5 +1,3 @@
-#include "stm32f1xx_hal.h"
-
 #ifndef TIMERLOCKS_H
 #define TIMERLOCKS_H
 
