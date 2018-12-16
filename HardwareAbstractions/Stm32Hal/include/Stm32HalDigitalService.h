@@ -1,5 +1,6 @@
 #include "HardwareAbstraction/PinDirection.h"
 #include "HardwareAbstraction/IDigitalService.h"
+#include "Stm32HalConf.h"
 
 #ifndef STM32HALDIGITALSERVICE_H
 #define STM32HALDIGITALSERVICE_H
