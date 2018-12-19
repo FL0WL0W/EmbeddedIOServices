@@ -60,7 +60,8 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
 # Currently Supported Microcontroller
 <ul>
   <li>STM32F103C8</li>
- </ul>
+  <li>Full Stm32 Line, just add Stm32HalConf.h</li>
+</ul>
 
 # TODO:
 <ul>
@@ -79,8 +80,7 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
   </ul>
   <li>Analog Feedback Float Output Service Wrapper</li>
   <li>Analog Feedback Stepper Float Output Service Wrapper</li>
-  <li>Implement STM32F103C8 interrupt callbacks for digital inputs.</li>
-  <li>Implement STM32F103C8 tick overhead compensation</li>
+  <li>Implement STM32Hal interrupt callbacks for digital inputs.</li>
   <li>*Test Stm32F103 Services</li>
   <li>*Create integration tests with integration test hardware</li>
 </ul>
