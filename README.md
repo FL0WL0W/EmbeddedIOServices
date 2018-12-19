@@ -81,6 +81,7 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
   <li>Analog Feedback Float Output Service Wrapper</li>
   <li>Analog Feedback Stepper Float Output Service Wrapper</li>
   <li>Implement STM32Hal interrupt callbacks for digital inputs.</li>
+  <li>Create PWM service that uses interrupt callback from DigitalService and Tick from TimerService to create software based PWM input and output.</li>
   <li>*Test Stm32F103 Services</li>
   <li>*Create integration tests with integration test hardware</li>
 </ul>
