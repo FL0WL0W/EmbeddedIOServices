@@ -5,22 +5,22 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
 <ul>
   <li>IAnalogService</li>
   <ul>
-    <li>InitPin(uint8 pin)</li>
-    <li>ReadPin(uint8 pin)</li>
+    <li>InitPin(uint16 pin)</li>
+    <li>ReadPin(uint16 pin)</li>
   </ul>
   <li>IDigitalService</li>
   <ul>
-    <li>InitPin(uint8 pin, PinDirection direction)</li>
-    <li>ReadPin(uint8 pin)</li>
-    <li>WritePin(uint8 pin, bool value)</li>
-    <li>ScheduleRecurringInterrupt(uint8 pin, CallBack callBack)
-    <li>ScheduleNextInterrupt(uint8 pin, CallBack callBack)
+    <li>InitPin(uint16 pin, PinDirection direction)</li>
+    <li>ReadPin(uint16 pin)</li>
+    <li>WritePin(uint16 pin, bool value)</li>
+    <li>ScheduleRecurringInterrupt(uint16 pin, CallBack callBack)
+    <li>ScheduleNextInterrupt(uint16 pin, CallBack callBack)
   </ul>
   <li>IPwmService</li>
   <ul>
-    <li>InitPin(uint8 pin, PinDirection direction, uint16 minFrequency)</li>
-    <li>ReadPin(uint8 pin)</li>
-    <li>WritePin(uint8 pin, PwmValue value)</li>
+    <li>InitPin(uint16 pin, PinDirection direction, uint16 minFrequency)</li>
+    <li>ReadPin(uint16 pin)</li>
+    <li>WritePin(uint16 pin, PwmValue value)</li>
   </ul>
   <li>ITimerService</li>
   <ul>
