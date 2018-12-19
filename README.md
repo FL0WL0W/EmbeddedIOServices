@@ -1,5 +1,5 @@
 # EmbeddedIOServices
-This is a unit tested hardware abstraction for embedded systems. The timer service has a built in scheduling system that can be used to trigger callbacks at precise times. The services are configurable for translating raw inputs and outputs to their meaning. I.E. sensor voltage -> sensor value (temperature, pressure, etc.).
+This is a unit tested hardware abstraction for embedded systems. The timer service has a built in scheduling system that can be used to trigger callbacks at precise times. The services are configurable for translating raw inputs and outputs to their meaning. I.E. sensor voltage -> sensor value (temperature, pressure, etc.), Throttle position -> Stepper position.
 
 # Interfaces that need to be implemented when adding new hardware
 <ul>
@@ -60,7 +60,8 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
 # Currently Supported Microcontroller
 <ul>
   <li>STM32F103C8</li>
- </ul>
+  <li>Full Stm32 Line, just add Stm32HalConf.h</li>
+</ul>
 
 # TODO:
 <ul>
@@ -79,8 +80,7 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
   </ul>
   <li>Analog Feedback Float Output Service Wrapper</li>
   <li>Analog Feedback Stepper Float Output Service Wrapper</li>
-  <li>Implement STM32F103C8 interrupt callbacks for digital inputs.</li>
-  <li>Implement STM32F103C8 tick overhead compensation</li>
+  <li>Implement STM32Hal interrupt callbacks for digital inputs.</li>
   <li>*Test Stm32F103 Services</li>
   <li>*Create integration tests with integration test hardware</li>
 </ul>
