@@ -1,5 +1,6 @@
 #include "TimerLocks.h"
 #include "Stm32HalTimerService.h"
+#include "Stm32HalPwmService.h"
 
 #ifdef TIM1
 	bool TIM1_Freq_Locked;
@@ -74,8 +75,8 @@ namespace Stm32
 		{
 			if (TimerService1 != 0)
 				TimerService1->Interrupt();
-			//if (PwmService != 0)
-			//	PwmService->InterruptTim1();
+			if (PwmService != 0)
+				PwmService->InterruptTim1();
 		}
 #endif
 #if defined(TIM1)
@@ -83,8 +84,8 @@ namespace Stm32
 		{
 			if (TimerService1 != 0)
 				TimerService1->Interrupt();
-			//if (PwmService != 0)
-			//	PwmService->InterruptTim1();
+			if (PwmService != 0)
+				PwmService->InterruptTim1();
 		}
 #endif
 #if defined(TIM2)
@@ -99,8 +100,8 @@ namespace Stm32
 		{
 			if (TimerService2 != 0)
 				TimerService2->Interrupt();
-			//if (PwmService != 0)
-			//	PwmService->InterruptTim2();
+			if (PwmService != 0)
+				PwmService->InterruptTim2();
 		}
 #endif
 #if defined(TIM2)
@@ -108,8 +109,8 @@ namespace Stm32
 		{
 			if (TimerService2 != 0)
 				TimerService2->Interrupt();
-			//if (PwmService != 0)
-			//	PwmService->InterruptTim2();
+			if (PwmService != 0)
+				PwmService->InterruptTim2();
 		}
 #endif
 #if defined(TIM3)
@@ -124,8 +125,8 @@ namespace Stm32
 		{
 			if (TimerService3 != 0)
 				TimerService3->Interrupt();
-			//if (PwmService != 0)
-			//	PwmService->InterruptTim3();
+			if (PwmService != 0)
+				PwmService->InterruptTim3();
 		}
 #endif
 #if defined(TIM3)
@@ -133,8 +134,8 @@ namespace Stm32
 		{
 			if (TimerService3 != 0)
 				TimerService3->Interrupt();
-			//if (PwmService != 0)
-			//	PwmService->InterruptTim3();
+			if (PwmService != 0)
+				PwmService->InterruptTim3();
 		}
 #endif
 #if defined(TIM4)
@@ -149,8 +150,8 @@ namespace Stm32
 		{
 			if (TimerService4 != 0)
 				TimerService4->Interrupt();
-			//if (PwmService != 0)
-			//	PwmService->InterruptTim4();
+			if (PwmService != 0)
+				PwmService->InterruptTim4();
 		}
 #endif
 #if defined(TIM4)
@@ -158,8 +159,8 @@ namespace Stm32
 		{
 			if (TimerService4 != 0)
 				TimerService4->Interrupt();
-			//if (PwmService != 0)
-			//	PwmService->InterruptTim4();
+			if (PwmService != 0)
+				PwmService->InterruptTim4();
 		}
 #endif
 #if defined(TIM5)
@@ -174,8 +175,8 @@ namespace Stm32
 		{
 			if (TimerService5 != 0)
 				TimerService5->Interrupt();
-			//if (PwmService != 0)
-			//	PwmService->InterruptTim5();
+			if (PwmService != 0)
+				PwmService->InterruptTim5();
 		}
 #endif
 #if defined(TIM5)
@@ -183,8 +184,8 @@ namespace Stm32
 		{
 			if (TimerService5 != 0)
 				TimerService5->Interrupt();
-			//if (PwmService != 0)
-			//	PwmService->InterruptTim5();
+			if (PwmService != 0)
+				PwmService->InterruptTim5();
 		}
 #endif
 #if defined(TIM6)
@@ -199,8 +200,8 @@ namespace Stm32
 		{
 			if (TimerService6 != 0)
 				TimerService6->Interrupt();
-			//if (PwmService != 0)
-			//	PwmService->InterruptTim6();
+			if (PwmService != 0)
+				PwmService->InterruptTim6();
 		}
 #endif
 #if defined(TIM6)
@@ -208,8 +209,8 @@ namespace Stm32
 		{
 			if (TimerService6 != 0)
 				TimerService6->Interrupt();
-			//if (PwmService != 0)
-			//	PwmService->InterruptTim6();
+			if (PwmService != 0)
+				PwmService->InterruptTim6();
 		}
 #endif
 #if defined(TIM7)
@@ -224,8 +225,8 @@ namespace Stm32
 		{
 			if (TimerService7 != 0)
 				TimerService7->Interrupt();
-			//if (PwmService != 0)
-			//	PwmService->InterruptTim7();
+			if (PwmService != 0)
+				PwmService->InterruptTim7();
 		}
 #endif
 #if defined(TIM7)
@@ -233,8 +234,8 @@ namespace Stm32
 		{
 			if (TimerService7 != 0)
 				TimerService7->Interrupt();
-			//if (PwmService != 0)
-			//	PwmService->InterruptTim7();
+			if (PwmService != 0)
+				PwmService->InterruptTim7();
 		}
 #endif
 #if defined(TIM8)
@@ -249,8 +250,8 @@ namespace Stm32
 		{
 			if (TimerService8 != 0)
 				TimerService8->Interrupt();
-			//if (PwmService != 0)
-			//	PwmService->InterruptTim8();
+			if (PwmService != 0)
+				PwmService->InterruptTim8();
 		}
 #endif
 #if defined(TIM8)
@@ -258,8 +259,8 @@ namespace Stm32
 		{
 			if (TimerService8 != 0)
 				TimerService8->Interrupt();
-			//if (PwmService != 0)
-			//	PwmService->InterruptTim8();
+			if (PwmService != 0)
+				PwmService->InterruptTim8();
 		}
 #endif
 #if defined(TIM9)
@@ -274,8 +275,8 @@ namespace Stm32
 		{
 			if (TimerService9 != 0)
 				TimerService9->Interrupt();
-			//if (PwmService != 0)
-			//	PwmService->InterruptTim9();
+			if (PwmService != 0)
+				PwmService->InterruptTim9();
 		}
 #endif
 #if defined(TIM9)
@@ -283,8 +284,8 @@ namespace Stm32
 		{
 			if (TimerService9 != 0)
 				TimerService9->Interrupt();
-			//if (PwmService != 0)
-			//	PwmService->InterruptTim9();
+			if (PwmService != 0)
+				PwmService->InterruptTim9();
 		}
 #endif
 #if defined(TIM10)
@@ -299,8 +300,8 @@ namespace Stm32
 		{
 			if (TimerService10 != 0)
 				TimerService10->Interrupt();
-			//if (PwmService != 0)
-			//	PwmService->InterruptTim10();
+			if (PwmService != 0)
+				PwmService->InterruptTim10();
 		}
 #endif
 #if defined(TIM10)
@@ -308,8 +309,8 @@ namespace Stm32
 		{
 			if (TimerService10 != 0)
 				TimerService10->Interrupt();
-			//if (PwmService != 0)
-			//	PwmService->InterruptTim10();
+			if (PwmService != 0)
+				PwmService->InterruptTim10();
 		}
 #endif
 #if defined(TIM11)
@@ -324,8 +325,8 @@ namespace Stm32
 		{
 			if (TimerService11 != 0)
 				TimerService11->Interrupt();
-			//if (PwmService != 0)
-			//	PwmService->InterruptTim11();
+			if (PwmService != 0)
+				PwmService->InterruptTim11();
 		}
 #endif
 #if defined(TIM11)
@@ -333,8 +334,8 @@ namespace Stm32
 		{
 			if (TimerService11 != 0)
 				TimerService11->Interrupt();
-			//if (PwmService != 0)
-			//	PwmService->InterruptTim11();
+			if (PwmService != 0)
+				PwmService->InterruptTim11();
 		}
 #endif
 #if defined(TIM12)
@@ -349,8 +350,8 @@ namespace Stm32
 		{
 			if (TimerService12 != 0)
 				TimerService12->Interrupt();
-			//if (PwmService != 0)
-			//	PwmService->InterruptTim12();
+			if (PwmService != 0)
+				PwmService->InterruptTim12();
 		}
 #endif
 #if defined(TIM12)
@@ -358,8 +359,8 @@ namespace Stm32
 		{
 			if (TimerService12 != 0)
 				TimerService12->Interrupt();
-			//if (PwmService != 0)
-			//	PwmService->InterruptTim12();
+			if (PwmService != 0)
+				PwmService->InterruptTim12();
 		}
 #endif
 #if defined(TIM13)
@@ -374,8 +375,8 @@ namespace Stm32
 		{
 			if (TimerService13 != 0)
 				TimerService13->Interrupt();
-			//if (PwmService != 0)
-			//	PwmService->InterruptTim13();
+			if (PwmService != 0)
+				PwmService->InterruptTim13();
 		}
 #endif
 #if defined(TIM13)
@@ -383,8 +384,8 @@ namespace Stm32
 		{
 			if (TimerService13 != 0)
 				TimerService13->Interrupt();
-			//if (PwmService != 0)
-			//	PwmService->InterruptTim13();
+			if (PwmService != 0)
+				PwmService->InterruptTim13();
 		}
 #endif
 #if defined(TIM14)
@@ -399,8 +400,8 @@ namespace Stm32
 		{
 			if (TimerService14 != 0)
 				TimerService14->Interrupt();
-			//if (PwmService != 0)
-			//	PwmService->InterruptTim14();
+			if (PwmService != 0)
+				PwmService->InterruptTim14();
 		}
 #endif
 #if defined(TIM14)
@@ -408,8 +409,8 @@ namespace Stm32
 		{
 			if (TimerService14 != 0)
 				TimerService14->Interrupt();
-			//if (PwmService != 0)
-			//	PwmService->InterruptTim14();
+			if (PwmService != 0)
+				PwmService->InterruptTim14();
 		}
 #endif
 	}

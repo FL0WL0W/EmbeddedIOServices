@@ -83,3 +83,73 @@
 //#define ADC4_IN13_PIN 
 //#define ADC4_IN14_PIN 
 //#define ADC4_IN15_PIN 
+
+//#define PWM_TIM1_CC1
+//#define PWM_TIM1_CC2
+//#define PWM_TIM1_CC3
+//#define PWM_TIM1_CC4
+
+//#define PWM_TIM2_CC1
+//#define PWM_TIM2_CC2
+//#define PWM_TIM2_CC3
+//#define PWM_TIM2_CC4
+
+//#define PWM_TIM3_CC1
+//#define PWM_TIM3_CC2
+//#define PWM_TIM3_CC3
+//#define PWM_TIM3_CC4
+
+//#define PWM_TIM4_CC1
+//#define PWM_TIM4_CC2
+//#define PWM_TIM4_CC3
+//#define PWM_TIM4_CC4
+
+//#define PWM_TIM5_CC1 
+//#define PWM_TIM5_CC2 
+//#define PWM_TIM5_CC3 
+//#define PWM_TIM5_CC4 
+
+//#define PWM_TIM6_CC1 
+//#define PWM_TIM6_CC2 
+//#define PWM_TIM6_CC3 
+//#define PWM_TIM6_CC4 
+
+//#define PWM_TIM7_CC1 
+//#define PWM_TIM7_CC2 
+//#define PWM_TIM7_CC3 
+//#define PWM_TIM7_CC4 
+
+//#define PWM_TIM8_CC1 
+//#define PWM_TIM8_CC2 
+//#define PWM_TIM8_CC3 
+//#define PWM_TIM8_CC4 
+
+//#define PWM_TIM9_CC1 
+//#define PWM_TIM9_CC2 
+//#define PWM_TIM9_CC3 
+//#define PWM_TIM9_CC4 
+
+//#define PWM_TIM10_CC1 
+//#define PWM_TIM10_CC2 
+//#define PWM_TIM10_CC3 
+//#define PWM_TIM10_CC4 
+
+//#define PWM_TIM11_CC1 
+//#define PWM_TIM11_CC2 
+//#define PWM_TIM11_CC3 
+//#define PWM_TIM11_CC4 
+
+//#define PWM_TIM12_CC1 
+//#define PWM_TIM12_CC2 
+//#define PWM_TIM12_CC3 
+//#define PWM_TIM12_CC4 
+
+//#define PWM_TIM13_CC1 
+//#define PWM_TIM13_CC2 
+//#define PWM_TIM13_CC3 
+//#define PWM_TIM13_CC4 
+
+//#define PWM_TIM14_CC1 
+//#define PWM_TIM14_CC2 
+//#define PWM_TIM14_CC3 
+//#define PWM_TIM14_CC4 

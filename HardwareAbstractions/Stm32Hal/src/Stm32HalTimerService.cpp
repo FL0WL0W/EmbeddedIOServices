@@ -67,7 +67,7 @@ namespace Stm32
 			HAL_NVIC_SetPriority(TIM1_CC_IRQn, 0, 0);
     		HAL_NVIC_EnableIRQ(TIM1_CC_IRQn);
 #else
-			(TIM1_IRQn, 0, 0);
+			HAL_NVIC_SetPriority(TIM1_IRQn, 0, 0);
     		HAL_NVIC_EnableIRQ(TIM1_IRQn);
 #endif
 			break;
