@@ -141,12 +141,11 @@ namespace Stm32
 		}
 
   		GPIO_InitTypeDef GPIO_InitStruct = {0};
-			/*Configure GPIO pin : PC13 */
 		GPIO_InitStruct.Pin = PinToGPIO_Pin(pin);
 		GPIO_InitStruct.Mode = HardwareAbstraction::In ? GPIO_MODE_INPUT : GPIO_MODE_OUTPUT_PP;
 		GPIO_InitStruct.Pull = GPIO_NOPULL;
 		GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-		HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+		HAL_GPIO_Init(GPIO, &GPIO_InitStruct);
 	}
 	
 	bool Stm32HalDigitalService::ReadPin(unsigned short pin)
