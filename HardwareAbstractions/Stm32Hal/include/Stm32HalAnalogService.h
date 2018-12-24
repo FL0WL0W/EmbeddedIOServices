@@ -1,5 +1,6 @@
 #include "HardwareAbstraction/IAnalogService.h"
 #include "Stm32HalConf.h"
+#include "Stm32HalGpio.h"
 
 #ifndef STM32HALANALOGSERVICE_H
 #define STM32HALANALOGSERVICE_H

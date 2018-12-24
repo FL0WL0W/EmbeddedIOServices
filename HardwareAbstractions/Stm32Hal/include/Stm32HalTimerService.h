@@ -1,5 +1,5 @@
 #include "HardwareAbstraction/ITimerService.h"
-#include "TimerLocks.h"
+#include "Stm32HalTimer.h"
 
 #ifndef STM32HALTIMERSERVICE_H
 #define STM32HALTIMERSERVICE_H

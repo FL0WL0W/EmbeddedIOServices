@@ -1,6 +1,9 @@
 #include "stm32f1xx_hal.h"
 #include "stm32f1xx.h"
 
+#ifndef STM32HALCONF_H
+#define STM32HALCONF_H
+
 #define TIM1_SEPERATE_UP_CC_IT
 //#define TIM2_SEPERATE_UP_CC_IT
 //#define TIM3_SEPERATE_UP_CC_IT
@@ -156,3 +159,5 @@
 //#define PWM_TIM14_CC2 
 //#define PWM_TIM14_CC3 
 //#define PWM_TIM14_CC4 
+
+#endif

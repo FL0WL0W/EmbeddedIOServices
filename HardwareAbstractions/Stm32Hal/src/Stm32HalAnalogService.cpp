@@ -508,6 +508,13 @@ defined(ADC4_IN15_PIN)
 		sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
 		
 		HAL_ADC_ConfigChannel(&hadc, &sConfig);
+		
+		GPIO_InitTypeDef GPIO_InitStruct = {0};
+		GPIO_InitStruct.Pin = PinToGPIO_Pin(pin);
+		GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+		GPIO_InitStruct.Pull = GPIO_NOPULL;
+		GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+		HAL_GPIO_Init(PinToGPIO(pin), &GPIO_InitStruct);
 	}
 	
 	float Stm32HalAnalogService::ReadPin(unsigned short pin)

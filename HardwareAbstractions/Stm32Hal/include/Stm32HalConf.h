@@ -1,3 +1,9 @@
+#include "stm32f1xx_hal.h"
+#include "stm32f1xx.h"
+
+#ifndef STM32HALCONF_H
+#define STM32HALCONF_H
+
 //#define TIM1_SEPERATE_UP_CC_IT
 //#define TIM2_SEPERATE_UP_CC_IT
 //#define TIM3_SEPERATE_UP_CC_IT
@@ -84,25 +90,25 @@
 //#define ADC4_IN14_PIN 
 //#define ADC4_IN15_PIN 
 
-//#define PWM_TIM1_CC1
-//#define PWM_TIM1_CC2
-//#define PWM_TIM1_CC3
-//#define PWM_TIM1_CC4
+//#define PWM_TIM1_CC1 
+//#define PWM_TIM1_CC2 
+//#define PWM_TIM1_CC3 
+//#define PWM_TIM1_CC4 
 
-//#define PWM_TIM2_CC1
-//#define PWM_TIM2_CC2
-//#define PWM_TIM2_CC3
-//#define PWM_TIM2_CC4
+//#define PWM_TIM2_CC1 
+//#define PWM_TIM2_CC2 
+//#define PWM_TIM2_CC3 
+//#define PWM_TIM2_CC4 
 
-//#define PWM_TIM3_CC1
-//#define PWM_TIM3_CC2
-//#define PWM_TIM3_CC3
-//#define PWM_TIM3_CC4
+//#define PWM_TIM3_CC1 
+//#define PWM_TIM3_CC2 
+//#define PWM_TIM3_CC3 
+//#define PWM_TIM3_CC4 
 
-//#define PWM_TIM4_CC1
-//#define PWM_TIM4_CC2
-//#define PWM_TIM4_CC3
-//#define PWM_TIM4_CC4
+//#define PWM_TIM4_CC1 
+//#define PWM_TIM4_CC2 
+//#define PWM_TIM4_CC3 
+//#define PWM_TIM4_CC4 
 
 //#define PWM_TIM5_CC1 
 //#define PWM_TIM5_CC2 
@@ -153,3 +159,5 @@
 //#define PWM_TIM14_CC2 
 //#define PWM_TIM14_CC3 
 //#define PWM_TIM14_CC4 
+
+#endif

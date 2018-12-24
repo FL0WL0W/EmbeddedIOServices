@@ -1,7 +1,12 @@
 #include "Stm32HalConf.h"
 
-#ifndef TIMERLOCKS_H
-#define TIMERLOCKS_H
+#ifndef STM32HALTIMER_H
+#define STM32HALTIMER_H
+
+namespace Stm32
+{
+    void EnableTimerClock(unsigned char timNum);
+    void EnableTimerInterrupts(unsigned char timNum);
 
 #ifdef TIM1
 	extern bool TIM1_Freq_Locked;
@@ -59,5 +64,6 @@
 	extern bool TIM14_Freq_Locked;
     extern bool TIM14_Input;
 #endif
+}
 
 #endif

@@ -1,7 +1,11 @@
 #include "HardwareAbstraction/PinDirection.h"
 #include "HardwareAbstraction/IPwmService.h"
+#include "Stm32HalGpio.h"
 
 using namespace HardwareAbstraction;
+
+#ifndef STM32HALPWMSERVICE_H
+#define STM32HALPWMSERVICE_H
 
 namespace Stm32
 {
@@ -100,5 +104,7 @@ namespace Stm32
 #endif
 	};
 
-	extern Stm32HalPwmService *PwmService;
+	extern Stm32HalPwmService *HalPwmService;
 }
+
+#endif

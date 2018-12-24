@@ -60,16 +60,6 @@ namespace Stm32
 			TIM1_Freq_Locked = true;
 			TimerService1 = this;
 			TIM = TIM1;
-			__HAL_RCC_TIM1_CLK_ENABLE();
-#ifdef TIM1_SEPERATE_UP_CC_IT
-			HAL_NVIC_SetPriority(TIM1_UP_IRQn, 0, 0);
-    		HAL_NVIC_EnableIRQ(TIM1_UP_IRQn);
-			HAL_NVIC_SetPriority(TIM1_CC_IRQn, 0, 0);
-    		HAL_NVIC_EnableIRQ(TIM1_CC_IRQn);
-#else
-			HAL_NVIC_SetPriority(TIM1_IRQn, 0, 0);
-    		HAL_NVIC_EnableIRQ(TIM1_IRQn);
-#endif
 			break;
 #endif
 #ifdef TIM2
@@ -79,16 +69,6 @@ namespace Stm32
 			TIM2_Freq_Locked = true;
 			TimerService2 = this;
 			TIM = TIM2;
-			__HAL_RCC_TIM2_CLK_ENABLE();
-#ifdef TIM2_SEPERATE_UP_CC_IT
-			HAL_NVIC_SetPriority(TIM2_UP_IRQn, 0, 0);
-    		HAL_NVIC_EnableIRQ(TIM2_UP_IRQn);
-			HAL_NVIC_SetPriority(TIM2_CC_IRQn, 0, 0);
-    		HAL_NVIC_EnableIRQ(TIM2_CC_IRQn);
-#else
-			HAL_NVIC_SetPriority(TIM2_IRQn, 0, 0);
-    		HAL_NVIC_EnableIRQ(TIM2_IRQn);
-#endif
 			break;
 #endif
 #ifdef TIM3
@@ -98,16 +78,6 @@ namespace Stm32
 			TIM3_Freq_Locked = true;
 			TimerService3 = this;
 			TIM = TIM3;
-			__HAL_RCC_TIM3_CLK_ENABLE();
-#ifdef TIM3_SEPERATE_UP_CC_IT
-			HAL_NVIC_SetPriority(TIM3_UP_IRQn, 0, 0);
-    		HAL_NVIC_EnableIRQ(TIM3_UP_IRQn);
-			HAL_NVIC_SetPriority(TIM3_CC_IRQn, 0, 0);
-    		HAL_NVIC_EnableIRQ(TIM3_CC_IRQn);
-#else
-			HAL_NVIC_SetPriority(TIM3_IRQn, 0, 0);
-    		HAL_NVIC_EnableIRQ(TIM3_IRQn);
-#endif
 			break;
 #endif
 #ifdef TIM4
@@ -117,16 +87,6 @@ namespace Stm32
 			TIM4_Freq_Locked = true;
 			TimerService4 = this;
 			TIM = TIM4;
-			__HAL_RCC_TIM4_CLK_ENABLE();
-#ifdef TIM4_SEPERATE_UP_CC_IT
-			HAL_NVIC_SetPriority(TIM4_UP_IRQn, 0, 0);
-    		HAL_NVIC_EnableIRQ(TIM4_UP_IRQn);
-			HAL_NVIC_SetPriority(TIM4_CC_IRQn, 0, 0);
-    		HAL_NVIC_EnableIRQ(TIM4_CC_IRQn);
-#else
-			HAL_NVIC_SetPriority(TIM4_IRQn, 0, 0);
-    		HAL_NVIC_EnableIRQ(TIM4_IRQn);
-#endif
 			break;
 #endif
 #ifdef TIM5
@@ -136,16 +96,6 @@ namespace Stm32
 			TIM5_Freq_Locked = true;
 			TimerService5 = this;
 			TIM = TIM5;
-			__HAL_RCC_TIM5_CLK_ENABLE();
-#ifdef TIM5_SEPERATE_UP_CC_IT
-			HAL_NVIC_SetPriority(TIM5_UP_IRQn, 0, 0);
-    		HAL_NVIC_EnableIRQ(TIM5_UP_IRQn);
-			HAL_NVIC_SetPriority(TIM5_CC_IRQn, 0, 0);
-    		HAL_NVIC_EnableIRQ(TIM5_CC_IRQn);
-#else
-			HAL_NVIC_SetPriority(TIM5_IRQn, 0, 0);
-    		HAL_NVIC_EnableIRQ(TIM5_IRQn);
-#endif
 			break;
 #endif
 #ifdef TIM6
@@ -155,16 +105,6 @@ namespace Stm32
 			TIM6_Freq_Locked = true;
 			TimerService6 = this;
 			TIM = TIM6;
-			__HAL_RCC_TIM6_CLK_ENABLE();
-#ifdef TIM6_SEPERATE_UP_CC_IT
-			HAL_NVIC_SetPriority(TIM6_UP_IRQn, 0, 0);
-    		HAL_NVIC_EnableIRQ(TIM6_UP_IRQn);
-			HAL_NVIC_SetPriority(TIM6_CC_IRQn, 0, 0);
-    		HAL_NVIC_EnableIRQ(TIM6_CC_IRQn);
-#else
-			HAL_NVIC_SetPriority(TIM6_IRQn, 0, 0);
-    		HAL_NVIC_EnableIRQ(TIM6_IRQn);
-#endif
 			break;
 #endif
 #ifdef TIM7
@@ -174,16 +114,6 @@ namespace Stm32
 			TIM7_Freq_Locked = true;
 			TimerService7 = this;
 			TIM = TIM7;
-			__HAL_RCC_TIM7_CLK_ENABLE();
-#ifdef TIM7_SEPERATE_UP_CC_IT
-			HAL_NVIC_SetPriority(TIM7_UP_IRQn, 0, 0);
-    		HAL_NVIC_EnableIRQ(TIM7_UP_IRQn);
-			HAL_NVIC_SetPriority(TIM7_CC_IRQn, 0, 0);
-    		HAL_NVIC_EnableIRQ(TIM7_CC_IRQn);
-#else
-			HAL_NVIC_SetPriority(TIM7_IRQn, 0, 0);
-    		HAL_NVIC_EnableIRQ(TIM7_IRQn);
-#endif
 			break;
 #endif
 #ifdef TIM8
@@ -193,16 +123,6 @@ namespace Stm32
 			TIM8_Freq_Locked = true;
 			TimerService8 = this;
 			TIM = TIM8;
-			__HAL_RCC_TIM8_CLK_ENABLE();
-#ifdef TIM8_SEPERATE_UP_CC_IT
-			HAL_NVIC_SetPriority(TIM8_UP_IRQn, 0, 0);
-    		HAL_NVIC_EnableIRQ(TIM8_UP_IRQn);
-			HAL_NVIC_SetPriority(TIM8_CC_IRQn, 0, 0);
-    		HAL_NVIC_EnableIRQ(TIM8_CC_IRQn);
-#else
-			HAL_NVIC_SetPriority(TIM8_IRQn, 0, 0);
-    		HAL_NVIC_EnableIRQ(TIM8_IRQn);
-#endif
 			break;
 #endif
 #ifdef TIM9
@@ -213,15 +133,6 @@ namespace Stm32
 			TimerService9 = this;
 			TIM = TIM9;
 			__HAL_RCC_TIM9_CLK_ENABLE();
-#ifdef TIM9_SEPERATE_UP_CC_IT
-			HAL_NVIC_SetPriority(TIM9_UP_IRQn, 0, 0);
-    		HAL_NVIC_EnableIRQ(TIM9_UP_IRQn);
-			HAL_NVIC_SetPriority(TIM9_CC_IRQn, 0, 0);
-    		HAL_NVIC_EnableIRQ(TIM9_CC_IRQn);
-#else
-			HAL_NVIC_SetPriority(TIM9_IRQn, 0, 0);
-    		HAL_NVIC_EnableIRQ(TIM9_IRQn);
-#endif
 			break;
 #endif
 #ifdef TIM10
@@ -232,15 +143,6 @@ namespace Stm32
 			TimerService10 = this;
 			TIM = TIM10;
 			__HAL_RCC_TIM10_CLK_ENABLE();
-#ifdef TIM10_SEPERATE_UP_CC_IT
-			HAL_NVIC_SetPriority(TIM10_UP_IRQn, 0, 0);
-    		HAL_NVIC_EnableIRQ(TIM10_UP_IRQn);
-			HAL_NVIC_SetPriority(TIM10_CC_IRQn, 0, 0);
-    		HAL_NVIC_EnableIRQ(TIM10_CC_IRQn);
-#else
-			HAL_NVIC_SetPriority(TIM10_IRQn, 0, 0);
-    		HAL_NVIC_EnableIRQ(TIM10_IRQn);
-#endif
 			break;
 #endif
 #ifdef TIM11
@@ -250,16 +152,6 @@ namespace Stm32
 			TIM11_Freq_Locked = true;
 			TimerService11 = this;
 			TIM = TIM11;
-			__HAL_RCC_TIM11_CLK_ENABLE();
-#ifdef TIM11_SEPERATE_UP_CC_IT
-			HAL_NVIC_SetPriority(TIM11_UP_IRQn, 0, 0);
-    		HAL_NVIC_EnableIRQ(TIM11_UP_IRQn);
-			HAL_NVIC_SetPriority(TIM11_CC_IRQn, 0, 0);
-    		HAL_NVIC_EnableIRQ(TIM11_CC_IRQn);
-#else
-			HAL_NVIC_SetPriority(TIM11_IRQn, 0, 0);
-    		HAL_NVIC_EnableIRQ(TIM11_IRQn);
-#endif
 			break;
 #endif
 #ifdef TIM12
@@ -269,16 +161,6 @@ namespace Stm32
 			TIM12_Freq_Locked = true;
 			TimerService12 = this;
 			TIM = TIM12;
-			__HAL_RCC_TIM12_CLK_ENABLE();
-#ifdef TIM12_SEPERATE_UP_CC_IT
-			HAL_NVIC_SetPriority(TIM12_UP_IRQn, 0, 0);
-    		HAL_NVIC_EnableIRQ(TIM12_UP_IRQn);
-			HAL_NVIC_SetPriority(TIM12_CC_IRQn, 0, 0);
-    		HAL_NVIC_EnableIRQ(TIM12_CC_IRQn);
-#else
-			HAL_NVIC_SetPriority(TIM12_IRQn, 0, 0);
-    		HAL_NVIC_EnableIRQ(TIM12_IRQn);
-#endif
 			break;
 #endif
 #ifdef TIM13
@@ -288,16 +170,6 @@ namespace Stm32
 			TIM13_Freq_Locked = true;
 			TimerService13 = this;
 			TIM = TIM13;
-			__HAL_RCC_TIM13_CLK_ENABLE();
-#ifdef TIM13_SEPERATE_UP_CC_IT
-			HAL_NVIC_SetPriority(TIM13_UP_IRQn, 0, 0);
-    		HAL_NVIC_EnableIRQ(TIM13_UP_IRQn);
-			HAL_NVIC_SetPriority(TIM13_CC_IRQn, 0, 0);
-    		HAL_NVIC_EnableIRQ(TIM13_CC_IRQn);
-#else
-			HAL_NVIC_SetPriority(TIM13_IRQn, 0, 0);
-    		HAL_NVIC_EnableIRQ(TIM13_IRQn);
-#endif
 			break;
 #endif
 #ifdef TIM14
@@ -307,19 +179,12 @@ namespace Stm32
 			TIM14_Freq_Locked = true;
 			TimerService14 = this;
 			TIM = TIM14;
-			__HAL_RCC_TIM14_CLK_ENABLE();
-#ifdef TIM14_SEPERATE_UP_CC_IT
-			HAL_NVIC_SetPriority(TIM14_UP_IRQn, 0, 0);
-    		HAL_NVIC_EnableIRQ(TIM14_UP_IRQn);
-			HAL_NVIC_SetPriority(TIM14_CC_IRQn, 0, 0);
-    		HAL_NVIC_EnableIRQ(TIM14_CC_IRQn);
-#else
-			HAL_NVIC_SetPriority(TIM14_IRQn, 0, 0);
-    		HAL_NVIC_EnableIRQ(TIM14_IRQn);
-#endif
 			break;
 #endif
 		}
+
+		EnableTimerInterrupts(timer);
+		EnableTimerClock(timer);
 		
 		TIM_HandleTypeDef TIM_HandleStruct = {0};
 		TIM_HandleStruct.Instance = TIM;
