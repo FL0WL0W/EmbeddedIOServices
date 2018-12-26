@@ -6,6 +6,12 @@ namespace HardwareAbstraction
 	{
 		float Period;
 		float PulseWidth;
+
+		bool operator==(const PwmValue& rhs) const
+		{
+			return Period == rhs.Period
+				&& PulseWidth == rhs.PulseWidth;
+		}
 	};
 
 	class IPwmService
