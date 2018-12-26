@@ -68,7 +68,6 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
   <li>Config Editor</li>
   <li>Create Unit Tests For</li>
   <ul>
-    <li>FloatOutputService_PwmPolynomial</li>
     <li>FloatOutputService_PwmInterpolatedTable</li>
   </ul>
   <li>Create Stepper Services</li>
