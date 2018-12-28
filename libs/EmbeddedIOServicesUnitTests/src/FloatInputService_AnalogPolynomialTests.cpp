@@ -60,7 +60,7 @@ namespace UnitTests
 		}
 	};
 
-	TEST_F(FloatInputService_AnalogPolynomialTest, FloatInputService_AnalogPolynomial_WhenGettingValueThenCorrectValueIsReturned)
+	TEST_F(FloatInputService_AnalogPolynomialTest, WhenGettingValueWithinLimits_ThenCorrectValueIsReturned)
 	{
 		EXPECT_CALL(_timerService, GetTick()).Times(1).WillOnce(Return(5));
 		EXPECT_CALL(_analogService, ReadPin(1)).Times(1).WillOnce(Return(0));
@@ -85,13 +85,19 @@ namespace UnitTests
 		_floatInputService->ReadValue();
 		ASSERT_FLOAT_EQ(-1.25f, _floatInputService->Value);
 		ASSERT_FLOAT_EQ(-10625.0f, _floatInputService->ValueDot);
+	}
 
+	TEST_F(FloatInputService_AnalogPolynomialTest, WhenGettingValueAboveMaxValue_ThenCorrectValueIsReturned)
+	{
 		EXPECT_CALL(_timerService, GetTick()).Times(2).WillRepeatedly(Return(30));
 		EXPECT_CALL(_analogService, ReadPin(1)).Times(1).WillOnce(Return(100));
 		_floatInputService->ReadValue();
 		ASSERT_FLOAT_EQ(150.0f, _floatInputService->Value);
+	}
 
-		EXPECT_CALL(_timerService, GetTick()).Times(1).WillOnce(Return(30));
+	TEST_F(FloatInputService_AnalogPolynomialTest, WhenGettingValueBelowMinValue_ThenCorrectValueIsReturned)
+	{
+		EXPECT_CALL(_timerService, GetTick()).Times(2).WillOnce(Return(30));
 		EXPECT_CALL(_analogService, ReadPin(1)).Times(1).WillOnce(Return(-100));
 		_floatInputService->ReadValue();
 		ASSERT_FLOAT_EQ(-40.0f, _floatInputService->Value);

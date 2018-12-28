@@ -41,7 +41,7 @@ namespace UnitTests
 		}
 	};
 
-	TEST_F(FloatInputService_StaticTest, FloatInputService_Static_WhenGettingValueThenCorrectValueIsReturned)
+	TEST_F(FloatInputService_StaticTest, WhenGettingStaticValue_ThenCorrectValueIsReturned)
 	{
 		_floatInputService->ReadValue();
 		ASSERT_FLOAT_EQ(5123.2f, _floatInputService->Value);

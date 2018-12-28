@@ -88,7 +88,7 @@ namespace UnitTests
 		}
 	};
 
-	TEST_F(FloatInputService_FaultDetectionWrapperTests, FloatInputService_FaultDetectionWrapper_WhenGettingValueThenCorrectValueIsReturned)
+	TEST_F(FloatInputService_FaultDetectionWrapperTests, WhenGettingValueWithinLimits_ThenDefaultValueIsReturned)
 	{
 		EXPECT_CALL(_timerService, GetTick()).Times(1).WillOnce(Return(5));
 		EXPECT_CALL(_analogService, ReadPin(1)).Times(1).WillOnce(Return(0));
@@ -113,15 +113,21 @@ namespace UnitTests
 		_floatInputService->ReadValue();
 		ASSERT_NEAR(-1.25f, _floatInputService->Value, 0.001f);
 		ASSERT_NEAR(-10625.0f, _floatInputService->ValueDot, 0.001f);
+	}
 
-		EXPECT_CALL(_timerService, GetTick()).Times(2).WillRepeatedly(Return(30));
-		EXPECT_CALL(_analogService, ReadPin(1)).Times(1).WillOnce(Return(100));
+	TEST_F(FloatInputService_FaultDetectionWrapperTests, WhenGettingValueBelowMinValue_ThenDefaultValueIsReturned)
+	{
+		EXPECT_CALL(_timerService, GetTick()).Times(2).WillOnce(Return(30));
+		EXPECT_CALL(_analogService, ReadPin(1)).Times(1).WillOnce(Return(-1));
 		_floatInputService->ReadValue();
 		ASSERT_FLOAT_EQ(50.0, _floatInputService->Value);
 		ASSERT_NEAR(0.0f, _floatInputService->ValueDot, 0.001f);
+	}
 
-		EXPECT_CALL(_timerService, GetTick()).Times(1).WillOnce(Return(30));
-		EXPECT_CALL(_analogService, ReadPin(1)).Times(1).WillOnce(Return(-1));
+	TEST_F(FloatInputService_FaultDetectionWrapperTests, WhenGettingValueAboveMaxValue_ThenCorrectValueIsReturned)
+	{
+		EXPECT_CALL(_timerService, GetTick()).Times(2).WillRepeatedly(Return(30));
+		EXPECT_CALL(_analogService, ReadPin(1)).Times(1).WillOnce(Return(100));
 		_floatInputService->ReadValue();
 		ASSERT_FLOAT_EQ(50.0, _floatInputService->Value);
 		ASSERT_NEAR(0.0f, _floatInputService->ValueDot, 0.001f);

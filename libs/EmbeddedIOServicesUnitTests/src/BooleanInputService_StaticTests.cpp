@@ -14,8 +14,8 @@ namespace UnitTests
 	{
 		protected:
 		HardwareAbstractionCollection _hardwareAbstractionCollection;
-		IBooleanInputService *_booleanInputService0;
-		IBooleanInputService *_booleanInputService1;
+		IBooleanInputService *_booleanInputServiceFalse;
+		IBooleanInputService *_booleanInputServiceTrue;
 
 		BooleanInputService_StaticTest() 
 		{
@@ -27,28 +27,31 @@ namespace UnitTests
 			void *config = malloc(sizeof(bool) + sizeof(unsigned char));
 			*(unsigned char *)config = 1;
 			memcpy(((unsigned char *)config + 1), inputConfig, sizeof(bool));
-			_booleanInputService0 = IBooleanInputService::CreateBooleanInputService(&_hardwareAbstractionCollection, config, &size);
+			_booleanInputServiceFalse = IBooleanInputService::CreateBooleanInputService(&_hardwareAbstractionCollection, config, &size);
 
 			*inputConfig = true;
 			config = malloc(sizeof(bool) + sizeof(unsigned char));
 			*(unsigned char *)config = 1;
 			memcpy(((unsigned char *)config + 1), inputConfig, sizeof(bool));
-			_booleanInputService1 = IBooleanInputService::CreateBooleanInputService(&_hardwareAbstractionCollection, config, &size);
+			_booleanInputServiceTrue = IBooleanInputService::CreateBooleanInputService(&_hardwareAbstractionCollection, config, &size);
 		}
 
 		~BooleanInputService_StaticTest() override 
 		{
-			free(_booleanInputService0);
-			free(_booleanInputService1);
+			free(_booleanInputServiceFalse);
+			free(_booleanInputServiceTrue);
 		}
 	};
 
-	TEST_F(BooleanInputService_StaticTest, BooleanInputService_Static_WhenGettingValueThenCorrectValueIsReturned)
+	TEST_F(BooleanInputService_StaticTest, WhenGettingStaticValueFalse_ThenFalseIsReturned)
 	{
-		_booleanInputService0->ReadValue();
-		ASSERT_EQ(false, _booleanInputService0->Value);
+		_booleanInputServiceFalse->ReadValue();
+		ASSERT_EQ(false, _booleanInputServiceFalse->Value);
+	}
 
-		_booleanInputService1->ReadValue();
-		ASSERT_EQ(true, _booleanInputService1->Value);
+	TEST_F(BooleanInputService_StaticTest, WhenGettingStaticValueTrue_ThenTrueIsReturned)
+	{
+		_booleanInputServiceTrue->ReadValue();
+		ASSERT_EQ(true, _booleanInputServiceTrue->Value);
 	}
 }

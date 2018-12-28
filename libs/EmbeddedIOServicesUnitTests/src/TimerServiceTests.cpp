@@ -17,7 +17,7 @@ namespace UnitTests
 		lastCallBack = 2;
 	}
 
-	TEST(TimerService, TimerService_WhenAddingLaterTaskFirstTaskIsCalledFirst)
+	TEST(TimerService, WhenAddingLaterTask_ThenFirstTaskIsCalledFirst)
 	{
 		HardwareAbstraction::MockTimerService timerService;
 		EXPECT_CALL(timerService, GetTick())

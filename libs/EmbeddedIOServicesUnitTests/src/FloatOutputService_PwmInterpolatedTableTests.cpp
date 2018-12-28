@@ -66,15 +66,21 @@ namespace UnitTests
 		}
 	};
 
-	TEST_F(FloatOutputService_PwmInterpolatedTableTests, FloatOutputService_PwmInterpolatedTable_WhenGettingValueThenCorrectValueIsReturned)
+	TEST_F(FloatOutputService_PwmInterpolatedTableTests, WhenSettingValueWithinTable_ThenCorrectPinAndValueIsSet)
+	{
+		EXPECT_CALL(_pwmService, WritePin(1, PwmValue {0.0001, 0.00004})).Times(1);
+		_floatOutputService->SetOutput(2.2);
+	}
+
+	TEST_F(FloatOutputService_PwmInterpolatedTableTests, WhenSettingValueAboveMaxValue_ThenCorrectPinAndValueIsSet)
+	{
+		EXPECT_CALL(_pwmService, WritePin(1, PwmValue {0.0001, 0.0000899999976})).Times(1);
+		_floatOutputService->SetOutput(10);
+	}
+
+	TEST_F(FloatOutputService_PwmInterpolatedTableTests, WhenSettingValuBelowMinValue_ThenCorrectPinAndValueIsSet)
 	{
 		EXPECT_CALL(_pwmService, WritePin(1, PwmValue {0.0001, 0.00001})).Times(1);
 		_floatOutputService->SetOutput(0);
-
-		EXPECT_CALL(_pwmService, WritePin(1, PwmValue {0.0001, 0.0000899999976})).Times(1);
-		_floatOutputService->SetOutput(10);
-
-		EXPECT_CALL(_pwmService, WritePin(1, PwmValue {0.0001, 0.00004})).Times(1);
-		_floatOutputService->SetOutput(2.2);
 	}
 }

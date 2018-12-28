@@ -58,15 +58,21 @@ namespace UnitTests
 		}
 	};
 
-	TEST_F(FloatOutputService_PwmPolynomialTests, FloatOutputService_PwmPolynomial_WhenGettingValueThenCorrectValueIsReturned)
+	TEST_F(FloatOutputService_PwmPolynomialTests, WhenSettingValueWithinLimits_ThenCorrectPinAndValueIsSet)
+	{
+		EXPECT_CALL(_pwmService, WritePin(1, PwmValue {0.0001, 0.0000176000059})).Times(1);
+		_floatOutputService->SetOutput(0.6);
+	}
+
+	TEST_F(FloatOutputService_PwmPolynomialTests, WhenSettingValueAboveMaxValue_ThenCorrectPinAndValueIsSet)
+	{
+		EXPECT_CALL(_pwmService, WritePin(1, PwmValue {0.0001, 0.0000899999976})).Times(1);
+		_floatOutputService->SetOutput(10);
+	}
+
+	TEST_F(FloatOutputService_PwmPolynomialTests, WhenSettingValuBelowMinValue_ThenCorrectPinAndValueIsSet)
 	{
 		EXPECT_CALL(_pwmService, WritePin(1, PwmValue {0.0001, 0.00001})).Times(1);
 		_floatOutputService->SetOutput(0);
-
-		EXPECT_CALL(_pwmService, WritePin(1, PwmValue {0.0001, 0.0000899999976})).Times(1);
-		_floatOutputService->SetOutput(10);
-
-		EXPECT_CALL(_pwmService, WritePin(1, PwmValue {0.0001, 0.0000176000059})).Times(1);
-		_floatOutputService->SetOutput(0.6);
 	}
 }

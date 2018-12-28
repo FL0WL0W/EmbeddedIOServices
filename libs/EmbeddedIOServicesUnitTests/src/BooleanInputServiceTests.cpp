@@ -16,8 +16,8 @@ namespace UnitTests
 		protected:
 		MockDigitalService _digitalService;
 		HardwareAbstractionCollection _hardwareAbstractionCollection;
-		IBooleanInputService *_booleanInputService0;
-		IBooleanInputService *_booleanInputService1;
+		IBooleanInputService *_booleanInputServiceUninverted;
+		IBooleanInputService *_booleanInputServiceInverted;
 
 		BooleanInputServiceTest() 
 		{
@@ -33,39 +33,48 @@ namespace UnitTests
 			memcpy(((unsigned char *)config + 1), inputConfig, inputConfig->Size());
 
 			unsigned int size = 0;
-			_booleanInputService0 = IBooleanInputService::CreateBooleanInputService(&_hardwareAbstractionCollection, config, &size);
+			_booleanInputServiceUninverted = IBooleanInputService::CreateBooleanInputService(&_hardwareAbstractionCollection, config, &size);
 
 			inputConfig->Pin = 2;
 			inputConfig->Inverted = true;
 			config = malloc(inputConfig->Size() + 1);
 			*(unsigned char *)config = 2;
 			memcpy(((unsigned char *)config + 1), inputConfig, inputConfig->Size());
-			_booleanInputService1 = IBooleanInputService::CreateBooleanInputService(&_hardwareAbstractionCollection, config, &size);
+			_booleanInputServiceInverted = IBooleanInputService::CreateBooleanInputService(&_hardwareAbstractionCollection, config, &size);
 		}
 
 		~BooleanInputServiceTest() override 
 		{
-			free(_booleanInputService0);
-			free(_booleanInputService1);
+			free(_booleanInputServiceUninverted);
+			free(_booleanInputServiceInverted);
 		}
 	};
 
-	TEST_F(BooleanInputServiceTest, BooleanInputService_WhenGettingValueThenCorrectValueIsReturned)
+	TEST_F(BooleanInputServiceTest, WhenGettingHighForUninverted_ThenTrueIsReturned)
 	{
 		EXPECT_CALL(_digitalService, ReadPin(1)).Times(1).WillOnce(Return(true));
-		_booleanInputService0->ReadValue();
-		ASSERT_EQ(true, _booleanInputService0->Value);
+		_booleanInputServiceUninverted->ReadValue();
+		ASSERT_EQ(true, _booleanInputServiceUninverted->Value);
+	}
 
+	TEST_F(BooleanInputServiceTest, WhenGettingLowForUninverted_ThenFalseIsReturned)
+	{
 		EXPECT_CALL(_digitalService, ReadPin(1)).Times(1).WillOnce(Return(false));
-		_booleanInputService0->ReadValue();
-		ASSERT_EQ(false, _booleanInputService0->Value);
+		_booleanInputServiceUninverted->ReadValue();
+		ASSERT_EQ(false, _booleanInputServiceUninverted->Value);
+	}
 
+	TEST_F(BooleanInputServiceTest, WhenGettingHighForInverted_ThenFalseIsReturned)
+	{
 		EXPECT_CALL(_digitalService, ReadPin(2)).Times(1).WillOnce(Return(true));
-		_booleanInputService1->ReadValue();
-		ASSERT_EQ(false, _booleanInputService1->Value);
+		_booleanInputServiceInverted->ReadValue();
+		ASSERT_EQ(false, _booleanInputServiceInverted->Value);
+	}
 
+	TEST_F(BooleanInputServiceTest, WhenGettingLowForInverted_ThenTrueIsReturned)
+	{
 		EXPECT_CALL(_digitalService, ReadPin(2)).Times(1).WillOnce(Return(false));
-		_booleanInputService1->ReadValue();
-		ASSERT_EQ(true, _booleanInputService1->Value);
+		_booleanInputServiceInverted->ReadValue();
+		ASSERT_EQ(true, _booleanInputServiceInverted->Value);
 	}
 }

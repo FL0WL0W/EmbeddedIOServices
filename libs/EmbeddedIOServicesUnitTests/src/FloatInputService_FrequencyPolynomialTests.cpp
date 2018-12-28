@@ -62,7 +62,7 @@ namespace UnitTests
 		}
 	};
 
-	TEST_F(FloatInputService_FrequencyPolynomialTest, FloatInputService_FrequencyPolynomial_WhenGettingValueThenCorrectValueIsReturned)
+	TEST_F(FloatInputService_FrequencyPolynomialTest, WhenGettingValue_ThenCorrectValueIsReturned)
 	{
 		HardwareAbstraction::PwmValue pwmValue = { 1.0f, 0.5f };
 		EXPECT_CALL(_timerService, GetTick()).Times(1).WillOnce(Return(5));

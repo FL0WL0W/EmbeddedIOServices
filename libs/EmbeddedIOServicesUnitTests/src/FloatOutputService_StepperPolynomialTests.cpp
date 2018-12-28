@@ -38,11 +38,14 @@ namespace UnitTests
 		}
 	};
 
-	TEST_F(FloatOutputService_StepperPolynomialTests, FloatOutputService_StepperPolynomial_WhenGettingValueThenCorrectValueIsReturned)
+	TEST_F(FloatOutputService_StepperPolynomialTests, WhenCalibrating_ThenCalibrateIsPassedThroughToTheStepperService)
 	{
 		EXPECT_CALL(_stepperService, Calibrate()).Times(1);
 		_floatOutputService->Calibrate();
+	}
 
+	TEST_F(FloatOutputService_StepperPolynomialTests, WhenSettingValueWithinLimits_ThenCorrectValueIsSet)
+	{
 		EXPECT_CALL(_stepperService, Step(-10)).Times(1);
 		_floatOutputService->SetOutput(0);
 
@@ -54,11 +57,17 @@ namespace UnitTests
 
 		EXPECT_CALL(_stepperService, Step(-1)).Times(1);
 		_floatOutputService->SetOutput(0.49);
+	}
 
-		EXPECT_CALL(_stepperService, Step(152)).Times(1);
+	TEST_F(FloatOutputService_StepperPolynomialTests, WhenSettingValueAboveMaxValue_ThenCorrectValueIsSet)
+	{
+		EXPECT_CALL(_stepperService, Step(150)).Times(1);
 		_floatOutputService->SetOutput(100);
+	}
 
-		EXPECT_CALL(_stepperService, Step(-190)).Times(1);
+	TEST_F(FloatOutputService_StepperPolynomialTests, WhenSettingValueBelowMinValue_ThenCorrectValueIsSet)
+	{
+		EXPECT_CALL(_stepperService, Step(-40)).Times(1);
 		_floatOutputService->SetOutput(-100);
 	}
 }

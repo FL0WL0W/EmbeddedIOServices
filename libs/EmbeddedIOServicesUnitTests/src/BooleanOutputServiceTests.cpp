@@ -71,32 +71,77 @@ namespace UnitTests
 		}
 	};
 
-	TEST_F(BooleanOutputServiceTest, BooleanOutputService_WhenSettingValueThenCorrectPinAndValueIsSet)
+	TEST_F(BooleanOutputServiceTest, WhenSettingOutputForNormalOff_ThenPinWrittenTrue)
+	{
+		EXPECT_CALL(_digitalService, WritePin(1, true)).Times(1);
+		_booleanOutputService0->OutputSet();
+	}
+
+	TEST_F(BooleanOutputServiceTest, WhenCallingOutputSetCallBackForNormalOff_ThenPinWrittenTrue)
 	{
 		EXPECT_CALL(_digitalService, WritePin(1, true)).Times(1);
 		IBooleanOutputService::OutputSetCallBack(_booleanOutputService0);
+	}
 
-		EXPECT_CALL(_digitalService, WritePin(2, false)).Times(1);
-		IBooleanOutputService::OutputSetCallBack(_booleanOutputService1);
+	TEST_F(BooleanOutputServiceTest, WhenWritingTrueForNormalOff_ThenPinWrittenTrue)
+	{
+		EXPECT_CALL(_digitalService, WritePin(1, true)).Times(1);
+		_booleanOutputService0->OutputWrite(true);
+	}
 
-		EXPECT_CALL(_digitalService, InitPin(3, HardwareAbstraction::In)).Times(1);
-		IBooleanOutputService::OutputSetCallBack(_booleanOutputService2);
+	TEST_F(BooleanOutputServiceTest, WhenResettingOutputForNormalOff_ThenPinWrittenFalse)
+	{
+		EXPECT_CALL(_digitalService, WritePin(1, false)).Times(1);
+		_booleanOutputService0->OutputReset();
+	}
 
-		EXPECT_CALL(_digitalService, InitPin(4, HardwareAbstraction::Out)).Times(1);
-		EXPECT_CALL(_digitalService, WritePin(4, false)).Times(1);
-		IBooleanOutputService::OutputSetCallBack(_booleanOutputService3);
-
+	TEST_F(BooleanOutputServiceTest, WhenCallingOutputResetCallBackForNormalOff_ThenPinWrittenTrue)
+	{
 		EXPECT_CALL(_digitalService, WritePin(1, false)).Times(1);
 		IBooleanOutputService::OutputResetCallBack(_booleanOutputService0);
+	}
 
+	TEST_F(BooleanOutputServiceTest, WhenWritingFalseForNormalOff_ThenPinWrittenTrue)
+	{
+		EXPECT_CALL(_digitalService, WritePin(1, false)).Times(1);
+		_booleanOutputService0->OutputWrite(false);
+	}
+
+	TEST_F(BooleanOutputServiceTest, WhenSettingOutputForNormalOn_ThenPinWrittenFalse)
+	{
+		EXPECT_CALL(_digitalService, WritePin(2, false)).Times(1);
+		_booleanOutputService1->OutputSet();
+	}
+
+	TEST_F(BooleanOutputServiceTest, WhenResettingOutputForNormalOn_ThenPintWrittenTrue)
+	{
 		EXPECT_CALL(_digitalService, WritePin(2, true)).Times(1);
-		IBooleanOutputService::OutputResetCallBack(_booleanOutputService1);
+		_booleanOutputService1->OutputReset();
+	}
 
+	TEST_F(BooleanOutputServiceTest, WhenSettingOutputForNormalOffHighZ_ThenPinSetAsInput)
+	{
+		EXPECT_CALL(_digitalService, InitPin(3, HardwareAbstraction::In)).Times(1);
+		_booleanOutputService2->OutputSet();
+	}
+
+	TEST_F(BooleanOutputServiceTest, WhenResettingOutputForNormalOffHighZ_ThenPinSetAsOutputAndWrittenFalse)
+	{
 		EXPECT_CALL(_digitalService, InitPin(3, HardwareAbstraction::Out)).Times(1);
 		EXPECT_CALL(_digitalService, WritePin(3, false)).Times(1);
-		IBooleanOutputService::OutputResetCallBack(_booleanOutputService2);
+		_booleanOutputService2->OutputReset();
+	}
 
+	TEST_F(BooleanOutputServiceTest, WhenSettingOutputForNormalOnHighZ_ThenPinSetAsOutputAndWrittenFalse)
+	{
+		EXPECT_CALL(_digitalService, InitPin(4, HardwareAbstraction::Out)).Times(1);
+		EXPECT_CALL(_digitalService, WritePin(4, false)).Times(1);
+		_booleanOutputService3->OutputSet();
+	}
+
+	TEST_F(BooleanOutputServiceTest, WhenResettingOutputForNormalOnHighZ_ThenPinSetAsInput)
+	{
 		EXPECT_CALL(_digitalService, InitPin(4, HardwareAbstraction::In)).Times(1);
-		IBooleanOutputService::OutputResetCallBack(_booleanOutputService3);
+		_booleanOutputService3->OutputReset();
 	}
 }

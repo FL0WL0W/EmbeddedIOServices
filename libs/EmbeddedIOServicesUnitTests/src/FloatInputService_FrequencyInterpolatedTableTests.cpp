@@ -74,9 +74,9 @@ namespace UnitTests
 		}
 	};
 
-	TEST_F(FloatInputService_FrequencyInterpolatedTableTest, FloatInputService_FrequencyInterpolatedTable_WhenGettingValueThenCorrectValueIsReturned)
+	TEST_F(FloatInputService_FrequencyInterpolatedTableTest, WhenGettingValueInTable_ThenCorrectValueIsReturned)
 	{
-		HardwareAbstraction::PwmValue pwmValue = { 0.1f, 0.05f };
+		PwmValue pwmValue = { 0.1f, 0.05f };
 		EXPECT_CALL(_timerService, GetTick()).Times(1).WillOnce(Return(5));
 		EXPECT_CALL(_pwmService, ReadPin(1)).Times(1).WillOnce(Return(pwmValue));
 		_floatInputService->ReadValue();
@@ -103,15 +103,21 @@ namespace UnitTests
 		_floatInputService->ReadValue();
 		ASSERT_NEAR(-1.25f, _floatInputService->Value, 0.001f);
 		ASSERT_NEAR(-10625.0f, _floatInputService->ValueDot, 0.001f);
+	}
 
-		pwmValue = { 0.0001f, 0.04f };
+	TEST_F(FloatInputService_FrequencyInterpolatedTableTest, WhenGettingValueAboveMaxValue_ThenCorrectValueIsReturned)
+	{
+		PwmValue pwmValue = { 0.0001f, 0.04f };
 		EXPECT_CALL(_timerService, GetTick()).Times(2).WillRepeatedly(Return(30));
 		EXPECT_CALL(_pwmService, ReadPin(1)).Times(1).WillOnce(Return(pwmValue));
 		_floatInputService->ReadValue();
 		ASSERT_FLOAT_EQ(90, _floatInputService->Value);
+	}
 
-		pwmValue = { 1.0f, 0.04f };
-		EXPECT_CALL(_timerService, GetTick()).Times(1).WillOnce(Return(30));
+	TEST_F(FloatInputService_FrequencyInterpolatedTableTest, WhenGettingValueBelowMinValue_ThenCorrectValueIsReturned)
+	{
+		PwmValue pwmValue = { 1.0f, 0.04f };
+		EXPECT_CALL(_timerService, GetTick()).Times(2).WillOnce(Return(30));
 		EXPECT_CALL(_pwmService, ReadPin(1)).Times(1).WillOnce(Return(pwmValue));
 		_floatInputService->ReadValue();
 		ASSERT_FLOAT_EQ(-10, _floatInputService->Value);

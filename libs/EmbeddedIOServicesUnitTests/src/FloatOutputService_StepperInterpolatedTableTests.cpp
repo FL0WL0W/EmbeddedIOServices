@@ -45,21 +45,30 @@ namespace UnitTests
 		}
 	};
 
-	TEST_F(FloatOutputService_StepperInterpolatedTableTests, FloatOutputService_StepperInterpolatedTable_WhenGettingValueThenCorrectValueIsReturned)
+	TEST_F(FloatOutputService_StepperInterpolatedTableTests, WhenCalibrating_ThenCalibrateIsPassedThroughToTheStepperService)
 	{
 		EXPECT_CALL(_stepperService, Calibrate()).Times(1);
 		_floatOutputService->Calibrate();
+	}
 
+	TEST_F(FloatOutputService_StepperInterpolatedTableTests, WhenSettingValueWithinTable_ThenCorrectValueIsSet)
+	{
 		EXPECT_CALL(_stepperService, Step(-10)).Times(1);
 		_floatOutputService->SetOutput(10);
 
 		EXPECT_CALL(_stepperService, Step(9)).Times(1);
 		_floatOutputService->SetOutput(19.25);
+	}
 
-		EXPECT_CALL(_stepperService, Step(91)).Times(1);
-		_floatOutputService->SetOutput(110);
+	TEST_F(FloatOutputService_StepperInterpolatedTableTests, WhenSettingValueAboveMaxValue_ThenCorrectValueIsSet)
+	{
+		EXPECT_CALL(_stepperService, Step(90)).Times(1);
+		_floatOutputService->SetOutput(120);
+	}
 
-		EXPECT_CALL(_stepperService, Step(-100)).Times(1);
-		_floatOutputService->SetOutput(10);
+	TEST_F(FloatOutputService_StepperInterpolatedTableTests, WhenSettingValueBelowMinValue_ThenCorrectValueIsSet)
+	{
+		EXPECT_CALL(_stepperService, Step(-10)).Times(1);
+		_floatOutputService->SetOutput(0);
 	}
 }
