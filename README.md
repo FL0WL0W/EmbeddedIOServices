@@ -68,12 +68,11 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
   <li>Config Editor</li>
   <li>Create Unit Tests For</li>
   <ul>
-    <li>Stepper Services when they are complete</li>
+    <li>StepperOutputService_StepDirectionControl</li>
   </ul>
   <li>Create Stepper Services</li>
   <ul>
     <li>Bipolar Stepper</li>
-    <li>Step/Direction Stepper</li>
     <li>Stepper Feedback Limit Calibration Wrapper</li>
     <li>Stepper Static Step Calibration Wrapper</li>
   </ul>
