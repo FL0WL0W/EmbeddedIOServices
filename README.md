@@ -54,6 +54,14 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
   <ul>
     <li>PWM Polynomial Translation</li>
     <li>PWM Lookup Table Translation</li>
+    <li>Stepper Polynomial Translation</li>
+    <li>Stepper Lookup Table Translation</li>
+  </ul>
+  <li>StepperOutputService</li>
+  <ul>
+    <li>Step/Direction Pin Control</li>
+    <li>Full Step Coil Control</li>
+    <li>Half Step Coil Control</li>
   </ul>
 </ul>
 
@@ -69,10 +77,11 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
   <li>Create Unit Tests For</li>
   <ul>
     <li>StepperOutputService_StepDirectionControl</li>
+    <li>StepperOutputService_FullStepControl</li>
+    <li>StepperOutputService_HalfStepControl</li>
   </ul>
   <li>Create Stepper Services</li>
   <ul>
-    <li>Bipolar Stepper</li>
     <li>Stepper Feedback Limit Calibration Wrapper</li>
     <li>Stepper Static Step Calibration Wrapper</li>
   </ul>
