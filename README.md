@@ -62,6 +62,7 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
     <li>Step/Direction Pin Control</li>
     <li>Full Step Coil Control</li>
     <li>Half Step Coil Control</li>
+    <li>Static Step Calibration</li>
   </ul>
 </ul>
 
@@ -79,12 +80,9 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
     <li>StepperOutputService_StepDirectionControl</li>
     <li>StepperOutputService_FullStepControl</li>
     <li>StepperOutputService_HalfStepControl</li>
+    <li>StepperOutputService_StaticStepCalibrationWrapper</li>
   </ul>
-  <li>Create Stepper Services</li>
-  <ul>
-    <li>Stepper Feedback Limit Calibration Wrapper</li>
-    <li>Stepper Static Step Calibration Wrapper</li>
-  </ul>
+  <li>Create Stepper Feedback Limit Calibration Wrapper</li>
   <li>Analog Feedback Float Output Service Wrapper</li>
   <li>Analog Feedback Stepper Float Output Service Wrapper</li>
   <li>Implement STM32Hal interrupt callbacks for digital inputs.</li>
