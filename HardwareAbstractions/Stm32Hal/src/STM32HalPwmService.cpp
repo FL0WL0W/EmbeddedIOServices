@@ -260,20 +260,27 @@ namespace Stm32
 				
 		EnableTimerClock(timAndChannel.TimNum);
 
+		TIM_HandleTypeDef TIM_HandleStruct = {0};
+		TIM_HandleStruct.Instance = timAndChannel.TIM;
+
+		//set prescaler
+		unsigned int clockFrequency = HAL_RCC_GetSysClockFreq();
+		TIM_HandleStruct.Init.Prescaler = (clockFrequency / minFrequency) / 65535;
+
 		if(direction == In)
 		{		
 			switch (timAndChannel.TimNum)
 			{
 	#ifdef TIM1
 			case 1:
-				if (TIM1_Freq_Locked)
+				if (TIM1_Freq_Locked && TIM1->PSC != TIM_HandleStruct.Init.Prescaler)
 					return;
 				TIM1_Freq_Locked = true;
 				break;
 	#endif
 	#ifdef TIM2
 			case 2:
-				if (TIM2_Freq_Locked)
+				if (TIM2_Freq_Locked && TIM2->PSC != TIM_HandleStruct.Init.Prescaler)
 					return;
 				if(direction == Out)
 					TIM2_Freq_Locked = true;
@@ -281,84 +288,84 @@ namespace Stm32
 	#endif
 	#ifdef TIM3
 			case 3:
-				if (TIM3_Freq_Locked)
+				if (TIM3_Freq_Locked && TIM3->PSC != TIM_HandleStruct.Init.Prescaler)
 					return;
 				TIM3_Freq_Locked = true;
 				break;
 	#endif
 	#ifdef TIM4
 			case 4:
-				if (TIM4_Freq_Locked)
+				if (TIM4_Freq_Locked && TIM4->PSC != TIM_HandleStruct.Init.Prescaler)
 					return;
 				TIM4_Freq_Locked = true;
 				break;
 	#endif
 	#ifdef TIM5
 			case 5:
-				if (TIM5_Freq_Locked)
+				if (TIM5_Freq_Locked && TIM5->PSC != TIM_HandleStruct.Init.Prescaler)
 					return;
 				TIM5_Freq_Locked = true;
 				break;
 	#endif
 	#ifdef TIM6
 			case 6:
-				if (TIM6_Freq_Locked)
+				if (TIM6_Freq_Locked && TIM6->PSC != TIM_HandleStruct.Init.Prescaler)
 					return;
 				TIM6_Freq_Locked = true;
 				break;
 	#endif
 	#ifdef TIM7
 			case 7:
-				if (TIM7_Freq_Locked)
+				if (TIM7_Freq_Locked && TIM7->PSC != TIM_HandleStruct.Init.Prescaler)
 					return;
 				TIM7_Freq_Locked = true;
 				break;
 	#endif
 	#ifdef TIM8
 			case 8:
-				if (TIM8_Freq_Locked)
+				if (TIM8_Freq_Locked && TIM8->PSC != TIM_HandleStruct.Init.Prescaler)
 					return;
 				TIM8_Freq_Locked = true;
 				break;
 	#endif
 	#ifdef TIM9
 			case 9:
-				if (TIM9_Freq_Locked)
+				if (TIM9_Freq_Locked && TIM9->PSC != TIM_HandleStruct.Init.Prescaler)
 					return;
 				TIM9_Freq_Locked = true;
 				break;
 	#endif
 	#ifdef TIM10
 			case 10:
-				if (TIM10_Freq_Locked)
+				if (TIM10_Freq_Locked && TIM10->PSC != TIM_HandleStruct.Init.Prescaler)
 					return;
 				TIM10_Freq_Locked = true;
 				break;
 	#endif
 	#ifdef TIM11
 			case 11:
-				if (TIM11_Freq_Locked)
+				if (TIM11_Freq_Locked && TIM11->PSC != TIM_HandleStruct.Init.Prescaler)
 					return;
 				TIM11_Freq_Locked = true;
 				break;
 	#endif
 	#ifdef TIM12
 			case 12:
-				if (TIM12_Freq_Locked)
+				if (TIM12_Freq_Locked && TIM12->PSC != TIM_HandleStruct.Init.Prescaler)
 					return;
 				TIM12_Freq_Locked = true;
 				break;
 	#endif
 	#ifdef TIM13
 			case 13:
-				if (TIM13_Freq_Locked)
+				if (TIM13_Freq_Locked && TIM13->PSC != TIM_HandleStruct.Init.Prescaler)
 					return;
 				TIM13_Freq_Locked = true;
 				break;
 	#endif
 	#ifdef TIM14
 			case 14:
-				if (TIM14_Freq_Locked)
+				if (TIM14_Freq_Locked && TIM14->PSC != TIM_HandleStruct.Init.Prescaler)
 					return;
 				TIM14_Freq_Locked = true;
 				break;
@@ -368,13 +375,6 @@ namespace Stm32
 		}
 		
 		EnableGPIOClock(pin);
-
-		TIM_HandleTypeDef TIM_HandleStruct = {0};
-		TIM_HandleStruct.Instance = timAndChannel.TIM;
-
-		//set prescaler
-		unsigned int clockFrequency = HAL_RCC_GetSysClockFreq();
-		TIM_HandleStruct.Init.Prescaler = (clockFrequency / minFrequency) / 65535;
 				
 		//set mode
 		TIM_HandleStruct.Init.CounterMode = TIM_COUNTERMODE_UP;
