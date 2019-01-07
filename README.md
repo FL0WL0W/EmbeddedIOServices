@@ -90,9 +90,9 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
   <li>*Manual Test Stm32Hal Services</li>
   <ul>
     <li>Digital Pin Init Out (DONE)</li>
-    <li>Digital Pin Init In</li>
+    <li>Digital Pin Init In (DONE)</li>
     <li>Digital Pin Write (DONE)</li>
-    <li>Digital Pin Read</li>
+    <li>Digital Pin Read (DONE)</li>
     <li>Analog Pin Init</li>
     <li>Analog Pin Read</li>
     <li>PWM Pin Init Out (DONE)</li>
