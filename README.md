@@ -96,9 +96,9 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
     <li>Analog Pin Init</li>
     <li>Analog Pin Read</li>
     <li>PWM Pin Init Out (DONE)</li>
-    <li>PWM Pin Init In</li>
+    <li>PWM Pin Init In (DONE)</li>
     <li>PWM Pin Write (DONE)</li>
-    <li>PWM Pin Read</li>
+    <li>PWM Pin Read (DONE)</li>
     <li>Timer Init (DONE)</li>
     <li>Timer Get Tick (DONE)</li>
     <li>Timer Get Ticks Per Second (DONE)</li>
