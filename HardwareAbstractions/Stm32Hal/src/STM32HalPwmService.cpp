@@ -429,17 +429,30 @@ namespace Stm32
 			{
 				case TIM_CHANNEL_1:
 					HAL_TIM_IC_ConfigChannel(&TIM_HandleStruct, &TIM_IC_InitStruct, TIM_CHANNEL_2);
+					__HAL_TIM_ENABLE_IT(&TIM_HandleStruct, TIM_IT_CC1);
+					__HAL_TIM_ENABLE_IT(&TIM_HandleStruct, TIM_IT_CC2);
+					HAL_TIM_IC_Start_IT(&TIM_HandleStruct, TIM_CHANNEL_2);
 					break;
 				case TIM_CHANNEL_2:
 					HAL_TIM_IC_ConfigChannel(&TIM_HandleStruct, &TIM_IC_InitStruct, TIM_CHANNEL_1);
+					__HAL_TIM_ENABLE_IT(&TIM_HandleStruct, TIM_IT_CC1);
+					__HAL_TIM_ENABLE_IT(&TIM_HandleStruct, TIM_IT_CC2);
+					HAL_TIM_IC_Start_IT(&TIM_HandleStruct, TIM_CHANNEL_1);
 					break;
 				case TIM_CHANNEL_3:
 					HAL_TIM_IC_ConfigChannel(&TIM_HandleStruct, &TIM_IC_InitStruct, TIM_CHANNEL_4);
+					__HAL_TIM_ENABLE_IT(&TIM_HandleStruct, TIM_IT_CC3);
+					__HAL_TIM_ENABLE_IT(&TIM_HandleStruct, TIM_IT_CC4);
+					HAL_TIM_IC_Start_IT(&TIM_HandleStruct, TIM_CHANNEL_4);
 					break;
 				case TIM_CHANNEL_4:
 					HAL_TIM_IC_ConfigChannel(&TIM_HandleStruct, &TIM_IC_InitStruct, TIM_CHANNEL_3);
+					__HAL_TIM_ENABLE_IT(&TIM_HandleStruct, TIM_IT_CC3);
+					__HAL_TIM_ENABLE_IT(&TIM_HandleStruct, TIM_IT_CC4);
+					HAL_TIM_IC_Start_IT(&TIM_HandleStruct, TIM_CHANNEL_3);
 					break;
 			}
+			HAL_TIM_IC_Start_IT(&TIM_HandleStruct, timAndChannel.TIM_Channel);
 			
 			GPIO_InitTypeDef GPIO_InitStruct = {0};
 			GPIO_InitStruct.Pin = PinToGPIO_Pin(pin);
@@ -458,7 +471,7 @@ namespace Stm32
 		
 		TimAndChannel timAndChannel = Stm32HalPwmPinToTimAndChannel(pin);
 
-		unsigned char timerMinus1 = timAndChannel.TimNum;;
+		unsigned char timerMinus1 = timAndChannel.TimNum - 1;
 		unsigned char iCMinus1 = 0;
 		unsigned char iCMinus1Neg = 0;
 		
@@ -489,10 +502,10 @@ namespace Stm32
 			pulseTick = ((int)_currCC[timerMinus1][iCMinus1Neg] - _currCC[timerMinus1][iCMinus1]) + 65535;
 		unsigned short periodTick = _currCC[timerMinus1][iCMinus1] - _prevCC[timerMinus1][iCMinus1];
 				
-		float ticksPerSecond = (HAL_RCC_GetSysClockFreq() / ((float)(timAndChannel.TIM->PSC)));
+		float clockFactor = ((float)(timAndChannel.TIM->PSC + 1)) / HAL_RCC_GetSysClockFreq();
 
-		value.PulseWidth = pulseTick * ticksPerSecond;
-		value.Period = periodTick * ticksPerSecond;
+		value.PulseWidth = pulseTick * clockFactor;
+		value.Period = periodTick * clockFactor;
 		
 		return value;
 	}
