@@ -1,16 +1,7 @@
 {
   "ExpandedNodes": [
     "",
-    "\\libs",
-    "\\libs\\EmbeddedIOServices",
-    "\\libs\\EmbeddedIOServicesUnitTests",
-    "\\libs\\EmbeddedIOServicesUnitTests\\src",
-    "\\libs\\EmbeddedIOServices\\include",
-    "\\libs\\EmbeddedIOServices\\include\\IOServices",
-    "\\libs\\HardwareAbstractionSTM32F103Cx",
-    "\\libs\\HardwareAbstractionSTM32F103Cx\\include",
-    "\\libs\\HardwareAbstractionSTM32F103Cx\\src"
+    "\\libs"
   ],
-  "SelectedNode": "\\libs\\HardwareAbstractionSTM32F103Cx\\include\\Stm32F103CxDigitalService.h",
   "PreviewInSolutionExplorer": false
 }
