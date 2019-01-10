@@ -37,6 +37,7 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
     <li>Digital Pin</li>
     <li>Static Value</li>
   </ul>
+  <li>ButtonService</li>
   <li>BooleanOutputService</li>
   <ul>
     <li>Digital Pin</li>
@@ -81,6 +82,7 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
     <li>StepperOutputService_FullStepControl</li>
     <li>StepperOutputService_HalfStepControl</li>
     <li>StepperOutputService_StaticStepCalibrationWrapper</li>
+    <li>ButtonService_Polling</li>
   </ul>
   <li>Create Stepper Feedback Limit Calibration Wrapper</li>
   <li>Analog Feedback Float Output Service Wrapper</li>
