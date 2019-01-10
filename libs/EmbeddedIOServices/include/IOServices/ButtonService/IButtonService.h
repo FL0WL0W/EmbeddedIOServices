@@ -16,8 +16,10 @@ namespace IOServices
 		void Add(void(*callBackPointer)(void *), void *parameters);
 		void Remove(ICallBack *callBack);
 		void Clear();
+		virtual void Tick() = 0;
 
 		static IButtonService* CreateButtonService(const HardwareAbstractionCollection *hardwareAbstractionCollection, void *config, unsigned int *sizeOut);
+		static void IButtonService::TickCallBack(void *buttonService);
 	};
 }
 #endif

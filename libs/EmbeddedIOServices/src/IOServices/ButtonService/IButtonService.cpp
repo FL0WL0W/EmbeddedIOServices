@@ -28,6 +28,10 @@ namespace IOServices
 		_callBackGroup->Clear();
 	}
 	
+	void IButtonService::TickCallBack(void *buttonService)
+	{
+		((IButtonService*)buttonService)->Tick();
+	}
 
 	IButtonService* IButtonService::CreateButtonService(const HardwareAbstractionCollection *hardwareAbstractionCollection, void *config, unsigned int *sizeOut)
 	{
