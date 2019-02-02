@@ -35,3 +35,6 @@
 *.suo
 *.opendb
 *.sqlite
+
+build/*
+.vscode/*
