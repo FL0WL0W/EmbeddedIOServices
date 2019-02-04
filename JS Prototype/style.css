@@ -1,0 +1,21 @@
+.configContainer {
+    border-style: solid;
+    border-width: 1px;
+    border-color: #666666;
+    padding: 5px;
+    display: inline-block;
+}
+.configContainer span {
+    display:block;
+    font-weight:bold;
+    padding: 1px;
+}
+.configContainer label {
+    float: left;
+    width: 145px;
+    padding-right: 5px;
+}
+.configContainer input[type="number"] {
+    width: 65px;
+    border-color: #666666;
+}

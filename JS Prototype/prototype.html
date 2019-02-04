@@ -1,0 +1,25 @@
+<html>
+    <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="utils.js"></script>
+        <script src="Config.js"></script>
+        <script src="IOServicesConfig.js"></script>
+        <script src="IOServicesConfigGui/IOServicesConfigGui.js"></script>
+        <script src="ConfigGuiModules/ConfigGuiModules.js"></script>
+        <link rel = "stylesheet" type = "text/css" href = "style.css" />
+        <script type="text/javascript">
+            $(document).ready(function() {
+                let b = new FloatInputService_StaticConfigGui();
+
+                $('body').append(wrapInConfigContainerGui("", b.GetHtml()));
+                
+                $("#btnSubmit").click(function(){
+                    alert(b.GetByteArray().toHex());
+                });
+            });
+        </script>
+    </head>
+    <body>
+        <input id="btnSubmit" type="button" value="Test"><br>
+    </body>
+</html>
