@@ -1,59 +1,43 @@
-class BooleanInputService_StaticConfig extends Config {
-    GetByteArray() {
-        return new Uint8Array([ 
-            1, 
-            this.Value ]);
-    }
-}
+var BooleanInputService_StaticConfigIni = [
+    { Location: "static", Type: "uint8", DefaultValue: 1 },
+    { Location: "Value", Type: "bool", Label: "Value", DefaultValue: false }
+];
 
-class BooleanInputServiceConfig extends Config {
-    GetByteArray() {
-        return new Uint8Array([ 
-            2, ])
-            .concatArray(new Uint8Array(new Uint16Array([this.Pin]).buffer))
-            .concatArray(new Uint8Array([this.Inverted ]));
-    }
-}
+var BooleanInputServiceConfigIni = [
+    { Location: "static", Type: "uint8", DefaultValue: 2 },
+    { Location: "Pin", Type: "uint16", Label: "Pin", DefaultValue: 0, Min: 0, Max: 65535, Step: 1 },
+    { Location: "Inverted", Type: "bool", Label: "Inverted", DefaultValue: false }
+];
 
-class BooleanOutputServiceConfig extends Config {
-    GetByteArray() {
-        return new Uint8Array([ 
-            1, ])
-            .concatArray(new Uint8Array(new Uint16Array([this.Pin]).buffer))
-            .concatArray(new Uint8Array([this.NormalOn, 
-            this.HighZ ]));
-    }
-}
+IBooleanInputServiceConfigIni = [
+    { Location: "Selection", Type: "iniselection", Label: "Input", DefaultValue: {Index: 1}, WrapInConfigContainer: false, Selections: [
+        { Name: "Static",  ini: BooleanInputService_StaticConfigIni},
+        { Name: "Pin",  ini: BooleanInputServiceConfigIni}
+    ] }
+];
 
-class ButtonService_PollingConfig extends Config {
-    GetByteArray() {
-        return new Uint8Array([ 
-            1 ])
-            .concatArray(this.BooleanInputServiceConfig.GetByteArray());
-    }
-}
+var BooleanOutputServiceConfigIni = [
+    { Location: "static", Type: "uint8", DefaultValue: 1 },
+    { Location: "Pin", Type: "uint16", Label: "Pin", DefaultValue: 0, Min: 0, Max: 65535, Step: 1 },
+    { Location: "NormalOn", Type: "bool", Label: "Normal On", DefaultValue: false },
+    { Location: "HighZ", Type: "bool", Label: "High Z", DefaultValue: false }
+];
 
-class FloatInputService_Static extends Config {
-    GetByteArray() {
-        return new Uint8Array([ 
-            1 ]) 
-            .concatArray(new Uint8Array(new Float32Array([this.Value]).buffer))
-            .concatArray(new Uint8Array(new Float32Array([this.ValueDot]).buffer));
-    }
-}
+var ButtonService_PollingConfigIni  = [
+    { Location: "static", Type: "uint8", DefaultValue: 1 },
+    { Location: "BooleanInputServiceConfig", Type: IBooleanInputServiceConfigIni, Label: "Boolean Input Config"}
+];
 
-class FloatInputService_AnalogPolynomialConfig extends Config {
-    constructor(Degree){
-        super();
-        this.A = new Float32Array(Degree+1)
-    }
+var FloatInputService_StaticConfigIni = [
+    { Location: "static", Type: "uint8", DefaultValue: 1 },
+    { Location: "Value", Type: "float", Label: "Value", DefaultValue: 0, Min: -1000000, Max: 1000000, Step: 0.01 },
+    { Location: "ValueDot", Type: "float", Label: "Value Dot", DefaultValue: 0, Min: -1000000, Max: 1000000, Step: 0.01 }
+];
 
-    GetByteArray() {
-        return new Uint8Array([ 
-            2 
-            ]).concatArray(new Uint8Array(this.A.buffer))
-            .concatArray(new Uint8Array(new Float32Array([this.MinValue]).buffer))
-            .concatArray(new Uint8Array(new Float32Array([this.MaxValue]).buffer))
-            .concatArray(new Uint8Array(new Uint16Array([this.DotSampleRate]).buffer));
-    }
-}
+var FloatInputService_AnalogPolynomialConfigIni = [
+    { Location: "static", Type: "uint8", DefaultValue: 2 },
+    { Location: "A", Type: "formula[4]", Label: "Coefficients", DefaultValue: 0 },
+    { Location: "MinValue", Type: "float", Label: "Min Value", DefaultValue: 0, Min: -1000000, Max: 1000000, Step: 0.01 },
+    { Location: "MaxValue", Type: "float", Label: "Max Value", DefaultValue: 0, Min: -1000000, Max: 1000000, Step: 0.01 },
+    { Location: "DotSampleRate", Type: "uint16", Label: "Dot Sample Rate", DefaultValue: 1000, Min: 1, Max: 65535, Step: 1 }
+];

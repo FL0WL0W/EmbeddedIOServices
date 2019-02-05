@@ -4,22 +4,37 @@
         <script src="utils.js"></script>
         <script src="Config.js"></script>
         <script src="IOServicesConfig.js"></script>
-        <script src="IOServicesConfigGui/IOServicesConfigGui.js"></script>
         <script src="ConfigGuiModules/ConfigGuiModules.js"></script>
         <link rel = "stylesheet" type = "text/css" href = "style.css" />
         <script type="text/javascript">
             $(document).ready(function() {
-                let b = new FloatInputService_StaticConfigGui();
+                let b = new ConfigGui(ButtonService_PollingConfigIni);
 
-                $('body').append(wrapInConfigContainerGui("", b.GetHtml()));
                 
-                $("#btnSubmit").click(function(){
-                    alert(b.GetByteArray().toHex());
+                $("#btnSave").click(function(){
+                    downloadBlob(b.GetByteArray(), "test.bin", "application/octet-stream");
+                });
+                $("#btnLoad").change(function(evt){
+                    var test = new FileReader();
+
+                    test.onload = function(evt) {
+                        if(evt.target.readyState != 2) return;
+                        if(evt.target.error) {
+                            alert('Error while reading file');
+                            return;
+                        }
+
+                        b.SetByteArray(new Uint8Array(evt.target.result));
+                        $('body').append(wrapInConfigContainerGui("", b.GetHtml()));
+                    };
+                    
+                    test.readAsArrayBuffer(evt.target.files[0]);
                 });
             });
         </script>
     </head>
     <body>
-        <input id="btnSubmit" type="button" value="Test"><br>
+        <input id="btnSave" type="button" value="Save"><br>
+        <input id="btnLoad" type="file"><br>
     </body>
 </html>
