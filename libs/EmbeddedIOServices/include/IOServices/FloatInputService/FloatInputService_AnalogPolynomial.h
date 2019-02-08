@@ -31,10 +31,10 @@ namespace IOServices
 		}
 		
 		unsigned short AdcPin;
+		unsigned short DotSampleRate;
 		float A[Degree+1];
 		float MinValue;
 		float MaxValue;
-		unsigned short DotSampleRate;
 	});
 	
 	template<unsigned char Degree>

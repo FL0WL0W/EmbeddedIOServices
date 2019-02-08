@@ -8,13 +8,15 @@
         <link rel = "stylesheet" type = "text/css" href = "style.css" />
         <script type="text/javascript">
             $(document).ready(function() {
-                let b = new ConfigGui(ButtonService_PollingConfigIni);
-
-                
+                $("#btnNew").click(function(){
+                    var b = new ConfigGui(testbuilder);
+                    $('#workspace').html(wrapInConfigContainerGui("", b.GetHtml()));
+                });
                 $("#btnSave").click(function(){
-                    downloadBlob(b.GetByteArray(), "test.bin", "application/octet-stream");
+                    downloadBlob(b.GetArrayBuffer(), "test.bin", "application/octet-stream");
                 });
                 $("#btnLoad").change(function(evt){
+                    var b = new ConfigGui(testbuilder);
                     var test = new FileReader();
 
                     test.onload = function(evt) {
@@ -24,8 +26,8 @@
                             return;
                         }
 
-                        b.SetByteArray(new Uint8Array(evt.target.result));
-                        $('body').append(wrapInConfigContainerGui("", b.GetHtml()));
+                        b.SetArrayBuffer(evt.target.result);
+                        $('#workspace').html(wrapInConfigContainerGui("", b.GetHtml()));
                     };
                     
                     test.readAsArrayBuffer(evt.target.files[0]);
@@ -35,6 +37,8 @@
     </head>
     <body>
         <input id="btnSave" type="button" value="Save"><br>
+        <input id="btnNew" type="button" value="New"><br>
         <input id="btnLoad" type="file"><br>
+        <div id="workspace"></div>
     </body>
 </html>

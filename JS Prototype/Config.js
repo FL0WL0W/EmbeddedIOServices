@@ -1,10 +1,44 @@
 class Config {
-    GetByteArray() {
-        return getByteArray(this, this.ini);
+    GetArrayBuffer() {
+        return getByteArray(this, this.ini).buffer;
     }
-    SetByteArray(byteArray) {
-        return setByteArray(this, this.ini, byteArray);
+    SetArrayBuffer(arrayBuffer) {
+        return setArrayBuffer(this, this.ini, arrayBuffer);
     }
+}
+
+function iniReferencedByIniRow(ini, reference) {
+    referencedBy = [];
+    $.each(ini, function(index, iniRow) {
+        if(iniRow.XMin === reference 
+            || iniRow.XMax === reference 
+            || iniRow.YMin === reference 
+            || iniRow.YMax === reference 
+            || (iniRow.Type.split("[").length > 1 && iniRow.Type.split("[")[1].split("]")[0] == reference) 
+            || (iniRow.Type.split("[").length > 2 && iniRow.Type.split("[")[2].split("]")[0] == reference)) {
+            referencedBy.push(iniRow);
+        }
+    });
+
+    return referencedBy;
+}
+
+function valueIsReferenceLocation(s) {
+    var ret = parseFloat(s);
+    if(isNaN(ret))
+    {
+        return true;
+    }
+    return false;
+}
+
+function parseValueString(obj, s) {
+    if(valueIsReferenceLocation(s))
+    {
+        return parseFloat(obj[s]);
+    }
+
+    return parseFloat(s);
 }
 
 function iniGetValue(obj, iniRow, iniIndex) {
@@ -16,18 +50,52 @@ function iniGetValue(obj, iniRow, iniIndex) {
         default:
             value = obj[iniRow.Location];
     }
-    if(!value && typeof iniRow.Type === "string")
+    if(typeof iniRow.Type === "string")
     {
-        if(iniRow.Type.split("[")[0] === "formula") {
-            value = new Float32Array(parseInt(iniRow.Type.split("[")[1].split("]")[0]) + 1);
-            $.each(value, function(index, valuevalue) {
-                value[index] = iniRow.DefaultValue;
-            })
-        } else {
-            value = iniRow.DefaultValue;
+        var prevVal = value;
+
+        if(iniRow.Type.split("[").length == 2) {
+            var arrayLen = parseValueString(obj, iniRow.Type.split("[")[1].split("]")[0]);
+            var xMin = parseValueString(obj, iniRow.XMin);
+            var xMax = parseValueString(obj, iniRow.XMax);
+            if(!prevVal || arrayLen !== prevVal.length || prevVal.XMin !== xMin || prevVal.XMax !== xMax)
+            {
+                switch(iniRow.Type.split("[")[0]) {
+                    case "formula":
+                        arrayLen++;
+                        if(prevVal && arrayLen === prevVal.length)
+                            break;
+                    case "uint8":
+                    case "uint16":
+                    case "uint32":
+                    case "int8":
+                    case "int16":
+                    case "int32":
+                    case "float":
+                        value = new Array(arrayLen);
+                        value.XMin = xMin;
+                        value.XMax = xMax;
+                        //to default for now. change this to interpolate the table later.
+                        $.each(value, function(index, valuevalue) {
+                            value[index] = iniRow.DefaultValue;
+                        });
+                        break;
+                }
+            }
+        }
+
+        if(!prevVal)
+        {
+            if(iniRow.Type.split("[").length == 2) {
+                $.each(value, function(index, valuevalue) {
+                    value[index] = iniRow.DefaultValue;
+                })
+            } else {
+                value = iniRow.DefaultValue;
+            }
         }
     }
-    
+
     return value;
 }
 
@@ -44,7 +112,7 @@ function iniSetValue(obj, iniRow, iniIndex, value) {
             obj[iniRow.Location] = new ConfigGui(iniRow.Type);
         else
             obj[iniRow.Location].ini = iniRow.Type;
-        return setByteArray(obj[iniRow.Location], iniRow.Type, value);
+        return setArrayBuffer(obj[iniRow.Location], iniRow.Type, value);
     }
 }
 
@@ -174,26 +242,49 @@ function getByteArray(obj, ini) {
                     byteArray = byteArray.concatArray(new Uint8Array(new Float32Array([value]).buffer));
                     break;
                 case "iniselection":
-                    byteArray = byteArray.concatArray(value.Value.GetByteArray());
+                    byteArray = byteArray.concatArray(getByteArray(value.Value, value.Value.ini));
                     break;
                 default:
                     if(iniRow.Type.indexOf("[") > -1) {
-                        byteArray = byteArray.concatArray(new Uint8Array(value.buffer));
+                        switch(iniRow.Type.split("[")[0]) {
+                            case "uint8":
+                                byteArray = byteArray.concatArray(new Uint8Array(value));
+                                break;
+                            case "uint16":
+                            byteArray = byteArray.concatArray(new Uint8Array(new Uint16Array(value).buffer));
+                                break;
+                            case "uint32":
+                            byteArray = byteArray.concatArray(new Uint8Array(new Uint32Array(value).buffer));
+                                break;
+                            case "int8":
+                            byteArray = byteArray.concatArray(new Uint8Array(new Int8Array(value).buffer));
+                                break;
+                            case "int16":
+                            byteArray = byteArray.concatArray(new Uint8Array(new Int16Array(value).buffer));
+                                break;
+                            case "int32":
+                            byteArray = byteArray.concatArray(new Uint8Array(new Int32Array(value).buffer));
+                                break;
+                            case "formula":
+                            case "float":
+                                byteArray = byteArray.concatArray(new Uint8Array(new Float32Array(value).buffer));
+                                break;
+                        }
                     } else {
                         throw "getByteArray Value Invalid";
                     }
                     break;
             }
         } else {
-            byteArray = byteArray.concatArray(value.GetByteArray());
+            byteArray = byteArray.concatArray(getByteArray(value, value.ini));
         }
     });
 
     return byteArray;
 }
 
-function setByteArray(obj, ini, byteArray) {
-    var prevLength = byteArray.length;
+function setArrayBuffer(obj, ini, arrayBuffer) {
+    var prevLength = arrayBuffer.byteLength;
 
     $.each(ini, function(iniIndex, iniRow){        
         if(typeof iniRow.Type === "string")
@@ -201,32 +292,32 @@ function setByteArray(obj, ini, byteArray) {
             switch(iniRow.Type) {
                 case "bool":
                 case "uint8":
-                    iniSetValue(obj, iniRow, iniIndex, byteArray[0]);
-                    byteArray = byteArray.subarray(1);
+                    iniSetValue(obj, iniRow, iniIndex, new Uint8Array(arrayBuffer.slice(0, 1))[0]);
+                    arrayBuffer = arrayBuffer.slice(1);
                     break;
                 case "uint16":
-                    iniSetValue(obj, iniRow, iniIndex, new Uint16Array(byteArray.subarray(0, 2))[0]);
-                    byteArray = byteArray.subarray(2);
+                    iniSetValue(obj, iniRow, iniIndex, new Uint16Array(arrayBuffer.slice(0, 2))[0]);
+                    arrayBuffer = arrayBuffer.slice(2);
                     break;
                 case "uint32":
-                    iniSetValue(obj, iniRow, iniIndex, new Uint32Array(byteArray.subarray(0, 4))[0]);
-                    byteArray = byteArray.subarray(4);
+                    iniSetValue(obj, iniRow, iniIndex, new Uint32Array(arrayBuffer.slice(0, 4))[0]);
+                    arrayBuffer = arrayBuffer.slice(4);
                     break;
                 case "int8":
-                    iniSetValue(obj, iniRow, iniIndex, new Int8Array(byteArray.subarray(0, 1))[0]);
-                    byteArray = byteArray.subarray(1);
+                    iniSetValue(obj, iniRow, iniIndex, new Int8Array(arrayBuffer.slice(0, 1))[0]);
+                    arrayBuffer = arrayBuffer.slice(1);
                     break;
                 case "int16":
-                    iniSetValue(obj, iniRow, iniIndex, new Int16Array(byteArray.subarray(0, 2))[0]);
-                    byteArray = byteArray.subarray(2);
+                    iniSetValue(obj, iniRow, iniIndex, new Int16Array(arrayBuffer.slice(0, 2))[0]);
+                    arrayBuffer = arrayBuffer.slice(2);
                     break;
                 case "int32":
-                    iniSetValue(obj, iniRow, iniIndex, new Int32Array(byteArray.subarray(0, 4))[0]);
-                    byteArray = byteArray.subarray(4);
+                    iniSetValue(obj, iniRow, iniIndex, new Int32Array(arrayBuffer.slice(0, 4))[0]);
+                    arrayBuffer = arrayBuffer.slice(4);
                     break;
                 case "float":
-                    iniSetValue(obj, iniRow, iniIndex, new Float32Array(byteArray.subarray(0, 4))[0]);
-                    byteArray = byteArray.subarray(4);
+                    iniSetValue(obj, iniRow, iniIndex, new Float32Array(arrayBuffer.slice(0, 4))[0]);
+                    arrayBuffer = arrayBuffer.slice(4);
                     break;
                 case "iniselection":
                     var selectionVal;
@@ -236,10 +327,10 @@ function setByteArray(obj, ini, byteArray) {
                         {
                             switch(selectionValue.ini[0].Type) {
                                 case "uint8":
-                                    selectionId = byteArray[0];
+                                    selectionId = new Uint8Array(arrayBuffer.slice(0, 1))[0];
                                     break;
                                 case "uint16":
-                                    selectionId = new Uint16Array(byteArray.subarray(0, 2))[0];
+                                    selectionId = new Uint16Array(arrayBuffer.slice(0, 2))[0];
                                     break;
                             }
                         }
@@ -251,57 +342,59 @@ function setByteArray(obj, ini, byteArray) {
 
                     if(selectionVal)
                     {
-                        byteArray = byteArray.subarray(selectionVal.Value.SetByteArray(byteArray));
+                        arrayBuffer = arrayBuffer.slice(selectionVal.Value.SetArrayBuffer(arrayBuffer));
                         iniSetValue(obj, iniRow, iniIndex, selectionVal);
                     }
                     break;
                 default:
                     if(iniRow.Type.indexOf("[") > -1) {
-                        var arrayLen = parseInt(iniRow.Type.split("[")[1].split("]")[0]);
+                        var arrayLen = parseValueString(obj, iniRow.Type.split("[")[1].split("]")[0]);;
                         if(iniRow.Type.split("[").length === 3)
-                            arrayLen *= parseInt(iniRow.Type.split("[")[2].split("]")[0]);
+                            arrayLen *= parseValueString(obj, iniRow.Type.split("[")[2].split("]")[0]);;
                         switch(iniRow.Type.split("[")[0]) {
                             case "bool":
                             case "uint8":
-                                iniSetValue(obj, iniRow, iniIndex, byteArray.subarray(0, arrayLen));
-                                byteArray = byteArray.subarray(arrayLen);
+                                iniSetValue(obj, iniRow, iniIndex, Array.from(new Uint8Array(arrayBuffer.slice(0, arrayLen))));
+                                arrayBuffer = arrayBuffer.slice(arrayLen);
                                 break;
                             case "uint16":
-                                iniSetValue(obj, iniRow, iniIndex, new Uint16Array(byteArray.subarray(0, 2 * arrayLen)));
-                                byteArray = byteArray.subarray(2 * arrayLen);
+                                iniSetValue(obj, iniRow, iniIndex, Array.from(new Uint16Array(arrayBuffer.slice(0, 2 * arrayLen))));
+                                arrayBuffer = arrayBuffer.slice(2 * arrayLen);
                                 break;
                             case "uint32":
-                                iniSetValue(obj, iniRow, iniIndex, new Uint32Array(byteArray.subarray(0, 4 * arrayLen)));
-                                byteArray = byteArray.subarray(4 * arrayLen);
+                                iniSetValue(obj, iniRow, iniIndex, Array.from(new Uint32Array(arrayBuffer.slice(0, 4 * arrayLen))));
+                                arrayBuffer = arrayBuffer.slice(4 * arrayLen);
                                 break;
                             case "int8":
-                                iniSetValue(obj, iniRow, iniIndex, new Int8Array(byteArray.subarray(0, arrayLen)));
-                                byteArray = byteArray.subarray(arrayLen);
+                                iniSetValue(obj, iniRow, iniIndex, Array.from(new Int8Array(arrayBuffer.slice(0, arrayLen))));
+                                arrayBuffer = arrayBuffer.slice(arrayLen);
                                 break;
                             case "int16":
-                                iniSetValue(obj, iniRow, iniIndex, new Int16Array(byteArray.subarray(0, 2 * arrayLen)));
-                                byteArray = byteArray.subarray(2 * arrayLen);
+                                iniSetValue(obj, iniRow, iniIndex, Array.from(new Int16Array(arrayBuffer.slice(0, 2 * arrayLen))));
+                                arrayBuffer = arrayBuffer.slice(2 * arrayLen);
                                 break;
                             case "int32":
-                                iniSetValue(obj, iniRow, iniIndex, new Int32Array(byteArray.subarray(0, 4 * arrayLen)));
-                                byteArray = byteArray.subarray(4 * arrayLen);
+                                iniSetValue(obj, iniRow, iniIndex, Array.from(new Int32Array(arrayBuffer.slice(0, 4 * arrayLen))));
+                                arrayBuffer = arrayBuffer.slice(4 * arrayLen);
                                 break;
                             case "formula":
                                 arrayLen++;
                             case "float":
-                                iniSetValue(obj, iniRow, iniIndex, new Float32Array(byteArray.subarray(0, 4 * arrayLen)));
-                                byteArray = byteArray.subarray(4 * arrayLen);
+                                iniSetValue(obj, iniRow, iniIndex, Array.from(new Float32Array(arrayBuffer.slice(0, 4 * arrayLen))));
+                                arrayBuffer = arrayBuffer.slice(4 * arrayLen);
                                 break;
                         }
+                        obj[iniRow.Location].XMin = parseValueString(obj, iniRow.XMin);
+                        obj[iniRow.Location].XMax = parseValueString(obj, iniRow.XMax);
                     } else {
                         throw "setByteArray Type Invalid";
                     }
                     break;
             }
         } else {
-            byteArray = byteArray.subarray(iniSetValue(obj, iniRow, iniIndex, byteArray));
+            arrayBuffer = arrayBuffer.slice(iniSetValue(obj, iniRow, iniIndex, arrayBuffer));
         }
     });
 
-    return prevLength - byteArray.length;
+    return prevLength - arrayBuffer.byteLength;
 }

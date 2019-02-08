@@ -32,10 +32,10 @@ namespace IOServices
 		
 		unsigned short PwmPin;
 		unsigned short MinFrequency;
+		unsigned short DotSampleRate;
 		float A[Degree + 1];
 		float MinValue;
 		float MaxValue;
-		unsigned short DotSampleRate;
 	});
 
 	template<unsigned char Degree>
