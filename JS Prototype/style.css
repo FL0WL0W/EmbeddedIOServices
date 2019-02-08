@@ -17,9 +17,6 @@
     width: 40px;
     display: inline-block;
 }
-.configContainer span table {
-    display: inline-block;
-}
 .configContainer span input {
     margin: 1px;
 }
@@ -45,29 +42,31 @@
     border-color: #666666;
 }
 
-.configContainer span table th {
+.table2D {
+    border-color: #666666;
+    border-spacing: 0px;
+    border: 1px;
+    display: inline-block;
+    border-style: solid;
+}
+.table2D th {
     padding: 2px;
-    overflow: hidden;
     border: 1px;
     border-color: #666666;
     border-style: solid;
+    white-space: nowrap;
 }
-.configContainer span table td {
+.table2D td {
     padding: 0px;
-    overflow: hidden;
     border: 1px;
     border-color: #666666;
     border-style: solid;
 }
-.configContainer span table input[type="number"] {
+.table2D input[type="number"] {
     width: 65px;
     border-style: none;
     margin: 0px;
     line-height: 20px;
-}
-.configContainer span table {
-    border-spacing: 0px;
-    border: 1px;
 }
 
 .configContainer span label {
@@ -75,6 +74,10 @@
     width: 170px;
     padding-right: 5px;
     margin: 1px;
+}
+
+.configContainer span .subConfigLabel {
+    width: 50px;
 }
 
 .selected {

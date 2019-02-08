@@ -48,16 +48,38 @@ var FloatInputService_AnalogInterpolatedTableConfigIni = [
     { Location: "AdcPin", Type: "uint16", Label: "Pin", DefaultValue: 0, Min: 0, Max: 65535, Step: 1 },
     { Location: "DotSampleRate", Type: "uint16", Label: "Dot Sample Rate", DefaultValue: 1000, Min: 1, Max: 65535, Step: 1 },
     { Location: "MinInputValue", Type: "float", Label: "Min Input Voltage", DefaultValue: 0, Min: -1000000, Max: 1000000, Step: 0.1 },
-    { Location: "MaxInputValue", Type: "float", Label: "Max Input Voltage", DefaultValue: 0, Min: -1000000, Max: 1000000, Step: 0.1 },
-    { Location: "Resolution", Type: "uint8", Label: "Resolution", DefaultValue: 16, Min: 1, Max: 255, Step: 1 },
-    { Location: "Table", Type: "float[Resolution]", XLabel: "Input Voltage", ZLabel: "Value", DefaultValue: 0, Min: -1000000, Max: 1000000, Step: 0.1, XMin: "MinInputValue", XMax: "MaxInputValue" }
+    { Location: "MaxInputValue", Type: "float", Label: "Max Input Voltage", DefaultValue: 3.3, Min: -1000000, Max: 1000000, Step: 0.1 },
+    { Location: "Resolution", Type: "uint8", Label: "Resolution", DefaultValue: 8, Min: 1, Max: 255, Step: 1 },
+    { Location: "Table", Type: "float[Resolution]", Label: "Input Voltage to Value", XLabel: "Input Voltage", ZLabel: "Value", DefaultValue: 0, Min: -1000000, Max: 1000000, Step: 0.1, XMin: "MinInputValue", XMax: "MaxInputValue", Dialog: true }
+];
+
+var FloatInputService_FrequencyPolynomialConfigIni = [
+    { Location: "static", Type: "uint8", DefaultValue: 3 },
+    { Location: "PwmPin", Type: "uint16", Label: "Pin", DefaultValue: 0, Min: 0, Max: 65535, Step: 1 },
+    { Location: "MinFrequency", Type: "uint16", Label: "Min Frequency", DefaultValue: 50, Min: 1, Max: 65535, Step: 1 },
+    { Location: "DotSampleRate", Type: "uint16", Label: "Dot Sample Rate", DefaultValue: 1000, Min: 1, Max: 65535, Step: 1 },
+    { Location: "A", Type: "formula[4]", Label: "Coefficients", DefaultValue: 0 },
+    { Location: "MinValue", Type: "float", Label: "Min Value", DefaultValue: 0, Min: -1000000, Max: 1000000, Step: 0.1 },
+    { Location: "MaxValue", Type: "float", Label: "Max Value", DefaultValue: 0, Min: -1000000, Max: 1000000, Step: 0.1 }
+];
+
+var FloatInputService_FrequencyInterpolatedTableConfigIni = [
+    { Location: "static", Type: "uint8", DefaultValue: 5 },
+    { Location: "PwmPin", Type: "uint16", Label: "Pin", DefaultValue: 0, Min: 0, Max: 65535, Step: 1 },
+    { Location: "DotSampleRate", Type: "uint16", Label: "Dot Sample Rate", DefaultValue: 1000, Min: 1, Max: 65535, Step: 1 },
+    { Location: "MinFrequency", Type: "uint16", Label: "Min Frequency", DefaultValue: 50, Min: 1, Max: 65535, Step: 1 },
+    { Location: "MaxFrequency", Type: "uint16", Label: "Max Frequency", DefaultValue: 100, Min: 1, Max: 65535, Step: 1 },
+    { Location: "Resolution", Type: "uint8", Label: "Resolution", DefaultValue: 11, Min: 1, Max: 255, Step: 1 },
+    { Location: "Table", Type: "float[Resolution]", Label: "Input Voltage to Value", XLabel: "Input Voltage", ZLabel: "Value", DefaultValue: 0, Min: -1000000, Max: 1000000, Step: 0.1, XMin: "MinFrequency", XMax: "MaxFrequency", Dialog: true }
 ];
 
 IFloatInputServiceIni = [
-    { Location: "Selection", Type: "iniselection", Label: "Input", DefaultValue: {Index: 2}, WrapInConfigContainer: false, Selections: [
+    { Location: "Selection", Type: "iniselection", Label: "Input", DefaultValue: {Index: 0}, WrapInConfigContainer: false, Selections: [
         { Name: "Static",  ini: FloatInputService_StaticConfigIni},
         { Name: "Analog Pin Polynomial",  ini: FloatInputService_AnalogPolynomialConfigIni},
-        { Name: "Analog Pin Lookup Table",  ini: FloatInputService_AnalogInterpolatedTableConfigIni}
+        { Name: "Analog Pin Lookup Table",  ini: FloatInputService_AnalogInterpolatedTableConfigIni},
+        { Name: "Frequency Pin Polynomial",  ini: FloatInputService_FrequencyPolynomialConfigIni},
+        { Name: "Frequency Pin Lookup Table",  ini: FloatInputService_FrequencyInterpolatedTableConfigIni}
     ] }
 ];
 

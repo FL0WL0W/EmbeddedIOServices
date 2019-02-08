@@ -1,22 +1,25 @@
 <html>
     <head>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="http://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+        <script src="http://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
         <script src="utils.js"></script>
         <script src="Config.js"></script>
         <script src="IOServicesConfig.js"></script>
         <script src="ConfigGuiModules/ConfigGuiModules.js"></script>
+        <link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
         <link rel = "stylesheet" type = "text/css" href = "style.css" />
         <script type="text/javascript">
             $(document).ready(function() {
+                var b;
                 $("#btnNew").click(function(){
-                    var b = new ConfigGui(testbuilder);
+                    b = new ConfigGui(testbuilder);
                     $('#workspace').html(wrapInConfigContainerGui("", b.GetHtml()));
                 });
                 $("#btnSave").click(function(){
                     downloadBlob(b.GetArrayBuffer(), "test.bin", "application/octet-stream");
                 });
                 $("#btnLoad").change(function(evt){
-                    var b = new ConfigGui(testbuilder);
+                    b = new ConfigGui(testbuilder);
                     var test = new FileReader();
 
                     test.onload = function(evt) {
