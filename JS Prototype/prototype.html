@@ -10,17 +10,17 @@
         <link rel = "stylesheet" type = "text/css" href = "style.css" />
         <script type="text/javascript">
             $(document).ready(function() {
-                var b = new ConfigGui(IOServicesDemo);
+                var b = new ConfigGui(IOServicesIni);
                 $('#workspace').html(wrapInConfigContainerGui("", b.GetHtml()));
                 $("#btnNew").click(function(){
-                    b = new ConfigGui(IOServicesDemo);
+                    b = new ConfigGui(b.iniNameSpace);
                     $('#workspace').html(wrapInConfigContainerGui("", b.GetHtml()));
                 });
                 $("#btnSave").click(function(){
-                    downloadBlob(b.GetArrayBuffer(), "test.bin", "application/octet-stream");
+                    downloadBin(b.GetArrayBuffer(), "test.bin");
                 });
                 $("#btnLoad").change(function(evt){
-                    b = new ConfigGui(IOServicesDemo);
+                    b = new ConfigGui(b.iniNameSpace);
                     var test = new FileReader();
 
                     test.onload = function(evt) {
@@ -36,14 +36,36 @@
                     
                     test.readAsArrayBuffer(evt.target.files[0]);
                 });
+                $("#btnSaveIni").click(function(){
+                    downloadObject(b.iniNameSpace, "test.ini");
+                });
+                $("#btnLoadIni").change(function(evt){
+                    var test = new FileReader();
+
+                    test.onload = function(evt) {
+                        if(evt.target.readyState != 2) return;
+                        if(evt.target.error) {
+                            alert('Error while reading file');
+                            return;
+                        }
+
+                        b = new ConfigGui(JSON.parse(evt.target.result));
+                        $('#workspace').html(wrapInConfigContainerGui("", b.GetHtml()));
+                    };
+                    
+                    test.readAsText(evt.target.files[0]);
+                });
             });
         </script>
     </head>
     <body>
-        <input id="btnSave" type="button" class="button" value="Save">
         <input id="btnNew" type="button" class="button" value="New">
+        <input id="btnSave" type="button" class="button" value="Save">
         <label for="btnLoad" class="button">Open</label>
         <input id="btnLoad" type="file" style="display: none;">
+        <input id="btnSaveIni" type="button" class="button" value="Save Ini">
+        <label for="btnLoadIni" class="button">Open Ini</label>
+        <input id="btnLoadIni" type="file" style="display: none;">
         <div id="workspace"></div>
     </body>
 </html>

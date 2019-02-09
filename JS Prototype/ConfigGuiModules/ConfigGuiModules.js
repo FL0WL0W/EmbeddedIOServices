@@ -374,24 +374,24 @@ function getIniConfigGui(obj, ini, idPrefix, mainCallBack) {
                     elementTemplate += "<span>" + getSelectionConfigGui(idPrefix + location, label, value, iniRow.Selections, function(value) {
                         obj[location].Index = value;
                         if(!obj[location].Value || obj[location].Value.IsDefaultValues)
-                            obj[location] = { Index: value, Value: new ConfigGui(iniRow.Selections[value].ini,callBack())}
+                            obj[location] = { Index: value, Value: new ConfigGui(obj.iniNameSpace, iniRow.Selections[value].Ini,callBack())}
                         else
-                            obj[location].Value.ini = iniRow.Selections[value].ini
+                            obj[location].Value.ini = iniRow.Selections[value].Ini
                         callBack();
                     }, function() {
-                        obj[location].Value = new ConfigGui(iniRow.Selections[obj[location].Index].ini, callBack)
+                        obj[location].Value = new ConfigGui(obj.iniNameSpace, iniRow.Selections[obj[location].Index].Ini, callBack)
                         callBack();
                     }) + "</span>";
                     if(!value.Value)
-                        obj[location] = { Index: value.Index, Value: new ConfigGui(iniRow.Selections[value.Index].ini, callBack )}
+                        obj[location] = { Index: value.Index, Value: new ConfigGui(obj.iniNameSpace, iniRow.Selections[value.Index].Ini, callBack )}
                     var innerValue;
                     if(iniRow.WrapInConfigContainer)
                         elementTemplate += "<br>" + wrapInConfigContainerGui("", obj[location].Value.GetHtml());
                     else
                         elementTemplate += obj[location].Value.GetHtml();
                     break;
-                case "undeclaredini":
-                    iniRow.Type = window[iniRow.UndeclaredType];
+                case "namespaceini":
+                    iniRow.Type = obj.iniNameSpace[iniRow.Ini];
                     addIniRow(iniIndex, iniRow);
                     break;
                 default:
@@ -399,7 +399,7 @@ function getIniConfigGui(obj, ini, idPrefix, mainCallBack) {
             }
         } else {
             if(!obj[location])
-                obj[location] = new ConfigGui(iniRow.Type,callBack );
+                obj[location] = new ConfigGui(obj.iniNameSpace, iniRow.Ini,callBack );
 
             if(label) {
                 if(iniRow.SameLine) 
@@ -437,16 +437,15 @@ function getIniConfigGui(obj, ini, idPrefix, mainCallBack) {
 }
 
 class ConfigGui extends Config {
-    constructor(ini, callBack){
-        super();
+    constructor(iniNameSpace, ini, callBack){
+        super(iniNameSpace, ini);
         this.GUID = getGUID();
-        this.ini = ini;
         this.callBack = callBack;
         this.IsDefaultValues = true;
     }
 
     GetHtml() {
-        return getIniConfigGui(this, this.ini, this.GUID, this.callBack);
+        return getIniConfigGui(this, this.iniNameSpace[this.ini], this.GUID, this.callBack);
     }
 }
 

@@ -29,10 +29,14 @@ function getGUID(){
     return "GUID" + (GUID++);
 }
 
-var downloadBlob = function(data, fileName, mimeType) {
+var downloadObject = function(obj, fileName) {
+    downloadstring(JSON.stringify(obj), fileName);
+}
+
+var downloadBin = function(data, fileName) {
     var blob, url;
     blob = new Blob([data], {
-      type: mimeType
+      type: "application/octet-stream"
     });
     url = window.URL.createObjectURL(blob);
     downloadURL(url, fileName);
@@ -40,6 +44,18 @@ var downloadBlob = function(data, fileName, mimeType) {
       return window.URL.revokeObjectURL(url);
     }, 1000);
   };
+
+var downloadstring = function(text, fileName) {
+    var blob, url;
+    blob = new Blob([text], { 
+        type: "text/plain" 
+    });
+    url = window.URL.createObjectURL(blob);
+    downloadURL(url, fileName);
+    setTimeout(function() {
+      return window.URL.revokeObjectURL(url);
+    }, 1000);
+  }
   
 var downloadURL = function(data, fileName) {
     var a;
@@ -49,7 +65,7 @@ var downloadURL = function(data, fileName) {
     document.body.appendChild(a);
     a.style = 'display: none';
     a.click();
-    //a.remove();
+    a.remove();
   };
 
 var currentMousePos = { x: -1, y: -1 };

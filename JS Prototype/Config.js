@@ -1,9 +1,18 @@
 class Config {
+    constructor(iniNameSpace, ini) {
+        if(ini)
+            this.ini = ini;
+        else {
+            this.ini = "Main";
+        }
+        this.iniNameSpace = iniNameSpace;
+    }
+
     GetArrayBuffer() {
-        return getByteArray(this, this.ini).buffer;
+        return getByteArray(this, this.iniNameSpace[this.ini]).buffer;
     }
     SetArrayBuffer(arrayBuffer) {
-        return setArrayBuffer(this, this.ini, arrayBuffer);
+        return setArrayBuffer(this, this.iniNameSpace[this.ini], arrayBuffer);
     }
 }
 
@@ -110,9 +119,9 @@ function iniSetValue(obj, iniRow, iniIndex, value) {
         }
     } else {
         if(!obj[iniRow.Location])
-            obj[iniRow.Location] = new ConfigGui(iniRow.Type);
+            obj[iniRow.Location] = new ConfigGui(obj.iniNameSpace, iniRow.Ini);
         else
-            obj[iniRow.Location].ini = iniRow.Type;
+            obj[iniRow.Location].ini = iniRow.Ini;
         return setArrayBuffer(obj[iniRow.Location], iniRow.Type, value);
     }
 }
@@ -243,7 +252,7 @@ function getByteArray(obj, ini) {
                     byteArray = byteArray.concatArray(new Uint8Array(new Float32Array([value]).buffer));
                     break;
                 case "iniselection":
-                    byteArray = byteArray.concatArray(getByteArray(value.Value, value.Value.ini));
+                    byteArray = byteArray.concatArray(new Uint8Array(value.Value.GetArrayBuffer()));
                     break;
                 default:
                     if(iniRow.Type.indexOf("[") > -1) {
@@ -277,7 +286,7 @@ function getByteArray(obj, ini) {
                     break;
             }
         } else {
-            byteArray = byteArray.concatArray(getByteArray(value, value.ini));
+            byteArray = byteArray.concatArray(new Uint8Array(value.GetArrayBuffer()));
         }
     });
 
@@ -323,9 +332,9 @@ function setArrayBuffer(obj, ini, arrayBuffer) {
                     var selectionVal;
                     $.each(iniRow.Selections, function(selectionIndex, selectionValue) {
                         var selectionId;
-                        if(selectionValue.ini[0].Location === "static")
+                        if(obj.iniNameSpace[selectionValue.Ini][0].Location === "static")
                         {
-                            switch(selectionValue.ini[0].Type) {
+                            switch(obj.iniNameSpace[selectionValue.Ini][0].Type) {
                                 case "uint8":
                                     selectionId = new Uint8Array(arrayBuffer.slice(0, 1))[0];
                                     break;
@@ -334,9 +343,9 @@ function setArrayBuffer(obj, ini, arrayBuffer) {
                                     break;
                             }
                         }
-                        if(selectionId === selectionValue.ini[0].DefaultValue)
+                        if(selectionId === obj.iniNameSpace[selectionValue.Ini][0].DefaultValue)
                         {
-                            selectionVal = {Index: selectionIndex, Value: new ConfigGui(selectionValue.ini)}
+                            selectionVal = {Index: selectionIndex, Value: new ConfigGui(obj.iniNameSpace, selectionValue.Ini)}
                         }
                     });
 
@@ -346,8 +355,8 @@ function setArrayBuffer(obj, ini, arrayBuffer) {
                         iniSetValue(obj, iniRow, iniIndex, selectionVal);
                     }
                     break;
-                case "undeclaredini":
-                    iniRow.Type = window[iniRow.UndeclaredType];
+                case "namespaceini":
+                    iniRow.Type = obj.iniNameSpace[iniRow.Ini];
                     setIniRow(iniIndex, iniRow);
                     break;
                 default:
