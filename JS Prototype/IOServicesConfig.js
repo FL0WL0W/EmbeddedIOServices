@@ -34,6 +34,12 @@ var ButtonService_PollingConfigIni  = [
     { Location: "BooleanInputServiceConfig", Type: IBooleanInputServiceConfigIni }
 ];
 
+var IButtonServiceConfigIni  = [
+    { Location: "Selection", Type: "iniselection", Label: "Output", DefaultValue: {Index: 0}, WrapInConfigContainer: false, Selections: [
+        { Name: "Polling",  ini: ButtonService_PollingConfigIni}
+    ] }
+];
+
 var FloatInputService_StaticConfigIni = [
     { Location: "static", Type: "uint8", DefaultValue: 1 },
     { Location: "Value", Type: "float", Label: "Value", DefaultValue: 0, Min: -1000000, Max: 1000000, Step: 0.1 },
@@ -170,7 +176,7 @@ var FloatOutputService_StepperInterpolatedTableConfigIni = [
     { Location: "StepperConfig", Type: IStepperOutputServiceConfigIni }
 ];
 
-IFloatOutputServiceConfigIni = [
+var IFloatOutputServiceConfigIni = [
     { Location: "Selection", Type: "iniselection", Label: "Output", DefaultValue: {Index: 0}, WrapInConfigContainer: false, Selections: [
         { Name: "PWM Pin Polynomial",  ini: FloatOutputService_PwmPolynomialConfigIni},
         { Name: "PWM Pin Lookup Table",  ini: FloatOutputService_PwmInterpolatedTableConfigIni},
@@ -179,10 +185,11 @@ IFloatOutputServiceConfigIni = [
     ] }
 ];
 
-var testbuilder = [
-    { Location: "static", Type: "uint8", DefaultValue: 1 },
-    { Location: "MAPConfig", Type: IFloatInputServiceConfigIni, Label: "MAP", WrapInConfigContainer: true },
-    { Location: "MAFConfig", Type: IFloatInputServiceConfigIni, Label: "MAF", WrapInConfigContainer: true },
-    { Location: "TPSConfig", Type: IFloatInputServiceConfigIni, Label: "TPS", WrapInConfigContainer: true },
-    { Location: "IACConfig", Type: IFloatOutputServiceConfigIni, Label: "IAC", WrapInConfigContainer: true }
+var IOServicesDemo = [
+    { Location: "BooleanInputService", Type: IBooleanInputServiceConfigIni, Label: "BooleanInputService", WrapInConfigContainer: true },
+    { Location: "ButtonService", Type: IButtonServiceConfigIni, Label: "ButtonService", WrapInConfigContainer: true },
+    { Location: "BooleanOutputService", Type: IBooleanOutputServiceConfigIni, Label: "BooleanOutputService", WrapInConfigContainer: true },
+    { Location: "FloatInputService", Type: IFloatInputServiceConfigIni, Label: "FloatInputService", WrapInConfigContainer: true },
+    { Location: "StepperOutputService", Type: IStepperOutputServiceConfigIni, Label: "StepperOutputService", WrapInConfigContainer: true },
+    { Location: "FloatOutputService", Type: IFloatOutputServiceConfigIni, Label: "FloatOutputService", WrapInConfigContainer: true }
 ]

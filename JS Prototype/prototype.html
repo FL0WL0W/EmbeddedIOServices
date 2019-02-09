@@ -10,16 +10,17 @@
         <link rel = "stylesheet" type = "text/css" href = "style.css" />
         <script type="text/javascript">
             $(document).ready(function() {
-                var b;
+                var b = new ConfigGui(IOServicesDemo);
+                $('#workspace').html(wrapInConfigContainerGui("", b.GetHtml()));
                 $("#btnNew").click(function(){
-                    b = new ConfigGui(testbuilder);
+                    b = new ConfigGui(IOServicesDemo);
                     $('#workspace').html(wrapInConfigContainerGui("", b.GetHtml()));
                 });
                 $("#btnSave").click(function(){
                     downloadBlob(b.GetArrayBuffer(), "test.bin", "application/octet-stream");
                 });
                 $("#btnLoad").change(function(evt){
-                    b = new ConfigGui(testbuilder);
+                    b = new ConfigGui(IOServicesDemo);
                     var test = new FileReader();
 
                     test.onload = function(evt) {
