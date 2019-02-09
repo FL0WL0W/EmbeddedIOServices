@@ -31,10 +31,10 @@ namespace IOServices
 		}
 		
 		unsigned short PwmPin;
+		unsigned short Frequency;
 		float A[Degree+1];
 		float MinDutyCycle;
 		float MaxDutyCycle;
-		unsigned short Frequency;
 	});
 
 	template<unsigned char Degree>

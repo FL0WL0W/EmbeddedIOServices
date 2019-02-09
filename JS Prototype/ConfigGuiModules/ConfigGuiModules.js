@@ -1,10 +1,12 @@
 var numberConfigGuiTemplate;
-function getNumberConfigGui(id, label, value, min, max, step, callBack) {
+function getNumberConfigGui(id, label, value, min, max, step, displayMultiplier, callBack) {
     if(!numberConfigGuiTemplate)
         numberConfigGuiTemplate = getFileContents("ConfigGuiModules/Number.html");
     var template = numberConfigGuiTemplate;
     template = template.replace(/[$]id[$]/g, id);
     template = template.replace(/[$]label[$]/g, label);
+    if(displayMultiplier)
+        value *= displayMultiplier;
     template = template.replace(/[$]value[$]/g, value);
     template = template.replace(/[$]min[$]/g, min);
     template = template.replace(/[$]max[$]/g, max);
@@ -13,15 +15,23 @@ function getNumberConfigGui(id, label, value, min, max, step, callBack) {
     $(document).off("change."+id);
     if(callBack) {
         $(document).on("change."+id, "#" + id, function(){
-            callBack($(this).val());
+            val = parseFloat($(this).val());
+            if(displayMultiplier) 
+                val /= displayMultiplier;
+            callBack(val);
         });
     }
     return template;
 }
 
-function getNumberArrayConfigGui(id, dialog, label, xlabel, zlabel, values, min, max, step, callBack, xMin, xMinMin, xMinMax, xMinStep, xMinCallBack, xMax, xMaxMin, xMaxMax, xMaxStep, xMaxCallBack) {
+function getNumberArrayConfigGui(id, dialog, label, xlabel, zlabel, values, min, max, step, displayMultiplier, callBack, xMin, xMinMin, xMinMax, xMinStep, xMinCallBack, xMax, xMaxMin, xMaxMax, xMaxStep, xMaxCallBack, xMinMaxDisplayMultiplier) {
     var header = "<tr><th>" + xlabel + "</th>";
     var row = "<tr><th>" + zlabel + "</th>";
+
+    if(xMinMaxDisplayMultiplier) {
+        xMin *= xMinMaxDisplayMultiplier;
+        xMax *= xMinMaxDisplayMultiplier;
+    }
 
     for(var i = 0; i < values.length; i++)
     {
@@ -37,7 +47,10 @@ function getNumberArrayConfigGui(id, dialog, label, xlabel, zlabel, values, min,
             rowClass = " class =\"" + rowClass + "\"";
         else
             rowClass = "";
-        row += "<td><input id=\"" + id + i + "\" type=\"number\" min=\"" + min + "\" max=\"" + max + "\" step=\"" + step + "\" value=\"" + values[i] + "\""+rowClass+"/></td>";
+        var value = values[i];
+        if(displayMultiplier)
+            value *= displayMultiplier;
+        row += "<td><input id=\"" + id + i + "\" type=\"number\" min=\"" + min + "\" max=\"" + max + "\" step=\"" + step + "\" value=\"" + value + "\""+rowClass+"/></td>";
     }
     
     header += "</tr>"
@@ -49,7 +62,9 @@ function getNumberArrayConfigGui(id, dialog, label, xlabel, zlabel, values, min,
     if(callBack) {
         $.each(values, function(index, value) {
             $(document).on("change."+id, "#" + id + index, function(){
-                var val = $(this).val();
+                val = parseFloat($(this).val());
+                if(displayMultiplier) 
+                    val /= displayMultiplier;
                 values[index] = val;
                 var selectedCount = 0;
                 $.each(values, function(selectedindex, value) { if ($("#" + id + selectedindex).hasClass("selected")) selectedCount++; });
@@ -68,13 +83,19 @@ function getNumberArrayConfigGui(id, dialog, label, xlabel, zlabel, values, min,
 
     if(xMinCallBack) {
         $(document).on("change."+id, "#" + id + "min", function(){
-            xMinCallBack($(this).val());
+            val = parseFloat($(this).val());
+            if(xMinMaxDisplayMultiplier) 
+                val /= xMinMaxDisplayMultiplier;
+            xMinCallBack(val);
         });
     }
 
     if(xMaxCallBack) {
         $(document).on("change."+id, "#" + id + "max", function(){
-            xMaxCallBack($(this).val());
+            val = parseFloat($(this).val());
+            if(xMinMaxDisplayMultiplier) 
+                val /= xMinMaxDisplayMultiplier;
+            xMaxCallBack(val);
         });
     }
 
@@ -225,6 +246,9 @@ var selectionConfigGuiTemplate;
 function getSelectionConfigGui(id, label, value, selections, callBack, clearCallBack) {
     if(!selectionConfigGuiTemplate)
         selectionConfigGuiTemplate = getFileContents("ConfigGuiModules/Selection.html");
+    if(selections.length < 2) {
+        return "";
+    }
     var template = selectionConfigGuiTemplate;
     template = template.replace(/[$]id[$]/g, id);
     template = template.replace(/[$]label[$]/g, label);
@@ -306,7 +330,10 @@ function getIniConfigGui(obj, ini, idPrefix, callBack) {
                     if(iniRow.Type.split("[").length === 2) {
                         var xMinRef = valueIsReferenceLocation(iniRow.XMin)? ini.find(function(element) { return element.Location === iniRow.XMin}): undefined;
                         var xMaxRef = valueIsReferenceLocation(iniRow.XMin)? ini.find(function(element) { return element.Location === iniRow.XMax}): undefined;
-                        elementTemplate += getNumberArrayConfigGui(idPrefix + location, iniRow.Dialog, label, iniRow.XLabel, iniRow.ZLabel, value, min, max, step, function(value){
+                        if(xMinRef.DisplayMultiplier !== xMaxRef.DisplayMultiplier) {
+                            throw "XMin and XMax references do not share the same DisplayMultiplier"
+                        }
+                        elementTemplate += getNumberArrayConfigGui(idPrefix + location, iniRow.Dialog, label, iniRow.XLabel, iniRow.ZLabel, value, min, max, step, iniRow.DisplayMultiplier, function(value){
                             obj[location] = value;
                             reRender();
                             if(callBack)
@@ -322,11 +349,11 @@ function getIniConfigGui(obj, ini, idPrefix, callBack) {
                                 reRender();
                                 if(callBack)
                                     callBack(obj);
-                            } : undefined);
+                            } : undefined, xMinRef.DisplayMultiplier);
                     } else {
                         var referencedBy = iniReferencedByIniRow(ini, location);
                         if(referencedBy.length !== 1 || (referencedBy[0].XMin !== location && referencedBy[0].XMax !== location && referencedBy[0].YMin !== location && referencedBy[0].YMax !== location)){
-                            elementTemplate += getNumberConfigGui(idPrefix + location, label, value, min, max, step, function(value){
+                            elementTemplate += getNumberConfigGui(idPrefix + location, label, value, min, max, step, iniRow.DisplayMultiplier, function(value){
                                 obj[location] = value;
                                 reRender();
                                 if(callBack)
@@ -371,6 +398,10 @@ function getIniConfigGui(obj, ini, idPrefix, callBack) {
                     else
                         elementTemplate += obj[location].Value.GetHtml();
                     break;
+                case "undeclaredini":
+                    iniRow.Type = window[iniRow.UndeclaredType];
+                    addIniRow(iniIndex, iniRow);
+                    break;
                 default:
                     break;
             }
@@ -378,7 +409,12 @@ function getIniConfigGui(obj, ini, idPrefix, callBack) {
             if(!obj[location])
                 obj[location] = new ConfigGui(iniRow.Type, function() { reRender(); if(callBack) callBack(obj); });
 
-            elementTemplate = "<label for=\"span" + idPrefix + location + "\" class=\"subConfigLabel\">" + label + "</label>" + elementTemplate;
+            if(label) {
+                if(iniRow.SameLine) 
+                    elementTemplate = "<label for=\"span" + idPrefix + location + "\" class=\"subConfigSameLineLabel\">" + label + ":</label>" + elementTemplate;
+                else
+                    elementTemplate = "<label for=\"span" + idPrefix + location + "\" class=\"subConfigLabel\">" + label + "</label><span class=\"sameLineSpacer\"></span>" + elementTemplate;
+            }
             if(iniRow.WrapInConfigContainer)
                 elementTemplate += wrapInConfigContainerGui(obj[location].GUID, obj[location].GetHtml());
             else

@@ -27,7 +27,7 @@ namespace IOServices
 			return sizeof(StepperOutputService_FullStepControlConfig);
 		}
 		
-		unsigned int MaxStepsPerSecond;
+		unsigned unsigned short MaxStepsPerSecond;
 		unsigned float StepWidth;
 	});
 

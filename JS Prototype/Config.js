@@ -14,8 +14,9 @@ function iniReferencedByIniRow(ini, reference) {
             || iniRow.XMax === reference 
             || iniRow.YMin === reference 
             || iniRow.YMax === reference 
-            || (iniRow.Type.split("[").length > 1 && iniRow.Type.split("[")[1].split("]")[0] == reference) 
-            || (iniRow.Type.split("[").length > 2 && iniRow.Type.split("[")[2].split("]")[0] == reference)) {
+            || (typeof iniRow.Type === "string" && 
+                ((iniRow.Type.split("[").length > 1 && iniRow.Type.split("[")[1].split("]")[0] == reference) 
+                || (iniRow.Type.split("[").length > 2 && iniRow.Type.split("[")[2].split("]")[0] == reference)))) {
             referencedBy.push(iniRow);
         }
     });
@@ -285,8 +286,7 @@ function getByteArray(obj, ini) {
 
 function setArrayBuffer(obj, ini, arrayBuffer) {
     var prevLength = arrayBuffer.byteLength;
-
-    $.each(ini, function(iniIndex, iniRow){        
+    var setIniRow = function(iniIndex, iniRow){        
         if(typeof iniRow.Type === "string")
         {
             switch(iniRow.Type) {
@@ -346,6 +346,10 @@ function setArrayBuffer(obj, ini, arrayBuffer) {
                         iniSetValue(obj, iniRow, iniIndex, selectionVal);
                     }
                     break;
+                case "undeclaredini":
+                    iniRow.Type = window[iniRow.UndeclaredType];
+                    setIniRow(iniIndex, iniRow);
+                    break;
                 default:
                     if(iniRow.Type.indexOf("[") > -1) {
                         var arrayLen = parseValueString(obj, iniRow.Type.split("[")[1].split("]")[0]);;
@@ -394,7 +398,9 @@ function setArrayBuffer(obj, ini, arrayBuffer) {
         } else {
             arrayBuffer = arrayBuffer.slice(iniSetValue(obj, iniRow, iniIndex, arrayBuffer));
         }
-    });
+    }
+
+    $.each(ini, setIniRow);
 
     return prevLength - arrayBuffer.byteLength;
 }
