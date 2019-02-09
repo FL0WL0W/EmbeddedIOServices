@@ -390,10 +390,6 @@ function getIniConfigGui(obj, ini, idPrefix, mainCallBack) {
                     else
                         elementTemplate += obj[location].Value.GetHtml();
                     break;
-                case "namespaceini":
-                    iniRow.Type = obj.iniNameSpace[iniRow.Ini];
-                    addIniRow(iniIndex, iniRow);
-                    break;
                 default:
                     break;
             }

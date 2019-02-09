@@ -122,7 +122,7 @@ function iniSetValue(obj, iniRow, iniIndex, value) {
             obj[iniRow.Location] = new ConfigGui(obj.iniNameSpace, iniRow.Ini);
         else
             obj[iniRow.Location].ini = iniRow.Ini;
-        return setArrayBuffer(obj[iniRow.Location], iniRow.Type, value);
+        return setArrayBuffer(obj[iniRow.Location], obj.iniNameSpace[iniRow.Ini], value);
     }
 }
 
@@ -354,10 +354,6 @@ function setArrayBuffer(obj, ini, arrayBuffer) {
                         arrayBuffer = arrayBuffer.slice(selectionVal.Value.SetArrayBuffer(arrayBuffer));
                         iniSetValue(obj, iniRow, iniIndex, selectionVal);
                     }
-                    break;
-                case "namespaceini":
-                    iniRow.Type = obj.iniNameSpace[iniRow.Ini];
-                    setIniRow(iniIndex, iniRow);
                     break;
                 default:
                     if(iniRow.Type.indexOf("[") > -1) {
