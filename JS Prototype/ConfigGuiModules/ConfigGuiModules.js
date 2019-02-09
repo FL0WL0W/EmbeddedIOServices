@@ -277,7 +277,7 @@ function getSelectionConfigGui(id, label, value, selections, callBack, clearCall
     return template;
 }
 
-function getIniConfigGui(obj, ini, idPrefix, callBack) {
+function getIniConfigGui(obj, ini, idPrefix, mainCallBack) {
     var template = "<span id=\"span" + idPrefix + "\">"
 
     var reRender = function() {
@@ -286,6 +286,13 @@ function getIniConfigGui(obj, ini, idPrefix, callBack) {
         var newElement = document.getElementById(element.id);
         if(newElement)
             newElement.focus();
+    }
+
+    var callBack = function() {
+        reRender();
+        obj.IsDefaultValues = false;
+        if(mainCallBack)
+            mainCallBack(obj);
     }
 
     var firstElement = true;
@@ -316,8 +323,7 @@ function getIniConfigGui(obj, ini, idPrefix, callBack) {
                 case "bool":
                     elementTemplate += getCheckBoxConfigGui(idPrefix + location, label, value, function(value){
                         obj[location] = value;
-                        if(callBack)
-                            callBack(obj);
+                        callBack();
                     });
                     break;
                 case "uint8":
@@ -335,29 +341,21 @@ function getIniConfigGui(obj, ini, idPrefix, callBack) {
                         }
                         elementTemplate += getNumberArrayConfigGui(idPrefix + location, iniRow.Dialog, label, iniRow.XLabel, iniRow.ZLabel, value, min, max, step, iniRow.DisplayMultiplier, function(value){
                             obj[location] = value;
-                            reRender();
-                            if(callBack)
-                                callBack(obj);
+                            callBack();
                             }, parseValueString(obj, iniRow.XMin), xMinRef? xMinRef.Min : undefined, xMinRef? xMinRef.Max : undefined, xMinRef? xMinRef.Step : undefined, xMinRef ? function(value){
                                 obj[iniRow.XMin] = value;
-                                reRender();
-                                if(callBack)
-                                    callBack(obj);
+                                callBack();
                             } : undefined, 
                            parseValueString(obj, iniRow.XMax), xMaxRef? xMaxRef.Min : undefined, xMaxRef? xMaxRef.Max : undefined, xMaxRef? xMaxRef.Step : undefined, xMaxRef ? function(value){
                                 obj[iniRow.XMax] = value;
-                                reRender();
-                                if(callBack)
-                                    callBack(obj);
+                                callBack();
                             } : undefined, xMinRef.DisplayMultiplier);
                     } else {
                         var referencedBy = iniReferencedByIniRow(ini, location);
                         if(referencedBy.length !== 1 || (referencedBy[0].XMin !== location && referencedBy[0].XMax !== location && referencedBy[0].YMin !== location && referencedBy[0].YMax !== location)){
                             elementTemplate += getNumberConfigGui(idPrefix + location, label, value, min, max, step, iniRow.DisplayMultiplier, function(value){
                                 obj[location] = value;
-                                reRender();
-                                if(callBack)
-                                    callBack(obj);
+                                callBack();
                             });
                         } else {
                             hideElement = true;
@@ -368,30 +366,24 @@ function getIniConfigGui(obj, ini, idPrefix, callBack) {
                 case "formula":
                     elementTemplate += getFormulaConfigGui(idPrefix + location, label, value, min, max, step, function(value) {
                         obj[location] = value;
-                        reRender();
-                        if(callBack)
-                            callBack(obj);
+                        callBack();
                     });
                     obj[location] = value;
                     break;
                 case "iniselection":
                     elementTemplate += "<span>" + getSelectionConfigGui(idPrefix + location, label, value, iniRow.Selections, function(value) {
                         obj[location].Index = value;
-                        if(!obj[location].Value)
-                            obj[location] = { Index: value.Index, Value: new ConfigGui(iniRow.Selections[value].ini, function() { reRender(); if(callBack) callBack(obj); })}
+                        if(!obj[location].Value || obj[location].Value.IsDefaultValues)
+                            obj[location] = { Index: value, Value: new ConfigGui(iniRow.Selections[value].ini,callBack())}
                         else
                             obj[location].Value.ini = iniRow.Selections[value].ini
-                            reRender();
-                        if(callBack)
-                            callBack(obj);
+                        callBack();
                     }, function() {
-                        obj[location].Value = new ConfigGui(iniRow.Selections[obj[location].Index].ini, function() { reRender(); if(callBack) callBack(obj); })
-                            reRender();
-                        if(callBack)
-                            callBack(obj);
+                        obj[location].Value = new ConfigGui(iniRow.Selections[obj[location].Index].ini, callBack)
+                        callBack();
                     }) + "</span>";
                     if(!value.Value)
-                        obj[location] = { Index: value.Index, Value: new ConfigGui(iniRow.Selections[value.Index].ini, function() { reRender(); if(callBack) callBack(obj); })}
+                        obj[location] = { Index: value.Index, Value: new ConfigGui(iniRow.Selections[value.Index].ini, callBack )}
                     var innerValue;
                     if(iniRow.WrapInConfigContainer)
                         elementTemplate += "<br>" + wrapInConfigContainerGui("", obj[location].Value.GetHtml());
@@ -407,7 +399,7 @@ function getIniConfigGui(obj, ini, idPrefix, callBack) {
             }
         } else {
             if(!obj[location])
-                obj[location] = new ConfigGui(iniRow.Type, function() { reRender(); if(callBack) callBack(obj); });
+                obj[location] = new ConfigGui(iniRow.Type,callBack );
 
             if(label) {
                 if(iniRow.SameLine) 
@@ -450,6 +442,7 @@ class ConfigGui extends Config {
         this.GUID = getGUID();
         this.ini = ini;
         this.callBack = callBack;
+        this.IsDefaultValues = true;
     }
 
     GetHtml() {
