@@ -52,6 +52,14 @@ function getNumberTableConfigGui(id, dialog, label,
         yMin *= yMaxDisplayMultiplier;
     }
 
+    if(xMinDisplayMultiplier !== xMaxDisplayMultiplier) {
+        throw "XMin and XMax references do not share the same DisplayMultiplier"
+    }
+
+    if(yMinDisplayMultiplier !== yMaxDisplayMultiplier) {
+        throw "YMin and YMax references do not share the same DisplayMultiplier"
+    }
+
     $(document).off("change."+id);
     var row = "";
     var table = "";
@@ -462,10 +470,7 @@ function getIniConfigGui(obj, ini, idPrefix, mainCallBack) {
                             var xMinRef = valueIsReferenceLocation(iniRow.XMin)? ini.find(function(element) { return element.Location === iniRow.XMin}): undefined;
                             var xMaxRef = valueIsReferenceLocation(iniRow.XMin)? ini.find(function(element) { return element.Location === iniRow.XMax}): undefined;
                             var xResRef = valueIsReferenceLocation(xRes)? ini.find(function(element) { return element.Location === xRes}): undefined;
-                            if(xMinRef.DisplayMultiplier !== xMaxRef.DisplayMultiplier) {
-                                throw "XMin and XMax references do not share the same DisplayMultiplier"
-                            }
-
+                            
                             elementTemplate += getNumberTableConfigGui(idPrefix + location, iniRow.Dialog, label,
                                 iniRow.ZLabel, value, min, max, step, iniRow.DisplayMultiplier, function(value){
                                         obj[location] = value;
