@@ -75,7 +75,6 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
 
 # TODO:
 <ul>
-  <li>Config Editor</li>
   <li>Create Unit Tests For</li>
   <ul>
     <li>StepperOutputService_StepDirectionControl</li>
