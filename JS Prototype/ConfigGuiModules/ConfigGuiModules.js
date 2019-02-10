@@ -24,81 +24,181 @@ function getNumberConfigGui(id, label, value, min, max, step, displayMultiplier,
     return template;
 }
 
-function getNumberArrayConfigGui(id, dialog, label, xlabel, zlabel, values, min, max, step, displayMultiplier, callBack, xMin, xMinMin, xMinMax, xMinStep, xMinCallBack, xMax, xMaxMin, xMaxMax, xMaxStep, xMaxCallBack, xMinMaxDisplayMultiplier) {
-    var header = "<tr><th>" + xlabel + "</th>";
-    var row = "<tr><th>" + zlabel + "</th>";
+function getNumberTableConfigGui(id, dialog, label,
+    zlabel, values, min, max, step, displayMultiplier, callBack, 
+    xlabel, xMin, xMinMin, xMinMax, xMinStep, xMinDisplayMultiplier, xMinCallBack, 
+    xMax, xMaxMin, xMaxMax, xMaxStep, xMaxDisplayMultiplier, xMaxCallBack, 
+    xRes, xResMin, xResMax, xResStep, xResDisplayMultiplier, xResCallBack, 
+    ylabel, yMin, yMinMin, yMinMax, yMinStep, yMinDisplayMultiplier, yMinCallBack, 
+    yMax, yMaxMin, yMaxMax, yMaxStep, yMaxDisplayMultiplier, yMaxCallBack, 
+    yRes, yResMin, yResMax, yResStep, yResDisplayMultiplier, yResCallBack) {
 
-    if(xMinMaxDisplayMultiplier) {
-        xMin *= xMinMaxDisplayMultiplier;
-        xMax *= xMinMaxDisplayMultiplier;
+    var template = "";
+    if(xResCallBack)
+        template += getNumberConfigGui(id + "xres", "X Resolution", xRes, xResMin, xResMax, xResStep, xResDisplayMultiplier, xResCallBack) + "<br>";
+    if(yResCallBack)
+        template += getNumberConfigGui(id + "yres", "Y Resolution", yRes, yResMin, yResMax, yResStep, yResDisplayMultiplier, yResCallBack) + "<br>";
+    
+    if(xMinDisplayMultiplier) {
+        xMin *= xMinDisplayMultiplier;
+    }
+    if(xMaxDisplayMultiplier) {
+        xMin *= xMaxDisplayMultiplier;
+    }
+    if(yMinDisplayMultiplier) {
+        yMin *= yMinDisplayMultiplier;
+    }
+    if(yMaxDisplayMultiplier) {
+        yMin *= yMaxDisplayMultiplier;
     }
 
-    for(var i = 0; i < values.length; i++)
-    {
-        if(i === 0 && xMinCallBack) {
-            header += "<td><input id=\"" + id + "min\" type=\"number\" min=\"" + xMinMin + "\" max=\"" + xMinMax + "\" step=\"" + xMinStep + "\" value=\"" + xMin + "\"/></td>";
-        } else if (i === values.length -1 && xMaxCallBack) {
-            header += "<td><input id=\"" + id + "max\" type=\"number\" min=\"" + xMaxMin + "\" max=\"" + xMaxMax + "\" step=\"" + xMaxStep + "\" value=\"" + xMax + "\"/></td>";
-        } else {
-            header += "<td><input id=\"" + id + "x" + i + "\" type=\"number\" disabled value=\"" + parseFloat(parseFloat(((xMax - xMin) * i / (values.length-1) + xMin).toFixed(6)).toPrecision(7)) + "\"/></td>";
-        }
-        var rowClass = $("#" + id + i).attr("class")
-        if(rowClass)
-            rowClass = " class =\"" + rowClass + "\"";
-        else
-            rowClass = "";
-        var value = values[i];
-        if(displayMultiplier)
-            value *= displayMultiplier;
-        row += "<td><input id=\"" + id + i + "\" type=\"number\" min=\"" + min + "\" max=\"" + max + "\" step=\"" + step + "\" value=\"" + value + "\""+rowClass+"/></td>";
-    }
-    
-    header += "</tr>"
-    row += "</tr>";
-
-    var template = "<table id=\"" + id + "table\" class=\"table2D\">" + header + row + "</table>";
-    
     $(document).off("change."+id);
-    if(callBack) {
-        $.each(values, function(index, value) {
-            $(document).on("change."+id, "#" + id + index, function(){
-                val = parseFloat($(this).val());
-                if(displayMultiplier) 
-                    val /= displayMultiplier;
-                values[index] = val;
-                var selectedCount = 0;
-                $.each(values, function(selectedindex, value) { if ($("#" + id + selectedindex).hasClass("selected")) selectedCount++; });
-                if(selectedCount > 1) {
-                    $.each(values, function(selectedindex, value) {
-                        var thisElement = $("#" + id + selectedindex);
-                        if(thisElement.hasClass("selected"))  {
-                            values[selectedindex] = val;
-                        }
-                    });
+    var row = "";
+    var table = "";
+    for(var y = 0; y < (!yRes? 2 : yRes + 1); y++) {
+        var row = "<tr>"
+        for(x = 0; x < xRes + 1; x++) {
+            if(y === 0) {
+                if(x === 0) {
+                    // X - - -
+                    // - - - -
+                    // - - - -
+                    // - - - -
+                    if(!yRes) {
+                        row += "<th>" + xlabel + "</th>";
+                    } else {
+                        row += "<td></td>";
+                    }
+                } else {
+                    // - X X X
+                    // - - - -
+                    // - - - -
+                    // - - - -
+                    if(x === 1 && xMinCallBack) {
+                        // - X - -
+                        // - - - -
+                        // - - - -
+                        // - - - -
+                        row += "<td><input id=\"" + id + "xmin\" type=\"number\" min=\"" + xMinMin + "\" max=\"" + xMinMax + "\" step=\"" + xMinStep + "\" value=\"" + xMin + "\"/></td>";
+                        
+                        $(document).on("change."+id, "#" + id + "xmin", function(){
+                            val = parseFloat($(this).val());
+                            if(xMinDisplayMultiplier) 
+                                val /= xMinDisplayMultiplier;
+                            xMinCallBack(val);
+                        });
+                    } else if (x === xRes && xMaxCallBack) {
+                        // - - - X
+                        // - - - -
+                        // - - - -
+                        // - - - -
+                        row += "<td><input id=\"" + id + "xmax\" type=\"number\" min=\"" + xMaxMin + "\" max=\"" + xMaxMax + "\" step=\"" + xMaxStep + "\" value=\"" + xMax + "\"/></td>";
+                        
+                        $(document).on("change."+id, "#" + id + "xmax", function(){
+                            val = parseFloat($(this).val());
+                            if(xMaxDisplayMultiplier) 
+                                val /= xMaxDisplayMultiplier;
+                            xMaxCallBack(val);
+                        });
+                    } else {
+                        // - - X -
+                        // - - - -
+                        // - - - -
+                        // - - - -
+                        row += "<td><input id=\"" + id + "x" + x + "\" type=\"number\" disabled value=\"" + parseFloat(parseFloat(((xMax - xMin) * x / (values.length-1) + xMin).toFixed(6)).toPrecision(7)) + "\"/></td>";
+                    }
                 }
-                callBack(values);
-            });
-        });
-    }
+            } else {
+                if(x === 0) {
+                    // - - - -
+                    // X - - -
+                    // X - - -
+                    // X - - -
+                    if(y === 1 && yMinCallBack) {
+                        // - - - -
+                        // X - - -
+                        // - - - -
+                        // - - - -
+                        row += "<td><input id=\"" + id + "ymin\" type=\"number\" min=\"" + yMinMin + "\" max=\"" + yMinMax + "\" step=\"" + yMinStep + "\" value=\"" + yMin + "\"/></td>";
+                        
+                        $(document).on("change."+id, "#" + id + "ymin", function(){
+                            val = parseFloat($(this).val());
+                            if(yMinDisplayMultiplier) 
+                                val /= yMinDisplayMultiplier;
+                            yMinCallBack(val);
+                        });
+                    } else if (x === xRes && xMaxCallBack) {
+                        // - - - -
+                        // - - - -
+                        // - - - -
+                        // X - - -
+                        row += "<td><input id=\"" + id + "ymax\" type=\"number\" min=\"" + yMaxMin + "\" max=\"" + yMaxMax + "\" step=\"" + yMaxStep + "\" value=\"" + yMax + "\"/></td>";
+                        
+                        $(document).on("change."+id, "#" + id + "ymax", function(){
+                            val = parseFloat($(this).val());
+                            if(yMaxDisplayMultiplier) 
+                                val /= yMaxDisplayMultiplier;
+                            yMaxCallBack(val);
+                        });
+                    } else {
+                        // - - - -
+                        // - - - -
+                        // X - - -
+                        // - - - -
+                        if(!yRes) {
+                            row += "<th>" + zlabel + "</th>";
+                        } else {
+                            row += "<td><input id=\"" + id + "y" + y + "\" type=\"number\" disabled value=\"" + parseFloat(parseFloat(((yMax - yMin) * y / (values.length-1) + yMin).toFixed(6)).toPrecision(7)) + "\"/></td>";
+                        }
+                    }
+                } else {
+                    // - - - -
+                    // - X X X
+                    // - X X X
+                    // - X X X
+                    var valuesIndex = (x-1) + xRes * (y-1);
+                    var inputId =  id + valuesIndex;
+                    var rowClass = $("#" + inputId).attr("class")
+                    if(rowClass)
+                        rowClass = " class =\"" + rowClass + "\"";
+                    else
+                        rowClass = "";
+                    var value = values[valuesIndex];
+                    if(displayMultiplier)
+                        value *= displayMultiplier;
+                    row += "<td><input id=\"" + inputId + "\" type=\"number\" min=\"" + min + "\" max=\"" + max + "\" step=\"" + step + "\" value=\"" + value + "\""+rowClass+"/></td>";
 
-    if(xMinCallBack) {
-        $(document).on("change."+id, "#" + id + "min", function(){
-            val = parseFloat($(this).val());
-            if(xMinMaxDisplayMultiplier) 
-                val /= xMinMaxDisplayMultiplier;
-            xMinCallBack(val);
-        });
-    }
+                    if(callBack) {
+                        var registerOnChange = function(valuesIndex) {
+                            $(document).on("change."+id, "#" + inputId, function(){
+                                val = parseFloat($(this).val());
+                                if(displayMultiplier) 
+                                    val /= displayMultiplier;
+                                values[valuesIndex] = val;
+                                var selectedCount = 0;
+                                $.each(values, function(selectedindex, value) { if ($("#" + id + selectedindex).hasClass("selected")) selectedCount++; });
+                                if(selectedCount > 1) {
+                                    $.each(values, function(selectedindex, value) {
+                                        var thisElement = $("#" + id + selectedindex);
+                                        if(thisElement.hasClass("selected"))  {
+                                            values[selectedindex] = val;
+                                        }
+                                    });
+                                }
+                                callBack(values);
+                            });
+                        }
 
-    if(xMaxCallBack) {
-        $(document).on("change."+id, "#" + id + "max", function(){
-            val = parseFloat($(this).val());
-            if(xMinMaxDisplayMultiplier) 
-                val /= xMinMaxDisplayMultiplier;
-            xMaxCallBack(val);
-        });
+                        registerOnChange(valuesIndex);
+                    }
+                }
+            }
+        }
+        row += "</tr>";
+        table += row;
     }
-
+    template += "<table id=\"" + id + "table\" class=\"configtable\">" + table + "</table>";
+    
     $(document).off("mousedown."+id);
     $(document).off("mouseup."+id);
     $(document).off("mousemove."+id);
@@ -106,9 +206,11 @@ function getNumberArrayConfigGui(id, dialog, label, xlabel, zlabel, values, min,
     $(document).off("copy."+id);
     var selecting = false;
     var pointX;
+    var pointY;
     $.each(values, function(index, value) {
         $(document).on("mousedown."+id, "#" + id + index, function(){
             pointX =  $(this).offset().left - $(this).closest("table").offset().left;
+            pointY =  $(this).offset().top - $(this).closest("table").offset().top;
             $.each(values, function(index, value) {
                 $("#" + id + index).removeClass("selected");
             });
@@ -117,9 +219,18 @@ function getNumberArrayConfigGui(id, dialog, label, xlabel, zlabel, values, min,
         });
         $(document).on("copy."+id, "#" + id + index, function(e){
             var copyData = "";
+            var prevRow;
             $.each(values, function(index, value) {
-                if($("#" + id + index).hasClass("selected"))
-                    copyData += "\t" + value;
+                if($("#" + id + index).hasClass("selected")) {
+                    if(!prevRow)
+                        prevRow = index % xRes;
+                    if(prevRow !== index % xRes)
+                        copyData += "\n";
+                    else
+                        copyData += "\t";
+                    copyData += value;
+                }
+                prevRow = index % xRes;
             });
             copyData = copyData.substring(1);
             e.originalEvent.clipboardData.setData('text/plain', copyData);
@@ -127,11 +238,15 @@ function getNumberArrayConfigGui(id, dialog, label, xlabel, zlabel, values, min,
         });
         $(document).on("paste."+id, "#" + id + index, function(e){
             var val = e.originalEvent.clipboardData.getData('text/plain');
-            $.each(val.split("\t"), function(valIndex, val) {
-                if(index + valIndex < values.length) {
-                    $("#" + id + (index + valIndex)).addClass("selected");
-                    values[index + valIndex] = val;
-                }
+            var selectedIndex = index;
+            $.each(val.split("\n"), function(valIndex, val) {
+                $.each(val.split("\t"), function(valIndex, val) {
+                    if(selectedIndex + valIndex < values.length) {
+                        $("#" + id + (selectedIndex + valIndex)).addClass("selected");
+                        values[selectedIndex + valIndex] = val;
+                    }
+                });
+                selectedIndex += xRes;
             });
             callBack(values);
             e.preventDefault();
@@ -158,7 +273,10 @@ function getNumberArrayConfigGui(id, dialog, label, xlabel, zlabel, values, min,
             var thisTable = thisElement.closest("table")
             var relX = e.pageX - thisTable.offset().left;
             var elX = thisElement.offset().left - thisTable.offset().left + (thisElement.width() / 2);
-            if((elX <= relX && elX >= pointX) || (elX >= relX && elX <= pointX) || (pointX == thisElement.offset().left - thisTable.offset().left)) {
+            var relY = e.pageY - thisTable.offset().top;
+            var elY = thisElement.offset().top - thisTable.offset().top + (thisElement.height() / 2);
+            if(((elX <= relX && elX >= pointX) || (elX >= relX && elX <= pointX) || (pointX == thisElement.offset().left - thisTable.offset().left)) &&
+                ((elY <= relY && elY >= pointY) || (elY >= relY && elY <= pointY) || (pointY == thisElement.offset().top - thisTable.offset().top))) {
                 thisElement.addClass("selected");
             } else {
                 thisElement.removeClass("selected");
@@ -277,8 +395,9 @@ function getSelectionConfigGui(id, label, value, selections, callBack, clearCall
     return template;
 }
 
+var ShowAdvanced = false;
 function getIniConfigGui(obj, ini, idPrefix, mainCallBack) {
-    var template = "<span id=\"span" + idPrefix + "\">"
+    var template = "";
 
     var reRender = function() {
         var element = document.activeElement;
@@ -289,10 +408,11 @@ function getIniConfigGui(obj, ini, idPrefix, mainCallBack) {
     }
 
     var callBack = function() {
-        reRender();
         obj.IsDefaultValues = false;
         if(mainCallBack)
             mainCallBack(obj);
+        else
+            reRender();
     }
 
     var firstElement = true;
@@ -306,8 +426,6 @@ function getIniConfigGui(obj, ini, idPrefix, mainCallBack) {
         var elementTemplate = "";
         var hideElement = false;
 
-        elementTemplate += "<span class=\"configElementSpan\" id=\"span" + idPrefix + location + "\">"
-
         var label = iniGetLabel(obj, iniRow);
         var value = iniGetValue(obj, iniRow, iniIndex);
         var min = iniGetMin(obj, iniRow);
@@ -318,13 +436,18 @@ function getIniConfigGui(obj, ini, idPrefix, mainCallBack) {
         {
             switch(iniRow.Type.split("[")[0]) {
                 case "label":
-                    elementTemplate += "<label>" + label + "</label>";
+                    if(ShowAdvanced || !iniRow.Advanced) {
+                        elementTemplate += "<label>" + label + "</label>";
+                    }
                     break;
                 case "bool":
-                    elementTemplate += getCheckBoxConfigGui(idPrefix + location, label, value, function(value){
-                        obj[location] = value;
-                        callBack();
-                    });
+                    if(ShowAdvanced || !iniRow.Advanced) {
+                        elementTemplate += getCheckBoxConfigGui(idPrefix + location, label, value, function(value){
+                            obj[location] = value;
+                            callBack();
+                        });
+                    }
+                    obj[location] = value;
                     break;
                 case "uint8":
                 case "uint16":
@@ -333,62 +456,96 @@ function getIniConfigGui(obj, ini, idPrefix, mainCallBack) {
                 case "int16":
                 case "int32":
                 case "float":
-                    if(iniRow.Type.split("[").length === 2) {
-                        var xMinRef = valueIsReferenceLocation(iniRow.XMin)? ini.find(function(element) { return element.Location === iniRow.XMin}): undefined;
-                        var xMaxRef = valueIsReferenceLocation(iniRow.XMin)? ini.find(function(element) { return element.Location === iniRow.XMax}): undefined;
-                        if(xMinRef.DisplayMultiplier !== xMaxRef.DisplayMultiplier) {
-                            throw "XMin and XMax references do not share the same DisplayMultiplier"
-                        }
-                        elementTemplate += getNumberArrayConfigGui(idPrefix + location, iniRow.Dialog, label, iniRow.XLabel, iniRow.ZLabel, value, min, max, step, iniRow.DisplayMultiplier, function(value){
-                            obj[location] = value;
-                            callBack();
-                            }, parseValueString(obj, iniRow.XMin), xMinRef? xMinRef.Min : undefined, xMinRef? xMinRef.Max : undefined, xMinRef? xMinRef.Step : undefined, xMinRef ? function(value){
-                                obj[iniRow.XMin] = value;
-                                callBack();
-                            } : undefined, 
-                           parseValueString(obj, iniRow.XMax), xMaxRef? xMaxRef.Min : undefined, xMaxRef? xMaxRef.Max : undefined, xMaxRef? xMaxRef.Step : undefined, xMaxRef ? function(value){
-                                obj[iniRow.XMax] = value;
-                                callBack();
-                            } : undefined, xMinRef.DisplayMultiplier);
-                    } else {
-                        var referencedBy = iniReferencedByIniRow(ini, location);
-                        if(referencedBy.length !== 1 || (referencedBy[0].XMin !== location && referencedBy[0].XMax !== location && referencedBy[0].YMin !== location && referencedBy[0].YMax !== location)){
-                            elementTemplate += getNumberConfigGui(idPrefix + location, label, value, min, max, step, iniRow.DisplayMultiplier, function(value){
-                                obj[location] = value;
-                                callBack();
-                            });
+                    if(ShowAdvanced || !iniRow.Advanced) {
+                        if(iniRow.Type.split("[").length === 2) {
+                            var xRes = iniRow.Type.split("[")[1].split("]")[0];
+                            var xMinRef = valueIsReferenceLocation(iniRow.XMin)? ini.find(function(element) { return element.Location === iniRow.XMin}): undefined;
+                            var xMaxRef = valueIsReferenceLocation(iniRow.XMin)? ini.find(function(element) { return element.Location === iniRow.XMax}): undefined;
+                            var xResRef = valueIsReferenceLocation(xRes)? ini.find(function(element) { return element.Location === xRes}): undefined;
+                            if(xMinRef.DisplayMultiplier !== xMaxRef.DisplayMultiplier) {
+                                throw "XMin and XMax references do not share the same DisplayMultiplier"
+                            }
+
+                            elementTemplate += getNumberTableConfigGui(idPrefix + location, iniRow.Dialog, label,
+                                iniRow.ZLabel, value, min, max, step, iniRow.DisplayMultiplier, function(value){
+                                        obj[location] = value;
+                                        callBack();
+                                    }, 
+                                iniRow.XLabel, parseValueString(obj, iniRow.XMin), xMinRef? xMinRef.Min : undefined, xMinRef? xMinRef.Max : undefined, xMinRef? xMinRef.Step : undefined,  xMinRef? xMinRef.DisplayMultiplier : undefined, xMinRef ? function(value){
+                                        obj[iniRow.XMin] = value;
+                                        callBack();
+                                    } : undefined, 
+                                parseValueString(obj, iniRow.XMax), xMaxRef? xMaxRef.Min : undefined, xMaxRef? xMaxRef.Max : undefined, xMaxRef? xMaxRef.Step : undefined, xMaxRef? xMaxRef.DisplayMultiplier : undefined, xMaxRef ? function(value){
+                                        obj[iniRow.XMax] = value;
+                                        callBack();
+                                    } : undefined, 
+                                parseValueString(obj, xRes), xResRef? xResRef.Min : undefined, xResRef? xResRef.Max : undefined, xResRef? xResRef.Step : undefined, xResRef? xResRef.DisplayMultiplier : undefined, xResRef ? function(value){
+                                        obj[xRes] = value;
+                                        callBack();
+                                    } : undefined)
+                            // elementTemplate += getNumberArrayConfigGui(idPrefix + location, iniRow.Dialog, label, iniRow.XLabel, iniRow.ZLabel, value, min, max, step, iniRow.DisplayMultiplier, function(value){
+                            //         obj[location] = value;
+                            //         callBack();
+                            //     }, parseValueString(obj, iniRow.XMin), xMinRef? xMinRef.Min : undefined, xMinRef? xMinRef.Max : undefined, xMinRef? xMinRef.Step : undefined, xMinRef ? function(value){
+                            //         obj[iniRow.XMin] = value;
+                            //         callBack();
+                            //     } : undefined, parseValueString(obj, iniRow.XMax), xMaxRef? xMaxRef.Min : undefined, xMaxRef? xMaxRef.Max : undefined, xMaxRef? xMaxRef.Step : undefined, xMaxRef ? function(value){
+                            //         obj[iniRow.XMax] = value;
+                            //         callBack();
+                            //     } : undefined, xMinRef.DisplayMultiplier, parseValueString(obj, xRes), xResRef? xResRef.Min : undefined, xResRef? xResRef.Max : undefined, xResRef? xResRef.Step : undefined, xResRef? xResRef.DisplayMultiplier : undefined, xResRef ? function(value){
+                            //         obj[xRes] = value;
+                            //         callBack();
+                            //     } : undefined);
                         } else {
-                            hideElement = true;
+                            var referencedBy = iniReferencedByIniRow(ini, location);
+                            if(referencedBy.length !== 1 || (referencedBy[0].XMin !== location && referencedBy[0].XMax !== location && 
+                                                            referencedBy[0].YMin !== location && referencedBy[0].YMax !== location && 
+                                                            (referencedBy[0].Type.split("[").length < 2 || referencedBy[0].Type.split("[")[1].split("]")[0] !== location) && 
+                                                            (referencedBy[0].Type.split("[").length < 3 || referencedBy[0].Type.split("[")[2].split("]")[0] !== location))){
+                                elementTemplate += getNumberConfigGui(idPrefix + location, label, value, min, max, step, iniRow.DisplayMultiplier, function(value){
+                                    obj[location] = value;
+                                    callBack();
+                                });
+                            } else {
+                                hideElement = true;
+                            }
                         }
                     }
                     obj[location] = value;
                     break;
                 case "formula":
-                    elementTemplate += getFormulaConfigGui(idPrefix + location, label, value, min, max, step, function(value) {
-                        obj[location] = value;
-                        callBack();
-                    });
+                    if(ShowAdvanced || !iniRow.Advanced) {
+                        elementTemplate += getFormulaConfigGui(idPrefix + location, label, value, min, max, step, function(value) {
+                            obj[location] = value;
+                            callBack();
+                        });
+                    }
                     obj[location] = value;
                     break;
                 case "iniselection":
-                    elementTemplate += "<span>" + getSelectionConfigGui(idPrefix + location, label, value, iniRow.Selections, function(value) {
-                        obj[location].Index = value;
-                        if(!obj[location].Value || obj[location].Value.IsDefaultValues)
-                            obj[location] = { Index: value, Value: new ConfigGui(obj.iniNameSpace, iniRow.Selections[value].Ini,callBack())}
-                        else
-                            obj[location].Value.ini = iniRow.Selections[value].Ini
-                        callBack();
-                    }, function() {
-                        obj[location].Value = new ConfigGui(obj.iniNameSpace, iniRow.Selections[obj[location].Index].Ini, callBack)
-                        callBack();
-                    }) + "</span>";
+                    if(ShowAdvanced || !iniRow.Advanced) {
+                        elementTemplate += "<span>" + getSelectionConfigGui(idPrefix + location, label, value, iniRow.Selections, function(value) {
+                            obj[location].Index = value;
+                            if(!obj[location].Value || obj[location].Value.IsDefaultValues)
+                                obj[location] = { Index: value, Value: new ConfigGui(obj.iniNameSpace, iniRow.Selections[value].Ini,callBack())}
+                            else
+                                obj[location].Value.ini = iniRow.Selections[value].Ini
+                            callBack();
+                        }, function() {
+                            obj[location].Value = new ConfigGui(obj.iniNameSpace, iniRow.Selections[obj[location].Index].Ini, callBack)
+                            callBack();
+                        }) + "</span>";
+                    }
                     if(!value.Value)
                         obj[location] = { Index: value.Index, Value: new ConfigGui(obj.iniNameSpace, iniRow.Selections[value.Index].Ini, callBack )}
-                    var innerValue;
-                    if(iniRow.WrapInConfigContainer)
-                        elementTemplate += "<br>" + wrapInConfigContainerGui("", obj[location].Value.GetHtml());
-                    else
-                        elementTemplate += obj[location].Value.GetHtml();
+                        var innerHtml = obj[location].Value.GetHtml();
+                    
+                    if(innerHtml != "") {
+                        if(iniRow.WrapInConfigContainer)
+                            elementTemplate += "<br>" + wrapInConfigContainerGui("", innerHtml);
+                        else
+                            elementTemplate += innerHtml;
+                    }
                     break;
                 default:
                     break;
@@ -397,37 +554,43 @@ function getIniConfigGui(obj, ini, idPrefix, mainCallBack) {
             if(!obj[location])
                 obj[location] = new ConfigGui(obj.iniNameSpace, iniRow.Ini,callBack );
 
-            if(label) {
-                if(iniRow.SameLine) 
-                    elementTemplate = "<label for=\"span" + idPrefix + location + "\" class=\"subConfigSameLineLabel\">" + label + ":</label>" + elementTemplate;
+            var innerHtml = obj[location].GetHtml();
+            if(innerHtml != "") {
+                if(label) {
+                    if(iniRow.SameLine) 
+                        elementTemplate = "<label for=\"span" + idPrefix + location + "\" class=\"subConfigSameLineLabel\">" + label + ":</label>" + elementTemplate;
+                    else
+                        elementTemplate = "<label for=\"span" + idPrefix + location + "\" class=\"subConfigLabel\">" + label + "</label><span class=\"sameLineSpacer\"></span>" + elementTemplate;
+                }
+                if(iniRow.WrapInConfigContainer)
+                    elementTemplate += wrapInConfigContainerGui(obj[location].GUID, innerHtml);
                 else
-                    elementTemplate = "<label for=\"span" + idPrefix + location + "\" class=\"subConfigLabel\">" + label + "</label><span class=\"sameLineSpacer\"></span>" + elementTemplate;
-            }
-            if(iniRow.WrapInConfigContainer)
-                elementTemplate += wrapInConfigContainerGui(obj[location].GUID, obj[location].GetHtml());
-            else
-                elementTemplate += obj[location].GetHtml();
-        }
-
-        elementTemplate += "</span>";
-
-        if(!firstElement) {
-            if(iniRow.SameLine) {
-                elementTemplate = "<span class=\"sameLineSpacer\"></span>" + elementTemplate;
-            } else {
-                elementTemplate = "<br>" + elementTemplate;
+                    elementTemplate += innerHtml;
             }
         }
+        if(elementTemplate != "") {
+            elementTemplate = "<span class=\"configElementSpan\" id=\"span" + idPrefix + location + "\">" + elementTemplate + "</span>";
 
-        if(!hideElement) {
-            firstElement = false;
-            template += elementTemplate;
+            if(!firstElement) {
+                if(iniRow.SameLine) {
+                    elementTemplate = "<span class=\"sameLineSpacer\"></span>" + elementTemplate;
+                } else {
+                    elementTemplate = "<br>" + elementTemplate;
+                }
+            }
+
+            if(!hideElement) {
+                firstElement = false;
+                template += elementTemplate;
+            }
         }
     }
 
     $.each(ini, addIniRow);
     
-    template += "</span>";
+    if(template != "") {
+        template = "<span id=\"span" + idPrefix + "\" class=\"configElementSpan\">" + template + "</span>";
+    }
 
     return template;
 }

@@ -11,6 +11,11 @@
         <script type="text/javascript">
             $(document).ready(function() {
                 var b = new ConfigGui(IOServicesIni);
+                $('#chkAdvanced').change(function(){
+                    ShowAdvanced = this.checked;
+                                        
+                    $('#workspace').html(wrapInConfigContainerGui("", b.GetHtml()));
+                });
                 $('#workspace').html(wrapInConfigContainerGui("", b.GetHtml()));
                 $("#btnNew").click(function(){
                     b = new ConfigGui(b.iniNameSpace);
@@ -66,6 +71,7 @@
         <input id="btnSaveIni" type="button" class="button" value="Save Ini">
         <label for="btnLoadIni" class="button">Open Ini</label>
         <input id="btnLoadIni" type="file" style="display: none;">
+        <input id="chkAdvanced" type="checkbox">Advanced</input>
         <div id="workspace"></div>
     </body>
 </html>

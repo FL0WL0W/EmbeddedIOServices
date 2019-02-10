@@ -42,27 +42,27 @@
     border-color: #666666;
 }
 
-.table2D {
+.configtable {
     border-color: #666666;
     border-spacing: 0px;
     border: 1px;
     display: inline-block;
     border-style: solid;
 }
-.table2D th {
+.configtable th {
     padding: 2px;
     border: 1px;
     border-color: #666666;
     border-style: solid;
     white-space: nowrap;
 }
-.table2D td {
+.configtable td {
     padding: 0px;
     border: 1px;
     border-color: #666666;
     border-style: solid;
 }
-.table2D input[type="number"] {
+.configtable input[type="number"] {
     width: 65px;
     border-style: none;
     margin: 0px;
