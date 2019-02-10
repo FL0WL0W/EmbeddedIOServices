@@ -22,7 +22,7 @@
                     $('#workspace').html(wrapInConfigContainerGui("", b.GetHtml()));
                 });
                 $("#btnSave").click(function(){
-                    downloadBin(b.GetArrayBuffer(), "test.bin");
+                    downloadBin(b.GetArrayBuffer(), "config.bin");
                 });
                 $("#btnLoad").change(function(evt){
                     b = new ConfigGui(b.iniNameSpace);
@@ -42,7 +42,7 @@
                     test.readAsArrayBuffer(evt.target.files[0]);
                 });
                 $("#btnSaveIni").click(function(){
-                    downloadObject(b.iniNameSpace, "test.ini");
+                    downloadObject(b.iniNameSpace, "config.ini");
                 });
                 $("#btnLoadIni").change(function(evt){
                     var test = new FileReader();
