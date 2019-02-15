@@ -1,16 +1,15 @@
 <html>
     <head>
-        <script src="/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
-        <script src="/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+        <script src="jquery-3.3.1.min.js"></script>
         <script src="utils.js"></script>
         <script src="Config.js"></script>
         <script src="IOServicesConfig.js"></script>
-        <script src="ConfigGuiModules/ConfigGuiModules.js"></script>
-        <link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+        <script src="TransmissionControlServicesConfig.js"></script>
+        <script src="ConfigGui/ConfigGui.js"></script>
         <link rel = "stylesheet" type = "text/css" href = "style.css" />
         <script type="text/javascript">
             $(document).ready(function() {
-                var b = new ConfigGui(IOServicesIni);
+                var b = new ConfigGui(undefined, IOServicesIni);
                 $('#chkAdvanced').change(function(){
                     ShowAdvanced = this.checked;
                                         
@@ -25,7 +24,7 @@
                     downloadBin(b.GetArrayBuffer(), "config.bin");
                 });
                 $("#btnLoad").change(function(evt){
-                    b = new ConfigGui(b.iniNameSpace);
+                    b = new ConfigGui(undefined, b.ConfigNameSpace, b.ConfigName);
                     var test = new FileReader();
 
                     test.onload = function(evt) {
@@ -42,7 +41,7 @@
                     test.readAsArrayBuffer(evt.target.files[0]);
                 });
                 $("#btnSaveIni").click(function(){
-                    downloadObject(b.iniNameSpace, "config.json");
+                    downloadObject(b.GetConfig(), "config.json");
                 });
                 $("#btnLoadIni").change(function(evt){
                     var test = new FileReader();
@@ -54,7 +53,7 @@
                             return;
                         }
 
-                        b = new ConfigGui(JSON.parse(evt.target.result));
+                        b = new ConfigGui(JSON.parse(evt.target.result), IOServicesIni);
                         $('#workspace').html(wrapInConfigContainerGui("", b.GetHtml()));
                     };
                     
