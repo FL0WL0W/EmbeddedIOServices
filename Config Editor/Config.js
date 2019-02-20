@@ -1,37 +1,30 @@
 class Config {
-    constructor(obj, configNameSpace, configName, parent) {
+    constructor(obj, configNameSpace, parent) {
+        if(obj && obj.ConfigName) {
+            Object.assign(this, configNameSpace[obj.ConfigName]);
+        } else {
+            Object.assign(this, configNameSpace["Main"]);
+        }
         if(obj)
             Object.assign(this, obj);
-        this.Parent = parent;
 
+        this.Parent = parent;
         this.ConfigNameSpace = configNameSpace;
 
-        if(!this.ConfigName) {
-            this.ConfigName = configName;
-        }
+        for(var variableRowIndex in this.Variables) {
+            var variableRow = this.Variables[variableRowIndex];
+            var variableRowKey = Object.keys(variableRow)[0];
+            var variableRowObj = this[variableRowKey];
 
-        if(!this.ConfigName) {
-            this.ConfigName = "Main";
-        }
+            if(!variableRowObj)
+                variableRowObj = variableRow[variableRowKey];
 
-        if(!this.Config) {
-            this.Config = this.ConfigNameSpace[this.ConfigName];
-        }
-
-        for(var configRowIndex in this.Config) {
-            var configRow = this.Config[configRowIndex];
-            var configRowKey = Object.keys(configRow)[0];
-            var configRowObj = this[configRowKey];
-
-            if(!configRowObj)
-                configRowObj = configRow[configRowKey];
-
-            if(configRowObj.XResolution) {
-                this[configRowKey] = new ConfigNumberTable(configRowObj, this);
-            } else if(configRowObj.Type) {
-                if(configRowObj.Type)
+            if(variableRowObj.XResolution) {
+                this[variableRowKey] = new ConfigNumberTable(variableRowObj, this);
+            } else if(variableRowObj.Type) {
+                if(variableRowObj.Type)
                 {
-                    switch(configRowObj.Type) {
+                    switch(variableRowObj.Type) {
                         case "uint8":
                         case "uint16":
                         case "uint32":
@@ -41,77 +34,193 @@ class Config {
                         case "int32":
                         case "int64":
                         case "float":
-                            this[configRowKey] = new ConfigNumber(configRowObj, this);
+                            this[variableRowKey] = new ConfigNumber(variableRowObj, this);
                             break;
                         case "formula":
-                            this[configRowKey] = new ConfigFormula(configRowObj, this);
+                            this[variableRowKey] = new ConfigFormula(variableRowObj, this);
                             break;
                         case "bool":
-                            this[configRowKey] = new ConfigBoolean(configRowObj, this);
+                            this[variableRowKey] = new ConfigBoolean(variableRowObj, this);
                             break;
                     }
                 }
-            } else if (configRowObj.ConfigName) {
-                if(!configRowObj.Array) {
-                    this[configRowKey] = new Config(configRowObj, this.ConfigNameSpace, undefined, this);
+            } else if (variableRowObj.ConfigName || variableRowObj.Variables) {
+                if(!variableRowObj.Array) {
+                    this[variableRowKey] = new Config(variableRowObj, this.ConfigNameSpace, this);
                 } else {
-                    this[configRowKey] = new ConfigArray(configRowObj, this.ConfigNameSpace, this);
+                    this[variableRowKey] = new ConfigArray(variableRowObj, this.ConfigNameSpace, this);
                 }
-            } else if (configRowObj.Selections) {
-                this[configRowKey] = new ConfigSelection(configRowObj, this.ConfigNameSpace, this);
+            } else if (variableRowObj.Selections) {
+                this[variableRowKey] = new ConfigSelection(variableRowObj, this.ConfigNameSpace, this);
             }
         }
     }
     GetArrayBuffer() {
         var arrayBuffer = new ArrayBuffer();
-        for(var configRowIndex in this.Config) {
-            var configRow = this.Config[configRowIndex];
-            var configRowKey = Object.keys(configRow)[0];
-            var configRowObj = this[configRowKey];
+        for(var variableRowIndex in this.Variables) {
+            var variableRow = this.Variables[variableRowIndex];
+            var variableRowKey = Object.keys(variableRow)[0];
+            var variableRowObj = this[variableRowKey];
 
-            arrayBuffer = arrayBuffer.concatArray(configRowObj.GetArrayBuffer());
+            if(this.Size) {// we are in a statically mapped area
+                var offset = variableRowObj.Offset;
+                if(!offset)
+                    throw "Config No offset specified";
+
+                var subArrayBuffer = variableRowObj.GetArrayBuffer();
+
+                if(variableRowObj.BitOffset || variableRowObj.BitSize) {
+                    var bitSize = variableRowObj.BitSize;
+                    if(!bitSize) {
+                        if(variableRowObj instanceof ConfigBoolean)
+                            bitSize = 1;
+                        else
+                            bitSize = subArrayBuffer.length * 8;
+                    }
+                    
+                    var bitOffset = variableRowObj.BitOffset;
+                    if(!bitOffset)
+                        bitOffset = 0;
+
+                    var bitMask = (0xFFFFFFFFFFFFFFFF >> (64 - bitSize)) << bitOffset;
+
+                    switch(subArrayBuffer.length){
+                        case 1:
+                            subArrayBuffer = new Uint8Array( [ ( new Uint8Array(subArrayBuffer)[0] & bitMask ) | ( new Uint8Array(arrayBuffer.slice(offset, 1))[0] & ~bitMask ) ] ).buffer;
+                            break;
+                        case 2:
+                            subArrayBuffer = new Uint16Array( [ ( new Uint16Array(subArrayBuffer)[0] & bitMask ) | ( new Uint16Array(arrayBuffer.slice(offset, 2))[0] & ~bitMask ) ] ).buffer;
+                            break;
+                        case 4:
+                            subArrayBuffer = new Uint32Array( [ ( new Uint32Array(subArrayBuffer)[0] & bitMask ) | ( new Uint32Array(arrayBuffer.slice(offset, 4))[0] & ~bitMask ) ] ).buffer;
+                            break;
+                        case 8:
+                            subArrayBuffer = new Uint64Array( [ ( new Uint64Array(subArrayBuffer)[0] & bitMask ) | ( new Uint64Array(arrayBuffer.slice(offset, 8))[0] & ~bitMask ) ] ).buffer;
+                            break;
+                        default:
+                            throw "Config Object cannot be bit offset or sized"
+                    }                
+                }
+
+                arrayBuffer = arrayBuffer.slice(0, offset).concatArray(subArrayBuffer).concatArray(arrayBuffer.slice(offset + subArrayBuffer.byteLength));
+            } else {
+                arrayBuffer = arrayBuffer.concatArray(variableRowObj.GetArrayBuffer());
+            }
         }
         return arrayBuffer;
     }
     SetArrayBuffer(arrayBuffer) {
         var size = 0;
 
-        for(var configRowIndex in this.Config) {
-            var configRow = this.Config[configRowIndex];
-            var configRowKey = Object.keys(configRow)[0];
-            var configRowObj = this[configRowKey];
+        if(this.Size) {// we are in a statically mapped area
+            size = this.Size;
+        }
 
-            size += configRowObj.SetArrayBuffer(arrayBuffer.slice(size));
+        for(var variableRowIndex in this.Variables) {
+            var variableRow = this.Variables[variableRowIndex];
+            var variableRowKey = Object.keys(variableRow)[0];
+            var variableRowObj = this[variableRowKey];
+
+            if(this.Size) {// we are in a statically mapped area
+                var offset = variableRowObj.Offset;
+                if(!offset)
+                    throw "Config No offset specified";
+                
+                var subArrayBuffer = arrayBuffer.slice(offset);
+
+                if(variableRowObj.BitOffset || variableRowObj.BitSize) {
+                    var bitSize = variableRowObj.BitSize;
+                    var byteSize = 1;
+                    if(!bitSize) {
+                        if(variableRowObj instanceof ConfigBoolean)
+                            bitSize = 1;
+                        else {
+                            if(variableRowObj.Type) {
+                                switch(variableRowObj.Type) {
+                                    case "uint8":
+                                    case "int8":
+                                        bitSize = 8;
+                                        break;
+                                    case "uint16":
+                                    case "int16":
+                                        bitSize = 16;
+                                        byteSize = 2;
+                                        break;
+                                    case "uint32":
+                                    case "int32":
+                                        bitSize = 32;
+                                        byteSize = 4;
+                                        break;
+                                    case "uint64":
+                                    case "int64":
+                                    case "float":
+                                        bitSize = 64;
+                                        byteSize = 8;
+                                }
+                            } else {
+                                throw "Config Object cannot be bit offset or sized"
+                            }
+                        }
+                    }
+                    
+                    var bitOffset = variableRowObj.BitOffset;
+                    if(!bitOffset)
+                        bitOffset = 0;
+
+                    var bitMask = (0xFFFFFFFFFFFFFFFF >> (64 - bitSize)) << bitOffset;
+
+                    switch(byteSize){
+                        case 1:
+                            subArrayBuffer = new Uint8Array( [ ( new Uint8Array(subArrayBuffer.slice(0,1))[0] & bitMask ) >> bitOffset ] ).buffer;
+                            break;
+                        case 2:
+                            subArrayBuffer = new Uint16Array( [ ( new Uint16Array(subArrayBuffer.slice(0,2))[0] & bitMask ) >> bitOffset ] ).buffer;
+                            break;
+                        case 4:
+                            subArrayBuffer = new Uint32Array( [ ( new Uint32Array(subArrayBuffer.slice(0,4))[0] & bitMask ) >> bitOffset ] ).buffer;
+                            break;
+                        case 8:
+                            subArrayBuffer = new Uint64Array( [ ( new Uint64Array(subArrayBuffer.slice(0,8))[0] & bitMask ) >> bitOffset ] ).buffer;
+                            break;
+                        default:
+                            throw "Config Object cannot be bit offset or sized"
+                    }                
+                }
+
+                variableRowObj.SetArrayBuffer(subArrayBuffer);
+            } else {
+                size += variableRowObj.SetArrayBuffer(arrayBuffer.slice(size));
+            }
         }
 
         return size;
     }
     GetConfig() {
-        var returnConfig = []
-        for(var configRowIndex in this.Config) {
-            var configRow = this.Config[configRowIndex];
-            var configRowKey = Object.keys(configRow)[0];
-            var configRowObj = this[configRowKey];
+        var returnVariables = []
+        for(var variableRowIndex in this.Variables) {
+            var variableRow = this.Variables[variableRowIndex];
+            var variableRowKey = Object.keys(variableRow)[0];
+            var variableRowObj = this[variableRowKey];
 
-            if(!configRowObj)
+            if(!variableRowObj)
                 throw "Config not initialized";
                 
-            var configRowValue = configRowObj.GetConfig();
+            var variableRowValue = variableRowObj.GetConfig();
 
-            var returnConfigRow = {};
-            returnConfigRow[configRowKey] = configRowValue;
+            var returnVariableRow = {};
+            returnVariableRow[variableRowKey] = variableRowValue;
             
-            returnConfig.push(returnConfigRow);
+            returnVariables.push(returnVariableRow);
         }
-        this.Config = returnConfig;
+        this.Variables = returnVariables;
         
         return JSON.parse(JSON.stringify(this, function(key, value) {   
             if(key === "ConfigNameSpace" || key === "Parent")
                 return undefined;         
-            for(var configRowIndex in this.Config) {
-                var configRow = this.Config[configRowIndex];
+            for(var variableRowIndex in this.Variables) {
+                var variableRow = this.Variables[variableRowIndex];
 
-                if(key === Object.keys(configRow)[0]) {
+                if(key === Object.keys(variableRow)[0]) {
                     return undefined;
                 }
             }
@@ -136,7 +245,7 @@ class ConfigSelection {
         }
 
         if(!this.Value) {
-            this.Value = new Config(this.Selections[this.Index], this.ConfigNameSpace, undefined, this.Parent);
+            this.Value = new Config(this.Selections[this.Index], this.ConfigNameSpace, this);
         }
     }
     GetArrayBuffer() {
@@ -144,14 +253,14 @@ class ConfigSelection {
     }
     SetArrayBuffer(arrayBuffer) {
         var thisClass = this;
-        if( !(this.Value.Config[0].Type === "uint8" && new Uint8Array(arrayBuffer.slice(0, 1))[0] === this.Value.Config[0].Value) &&
-            !(this.Value.Config[0].Type === "uint16" && new Uint16Array(arrayBuffer.slice(0, 16))[0] === this.Value.Config[0].Value)) {
+        if( !(this.Value.Variables[0].Type === "uint8" && new Uint8Array(arrayBuffer.slice(0, 1))[0] === this.Value.Variables[0].Value) &&
+            !(this.Value.Variables[0].Type === "uint16" && new Uint16Array(arrayBuffer.slice(0, 16))[0] === this.Value.Variables[0].Value)) {
 
             $.each(this.Selections, function(selectionIndex, selectionValueObj) {
-                var selectionValue = new Config(selectionValueObj, thisClass.ConfigNameSpace, undefined, this.Parent);
+                var selectionValue = new Config(selectionValueObj, thisClass.ConfigNameSpace, this.Parent);
 
-                if( (selectionValue.Config[0].Type === "uint8" && new Uint8Array(arrayBuffer.slice(0, 1))[0] === selectionValue.Config[0].Value) ||
-                    (selectionValue.Config[0].Type === "uint16" && new Uint16Array(arrayBuffer.slice(0, 16))[0] === selectionValue.Config[0].Value)) {
+                if( (selectionValue.Variables[0].Type === "uint8" && new Uint8Array(arrayBuffer.slice(0, 1))[0] === selectionValue.Variables[0].Value) ||
+                    (selectionValue.Variables[0].Type === "uint16" && new Uint16Array(arrayBuffer.slice(0, 16))[0] === selectionValue.Variables[0].Value)) {
                     thisClass.Index = selectionIndex;
                     thisClass.Value = selectionValue;
                 }
@@ -237,23 +346,25 @@ class ConfigNumber {
                 this.Value = this.Min;
             else
                 this.Value = 0;
+        if(!this.ValueMultiplier)
+            this.Value = 1;
     }
     GetArrayBuffer() {
         switch(this.Type) {
             case "uint8":
-                return new Uint8Array([this.Value]).buffer;
+                return new Uint8Array([this.Value]).buffer * this.ValueMultiplier;
             case "uint16":
-                return new Uint16Array([this.Value]).buffer;
+                return new Uint16Array([this.Value]).buffer * this.ValueMultiplier;
             case "uint32":
-                return new Uint32Array([this.Value]).buffer;
+                return new Uint32Array([this.Value]).buffer * this.ValueMultiplier;
             case "int8":
-                return new Int8Array([this.Value]).buffer;
+                return new Int8Array([this.Value]).buffer * this.ValueMultiplier;
             case "int16":
-                return new Int16Array([this.Value]).buffer;
+                return new Int16Array([this.Value]).buffer * this.ValueMultiplier;
             case "int32":
-                return new Int32Array([this.Value]).buffer;
+                return new Int32Array([this.Value]).buffer * this.ValueMultiplier;
             case "float":
-                return new Float32Array([this.Value]).buffer;
+                return new Float32Array([this.Value]).buffer * this.ValueMultiplier;
         }
     }
     SetArrayBuffer(arrayBuffer) {
@@ -286,6 +397,8 @@ class ConfigNumber {
                 this.Value = new Float32Array(arrayBuffer.slice(0,4))[0];
                 return 4;
         }
+
+        this.Value /= this.ValueMultiplier;
     }
     GetConfig() {
         return JSON.parse(JSON.stringify(this, function(key, value) {   
@@ -304,10 +417,10 @@ class ConfigBoolean {
             this.Value = false;
     }
     GetArrayBuffer() {
-        return new Uint8Array([this.Value]).buffer;
+        return new Uint8Array([this.Value & 0x01]).buffer;
     }
     SetArrayBuffer(arrayBuffer) {
-        this.Value = (new Uint8Array(arrayBuffer.slice(0,1))[0] === 1);
+        this.Value = new Uint8Array(arrayBuffer)[0] & 0x01;
         return 1;
     }
     GetConfig() {
@@ -393,31 +506,39 @@ class ConfigNumberTable {
                 thisClass.Value[index] = val;
             });
         }
+        if(!this.ValueMultiplier)
+            this.Value = 1;
     }
     GetTableArrayLength() {
         return GetReferenceByNumberOrReference(this.Parent, this.XResolution, 1).Value * GetReferenceByNumberOrReference(this.Parent, this.YResolution, 1).Value;
     }
     GetArrayBuffer() {
+        var value = Array.from(this.Value);
+
+        for(var i = 0; i < value.length; i++) {
+            value[i] *= this.ValueMultiplier
+        }
+
         switch(this.Type) {
             case "bool":
             case "uint8":
-                return Uint8Array.from(this.Value).buffer;
+                return Uint8Array.from(value).buffer;
             case "uint16":
-                return Uint16Array.from(this.Value).buffer;
+                return Uint16Array.from(value).buffer;
             case "uint32":
-                return Uint32Array.from(this.Value).buffer;
+                return Uint32Array.from(value).buffer;
             case "uint64":
-                return Uint64Array.from(this.Value).buffer;
+                return Uint64Array.from(value).buffer;
             case "int8":
-                return Int8Array.from(this.Value).buffer;
+                return Int8Array.from(value).buffer;
             case "int16":
-                return Int16Array.from(this.Value).buffer;
+                return Int16Array.from(value).buffer;
             case "int32":
-                return Int32Array.from(this.Value).buffer;
+                return Int32Array.from(value).buffer;
             case "int64":
-                return Int64Array.from(this.Value).buffer;
+                return Int64Array.from(value).buffer;
             case "float":
-                return Float32Array.from(this.Value).buffer;
+                return Float32Array.from(value).buffer;
         }
 
         throw "ConfigNumberTable Type Invalid";
@@ -429,34 +550,48 @@ class ConfigNumberTable {
             case "bool":
             case "uint8":
                 this.Value = Array.from(new Uint8Array(arrayBuffer.slice(0, arrayLen)));
-                return arrayLen;
+                break;
             case "uint16":
                 this.Value = Array.from(new Uint16Array(arrayBuffer.slice(0, 2 * arrayLen)));
-                return 2 * arrayLen;
+                arrayLen = 2 * arrayLen;
+                break;
             case "uint32":
                 this.Value = Array.from(new Uint32Array(arrayBuffer.slice(0, 4 * arrayLen)));
-                return 4 * arrayLen;
+                arrayLen = 4 * arrayLen;
+                break;
             case "uint64":
                 this.Value = Array.from(new Uint64Array(arrayBuffer.slice(0, 4 * arrayLen)));
-                return 8 * arrayLen;
+                arrayLen = 8 * arrayLen;
+                break;
             case "int8":
                 this.Value = Array.from(new Int8Array(arrayBuffer.slice(0, arrayLen)));
-                return arrayLen;
+                arrayLen = arrayLen;
+                break;
             case "int16":
                 this.Value = Array.from(new Int16Array(arrayBuffer.slice(0, 2 * arrayLen)));
-                return 2 * arrayLen;
+                arrayLen = 2 * arrayLen;
+                break;
             case "int32":
                 this.Value = Array.from(new Int32Array(arrayBuffer.slice(0, 4 * arrayLen)));
-                return 4 * arrayLen;
+                arrayLen = 4 * arrayLen;
+                break;
             case "int64":
                 this.Value = Array.from(new Int64Array(arrayBuffer.slice(0, 4 * arrayLen)));
-                return 8 * arrayLen;
+                arrayLen = 8 * arrayLen;
+                break;
             case "float":
                 this.Value = Array.from(new Float32Array(arrayBuffer.slice(0, 4 * arrayLen)));
-                return 4 * arrayLen;
+                arrayLen = 4 * arrayLen;
+                break;
+            default: 
+        throw "ConfigNumberTable Type Invalid";
         }
 
-        throw "ConfigNumberTable Type Invalid";
+        for(var i = 0; i < this.Value.length; i++) {
+            this.Value[i] /= this.ValueMultiplier
+        }
+
+        return arrayLen;
     }
     GetConfig() {
         return JSON.parse(JSON.stringify(this, function(key, value) {   
@@ -492,11 +627,22 @@ class ConfigFormula {
         return GetReferenceByNumberOrReference(this.Parent, this.Degree, 0).Value + 1;
     }
     GetArrayBuffer() {
-        return Float32Array.from(this.Value);
+        var value = Array.from(this.Value);
+
+        for(var i = 0; i < value.length; i++) {
+            value[i] *= this.ValueMultiplier
+        }
+
+        return Float32Array.from(value);
     }
     SetArrayBuffer(arrayBuffer) {
         var arrayLen = this.GetTableArrayLength();
         this.Value = Array.from(new Float32Array(arrayBuffer.slice(0, 4 * arrayLen)));
+        
+        for(var i = 0; i < this.Value.length; i++) {
+            this.Value[i] /= this.ValueMultiplier
+        }
+        
         return 4 * arrayLen;
     }
     GetConfig() {
@@ -529,12 +675,17 @@ class ConfigArray {
                 Object.assign(subConfig, this);
                 delete subConfig.Array;
                 delete subConfig.Value;
-                subConfig.Label = subConfig.Label + "[" + i + "]";
+                delete subConfig.Labels;
+                if(this.Labels && i < this.Labels.length) {
+                    subConfig.Label = this.Labels[i];
+                } else {
+                    subConfig.Label = this.Label + "[" + i + "]";
+                }
 
                 if(i < prevValueLength)
                     this.Value[i] = prevValue[i];
                 else
-                    this.Value[i] = new Config(subConfig, this.ConfigNameSpace, undefined, this.Parent);
+                    this.Value[i] = new Config(subConfig, this.ConfigNameSpace, this.Parent);
             }
         }
     }
@@ -565,8 +716,14 @@ class ConfigArray {
                 Object.assign(subConfig, this);
                 delete subConfig.Array;
                 delete subConfig.Value;
-                subConfig.Label = subConfig.Label + "[" + i + "]";
-                this.Value[i] = new Config(subConfig, this.ConfigNameSpace, undefined, this.Parent);
+                delete subConfig.Labels;
+                if(this.Labels && i < this.Labels.length) {
+                    subConfig.Label = this.Labels[i];
+                } else {
+                    subConfig.Label = this.Label + "[" + i + "]";
+                }
+
+                this.Value[i] = new Config(subConfig, this.ConfigNameSpace, this.Parent);
                 size += this.Value[i].SetArrayBuffer(arrayBuffer.slice(size));
             } else {
                 this.Value[i] = prevValue[i];

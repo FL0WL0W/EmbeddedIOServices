@@ -4,12 +4,11 @@
         <script src="utils.js"></script>
         <script src="Config.js"></script>
         <script src="IOServicesConfig.js"></script>
-        <script src="TransmissionControlServicesConfig.js"></script>
         <script src="ConfigGui/ConfigGui.js"></script>
         <link rel = "stylesheet" type = "text/css" href = "style.css" />
         <script type="text/javascript">
             $(document).ready(function() {
-                var b = new ConfigGui(undefined, TransmissionControlServicesIni);
+                var b = new ConfigGui(undefined, IOServicesIni);
                 $('#chkAdvanced').change(function(){
                     ShowAdvanced = this.checked;
                                         
@@ -17,14 +16,14 @@
                 });
                 $('#workspace').html(wrapInConfigContainerGui("", b.GetHtml()));
                 $("#btnNew").click(function(){
-                    b = new ConfigGui(b.iniNameSpace);
+                    b = new ConfigGui(undefined, b.ConfigNameSpace);
                     $('#workspace').html(wrapInConfigContainerGui("", b.GetHtml()));
                 });
                 $("#btnSave").click(function(){
                     downloadBin(b.GetArrayBuffer(), "config.bin");
                 });
                 $("#btnLoad").change(function(evt){
-                    b = new ConfigGui(undefined, b.ConfigNameSpace, b.ConfigName);
+                    b = new ConfigGui(undefined, b.ConfigNameSpace);
                     var test = new FileReader();
 
                     test.onload = function(evt) {
@@ -53,7 +52,7 @@
                             return;
                         }
 
-                        b = new ConfigGui(JSON.parse(evt.target.result), IOServicesIni);
+                        b = new ConfigGui(JSON.parse(evt.target.result), b.ConfigNameSpace);
                         $('#workspace').html(wrapInConfigContainerGui("", b.GetHtml()));
                     };
                     
