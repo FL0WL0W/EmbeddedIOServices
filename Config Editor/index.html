@@ -3,12 +3,13 @@
         <script src="jquery-3.3.1.min.js"></script>
         <script src="utils.js"></script>
         <script src="Config.js"></script>
+        <script src="Units.js"></script>
         <script src="IOServicesConfig.js"></script>
         <script src="ConfigGui/ConfigGui.js"></script>
         <link rel = "stylesheet" type = "text/css" href = "style.css" />
         <script type="text/javascript">
             $(document).ready(function() {
-                var b = new ConfigGui(undefined, IOServicesIni);
+                var b = new ConfigGui(undefined, IOServicesConfig);
                 $('#chkAdvanced').change(function(){
                     ShowAdvanced = this.checked;
                                         
@@ -40,7 +41,7 @@
                     test.readAsArrayBuffer(evt.target.files[0]);
                 });
                 $("#btnSaveIni").click(function(){
-                    downloadObject(b.GetConfig(), "config.json");
+                    downloadObject({ configNameSpace: b.ConfigNameSpace, obj: b.GetConfig() }, "config.json");
                 });
                 $("#btnLoadIni").change(function(evt){
                     var test = new FileReader();
@@ -52,7 +53,9 @@
                             return;
                         }
 
-                        b = new ConfigGui(JSON.parse(evt.target.result), b.ConfigNameSpace);
+                        var ini = JSON.parse(evt.target.result);
+
+                        b = new ConfigGui(ini.obj, ini.configNameSpace);
                         $('#workspace').html(wrapInConfigContainerGui("", b.GetHtml()));
                     };
                     
@@ -69,7 +72,6 @@
         <input id="btnSaveIni" type="button" class="button" value="Save Ini">
         <label for="btnLoadIni" class="button">Open Ini</label>
         <input id="btnLoadIni" type="file" style="display: none;">
-        <input id="chkAdvanced" type="checkbox">Advanced</input>
         <div id="workspace"></div>
     </body>
 </html>
