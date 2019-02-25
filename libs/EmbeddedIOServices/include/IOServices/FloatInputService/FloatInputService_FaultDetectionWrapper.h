@@ -15,7 +15,7 @@ namespace IOServices
 		}
 		
 	public:
-		unsigned int Size()
+		unsigned int Size() const
 		{
 			return sizeof(FloatInputService_FaultDetectionWrapperConfig);
 		}

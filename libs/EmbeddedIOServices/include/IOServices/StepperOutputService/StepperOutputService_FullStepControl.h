@@ -17,7 +17,7 @@ namespace IOServices
 		}
 		
 	public:
-		unsigned int Size()
+		unsigned int Size() const
 		{
 			return sizeof(StepperOutputService_FullStepControlConfig);
 		}

@@ -19,7 +19,7 @@ namespace IOServices
 		}
 		
 	public:
-		unsigned int Size()
+		unsigned int Size() const
 		{
 			return sizeof(FloatOutputService_PwmInterpolatedTableConfig) +
 				(sizeof(float) * Resolution);
