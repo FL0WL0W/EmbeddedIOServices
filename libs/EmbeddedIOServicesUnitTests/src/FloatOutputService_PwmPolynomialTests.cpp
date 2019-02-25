@@ -23,12 +23,12 @@ namespace UnitTests
 		{			
 			_hardwareAbstractionCollection.TimerService = &_timerService;
 			_hardwareAbstractionCollection.PwmService = &_pwmService;
-			FloatOutputService_PwmPolynomialConfig<4> *pwmConfig = FloatOutputService_PwmPolynomialConfig<4>::Cast(malloc(sizeof(FloatOutputService_PwmPolynomialConfig<4>)));
+			FloatOutputService_PwmPolynomialConfig<4> *pwmConfig = (FloatOutputService_PwmPolynomialConfig<4> *)malloc(sizeof(FloatOutputService_PwmPolynomialConfig<4>));
 			
 			pwmConfig->Frequency = 10000;
 			pwmConfig->PwmPin = 1;
-			pwmConfig->MinDutyCycle = 0.1;
-			pwmConfig->MaxDutyCycle = 0.9;
+			pwmConfig->MinDutyCycle = 0.1f;
+			pwmConfig->MaxDutyCycle = 0.9f;
 			pwmConfig->A[0] = -1;
 			pwmConfig->A[1] = 1;
 			pwmConfig->A[2] = 1;
@@ -60,19 +60,19 @@ namespace UnitTests
 
 	TEST_F(FloatOutputService_PwmPolynomialTests, WhenSettingValueWithinLimits_ThenCorrectPinAndValueIsSet)
 	{
-		EXPECT_CALL(_pwmService, WritePin(1, PwmValue {0.0001, 0.0000176000059})).Times(1);
-		_floatOutputService->SetOutput(0.6);
+		EXPECT_CALL(_pwmService, WritePin(1, PwmValue {0.0001f, 0.0000176000059f})).Times(1);
+		_floatOutputService->SetOutput(0.6f);
 	}
 
 	TEST_F(FloatOutputService_PwmPolynomialTests, WhenSettingValueAboveMaxValue_ThenCorrectPinAndValueIsSet)
 	{
-		EXPECT_CALL(_pwmService, WritePin(1, PwmValue {0.0001, 0.0000899999976})).Times(1);
+		EXPECT_CALL(_pwmService, WritePin(1, PwmValue {0.0001f, 0.0000899999976f})).Times(1);
 		_floatOutputService->SetOutput(10);
 	}
 
 	TEST_F(FloatOutputService_PwmPolynomialTests, WhenSettingValuBelowMinValue_ThenCorrectPinAndValueIsSet)
 	{
-		EXPECT_CALL(_pwmService, WritePin(1, PwmValue {0.0001, 0.00001})).Times(1);
+		EXPECT_CALL(_pwmService, WritePin(1, PwmValue {0.0001f, 0.00001f})).Times(1);
 		_floatOutputService->SetOutput(0);
 	}
 }

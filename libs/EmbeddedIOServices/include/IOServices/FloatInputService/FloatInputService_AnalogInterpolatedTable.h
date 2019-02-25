@@ -19,28 +19,20 @@ namespace IOServices
 			
 		}
 		
-	public:
-		static FloatInputService_AnalogInterpolatedTableConfig* Cast(void *p)
-		{
-			FloatInputService_AnalogInterpolatedTableConfig *ret = (FloatInputService_AnalogInterpolatedTableConfig *)p;
-
-			ret->Table = (float *)(ret + 1);
-
-			return ret;
-		}
-		
+	public:		
 		unsigned int Size()
 		{
 			return sizeof(FloatInputService_AnalogInterpolatedTableConfig) +
 				(sizeof(float) * Resolution);
 		}
+
+		const float *Table() const { return (float *)(this + 1); }
 		
 		unsigned short AdcPin;
 		unsigned short DotSampleRate;
 		float MinInputValue;
 		float MaxInputValue;
 		unsigned char Resolution;
-		float *Table;
 	});
 	
 	class FloatInputService_AnalogInterpolatedTable : public IFloatInputService

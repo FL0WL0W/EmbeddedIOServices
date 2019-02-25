@@ -16,11 +16,6 @@ namespace IOServices
 		}
 		
 	public:
-		static BooleanInputServiceConfig* Cast(void *p)
-		{
-			return (BooleanInputServiceConfig *)p;
-		}
-		
 		unsigned int Size()
 		{
 			return sizeof(BooleanInputServiceConfig);

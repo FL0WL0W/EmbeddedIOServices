@@ -34,7 +34,7 @@ namespace IOServices
 #ifdef FLOATINPUTSERVICE_ANALOGPOLYNOMIAL_H
 		case 2:
 			{
-				FloatInputService_AnalogPolynomialConfig<4> *analogPolynomialConfig = FloatInputService_AnalogPolynomialConfig<4>::Cast(config);
+				FloatInputService_AnalogPolynomialConfig<4> *analogPolynomialConfig = (FloatInputService_AnalogPolynomialConfig<4> *)config;
 				*sizeOut += analogPolynomialConfig->Size();
 				inputService = new FloatInputService_AnalogPolynomial<4>(hardwareAbstractionCollection, analogPolynomialConfig);
 				break;
@@ -44,7 +44,7 @@ namespace IOServices
 #ifdef FLOATINPUTSERVICE_FREQUENCYPOLYNOMIAL_H
 		case 3:
 			{
-				FloatInputService_FrequencyPolynomialConfig<4> *frequencyPolynomialConfig = FloatInputService_FrequencyPolynomialConfig<4>::Cast(config);
+				FloatInputService_FrequencyPolynomialConfig<4> *frequencyPolynomialConfig = (FloatInputService_FrequencyPolynomialConfig<4> *)config;
 				*sizeOut += frequencyPolynomialConfig->Size();
 				inputService = new FloatInputService_FrequencyPolynomial<4>(hardwareAbstractionCollection, frequencyPolynomialConfig);
 				break;
@@ -54,7 +54,7 @@ namespace IOServices
 #ifdef FLOATINPUTSERVICE_ANALOGINTERPOLATEDTABLE_H
 		case 4:
 			{
-				FloatInputService_AnalogInterpolatedTableConfig *analogInterpolatedTableConfig = FloatInputService_AnalogInterpolatedTableConfig::Cast(config);
+				FloatInputService_AnalogInterpolatedTableConfig *analogInterpolatedTableConfig = (FloatInputService_AnalogInterpolatedTableConfig *)config;
 				*sizeOut += analogInterpolatedTableConfig->Size();
 				inputService = new FloatInputService_AnalogInterpolatedTable(hardwareAbstractionCollection, analogInterpolatedTableConfig);
 				break;
@@ -64,7 +64,7 @@ namespace IOServices
 #ifdef FLOATINPUTSERVICE_FREQUENCYINTERPOLATEDTABLE_H
 		case 5:
 			{
-				FloatInputService_FrequencyInterpolatedTableConfig *frequencyInterpolatedTableConfig = FloatInputService_FrequencyInterpolatedTableConfig::Cast(config);
+				FloatInputService_FrequencyInterpolatedTableConfig *frequencyInterpolatedTableConfig = (FloatInputService_FrequencyInterpolatedTableConfig *)config;
 				*sizeOut += frequencyInterpolatedTableConfig->Size();
 				inputService = new FloatInputService_FrequencyInterpolatedTable(hardwareAbstractionCollection, frequencyInterpolatedTableConfig);
 				break;
@@ -74,7 +74,7 @@ namespace IOServices
 #ifdef FLOATINPUTSERVICE_FAULTDETECTIONWRAPPER_H
 		case 6:
 			{
-				FloatInputService_FaultDetectionWrapperConfig *faultDetectionConfig = FloatInputService_FaultDetectionWrapperConfig::Cast(config);
+				FloatInputService_FaultDetectionWrapperConfig *faultDetectionConfig = (FloatInputService_FaultDetectionWrapperConfig *)config;
 				*sizeOut += faultDetectionConfig->Size();
 				config = (void*)((unsigned char *)config + faultDetectionConfig->Size());
 				unsigned int childSize = 0;

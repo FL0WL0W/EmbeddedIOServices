@@ -64,31 +64,31 @@ namespace UnitTests
 
 	TEST_F(FloatInputService_FrequencyPolynomialTest, WhenGettingValue_ThenCorrectValueIsReturned)
 	{
-		HardwareAbstraction::PwmValue pwmValue = { 1.0f, 0.5f };
+		HardwareAbstraction::PwmValue pwmValue = { 1, 0.5f };
 		EXPECT_CALL(_timerService, GetTick()).Times(1).WillOnce(Return(5));
 		EXPECT_CALL(_pwmService, ReadPin(1)).Times(1).WillOnce(Return(pwmValue));
 		_floatInputService->ReadValue();
-		ASSERT_FLOAT_EQ(30.0f, _floatInputService->Value);
-		ASSERT_FLOAT_EQ(0.0f, _floatInputService->ValueDot);
+		ASSERT_FLOAT_EQ(30, _floatInputService->Value);
+		ASSERT_FLOAT_EQ(0, _floatInputService->ValueDot);
 
 		pwmValue = { 0.5f, 0.4f };
 		EXPECT_CALL(_timerService, GetTick()).Times(2).WillRepeatedly(Return(10));
 		EXPECT_CALL(_pwmService, ReadPin(1)).Times(1).WillOnce(Return(pwmValue));
 		_floatInputService->ReadValue();
-		ASSERT_FLOAT_EQ(130.0f, _floatInputService->Value);
-		ASSERT_FLOAT_EQ(65000.0f, _floatInputService->ValueDot);
+		ASSERT_FLOAT_EQ(130, _floatInputService->Value);
+		ASSERT_FLOAT_EQ(65000, _floatInputService->ValueDot);
 
 		pwmValue = { 0.25f, 0.2f };
 		EXPECT_CALL(_timerService, GetTick()).Times(1).WillOnce(Return(15));
 		EXPECT_CALL(_pwmService, ReadPin(1)).Times(1).WillOnce(Return(pwmValue));
 		_floatInputService->ReadValue();
-		ASSERT_FLOAT_EQ(150.0f, _floatInputService->Value);
-		ASSERT_FLOAT_EQ(65000.0f, _floatInputService->ValueDot);
+		ASSERT_FLOAT_EQ(150, _floatInputService->Value);
+		ASSERT_FLOAT_EQ(65000, _floatInputService->ValueDot);
 
 		EXPECT_CALL(_timerService, GetTick()).Times(2).WillRepeatedly(Return(20));
 		EXPECT_CALL(_pwmService, ReadPin(1)).Times(1).WillOnce(Return(pwmValue));
 		_floatInputService->ReadValue();
-		ASSERT_FLOAT_EQ(150.0f, _floatInputService->Value);
-		ASSERT_FLOAT_EQ(10000.0f, _floatInputService->ValueDot);
+		ASSERT_FLOAT_EQ(150, _floatInputService->Value);
+		ASSERT_FLOAT_EQ(10000, _floatInputService->ValueDot);
 	}
 }

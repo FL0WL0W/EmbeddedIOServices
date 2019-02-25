@@ -25,7 +25,7 @@ namespace UnitTests
 			*((unsigned char *)buildConfig) = 1;
 			buildConfig = (void *)(((unsigned char *)buildConfig) + 1);
 
-			*analogConfig = 5123.2;
+			*analogConfig = 5123.2f;
 			*(analogConfig + 1) = 2321.5;
 			
 			memcpy(buildConfig, analogConfig, sizeof(float) + sizeof(float));

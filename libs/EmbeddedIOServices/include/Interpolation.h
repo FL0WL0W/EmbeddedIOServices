@@ -14,31 +14,30 @@ namespace Interpolation
 	InterpolationResponse Interpolate(float value, float maxValue, float minValue, unsigned char resolution);
 	
 	template<typename K>
-		K InterpolateTable1(float value, float maxValue, float minValue, unsigned char resolution, K* table)
+		K InterpolateTable1(float value, float maxValue, float minValue, unsigned char resolution, const K* table)
 		{
 			return InterpolateTable1<K>(Interpolate(value, maxValue, minValue, resolution), table);
 		}
 	
 	template<typename K>
-		K InterpolateTable1(InterpolationResponse interpolation, K* table)
+		K InterpolateTable1(InterpolationResponse interpolation, const K* table)
 		{
-			K testValue = 0.5;
-			if(testValue == 0)
+			if(((K) 0.5f) == 0)
 			{
-				return round(table[interpolation.IndexL] * (1 - interpolation.Multiplier) + table[interpolation.IndexH] * interpolation.Multiplier);
+				return (K)round(table[interpolation.IndexL] * (1 - interpolation.Multiplier) + table[interpolation.IndexH] * interpolation.Multiplier);
 			}
 
-			return table[interpolation.IndexL] * (1 - interpolation.Multiplier) + table[interpolation.IndexH] * interpolation.Multiplier;
+			return (K)(table[interpolation.IndexL] * (1 - interpolation.Multiplier) + table[interpolation.IndexH] * interpolation.Multiplier);
 		}
 	
 	template<typename K>
-		K InterpolateTable2(float valueX, float maxValueX, float minValueX, unsigned char resolutionX, float valueY, float maxValueY, float minValueY, unsigned char resolutionY, K* table)
+		K InterpolateTable2(float valueX, float maxValueX, float minValueX, unsigned char resolutionX, float valueY, float maxValueY, float minValueY, unsigned char resolutionY, const K* table)
 		{
 			return InterpolateTable2<K>(Interpolate(valueX, maxValueX, minValueX, resolutionX), resolutionX, Interpolate(valueY, maxValueY, minValueY, resolutionY), table);
 		}
 	
 	template<typename K>
-		K InterpolateTable2(InterpolationResponse interpolationX, unsigned char resolutionX, InterpolationResponse interpolationY, K* table)
+		K InterpolateTable2(InterpolationResponse interpolationX, unsigned char resolutionX, InterpolationResponse interpolationY, const K* table)
 		{
 			K testValue = 0.5;
 			if(testValue == 0)

@@ -49,7 +49,7 @@ namespace IOServices
 		unsigned int ticksPerSecond = _hardwareAbstractionCollection->TimerService->GetTicksPerSecond();
 		unsigned int tick = _hardwareAbstractionCollection->TimerService->GetTick();
 		_stepBooleanOutputService->OutputSet();
-		_hardwareAbstractionCollection->TimerService->ReScheduleTask(_offTask, tick + ticksPerSecond * _config->StepWidth);
+		_hardwareAbstractionCollection->TimerService->ReScheduleTask(_offTask, (unsigned int)round(tick + ticksPerSecond * _config->StepWidth));
 		_hardwareAbstractionCollection->TimerService->ReScheduleTask(_stepTask, tick + ticksPerSecond / _config->MaxStepsPerSecond);
 	}
 	

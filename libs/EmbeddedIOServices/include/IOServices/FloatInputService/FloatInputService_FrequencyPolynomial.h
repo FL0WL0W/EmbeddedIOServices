@@ -20,11 +20,6 @@ namespace IOServices
 		}
 		
 	public:
-		static FloatInputService_FrequencyPolynomialConfig<Degree>* Cast(void *p)
-		{
-			return (FloatInputService_FrequencyPolynomialConfig<Degree> *)p;
-		}
-		
 		unsigned int Size()
 		{
 			return sizeof(FloatInputService_FrequencyPolynomialConfig<Degree>);

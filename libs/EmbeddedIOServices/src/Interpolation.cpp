@@ -13,7 +13,7 @@ namespace Interpolation
 			{
 				response.Multiplier = 0;
 			}
-			response.IndexL = response.Multiplier;
+			response.IndexL = (unsigned char)response.Multiplier;
 			response.Multiplier -= response.IndexL;
 			response.IndexH = response.IndexL + 1;
 			if (response.IndexL > resolution)

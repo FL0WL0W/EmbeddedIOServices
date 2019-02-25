@@ -19,12 +19,7 @@ namespace IOServices
 			
 		}
 		
-	public:
-		static FloatInputService_AnalogPolynomialConfig<Degree>* Cast(void *p)
-		{
-			return (FloatInputService_AnalogPolynomialConfig<Degree> *)p;
-		}
-		
+	public:		
 		unsigned int Size()
 		{
 			return sizeof(FloatInputService_AnalogPolynomialConfig<Degree>);

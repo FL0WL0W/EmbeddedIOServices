@@ -30,18 +30,18 @@ namespace UnitTests
 			pwmConfig->MinValue = 1;
 			pwmConfig->MaxValue = 5;
 			pwmConfig->Resolution = 11;
-			pwmConfig->Table = (float *)(pwmConfig + 1);
-			pwmConfig->Table[0] = 0.1;
-			pwmConfig->Table[1] = 0.2;
-			pwmConfig->Table[2] = 0.3;
-			pwmConfig->Table[3] = 0.4;
-			pwmConfig->Table[4] = 0.5;
-			pwmConfig->Table[5] = 0.6;
-			pwmConfig->Table[6] = 0.7;
-			pwmConfig->Table[7] = 0.8;
-			pwmConfig->Table[8] = 0.9;
-			pwmConfig->Table[9] = 0.9;
-			pwmConfig->Table[10] = 0.9;
+			float *Table = (float *)(pwmConfig + 1);
+			Table[0] = 0.1f;
+			Table[1] = 0.2f;
+			Table[2] = 0.3f;
+			Table[3] = 0.4f;
+			Table[4] = 0.5f;
+			Table[5] = 0.6f;
+			Table[6] = 0.7f;
+			Table[7] = 0.8f;
+			Table[8] = 0.9f;
+			Table[9] = 0.9f;
+			Table[10] = 0.9f;
 
 			void *config = malloc(1000000);
 			void *buildConfig = config;
@@ -68,19 +68,19 @@ namespace UnitTests
 
 	TEST_F(FloatOutputService_PwmInterpolatedTableTests, WhenSettingValueWithinTable_ThenCorrectPinAndValueIsSet)
 	{
-		EXPECT_CALL(_pwmService, WritePin(1, PwmValue {0.0001, 0.00004})).Times(1);
-		_floatOutputService->SetOutput(2.2);
+		EXPECT_CALL(_pwmService, WritePin(1, PwmValue {0.0001f, 0.00004f})).Times(1);
+		_floatOutputService->SetOutput(2.2f);
 	}
 
 	TEST_F(FloatOutputService_PwmInterpolatedTableTests, WhenSettingValueAboveMaxValue_ThenCorrectPinAndValueIsSet)
 	{
-		EXPECT_CALL(_pwmService, WritePin(1, PwmValue {0.0001, 0.0000899999976})).Times(1);
+		EXPECT_CALL(_pwmService, WritePin(1, PwmValue {0.0001f, 0.0000899999976f})).Times(1);
 		_floatOutputService->SetOutput(10);
 	}
 
 	TEST_F(FloatOutputService_PwmInterpolatedTableTests, WhenSettingValuBelowMinValue_ThenCorrectPinAndValueIsSet)
 	{
-		EXPECT_CALL(_pwmService, WritePin(1, PwmValue {0.0001, 0.00001})).Times(1);
+		EXPECT_CALL(_pwmService, WritePin(1, PwmValue {0.0001f, 0.00001f})).Times(1);
 		_floatOutputService->SetOutput(0);
 	}
 }

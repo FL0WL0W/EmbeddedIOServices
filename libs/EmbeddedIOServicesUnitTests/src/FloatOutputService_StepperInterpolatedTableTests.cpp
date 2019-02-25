@@ -23,18 +23,18 @@ namespace UnitTests
 			stepperConfig->MinValue = 10;
 			stepperConfig->MaxValue = 110;
 			stepperConfig->Resolution = 11;
-			stepperConfig->Table = (int *)(stepperConfig + 1);
-			stepperConfig->Table[0] = -10;
-			stepperConfig->Table[1] = 0;
-			stepperConfig->Table[2] = 10;
-			stepperConfig->Table[3] = 20;
-			stepperConfig->Table[4] = 30;
-			stepperConfig->Table[5] = 40;
-			stepperConfig->Table[6] = 50;
-			stepperConfig->Table[7] = 60;
-			stepperConfig->Table[8] = 70;
-			stepperConfig->Table[9] = 80;
-			stepperConfig->Table[10] = 90;
+			int *Table = (int *)(stepperConfig + 1);
+			Table[0] = -10;
+			Table[1] = 0;
+			Table[2] = 10;
+			Table[3] = 20;
+			Table[4] = 30;
+			Table[5] = 40;
+			Table[6] = 50;
+			Table[7] = 60;
+			Table[8] = 70;
+			Table[9] = 80;
+			Table[10] = 90;
 
 			_floatOutputService = new FloatOutputService_StepperInterpolatedTable(stepperConfig, &_stepperService);
 		}

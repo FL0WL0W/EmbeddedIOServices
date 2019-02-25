@@ -20,11 +20,6 @@ namespace IOServices
 		}
 		
 	public:
-		static FloatOutputService_PwmPolynomialConfig* Cast(void *p)
-		{
-			return (FloatOutputService_PwmPolynomialConfig *)p;
-		}
-			
 		unsigned int Size()
 		{
 			return sizeof(FloatOutputService_PwmPolynomialConfig<Degree>);

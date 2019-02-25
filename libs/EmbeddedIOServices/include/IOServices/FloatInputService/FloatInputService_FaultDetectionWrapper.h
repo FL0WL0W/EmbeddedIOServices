@@ -15,11 +15,6 @@ namespace IOServices
 		}
 		
 	public:
-		static FloatInputService_FaultDetectionWrapperConfig* Cast(void *p)
-		{
-			return (FloatInputService_FaultDetectionWrapperConfig *)p;
-		}
-		
 		unsigned int Size()
 		{
 			return sizeof(FloatInputService_FaultDetectionWrapperConfig);

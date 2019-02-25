@@ -19,7 +19,7 @@ namespace UnitTests
 
 		FloatOutputService_StepperPolynomialTests() 
 		{			
-			FloatOutputService_StepperPolynomialConfig<4> *stepperConfig = FloatOutputService_StepperPolynomialConfig<4>::Cast(malloc(sizeof(FloatOutputService_StepperPolynomialConfig<4>)));
+			FloatOutputService_StepperPolynomialConfig<4> *stepperConfig = (FloatOutputService_StepperPolynomialConfig<4> *)malloc(sizeof(FloatOutputService_StepperPolynomialConfig<4>));
 			
 			stepperConfig->MinStepPosition = -40;
 			stepperConfig->MaxStepPosition = 150;
@@ -56,7 +56,7 @@ namespace UnitTests
 		_floatOutputService->SetOutput(0.5);
 
 		EXPECT_CALL(_stepperService, Step(-1)).Times(1);
-		_floatOutputService->SetOutput(0.49);
+		_floatOutputService->SetOutput(0.49f);
 	}
 
 	TEST_F(FloatOutputService_StepperPolynomialTests, WhenSettingValueAboveMaxValue_ThenCorrectValueIsSet)

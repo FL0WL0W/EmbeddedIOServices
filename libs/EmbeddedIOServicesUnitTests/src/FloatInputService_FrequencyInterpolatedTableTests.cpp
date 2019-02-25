@@ -38,18 +38,18 @@ namespace UnitTests
 			analogConfig->MinFrequency = 10;
 			analogConfig->MaxFrequency = 110;
 			analogConfig->Resolution = 11;
-			analogConfig->Table = (float *)(analogConfig + 1);
-			analogConfig->Table[0] = -10;
-			analogConfig->Table[1] = 0;
-			analogConfig->Table[2] = 10;
-			analogConfig->Table[3] = 20;
-			analogConfig->Table[4] = 30;
-			analogConfig->Table[5] = 40;
-			analogConfig->Table[6] = 50;
-			analogConfig->Table[7] = 60;
-			analogConfig->Table[8] = 70;
-			analogConfig->Table[9] = 80;
-			analogConfig->Table[10] = 90;
+			float *Table = (float *)(analogConfig + 1);
+			Table[0] = -10;
+			Table[1] = 0;
+			Table[2] = 10;
+			Table[3] = 20;
+			Table[4] = 30;
+			Table[5] = 40;
+			Table[6] = 50;
+			Table[7] = 60;
+			Table[8] = 70;
+			Table[9] = 80;
+			Table[10] = 90;
 
 			void *config = malloc(analogConfig->Size() + 1);
 			void *buildConfig = config;
@@ -80,29 +80,29 @@ namespace UnitTests
 		EXPECT_CALL(_timerService, GetTick()).Times(1).WillOnce(Return(5));
 		EXPECT_CALL(_pwmService, ReadPin(1)).Times(1).WillOnce(Return(pwmValue));
 		_floatInputService->ReadValue();
-		ASSERT_FLOAT_EQ(-10.0f, _floatInputService->Value);
-		ASSERT_FLOAT_EQ(0.0f, _floatInputService->ValueDot);
+		ASSERT_FLOAT_EQ(-10, _floatInputService->Value);
+		ASSERT_FLOAT_EQ(0, _floatInputService->ValueDot);
 
 		pwmValue = { 0.025f, 0.004f };
 		EXPECT_CALL(_timerService, GetTick()).Times(2).WillRepeatedly(Return(10));
 		EXPECT_CALL(_pwmService, ReadPin(1)).Times(1).WillOnce(Return(pwmValue));
 		_floatInputService->ReadValue();
-		ASSERT_FLOAT_EQ(20.0f, _floatInputService->Value);
-		ASSERT_FLOAT_EQ(10000.0f, _floatInputService->ValueDot);
+		ASSERT_FLOAT_EQ(20, _floatInputService->Value);
+		ASSERT_FLOAT_EQ(10000, _floatInputService->ValueDot);
 
 		pwmValue = { 0.05f, 0.04f };
 		EXPECT_CALL(_timerService, GetTick()).Times(1).WillOnce(Return(15));
 		EXPECT_CALL(_pwmService, ReadPin(1)).Times(1).WillOnce(Return(pwmValue));
 		_floatInputService->ReadValue();
-		ASSERT_NEAR(0.0f, _floatInputService->Value, 0.001f);
-		ASSERT_FLOAT_EQ(10000.0f, _floatInputService->ValueDot);
+		ASSERT_NEAR(0, _floatInputService->Value, 0.001f);
+		ASSERT_FLOAT_EQ(10000, _floatInputService->ValueDot);
 
 		pwmValue = { 0.05333333333333f, 0.04f };
 		EXPECT_CALL(_timerService, GetTick()).Times(2).WillRepeatedly(Return(20));
 		EXPECT_CALL(_pwmService, ReadPin(1)).Times(1).WillOnce(Return(pwmValue));
 		_floatInputService->ReadValue();
 		ASSERT_NEAR(-1.25f, _floatInputService->Value, 0.001f);
-		ASSERT_NEAR(-10625.0f, _floatInputService->ValueDot, 0.001f);
+		ASSERT_NEAR(-10625, _floatInputService->ValueDot, 0.001f);
 	}
 
 	TEST_F(FloatInputService_FrequencyInterpolatedTableTest, WhenGettingValueAboveMaxValue_ThenCorrectValueIsReturned)
@@ -116,7 +116,7 @@ namespace UnitTests
 
 	TEST_F(FloatInputService_FrequencyInterpolatedTableTest, WhenGettingValueBelowMinValue_ThenCorrectValueIsReturned)
 	{
-		PwmValue pwmValue = { 1.0f, 0.04f };
+		PwmValue pwmValue = { 1, 0.04f };
 		EXPECT_CALL(_timerService, GetTick()).Times(2).WillOnce(Return(30));
 		EXPECT_CALL(_pwmService, ReadPin(1)).Times(1).WillOnce(Return(pwmValue));
 		_floatInputService->ReadValue();

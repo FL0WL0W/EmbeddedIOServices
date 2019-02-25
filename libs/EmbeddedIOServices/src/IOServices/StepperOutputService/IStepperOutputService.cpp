@@ -19,7 +19,7 @@ namespace IOServices
 #ifdef STEPPEROUTPUTSERVICE_STEPDIRECTIONCONTROL_H
 		case 1:
 			{
-				StepperOutputService_StepDirectionControlConfig *stepperConfig = StepperOutputService_StepDirectionControlConfig::Cast(config);
+				StepperOutputService_StepDirectionControlConfig *stepperConfig = (StepperOutputService_StepDirectionControlConfig *)config;
 				*sizeOut += stepperConfig->Size();
 
 				config = (void*)((unsigned char *)config + stepperConfig->Size());
@@ -39,7 +39,7 @@ namespace IOServices
 #ifdef STEPPEROUTPUTSERVICE_FULLSTEPCONTROL_H
 		case 2:
 			{
-				StepperOutputService_FullStepControlConfig *stepperConfig = StepperOutputService_FullStepControlConfig::Cast(config);
+				StepperOutputService_FullStepControlConfig *stepperConfig = (StepperOutputService_FullStepControlConfig *)config;
 				*sizeOut += stepperConfig->Size();
 
 				config = (void*)((unsigned char *)config + stepperConfig->Size());
@@ -67,7 +67,7 @@ namespace IOServices
 #ifdef STEPPEROUTPUTSERVICE_HALFSTEPCONTROL_H
 		case 3:
 			{
-				StepperOutputService_HalfStepControlConfig *stepperConfig = StepperOutputService_HalfStepControlConfig::Cast(config);
+				StepperOutputService_HalfStepControlConfig *stepperConfig = (StepperOutputService_HalfStepControlConfig *)config;
 				*sizeOut += stepperConfig->Size();
 
 				config = (void*)((unsigned char *)config + stepperConfig->Size());
