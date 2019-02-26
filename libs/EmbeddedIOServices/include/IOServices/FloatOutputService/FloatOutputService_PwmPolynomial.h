@@ -42,7 +42,7 @@ namespace IOServices
 			_hardwareAbstractionCollection->PwmService->InitPin(_config->PwmPin, HardwareAbstraction::Out, _config->Frequency);
 		}
 		
-		void SetOutput(float value)
+		void SetOutput(float value) override
 		{
 			float pwmValue = _config->A[0];
 			for (int i = 1; i <= Degree; i++)
@@ -56,7 +56,7 @@ namespace IOServices
 			_hardwareAbstractionCollection->PwmService->WritePin(_config->PwmPin, { 1.0f / _config->Frequency, pwmValue / _config->Frequency });
 		}
 
-		void Calibrate() { }
+		void Calibrate() override { }
 	};
 }
 #endif

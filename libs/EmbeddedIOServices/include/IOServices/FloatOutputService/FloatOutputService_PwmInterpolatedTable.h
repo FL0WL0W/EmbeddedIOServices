@@ -25,7 +25,7 @@ namespace IOServices
 				(sizeof(float) * Resolution);
 		}
 		
-		constexpr const float *Table() const { return (const float *)(this + 1); }
+		constexpr const float *Table() const { return reinterpret_cast<const float *>(this + 1); }
 		
 		unsigned short PwmPin;
 		unsigned short Frequency;
@@ -43,8 +43,8 @@ namespace IOServices
 	public:
 		FloatOutputService_PwmInterpolatedTable(const HardwareAbstractionCollection *hardwareAbstractionCollection, const FloatOutputService_PwmInterpolatedTableConfig *config);
 		
-		void SetOutput(float value);
-		void Calibrate();
+		void SetOutput(float value) override;
+		void Calibrate() override;
 	};
 }
 #endif

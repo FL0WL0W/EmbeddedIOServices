@@ -35,8 +35,8 @@ namespace IOServices
 
 	public:
 		StepperOutputService_StepDirectionControl(const HardwareAbstractionCollection *hardwareAbstractionCollection, const StepperOutputService_StepDirectionControlConfig *config, IBooleanOutputService *stepBooleanOutputService, IBooleanOutputService *directionBooleanOutputService);
-		void Step(int steps);
-		void Calibrate();
+		void Step(int steps) override;
+		void Calibrate() override;
 	};
 }
 

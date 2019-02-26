@@ -27,7 +27,7 @@ namespace IOServices
 	public:
 		FloatInputService_FaultDetectionWrapper(const FloatInputService_FaultDetectionWrapperConfig *config, IFloatInputService *child);
 
-		void ReadValue();
+		void ReadValue() override;
 	};
 }
 #endif

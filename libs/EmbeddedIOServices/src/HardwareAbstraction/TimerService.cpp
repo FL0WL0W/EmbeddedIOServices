@@ -119,14 +119,12 @@ namespace HardwareAbstraction
 		Task **end = CallBackStackPointer + StackSize;
 		if (CallBackStackPointer[StackSize - 1] == task)
 		{
-			ScheduleCallBack(CallBackStackPointer[StackSize - 2]->Tick);
-			std::remove(CallBackStackPointer, end, task);
-			StackSize--;
+			StackSize = static_cast<unsigned char>(std::remove(CallBackStackPointer, end, task) - CallBackStackPointer);
+			ScheduleCallBack(CallBackStackPointer[StackSize - 1]->Tick);
 		}
 		else
 		{
-			std::remove(CallBackStackPointer, end, task);
-			StackSize--;
+			StackSize = static_cast<unsigned char>(std::remove(CallBackStackPointer, end, task) - CallBackStackPointer);
 		}
 		return true;
 	}

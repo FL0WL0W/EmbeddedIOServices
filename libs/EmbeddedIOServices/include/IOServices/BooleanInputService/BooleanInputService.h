@@ -27,7 +27,7 @@ namespace IOServices
 		
 	public:
 		BooleanInputService(const HardwareAbstraction::HardwareAbstractionCollection *, const BooleanInputServiceConfig *);
-		void ReadValue();
+		void ReadValue() override;
 	};
 }
 #endif

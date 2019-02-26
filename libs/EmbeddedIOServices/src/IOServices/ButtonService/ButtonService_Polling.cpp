@@ -6,6 +6,7 @@ namespace IOServices
 	{
 		_timerService = timerService;
 		_booleanInputService = booleanInputService;
+		_callBackGroup = new CallBackGroup();
 	}
 
 	void ButtonService_Polling::Tick()

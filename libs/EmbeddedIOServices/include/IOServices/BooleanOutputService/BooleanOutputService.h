@@ -31,9 +31,9 @@ namespace IOServices
 	public:
 		BooleanOutputService(const HardwareAbstractionCollection *, const BooleanOutputServiceConfig *);
 
-		void OutputSet();
-		void OutputReset();
-		void OutputWrite(bool value);
+		void OutputSet() override;
+		void OutputReset() override;
+		void OutputWrite(bool value) override;
 	};
 }
 #endif

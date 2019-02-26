@@ -26,7 +26,7 @@ namespace IOServices
 				(sizeof(float) * Resolution);
 		}
 
-		constexpr const float *Table() const { return (const float *)(this + 1); }
+		constexpr const float *Table() const { return reinterpret_cast<const float *>(this + 1); }
 		
 		unsigned short AdcPin;
 		unsigned short DotSampleRate;
@@ -47,7 +47,7 @@ namespace IOServices
 	public:
 		FloatInputService_AnalogInterpolatedTable(const HardwareAbstractionCollection *hardwareAbstractionCollection, const FloatInputService_AnalogInterpolatedTableConfig *config);
 
-		void ReadValue();
+		void ReadValue() override;
 	};
 }
 #endif

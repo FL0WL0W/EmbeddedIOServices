@@ -27,8 +27,8 @@ namespace IOServices
 
 	public:
 		StepperOutputService_StaticStepCalibrationWrapper(const StepperOutputService_StaticStepCalibrationWrapperConfig *config, IStepperOutputService *child);
-		void Step(int steps);
-		void Calibrate();
+		void Step(int steps) override;
+		void Calibrate() override;
 	};
 }
 

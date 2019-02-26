@@ -42,7 +42,7 @@ namespace IOServices
 			_currentStepPosition = 0;
 		}
 			
-		void SetOutput(float value)
+		void SetOutput(float value) override
 		{
 			float newStepPosition = _config->A[0];
 			for (int i = 1; i <= Degree; i++)
@@ -60,7 +60,7 @@ namespace IOServices
 			_currentStepPosition = (int)newStepPosition;
 		}
 
-		void Calibrate() 
+		void Calibrate() override
 		{ 
 			_stepperService->Calibrate();
 		}

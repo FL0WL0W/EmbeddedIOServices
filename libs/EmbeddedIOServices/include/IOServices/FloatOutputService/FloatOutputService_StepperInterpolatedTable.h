@@ -26,7 +26,7 @@ namespace IOServices
 				(sizeof(int) * Resolution);
 		}
 		
-		constexpr const int *Table() const { return (const int *)(this + 1); }
+		constexpr const int *Table() const { return reinterpret_cast<const int *>(this + 1); }
 
 		float MinValue;
 		float MaxValue;
@@ -44,8 +44,8 @@ namespace IOServices
 	public:
 		FloatOutputService_StepperInterpolatedTable(const FloatOutputService_StepperInterpolatedTableConfig *config, IStepperOutputService *stepperService);
 		
-		void SetOutput(float value);
-		void Calibrate();
+		void SetOutput(float value) override;
+		void Calibrate() override;
 	};
 }
 #endif

@@ -46,7 +46,7 @@ namespace IOServices
 			_hardwareAbstractionCollection->PwmService->InitPin(_config->PwmPin, HardwareAbstraction::In, _config->MinFrequency);
 		}
 
-		void ReadValue()
+		void ReadValue() override
 		{
 			HardwareAbstraction::PwmValue pwmValue = _hardwareAbstractionCollection->PwmService->ReadPin(_config->PwmPin);
 

@@ -45,7 +45,7 @@ namespace IOServices
 			_hardwareAbstractionCollection->AnalogService->InitPin(_config->AdcPin);
 		}
 
-		void ReadValue()
+		void ReadValue() override
 		{
 			float adcValue = _hardwareAbstractionCollection->AnalogService->ReadPin(_config->AdcPin);
 			Value = _config->A[0];
