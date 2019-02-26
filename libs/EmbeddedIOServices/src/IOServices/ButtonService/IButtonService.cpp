@@ -1,6 +1,7 @@
 #include "IOServices/ButtonService/ButtonService_Polling.h"
 #include "IOServices/ButtonService/IButtonService.h"
 
+#ifdef IBUTTONSERVICE_H
 namespace IOServices
 {
 	IButtonService::IButtonService()
@@ -61,3 +62,4 @@ namespace IOServices
 	}
 	
 }
+#endif

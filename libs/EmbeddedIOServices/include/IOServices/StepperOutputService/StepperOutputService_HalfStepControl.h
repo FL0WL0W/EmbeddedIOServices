@@ -2,9 +2,8 @@
 #include "IOServices/BooleanOutputService/IBooleanOutputService.h"
 #include "Packed.h"
 
-#if !defined(STEPPEROUTPUTSERVICE_HALFSTEPCONTROL_H) && defined(ISTEPPEROUTPUTSERVICE_H)
+#if !defined(STEPPEROUTPUTSERVICE_HALFSTEPCONTROL_H) && defined(ISTEPPEROUTPUTSERVICE_H) && defined(HARDWAREABSTRACTIONCOLLECTION_H)
 #define STEPPEROUTPUTSERVICE_HALFSTEPCONTROL_H
-
 namespace IOServices
 {
 	PACK(
@@ -42,5 +41,4 @@ namespace IOServices
 		void Calibrate() override;
 	};
 }
-
 #endif

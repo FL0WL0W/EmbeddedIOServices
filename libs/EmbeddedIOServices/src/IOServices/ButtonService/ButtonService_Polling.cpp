@@ -1,5 +1,6 @@
 #include "IOServices/ButtonService/ButtonService_Polling.h"
 
+#ifdef BUTTONSERVICE_POLLING_H
 namespace IOServices
 {
 	ButtonService_Polling::ButtonService_Polling(ITimerService *timerService, IBooleanInputService *booleanInputService)
@@ -29,3 +30,4 @@ namespace IOServices
 		_callBackGroup->Execute();
 	}
 }
+#endif

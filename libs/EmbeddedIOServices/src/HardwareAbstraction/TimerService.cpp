@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include "HardwareAbstraction/ITimerService.h"
 
+#ifdef ITIMERSERVICE_H
 namespace HardwareAbstraction
 {	
 	bool GreaterThan(Task *i, Task *j)
@@ -145,3 +146,4 @@ namespace HardwareAbstraction
 		return (GetElapsedTick(lastTick) / (float)GetTicksPerSecond());
 	}
 }
+#endif

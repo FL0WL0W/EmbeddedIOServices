@@ -4,7 +4,6 @@
 
 #if !defined(STEPPEROUTPUTSERVICE_STATICSTEPCALIBRATIONWRAPER_H) && defined(ISTEPPEROUTPUTSERVICE_H)
 #define STEPPEROUTPUTSERVICE_STATICSTEPCALIBRATIONWRAPER_H
-
 namespace IOServices
 {
 	PACK(
@@ -31,5 +30,4 @@ namespace IOServices
 		void Calibrate() override;
 	};
 }
-
 #endif

@@ -1,5 +1,6 @@
 #include "Interpolation.h"
 
+#ifdef INTERPOLATION_H
 namespace Interpolation
 {
 	InterpolationResponse Interpolate(const float value, const float maxValue, const float minValue, const unsigned char resolution)
@@ -29,3 +30,4 @@ namespace Interpolation
 		return response;
 	}
 }
+#endif
