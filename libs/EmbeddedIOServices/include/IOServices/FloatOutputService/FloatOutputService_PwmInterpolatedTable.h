@@ -19,13 +19,13 @@ namespace IOServices
 		}
 		
 	public:
-		unsigned int Size() const
+		constexpr const unsigned int Size() const
 		{
 			return sizeof(FloatOutputService_PwmInterpolatedTableConfig) +
 				(sizeof(float) * Resolution);
 		}
 		
-		const float *Table() const { return (float *)(this + 1); }
+		constexpr const float *Table() const { return (const float *)(this + 1); }
 		
 		unsigned short PwmPin;
 		unsigned short Frequency;

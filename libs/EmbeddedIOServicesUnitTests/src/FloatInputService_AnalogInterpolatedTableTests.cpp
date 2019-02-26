@@ -18,13 +18,15 @@ namespace UnitTests
 		MockAnalogService _analogService;
 		HardwareAbstractionCollection _hardwareAbstractionCollection;
 		IFloatInputService *_floatInputService;
+		FloatInputService_AnalogInterpolatedTableConfig *_analogConfig;
+		unsigned int _size = 0;
 
 		FloatInputService_AnalogInterpolatedTableTest() 
 		{
 			_hardwareAbstractionCollection.TimerService = &_timerService;
 			_hardwareAbstractionCollection.AnalogService = &_analogService;
 			
-			FloatInputService_AnalogInterpolatedTableConfig *analogConfig = (FloatInputService_AnalogInterpolatedTableConfig *)malloc(sizeof(FloatInputService_AnalogInterpolatedTableConfig) + 4 * 11);
+			_analogConfig = (FloatInputService_AnalogInterpolatedTableConfig *)malloc(sizeof(FloatInputService_AnalogInterpolatedTableConfig) + 4 * 11);
 			
 			//adcPin
 			// unsigned short AdcPin;
@@ -33,12 +35,12 @@ namespace UnitTests
 			// unsigned short DotSampleRate;
 			// unsigned char Resolution;
 			// float *Table;
-			analogConfig->AdcPin = 1;
-			analogConfig->DotSampleRate = 500;
-			analogConfig->MinInputValue = 0;
-			analogConfig->MaxInputValue = 3.3f;
-			analogConfig->Resolution = 11;
-			float * Table = (float *)(analogConfig + 1);
+			_analogConfig->AdcPin = 1;
+			_analogConfig->DotSampleRate = 500;
+			_analogConfig->MinInputValue = 0;
+			_analogConfig->MaxInputValue = 3.3f;
+			_analogConfig->Resolution = 11;
+			float * Table = (float *)(_analogConfig + 1);
 			Table[0] = -10;
 			Table[1] = 0;
 			Table[2] = 10;
@@ -51,21 +53,20 @@ namespace UnitTests
 			Table[9] = 80;
 			Table[10] = 90;
 
-			void *config = malloc(analogConfig->Size() + 1);
+			void *config = malloc(_analogConfig->Size() + 1);
 			void *buildConfig = config;
 
 			//analog InterpolatedTable service id
 			*((unsigned char *)buildConfig) = 4;
 			buildConfig = (void *)(((unsigned char *)buildConfig) + 1);
 
-			memcpy(buildConfig, analogConfig, analogConfig->Size());
-			buildConfig = (void *)((unsigned char *)buildConfig + analogConfig->Size());
+			memcpy(buildConfig, _analogConfig, _analogConfig->Size());
+			buildConfig = (void *)((unsigned char *)buildConfig + _analogConfig->Size());
 
 			EXPECT_CALL(_timerService, GetTicksPerSecond())
 				.WillRepeatedly(Return(5000));
 			EXPECT_CALL(_analogService, InitPin(1)).Times(1);
-			unsigned int size = 0;
-			_floatInputService = IFloatInputService::CreateFloatInputService(&_hardwareAbstractionCollection, config, &size);
+			_floatInputService = IFloatInputService::CreateFloatInputService(&_hardwareAbstractionCollection, config, &_size);
 		}
 
 		~FloatInputService_AnalogInterpolatedTableTest() override 
@@ -73,6 +74,14 @@ namespace UnitTests
 			free(_floatInputService);
 		}
 	};
+
+	TEST_F(FloatInputService_AnalogInterpolatedTableTest, ConfigsAreCorrect)
+	{
+		ASSERT_EQ(57, _analogConfig->Size());
+		ASSERT_EQ(58, _size);
+		ASSERT_EQ((float *)(_analogConfig + 1), _analogConfig->Table());
+		ASSERT_EQ(-10, _analogConfig->Table()[0]);
+	}
 
 	TEST_F(FloatInputService_AnalogInterpolatedTableTest, WhenGettingValueInTable_ThenCorrectValueIsReturned)
 	{

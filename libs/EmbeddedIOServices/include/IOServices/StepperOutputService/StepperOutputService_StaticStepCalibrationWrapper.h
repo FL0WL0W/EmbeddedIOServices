@@ -10,14 +10,8 @@ namespace IOServices
 	PACK(
 	struct StepperOutputService_StaticStepCalibrationWrapperConfig
 	{
-	private:
-		StepperOutputService_StaticStepCalibrationWrapperConfig()
-		{
-			
-		}
-		
 	public:
-		unsigned int Size()
+		constexpr const unsigned int Size()
 		{
 			return sizeof(StepperOutputService_StaticStepCalibrationWrapperConfig);
 		}

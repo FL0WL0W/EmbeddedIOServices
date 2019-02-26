@@ -8,14 +8,8 @@ namespace IOServices
 	PACK(
 	struct FloatInputService_FaultDetectionWrapperConfig
 	{
-	private:
-		FloatInputService_FaultDetectionWrapperConfig()
-		{
-			
-		}
-		
 	public:
-		unsigned int Size() const
+		constexpr const unsigned int Size() const
 		{
 			return sizeof(FloatInputService_FaultDetectionWrapperConfig);
 		}

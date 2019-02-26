@@ -13,14 +13,8 @@ namespace IOServices
 	template<unsigned char Degree>
 	struct FloatInputService_AnalogPolynomialConfig
 	{
-	private:
-		FloatInputService_AnalogPolynomialConfig()
-		{
-			
-		}
-		
 	public:		
-		unsigned int Size() const
+		constexpr const unsigned int Size() const
 		{
 			return sizeof(FloatInputService_AnalogPolynomialConfig<Degree>);
 		}

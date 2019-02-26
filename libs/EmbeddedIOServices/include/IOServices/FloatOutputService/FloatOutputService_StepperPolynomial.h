@@ -14,14 +14,8 @@ namespace IOServices
 	template<unsigned char Degree>
 	struct FloatOutputService_StepperPolynomialConfig
 	{
-	private:
-		FloatOutputService_StepperPolynomialConfig()
-		{
-			
-		}
-			
 	public:
-		unsigned int Size() const
+		constexpr const unsigned int Size() const
 		{
 			return sizeof(FloatOutputService_StepperPolynomialConfig<Degree>);
 		}

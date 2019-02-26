@@ -13,14 +13,8 @@ namespace IOServices
 	template<unsigned char Degree>
 	struct FloatInputService_FrequencyPolynomialConfig
 	{
-	private:
-		FloatInputService_FrequencyPolynomialConfig()
-		{
-			
-		}
-		
 	public:
-		unsigned int Size() const
+		constexpr const unsigned int Size() const
 		{
 			return sizeof(FloatInputService_FrequencyPolynomialConfig<Degree>);
 		}

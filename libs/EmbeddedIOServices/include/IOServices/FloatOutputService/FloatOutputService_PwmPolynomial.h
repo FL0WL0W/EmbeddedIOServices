@@ -13,14 +13,8 @@ namespace IOServices
 	template<unsigned char Degree>
 	struct FloatOutputService_PwmPolynomialConfig
 	{
-	private:
-		FloatOutputService_PwmPolynomialConfig()
-		{
-			
-		}
-		
 	public:
-		unsigned int Size() const
+		constexpr const unsigned int Size() const
 		{
 			return sizeof(FloatOutputService_PwmPolynomialConfig<Degree>);
 		}

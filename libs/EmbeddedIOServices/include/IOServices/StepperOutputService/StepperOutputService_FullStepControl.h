@@ -10,14 +10,8 @@ namespace IOServices
 	PACK(
 	struct StepperOutputService_FullStepControlConfig
 	{
-	private:
-		StepperOutputService_FullStepControlConfig()
-		{
-			
-		}
-		
 	public:
-		unsigned int Size() const
+		constexpr const unsigned int Size() const
 		{
 			return sizeof(StepperOutputService_FullStepControlConfig);
 		}

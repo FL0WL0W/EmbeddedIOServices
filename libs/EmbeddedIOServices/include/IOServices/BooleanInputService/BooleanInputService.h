@@ -9,14 +9,8 @@ namespace IOServices
 	PACK(
 	struct BooleanInputServiceConfig
 	{
-	private:
-		BooleanInputServiceConfig()
-		{
-
-		}
-		
 	public:
-		unsigned int Size() const
+		constexpr const unsigned int Size() const
 		{
 			return sizeof(BooleanInputServiceConfig);
 		}
