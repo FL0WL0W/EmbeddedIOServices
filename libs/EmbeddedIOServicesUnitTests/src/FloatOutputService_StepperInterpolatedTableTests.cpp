@@ -23,7 +23,7 @@ namespace UnitTests
 			stepperConfig->MinValue = 10;
 			stepperConfig->MaxValue = 110;
 			stepperConfig->Resolution = 11;
-			int *Table = (int *)(stepperConfig + 1);
+			int32_t *Table = (int32_t *)(stepperConfig + 1);
 			Table[0] = -10;
 			Table[1] = 0;
 			Table[2] = 10;

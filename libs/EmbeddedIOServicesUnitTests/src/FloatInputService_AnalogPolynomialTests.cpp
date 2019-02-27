@@ -41,16 +41,16 @@ namespace UnitTests
 			void *buildConfig = config;
 
 			//analog polynomial service id
-			*((unsigned char *)buildConfig) = 2;
-			buildConfig = (void *)(((unsigned char *)buildConfig) + 1);
+			*((uint8_t *)buildConfig) = 2;
+			buildConfig = (void *)(((uint8_t *)buildConfig) + 1);
 
 			memcpy(buildConfig, analogConfig, sizeof(FloatInputService_AnalogPolynomialConfig<4>));
-			buildConfig = (void *)((unsigned char *)buildConfig + sizeof(FloatInputService_AnalogPolynomialConfig<4>));
+			buildConfig = (void *)((uint8_t *)buildConfig + sizeof(FloatInputService_AnalogPolynomialConfig<4>));
 
 			EXPECT_CALL(_timerService, GetTicksPerSecond())
 				.WillRepeatedly(Return(5000));
 			EXPECT_CALL(_analogService, InitPin(1)).Times(1);
-			unsigned int size = 0;
+			uint32_t size = 0;
 			_floatInputService = IFloatInputService::CreateFloatInputService(&_hardwareAbstractionCollection, config, &size);
 		}
 

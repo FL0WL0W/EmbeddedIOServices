@@ -5,8 +5,8 @@
 
 namespace Stm32
 {
-    void EnableTimerClock(unsigned char timNum);
-    void EnableTimerInterrupts(unsigned char timNum);
+    void EnableTimerClock(uint8_t timNum);
+    void EnableTimerInterrupts(uint8_t timNum);
 
 #ifdef TIM1
 	extern bool TIM1_Freq_Locked;

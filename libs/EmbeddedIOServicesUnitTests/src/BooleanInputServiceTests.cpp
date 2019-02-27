@@ -29,17 +29,17 @@ namespace UnitTests
 			inputConfig->Inverted = false;
 
 			void *config = malloc(inputConfig->Size() + 1);
-			*(unsigned char *)config = 2;
-			memcpy(((unsigned char *)config + 1), inputConfig, inputConfig->Size());
+			*(uint8_t *)config = 2;
+			memcpy(((uint8_t *)config + 1), inputConfig, inputConfig->Size());
 
-			unsigned int size = 0;
+			uint32_t size = 0;
 			_booleanInputServiceUninverted = IBooleanInputService::CreateBooleanInputService(&_hardwareAbstractionCollection, config, &size);
 
 			inputConfig->Pin = 2;
 			inputConfig->Inverted = true;
 			config = malloc(inputConfig->Size() + 1);
-			*(unsigned char *)config = 2;
-			memcpy(((unsigned char *)config + 1), inputConfig, inputConfig->Size());
+			*(uint8_t *)config = 2;
+			memcpy(((uint8_t *)config + 1), inputConfig, inputConfig->Size());
 			_booleanInputServiceInverted = IBooleanInputService::CreateBooleanInputService(&_hardwareAbstractionCollection, config, &size);
 		}
 

@@ -8,12 +8,12 @@ namespace Stm32
 {
     struct TimAndChannel
     {
-        unsigned char TimNum;
+        uint8_t TimNum;
         TIM_TypeDef *TIM;
-        unsigned short TIM_Channel;
+        uint16_t TIM_Channel;
     };
 
-	TimAndChannel Stm32HalPwmPinToTimAndChannel(unsigned short pin)
+	TimAndChannel Stm32HalPwmPinToTimAndChannel(uint16_t pin)
 	{
 		switch (pin)
 		{
@@ -251,7 +251,7 @@ namespace Stm32
 		HalPwmService = this;
 	}
 	
-	void Stm32HalPwmService::InitPin(unsigned short pin, PinDirection direction, unsigned short minFrequency)
+	void Stm32HalPwmService::InitPin(uint16_t pin, PinDirection direction, uint16_t minFrequency)
 	{
 		if (pin == 0)
 			return;
@@ -264,7 +264,7 @@ namespace Stm32
 		TIM_HandleStruct.Instance = timAndChannel.TIM;
 
 		//set prescaler
-		unsigned int clockFrequency = HAL_RCC_GetSysClockFreq();
+		uint32_t clockFrequency = HAL_RCC_GetSysClockFreq();
 		TIM_HandleStruct.Init.Prescaler = (clockFrequency / minFrequency) / 65535;
 
 		if(direction == In)
@@ -379,7 +379,7 @@ namespace Stm32
 		//set mode
 		TIM_HandleStruct.Init.CounterMode = TIM_COUNTERMODE_UP;
 		TIM_HandleStruct.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-		TIM_HandleStruct.Init.Period = (int)ceil(minFrequency / (TIM_HandleStruct.Init.Prescaler+1));
+		TIM_HandleStruct.Init.Period = static_cast<uint16_t>(ceil(minFrequency / (TIM_HandleStruct.Init.Prescaler+1)));
   		TIM_HandleStruct.Init.Period = 0xFFFF;
   		TIM_HandleStruct.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
 		
@@ -463,7 +463,7 @@ namespace Stm32
 		}
 	}
 		
-	PwmValue Stm32HalPwmService::ReadPin(unsigned short pin)
+	PwmValue Stm32HalPwmService::ReadPin(uint16_t pin)
 	{
 		PwmValue value = PwmValue();
 		if (pin == 0)
@@ -471,9 +471,9 @@ namespace Stm32
 		
 		TimAndChannel timAndChannel = Stm32HalPwmPinToTimAndChannel(pin);
 
-		unsigned char timerMinus1 = timAndChannel.TimNum - 1;
-		unsigned char iCMinus1 = 0;
-		unsigned char iCMinus1Neg = 0;
+		uint8_t timerMinus1 = timAndChannel.TimNum - 1;
+		uint8_t iCMinus1 = 0;
+		uint8_t iCMinus1Neg = 0;
 		
 		switch(timAndChannel.TIM_Channel)
 		{
@@ -495,14 +495,14 @@ namespace Stm32
 				break;
 		}
 
-		int pulseTick = (int)_currCC[timerMinus1][iCMinus1Neg] - _currCC[timerMinus1][iCMinus1];
+		int32_t pulseTick = static_cast<int32_t>(_currCC[timerMinus1][iCMinus1Neg]) - _currCC[timerMinus1][iCMinus1];
 		if(pulseTick < 0)
-			pulseTick = (int)_currCC[timerMinus1][iCMinus1Neg] - _prevCC[timerMinus1][iCMinus1];
+			pulseTick = static_cast<int32_t>(_currCC[timerMinus1][iCMinus1Neg]) - _prevCC[timerMinus1][iCMinus1];
 		if (pulseTick < 0)
-			pulseTick = ((int)_currCC[timerMinus1][iCMinus1Neg] - _currCC[timerMinus1][iCMinus1]) + 65535;
-		unsigned short periodTick = _currCC[timerMinus1][iCMinus1] - _prevCC[timerMinus1][iCMinus1];
+			pulseTick = (static_cast<int32_t>(_currCC[timerMinus1][iCMinus1Neg]) - _currCC[timerMinus1][iCMinus1]) + 65535;
+		uint16_t periodTick = _currCC[timerMinus1][iCMinus1] - _prevCC[timerMinus1][iCMinus1];
 				
-		float clockFactor = ((float)(timAndChannel.TIM->PSC + 1)) / HAL_RCC_GetSysClockFreq();
+		float clockFactor = static_cast<float>(timAndChannel.TIM->PSC + 1) / HAL_RCC_GetSysClockFreq();
 
 		value.PulseWidth = pulseTick * clockFactor;
 		value.Period = periodTick * clockFactor;
@@ -510,7 +510,7 @@ namespace Stm32
 		return value;
 	}
 	
-	void Stm32HalPwmService::WritePin(unsigned short pin, HardwareAbstraction::PwmValue value)
+	void Stm32HalPwmService::WritePin(uint16_t pin, HardwareAbstraction::PwmValue value)
 	{
 		if (pin == 0)
 			return;
@@ -563,9 +563,9 @@ namespace Stm32
 			)
 		{
 			//Set period
-			unsigned int clockFrequency = HAL_RCC_GetSysClockFreq();
+			uint32_t clockFrequency = HAL_RCC_GetSysClockFreq();
 			timAndChannel.TIM->PSC = (clockFrequency * value.Period) / 65535;
-			timAndChannel.TIM->ARR = (int)ceil((clockFrequency * value.Period) / (timAndChannel.TIM->PSC+1));
+			timAndChannel.TIM->ARR = static_cast<uint16_t>(ceil((clockFrequency * value.Period) / (timAndChannel.TIM->PSC+1)));
 		}
 
 		//set pulse width

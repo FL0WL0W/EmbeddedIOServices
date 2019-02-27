@@ -61,7 +61,7 @@ namespace Stm32
     bool TIM14_Input;
 #endif
 
-    void EnableTimerClock(unsigned char timNum)
+    void EnableTimerClock(uint8_t timNum)
     {
 		switch (timNum)
 		{
@@ -138,7 +138,7 @@ namespace Stm32
 		}
     }
 
-    void EnableTimerInterrupts(unsigned char timNum)
+    void EnableTimerInterrupts(uint8_t timNum)
 	{
 		switch (timNum)
 		{

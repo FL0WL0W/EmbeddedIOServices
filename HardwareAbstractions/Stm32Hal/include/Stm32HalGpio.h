@@ -5,9 +5,9 @@
 
 namespace Stm32
 {
-    unsigned short PinToGPIO_Pin(unsigned char pin);
-    GPIO_TypeDef *PinToGPIO(unsigned char pin);
-    void EnableGPIOClock(unsigned char pin);
+    uint16_t PinToGPIO_Pin(uint16_t pin);
+    GPIO_TypeDef *PinToGPIO(uint16_t pin);
+    void EnableGPIOClock(uint16_t pin);
 }
 
 #endif

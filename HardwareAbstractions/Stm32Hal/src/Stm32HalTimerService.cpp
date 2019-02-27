@@ -49,7 +49,7 @@ namespace Stm32
 	Stm32HalTimerService *TimerService14 = 0;
 #endif
 	
-	Stm32HalTimerService::Stm32HalTimerService(unsigned char timer, unsigned char compareRegister, unsigned int ticksPerSecond)
+	Stm32HalTimerService::Stm32HalTimerService(uint8_t timer, uint8_t compareRegister, uint32_t ticksPerSecond)
 	{	
 		switch (timer)
 		{
@@ -190,7 +190,7 @@ namespace Stm32
 		TIM_HandleStruct.Instance = TIM;
 
 		//set prescaler
-		unsigned int clockFrequency = HAL_RCC_GetSysClockFreq();
+		uint32_t clockFrequency = HAL_RCC_GetSysClockFreq();
 		TIM_HandleStruct.Init.Prescaler = clockFrequency / ticksPerSecond;
 		_ticksPerSecond = clockFrequency / TIM_HandleStruct.Init.Prescaler;
 		
@@ -217,7 +217,7 @@ namespace Stm32
 		HAL_TIM_ConfigClockSource(&TIM_HandleStruct, &TIM_ClockConfigStruct);
 	
 		//configure channel
-		unsigned int Channel;
+		uint32_t Channel;
 		TIM_OC_InitTypeDef TIM_OC_InitStruct = {0};
 		TIM_OC_InitStruct.OCMode = TIM_OCMODE_TIMING;
 		TIM_OC_InitStruct.OCPolarity = TIM_OCPOLARITY_HIGH;
@@ -257,16 +257,16 @@ namespace Stm32
 		HAL_TIM_Base_Start(&TIM_HandleStruct);
 	}
 
-	unsigned int Stm32HalTimerService::GetTick()
+	uint32_t Stm32HalTimerService::GetTick()
 	{
 		return _tick | TIM->CNT;
 	}
 
-	void Stm32HalTimerService::ScheduleCallBack(unsigned int tick)
+	void Stm32HalTimerService::ScheduleCallBack(uint32_t tick)
 	{
 		//tick overhead compensation
 		tick -= _tickCompensation;
-		unsigned int counter = _tick | TIM->CNT;
+		uint32_t counter = _tick | TIM->CNT;
 		if (_tick == (tick & 0xFFFF0000))
 		{
 			if (tick <= counter)
@@ -332,7 +332,7 @@ namespace Stm32
 		}
 	}
 
-	unsigned int Stm32HalTimerService::GetTicksPerSecond()
+	uint32_t Stm32HalTimerService::GetTicksPerSecond()
 	{
 		return _ticksPerSecond;
 	}

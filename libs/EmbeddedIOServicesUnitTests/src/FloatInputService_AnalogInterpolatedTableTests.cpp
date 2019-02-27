@@ -19,7 +19,7 @@ namespace UnitTests
 		HardwareAbstractionCollection _hardwareAbstractionCollection;
 		IFloatInputService *_floatInputService;
 		FloatInputService_AnalogInterpolatedTableConfig *_analogConfig;
-		unsigned int _size = 0;
+		uint32_t _size = 0;
 
 		FloatInputService_AnalogInterpolatedTableTest() 
 		{
@@ -29,11 +29,11 @@ namespace UnitTests
 			_analogConfig = (FloatInputService_AnalogInterpolatedTableConfig *)malloc(sizeof(FloatInputService_AnalogInterpolatedTableConfig) + 4 * 11);
 			
 			//adcPin
-			// unsigned short AdcPin;
+			// uint16_t AdcPin;
 			// float MinInputValue;
 			// float MaxInputValue;
-			// unsigned short DotSampleRate;
-			// unsigned char Resolution;
+			// uint16_t DotSampleRate;
+			// uint8_t Resolution;
 			// float *Table;
 			_analogConfig->AdcPin = 1;
 			_analogConfig->DotSampleRate = 500;
@@ -57,11 +57,11 @@ namespace UnitTests
 			void *buildConfig = config;
 
 			//analog InterpolatedTable service id
-			*((unsigned char *)buildConfig) = 4;
-			buildConfig = (void *)(((unsigned char *)buildConfig) + 1);
+			*((uint8_t *)buildConfig) = 4;
+			buildConfig = (void *)(((uint8_t *)buildConfig) + 1);
 
 			memcpy(buildConfig, _analogConfig, _analogConfig->Size());
-			buildConfig = (void *)((unsigned char *)buildConfig + _analogConfig->Size());
+			buildConfig = (void *)((uint8_t *)buildConfig + _analogConfig->Size());
 
 			EXPECT_CALL(_timerService, GetTicksPerSecond())
 				.WillRepeatedly(Return(5000));

@@ -21,18 +21,18 @@ namespace UnitTests
 		{
 			bool *inputConfig = (bool *)malloc(sizeof(bool));
 
-			unsigned int size = 0;
+			uint32_t size = 0;
 
 			*inputConfig = false;
-			void *config = malloc(sizeof(bool) + sizeof(unsigned char));
-			*(unsigned char *)config = 1;
-			memcpy(((unsigned char *)config + 1), inputConfig, sizeof(bool));
+			void *config = malloc(sizeof(bool) + sizeof(uint8_t));
+			*(uint8_t *)config = 1;
+			memcpy(((uint8_t *)config + 1), inputConfig, sizeof(bool));
 			_booleanInputServiceFalse = IBooleanInputService::CreateBooleanInputService(&_hardwareAbstractionCollection, config, &size);
 
 			*inputConfig = true;
-			config = malloc(sizeof(bool) + sizeof(unsigned char));
-			*(unsigned char *)config = 1;
-			memcpy(((unsigned char *)config + 1), inputConfig, sizeof(bool));
+			config = malloc(sizeof(bool) + sizeof(uint8_t));
+			*(uint8_t *)config = 1;
+			memcpy(((uint8_t *)config + 1), inputConfig, sizeof(bool));
 			_booleanInputServiceTrue = IBooleanInputService::CreateBooleanInputService(&_hardwareAbstractionCollection, config, &size);
 		}
 

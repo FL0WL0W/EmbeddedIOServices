@@ -2,7 +2,7 @@
 
 namespace Stm32
 {
-    unsigned short PinToGPIO_Pin(unsigned char pin)
+    uint16_t PinToGPIO_Pin(uint16_t pin)
     {
         switch ((pin - 1) % 16)
         {
@@ -41,7 +41,7 @@ namespace Stm32
         }
     }
 
-    GPIO_TypeDef *PinToGPIO(unsigned char pin)
+    GPIO_TypeDef *PinToGPIO(uint16_t pin)
     {
 		switch((pin - 1) / 16)
 		{
@@ -92,7 +92,7 @@ namespace Stm32
 		}
     }
     
-    void EnableGPIOClock(unsigned char pin)
+    void EnableGPIOClock(uint16_t pin)
     {
 		//PA 1-16
 		//PB 17-32

@@ -39,16 +39,16 @@ namespace UnitTests
 			void *buildConfig = config;
 
 			//pwm polynomial service id
-			*((unsigned char *)buildConfig) = 1;
-			buildConfig = (void *)(((unsigned char *)buildConfig) + 1);
+			*((uint8_t *)buildConfig) = 1;
+			buildConfig = (void *)(((uint8_t *)buildConfig) + 1);
 
 			memcpy(buildConfig, pwmConfig, sizeof(FloatOutputService_PwmPolynomialConfig<4>));
-			buildConfig = (void *)((unsigned char *)buildConfig + sizeof(FloatOutputService_PwmPolynomialConfig<4>));
+			buildConfig = (void *)((uint8_t *)buildConfig + sizeof(FloatOutputService_PwmPolynomialConfig<4>));
 
 			EXPECT_CALL(_timerService, GetTicksPerSecond())
 				.WillRepeatedly(Return(5000));
 			EXPECT_CALL(_pwmService, InitPin(1, Out, 10000)).Times(1);
-			unsigned int size = 0;
+			uint32_t size = 0;
 			_floatOutputService = IFloatOutputService::CreateFloatOutputService(&_hardwareAbstractionCollection, config, &size);
 		}
 

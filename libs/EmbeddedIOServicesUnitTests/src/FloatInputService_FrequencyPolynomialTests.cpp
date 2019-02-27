@@ -43,16 +43,16 @@ namespace UnitTests
 			void *buildConfig = config;
 
 			//frequency polynomial service id
-			*((unsigned char *)buildConfig) = 3;
-			buildConfig = (void *)(((unsigned char *)buildConfig) + 1);
+			*((uint8_t *)buildConfig) = 3;
+			buildConfig = (void *)(((uint8_t *)buildConfig) + 1);
 
 			memcpy(buildConfig, analogConfig, sizeof(FloatInputService_FrequencyPolynomialConfig<4>));
-			buildConfig = (void *)((unsigned char *)buildConfig + sizeof(FloatInputService_FrequencyPolynomialConfig<4>));
+			buildConfig = (void *)((uint8_t *)buildConfig + sizeof(FloatInputService_FrequencyPolynomialConfig<4>));
 
 			EXPECT_CALL(_timerService, GetTicksPerSecond())
 				.WillRepeatedly(Return(5000));
 			EXPECT_CALL(_pwmService, InitPin(1, In, analogConfig->MinFrequency)).Times(1);
-			unsigned int size = 0;
+			uint32_t size = 0;
 			_floatInputService = IFloatInputService::CreateFloatInputService(&_hardwareAbstractionCollection, config, &size);
 		}
 

@@ -19,19 +19,19 @@ namespace UnitTests
 		{
 			float *analogConfig = (float *)malloc(sizeof(float) + sizeof(float));
 
-			void *config = malloc(sizeof(float) + sizeof(float) + sizeof(unsigned char));
+			void *config = malloc(sizeof(float) + sizeof(float) + sizeof(uint8_t));
 			void *buildConfig = config;
 			//analog static service id
-			*((unsigned char *)buildConfig) = 1;
-			buildConfig = (void *)(((unsigned char *)buildConfig) + 1);
+			*((uint8_t *)buildConfig) = 1;
+			buildConfig = (void *)(((uint8_t *)buildConfig) + 1);
 
 			*analogConfig = 5123.2f;
 			*(analogConfig + 1) = 2321.5;
 			
 			memcpy(buildConfig, analogConfig, sizeof(float) + sizeof(float));
-			buildConfig = (void *)((unsigned char *)buildConfig + sizeof(float) + sizeof(float));
+			buildConfig = (void *)((uint8_t *)buildConfig + sizeof(float) + sizeof(float));
 
-			unsigned int size = 0;
+			uint32_t size = 0;
 			_floatInputService = IFloatInputService::CreateFloatInputService(&_hardwareAbstractionCollection, config, &size);
 		}
 

@@ -30,11 +30,11 @@ namespace UnitTests
 			FloatInputService_AnalogInterpolatedTableConfig *analogConfig = (FloatInputService_AnalogInterpolatedTableConfig *)malloc(sizeof(FloatInputService_AnalogInterpolatedTableConfig) + 4 * 11);
 			
 			//adcPin
-			// unsigned short AdcPin;
+			// uint16_t AdcPin;
 			// float MinInputValue;
 			// float MaxInputValue;
-			// unsigned short DotSampleRate;
-			// unsigned char Resolution;
+			// uint16_t DotSampleRate;
+			// uint8_t Resolution;
 			// float *Table;
 			analogConfig->AdcPin = 1;
 			analogConfig->DotSampleRate = 500;
@@ -62,23 +62,23 @@ namespace UnitTests
 			void *buildConfig = config;
 
 			//fault detection service id
-			*((unsigned char *)buildConfig) = 6;
-			buildConfig = (void *)(((unsigned char *)buildConfig) + 1);
+			*((uint8_t *)buildConfig) = 6;
+			buildConfig = (void *)(((uint8_t *)buildConfig) + 1);
 
 			memcpy(buildConfig, faultConfig, faultConfig->Size());
-			buildConfig = (void *)((unsigned char *)buildConfig + faultConfig->Size());
+			buildConfig = (void *)((uint8_t *)buildConfig + faultConfig->Size());
 
 			//analog InterpolatedTable service id
-			*((unsigned char *)buildConfig) = 4;
-			buildConfig = (void *)(((unsigned char *)buildConfig) + 1);
+			*((uint8_t *)buildConfig) = 4;
+			buildConfig = (void *)(((uint8_t *)buildConfig) + 1);
 
 			memcpy(buildConfig, analogConfig, analogConfig->Size());
-			buildConfig = (void *)((unsigned char *)buildConfig + analogConfig->Size());
+			buildConfig = (void *)((uint8_t *)buildConfig + analogConfig->Size());
 
 			EXPECT_CALL(_timerService, GetTicksPerSecond())
 				.WillRepeatedly(Return(5000));
 			EXPECT_CALL(_analogService, InitPin(1)).Times(1);
-			unsigned int size = 0;
+			uint32_t size = 0;
 			_floatInputService = IFloatInputService::CreateFloatInputService(&_hardwareAbstractionCollection, config, &size);
 		}
 

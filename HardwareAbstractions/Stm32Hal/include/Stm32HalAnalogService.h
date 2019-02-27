@@ -11,8 +11,8 @@ namespace Stm32
 	{
 	public:
 		Stm32HalAnalogService();
-		void InitPin(unsigned short pin);
-		float ReadPin(unsigned short pin);
+		void InitPin(uint16_t pin);
+		float ReadPin(uint16_t pin);
 	};
 }
 

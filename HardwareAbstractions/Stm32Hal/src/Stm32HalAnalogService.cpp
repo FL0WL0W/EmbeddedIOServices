@@ -100,7 +100,7 @@ defined(ADC4_IN15_PIN)
 		HAL_ADC_Init(&hadc);
 	}
 
-	void Stm32HalAnalogService::InitPin(unsigned short pin)
+	void Stm32HalAnalogService::InitPin(uint16_t pin)
 	{
 		if (pin == 0)
 			return;
@@ -517,7 +517,7 @@ defined(ADC4_IN15_PIN)
 		HAL_GPIO_Init(PinToGPIO(pin), &GPIO_InitStruct);
 	}
 	
-	float Stm32HalAnalogService::ReadPin(unsigned short pin)
+	float Stm32HalAnalogService::ReadPin(uint16_t pin)
 	{
 		ADC_HandleTypeDef hadc;
 		

@@ -69,7 +69,7 @@ namespace UnitTests
 			.WillRepeatedly(Return(300));
 		timerService.ReturnCallBack();
 		ASSERT_EQ(2, lastCallBack) << "second callback not called";
-		ASSERT_EQ((unsigned char)0, timerService.StackSize) << "Schedule tick not set to second overflow task after second task called";
+		ASSERT_EQ((uint8_t)0, timerService.StackSize) << "Schedule tick not set to second overflow task after second task called";
 
 		//make sure another callback doesnt mess it up
 		lastCallBack = 0;

@@ -3,7 +3,7 @@
 
 namespace Stm32
 {
-	void Stm32HalDigitalService::InitPin(unsigned short pin, HardwareAbstraction::PinDirection direction)
+	void Stm32HalDigitalService::InitPin(uint16_t pin, HardwareAbstraction::PinDirection direction)
 	{		
 		if (pin == 0)
 			return;
@@ -18,7 +18,7 @@ namespace Stm32
 		HAL_GPIO_Init(PinToGPIO(pin), &GPIO_InitStruct);
 	}
 	
-	bool Stm32HalDigitalService::ReadPin(unsigned short pin)
+	bool Stm32HalDigitalService::ReadPin(uint16_t pin)
 	{
 		if (pin == 0)
 			return false;
@@ -26,7 +26,7 @@ namespace Stm32
 		return HAL_GPIO_ReadPin(PinToGPIO(pin), PinToGPIO_Pin(pin)) == GPIO_PIN_SET;
 	}
 	
-	void Stm32HalDigitalService::WritePin(unsigned short pin, bool value)
+	void Stm32HalDigitalService::WritePin(uint16_t pin, bool value)
 	{
 		if (pin == 0)
 			return;
@@ -34,13 +34,13 @@ namespace Stm32
   		HAL_GPIO_WritePin(PinToGPIO(pin), PinToGPIO_Pin(pin), value? GPIO_PIN_SET : GPIO_PIN_RESET);
 	}
 
-	void Stm32HalDigitalService::ScheduleRecurringInterrupt(unsigned short pin, ICallBack *callBack)
+	void Stm32HalDigitalService::ScheduleRecurringInterrupt(uint16_t pin, ICallBack *callBack)
 	{
 		//TODO
 		//Setup Interrupt
 	}
 
-	void Stm32HalDigitalService::ScheduleNextInterrupt(unsigned short pin, ICallBack *callBack)
+	void Stm32HalDigitalService::ScheduleNextInterrupt(uint16_t pin, ICallBack *callBack)
 	{
 		//TODO
 	}

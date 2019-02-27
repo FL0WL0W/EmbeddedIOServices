@@ -9,21 +9,21 @@ namespace Stm32
 	class Stm32HalTimerService : public HardwareAbstraction::ITimerService
 	{
 	private:
-		unsigned int _ticksPerSecond;
+		uint32_t _ticksPerSecond;
 		TIM_TypeDef *TIM;
-		unsigned short _compare_IT;
-		unsigned short _tickCompensation;
-		unsigned int _tick = 0;
-		unsigned int _callTick = 0;
+		uint16_t _compare_IT;
+		uint16_t _tickCompensation;
+		uint32_t _tick = 0;
+		uint32_t _callTick = 0;
 		bool _futureTick = false;
 		bool _futureTock = false;
 		void ReturnCallBack(void);
-		void ScheduleCallBack(unsigned int tick);
+		void ScheduleCallBack(uint32_t tick);
 	public:
-		Stm32HalTimerService(unsigned char timer, unsigned char compareRegister, unsigned int ticksPerSecond);
+		Stm32HalTimerService(uint8_t timer, uint8_t compareRegister, uint32_t ticksPerSecond);
 		void Interrupt(void);
-		unsigned int GetTick(void);
-		unsigned int GetTicksPerSecond(void);
+		uint32_t GetTick(void);
+		uint32_t GetTicksPerSecond(void);
 	};
 	
 #ifdef TIM1

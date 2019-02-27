@@ -27,11 +27,11 @@ namespace UnitTests
 			FloatInputService_FrequencyInterpolatedTableConfig *analogConfig = (FloatInputService_FrequencyInterpolatedTableConfig *)malloc(sizeof(FloatInputService_FrequencyInterpolatedTableConfig) + 4 * 11);
 			
 			//adcPin
-			// unsigned short AdcPin;
+			// uint16_t AdcPin;
 			// float MinInputValue;
 			// float MaxInputValue;
-			// unsigned short DotSampleRate;
-			// unsigned char Resolution;
+			// uint16_t DotSampleRate;
+			// uint8_t Resolution;
 			// float *Table;
 			analogConfig->PwmPin = 1;
 			analogConfig->DotSampleRate = 500;
@@ -55,16 +55,16 @@ namespace UnitTests
 			void *buildConfig = config;
 
 			//frequency InterpolatedTable service id
-			*((unsigned char *)buildConfig) = 5;
-			buildConfig = (void *)(((unsigned char *)buildConfig) + 1);
+			*((uint8_t *)buildConfig) = 5;
+			buildConfig = (void *)(((uint8_t *)buildConfig) + 1);
 
 			memcpy(buildConfig, analogConfig, analogConfig->Size());
-			buildConfig = (void *)((unsigned char *)buildConfig + analogConfig->Size());
+			buildConfig = (void *)((uint8_t *)buildConfig + analogConfig->Size());
 
 			EXPECT_CALL(_timerService, GetTicksPerSecond())
 				.WillRepeatedly(Return(5000));
 			EXPECT_CALL(_pwmService, InitPin(1, In, analogConfig->MinFrequency)).Times(1);
-			unsigned int size = 0;
+			uint32_t size = 0;
 			_floatInputService = IFloatInputService::CreateFloatInputService(&_hardwareAbstractionCollection, config, &size);
 		}
 

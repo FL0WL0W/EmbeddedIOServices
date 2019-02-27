@@ -13,11 +13,11 @@ namespace Stm32
 	class Stm32HalDigitalService : public HardwareAbstraction::IDigitalService
 	{
 	public:
-		void InitPin(unsigned short pin, HardwareAbstraction::PinDirection direction);
-		bool ReadPin(unsigned short pin);
-		void WritePin(unsigned short pin, bool value);
-		void ScheduleRecurringInterrupt(unsigned short pin, ICallBack *);
-		void ScheduleNextInterrupt(unsigned short pin, ICallBack *);
+		void InitPin(uint16_t pin, HardwareAbstraction::PinDirection direction);
+		bool ReadPin(uint16_t pin);
+		void WritePin(uint16_t pin, bool value);
+		void ScheduleRecurringInterrupt(uint16_t pin, ICallBack *);
+		void ScheduleNextInterrupt(uint16_t pin, ICallBack *);
 	};
 }
 

@@ -13,53 +13,53 @@ namespace Stm32
 	{
 	protected:
 #if defined(TIM14)
-		unsigned short _prevCC[14][4];
-		unsigned short _currCC[14][4];
+		uint16_t _prevCC[14][4];
+		uint16_t _currCC[14][4];
 #elif defined(TIM13)
-		unsigned short _prevCC[13][4];
-		unsigned short _currCC[13][4];
+		uint16_t _prevCC[13][4];
+		uint16_t _currCC[13][4];
 #elif defined(TIM12)
-		unsigned short _prevCC[12][4];
-		unsigned short _currCC[12][4];
+		uint16_t _prevCC[12][4];
+		uint16_t _currCC[12][4];
 #elif defined(TIM11)
-		unsigned short _prevCC[11][4];
-		unsigned short _currCC[11][4];
+		uint16_t _prevCC[11][4];
+		uint16_t _currCC[11][4];
 #elif defined(TIM10)
-		unsigned short _prevCC[10][4];
-		unsigned short _currCC[10][4];
+		uint16_t _prevCC[10][4];
+		uint16_t _currCC[10][4];
 #elif defined(TIM9)
-		unsigned short _prevCC[9][4];
-		unsigned short _currCC[9][4];
+		uint16_t _prevCC[9][4];
+		uint16_t _currCC[9][4];
 #elif defined(TIM8)
-		unsigned short _prevCC[8][4];
-		unsigned short _currCC[8][4];
+		uint16_t _prevCC[8][4];
+		uint16_t _currCC[8][4];
 #elif defined(TIM7)
-		unsigned short _prevCC[7][4];
-		unsigned short _currCC[7][4];
+		uint16_t _prevCC[7][4];
+		uint16_t _currCC[7][4];
 #elif defined(TIM6)
-		unsigned short _prevCC[6][4];
-		unsigned short _currCC[6][4];
+		uint16_t _prevCC[6][4];
+		uint16_t _currCC[6][4];
 #elif defined(TIM5)
-		unsigned short _prevCC[5][4];
-		unsigned short _currCC[5][4];
+		uint16_t _prevCC[5][4];
+		uint16_t _currCC[5][4];
 #elif defined(TIM4)
-		unsigned short _prevCC[4][4];
-		unsigned short _currCC[4][4];
+		uint16_t _prevCC[4][4];
+		uint16_t _currCC[4][4];
 #elif defined(TIM3)
-		unsigned short _prevCC[3][4];
-		unsigned short _currCC[3][4];
+		uint16_t _prevCC[3][4];
+		uint16_t _currCC[3][4];
 #elif defined(TIM2)
-		unsigned short _prevCC[2][4];
-		unsigned short _currCC[2][4];
+		uint16_t _prevCC[2][4];
+		uint16_t _currCC[2][4];
 #elif defined(TIM1)
-		unsigned short _prevCC[1][4];
-		unsigned short _currCC[1][4];
+		uint16_t _prevCC[1][4];
+		uint16_t _currCC[1][4];
 #endif
 	public:
 		Stm32HalPwmService();
-		void InitPin(unsigned short pin, PinDirection direction, unsigned short minFrequency);
-		PwmValue ReadPin(unsigned short pin);
-		void WritePin(unsigned short pin, PwmValue value);
+		void InitPin(uint16_t pin, PinDirection direction, uint16_t minFrequency);
+		PwmValue ReadPin(uint16_t pin);
+		void WritePin(uint16_t pin, PwmValue value);
 #ifdef TIM1
 		void InterruptTim1(void);
 #endif
