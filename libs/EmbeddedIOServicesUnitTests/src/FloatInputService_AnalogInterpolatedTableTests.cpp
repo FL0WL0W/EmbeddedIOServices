@@ -19,7 +19,7 @@ namespace UnitTests
 		HardwareAbstractionCollection _hardwareAbstractionCollection;
 		IFloatInputService *_floatInputService;
 		FloatInputService_AnalogInterpolatedTableConfig *_analogConfig;
-		uint32_t _size = 0;
+		unsigned int _size = 0;
 
 		FloatInputService_AnalogInterpolatedTableTest() 
 		{

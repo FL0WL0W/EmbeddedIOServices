@@ -36,7 +36,7 @@ namespace UnitTests
 			*(uint8_t *)config = 1;
 			memcpy(((uint8_t *)config + 1), outputConfig, outputConfig->Size());
 
-			uint32_t size = 0;
+			unsigned int size = 0;
 			_booleanOutputService0 = IBooleanOutputService::CreateBooleanOutputService(&_hardwareAbstractionCollection, config, &size);
 
 			outputConfig->Pin = 3;

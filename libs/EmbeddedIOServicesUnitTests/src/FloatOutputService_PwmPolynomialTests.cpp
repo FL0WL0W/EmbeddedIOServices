@@ -48,7 +48,7 @@ namespace UnitTests
 			EXPECT_CALL(_timerService, GetTicksPerSecond())
 				.WillRepeatedly(Return(5000));
 			EXPECT_CALL(_pwmService, InitPin(1, Out, 10000)).Times(1);
-			uint32_t size = 0;
+			unsigned int size = 0;
 			_floatOutputService = IFloatOutputService::CreateFloatOutputService(&_hardwareAbstractionCollection, config, &size);
 		}
 

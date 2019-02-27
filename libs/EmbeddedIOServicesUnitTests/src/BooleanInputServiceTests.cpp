@@ -32,7 +32,7 @@ namespace UnitTests
 			*(uint8_t *)config = 2;
 			memcpy(((uint8_t *)config + 1), inputConfig, inputConfig->Size());
 
-			uint32_t size = 0;
+			unsigned int size = 0;
 			_booleanInputServiceUninverted = IBooleanInputService::CreateBooleanInputService(&_hardwareAbstractionCollection, config, &size);
 
 			inputConfig->Pin = 2;
