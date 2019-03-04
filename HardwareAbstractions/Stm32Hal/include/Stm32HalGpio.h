@@ -1,4 +1,5 @@
 #include "Stm32HalConf.h"
+#include "stdint.h"
 
 #ifndef STM32HALGPIO_H
 #define STM32HALGPIO_H

@@ -1,5 +1,6 @@
 #include "HardwareAbstraction/ITimerService.h"
 #include "Stm32HalTimer.h"
+#include "stdint.h"
 
 #ifndef STM32HALTIMERSERVICE_H
 #define STM32HALTIMERSERVICE_H

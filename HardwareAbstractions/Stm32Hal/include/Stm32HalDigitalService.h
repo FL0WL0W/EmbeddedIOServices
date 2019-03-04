@@ -2,6 +2,7 @@
 #include "HardwareAbstraction/IDigitalService.h"
 #include "Stm32HalConf.h"
 #include "Stm32HalGpio.h"
+#include "stdint.h"
 
 #ifndef STM32HALDIGITALSERVICE_H
 #define STM32HALDIGITALSERVICE_H

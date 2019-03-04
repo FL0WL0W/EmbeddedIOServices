@@ -1,6 +1,7 @@
 #include "HardwareAbstraction/PinDirection.h"
 #include "HardwareAbstraction/IPwmService.h"
 #include "Stm32HalGpio.h"
+#include "stdint.h"
 
 using namespace HardwareAbstraction;
 

@@ -1,4 +1,5 @@
 #include "Stm32HalConf.h"
+#include "stdint.h"
 
 #ifndef STM32HALTIMER_H
 #define STM32HALTIMER_H
