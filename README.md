@@ -86,7 +86,6 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
   <li>Create Stepper Feedback Limit Calibration Wrapper</li>
   <li>Analog Feedback Float Output Service Wrapper</li>
   <li>Analog Feedback Stepper Float Output Service Wrapper</li>
-  <li>Implement STM32Hal interrupt callbacks for digital inputs.</li>
   <li>Create PWM service that uses interrupt callback from DigitalService and Tick from TimerService to create software based PWM input and output.</li>
   <li>*Manual Test Stm32Hal Services</li>
   <ul>
@@ -94,6 +93,7 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
     <li>Digital Pin Init In (DONE)</li>
     <li>Digital Pin Write (DONE)</li>
     <li>Digital Pin Read (DONE)</li>
+    <li>Digital Pin Interrupt</li>
     <li>Analog Pin Init</li>
     <li>Analog Pin Read</li>
     <li>PWM Pin Init Out (DONE)</li>
