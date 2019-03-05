@@ -36,12 +36,11 @@ namespace Stm32
 
 	void Stm32HalDigitalService::ScheduleRecurringInterrupt(uint16_t pin, ICallBack *callBack)
 	{
-		//TODO
-		//Setup Interrupt
+		EnableInterrupt(pin, callBack, false);
 	}
 
 	void Stm32HalDigitalService::ScheduleNextInterrupt(uint16_t pin, ICallBack *callBack)
 	{
-		//TODO
+		EnableInterrupt(pin, callBack, true);
 	}
 }
