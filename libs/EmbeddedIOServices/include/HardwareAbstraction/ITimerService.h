@@ -31,7 +31,7 @@ namespace HardwareAbstraction
 		ICallBack *CallBackInstance;
 		bool DeleteOnExecution;
 		//only let TimerService edit these values
-		bool Scheduled;
+		bool Scheduled = false;
 		uint32_t Tick;
 	};
 
