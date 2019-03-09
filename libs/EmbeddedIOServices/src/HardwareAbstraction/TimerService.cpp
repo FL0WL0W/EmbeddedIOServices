@@ -82,7 +82,7 @@ namespace HardwareAbstraction
 		return taskToSchedule;
 	}
 
-	bool ITimerService::ScheduleTask(Task *task, uint32_t tick)
+	const bool ITimerService::ScheduleTask(Task *task, const uint32_t tick)
 	{
 		task->Tick = tick;
 		CallBackStackPointer[StackSize] = task;
@@ -96,7 +96,7 @@ namespace HardwareAbstraction
 		return true;
 	}
 
-	bool ITimerService::ReScheduleTask(Task *task, uint32_t tick)
+	const bool ITimerService::ReScheduleTask(Task *task, const uint32_t tick)
 	{
 		task->Tick = tick;
 		Task **end = CallBackStackPointer + StackSize;
@@ -118,7 +118,7 @@ namespace HardwareAbstraction
 		return true;
 	}
 
-	bool ITimerService::UnScheduleTask(Task *task)
+	const bool ITimerService::UnScheduleTask(Task *task)
 	{
 		Task **end = CallBackStackPointer + StackSize;
 		if (CallBackStackPointer[StackSize - 1] == task)
@@ -134,18 +134,19 @@ namespace HardwareAbstraction
 		return true;
 	}
 	
-	uint32_t ITimerService::GetElapsedTick(uint32_t lastTick)
+	const uint32_t ITimerService::GetElapsedTick(const uint32_t lastTick)
 	{
 		uint32_t tick = GetTick();
-		if (tick < lastTick)
+		uint32_t compareTick = lastTick;
+		if (tick < compareTick)
 		{
-			lastTick += 2147483647;
+			compareTick += 2147483647;
 			tick += 2147483647;
 		}
-		return tick - lastTick;
+		return tick - compareTick;
 	}
 	
-	float ITimerService::GetElapsedTime(uint32_t lastTick)
+	const float ITimerService::GetElapsedTime(const uint32_t lastTick)
 	{
 		return (GetElapsedTick(lastTick) / (float)GetTicksPerSecond());
 	}

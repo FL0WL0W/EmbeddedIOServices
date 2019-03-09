@@ -39,7 +39,7 @@ namespace HardwareAbstraction
 	{
 	protected:
 		void SortCallBackStack();
-		virtual void ScheduleCallBack(uint32_t tick) = 0;
+		virtual void ScheduleCallBack(const uint32_t tick) = 0;
 	public:
 #if TIMERSERVICE_MAX_STACK_SIZE <= 2^8
 		uint8_t StackSize = 0;
@@ -50,17 +50,17 @@ namespace HardwareAbstraction
 #endif
 		Task *CallBackStackPointer[TIMERSERVICE_MAX_STACK_SIZE];
 
-		virtual uint32_t GetTick(void) = 0;
-		virtual uint32_t GetTicksPerSecond() = 0;
+		virtual const uint32_t GetTick() = 0;
+		virtual const uint32_t GetTicksPerSecond() = 0;
 
 		void ReturnCallBack(void);
-		Task *ScheduleTask(void(*)(void *), void *, uint32_t, bool);
-		bool ScheduleTask(Task *, uint32_t);
-		bool ReScheduleTask(Task *, uint32_t);
-		bool UnScheduleTask(Task *);
+		Task *ScheduleTask(void(*)(void *), void *, const uint32_t, const bool);
+		const bool ScheduleTask(Task *, const uint32_t);
+		const bool ReScheduleTask(Task *, const uint32_t);
+		const bool UnScheduleTask(Task *);
 		
-		uint32_t GetElapsedTick(uint32_t);
-		float GetElapsedTime(uint32_t);
+		const uint32_t GetElapsedTick(const uint32_t);
+		const float GetElapsedTime(const uint32_t);
 	};
 }
 #endif
