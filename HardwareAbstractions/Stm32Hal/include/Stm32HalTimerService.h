@@ -18,13 +18,13 @@ namespace Stm32
 		uint32_t _callTick = 0;
 		bool _futureTick = false;
 		bool _futureTock = false;
-		void ReturnCallBack(void);
-		void ScheduleCallBack(uint32_t tick);
+		void ReturnCallBack();
+		void ScheduleCallBack(const uint32_t tick);
 	public:
 		Stm32HalTimerService(uint8_t timer, uint8_t compareRegister, uint32_t ticksPerSecond);
-		void Interrupt(void);
-		uint32_t GetTick(void);
-		uint32_t GetTicksPerSecond(void);
+		void Interrupt();
+		const uint32_t GetTick() override;
+		const uint32_t GetTicksPerSecond() override;
 	};
 	
 #ifdef TIM1

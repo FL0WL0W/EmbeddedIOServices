@@ -257,15 +257,15 @@ namespace Stm32
 		HAL_TIM_Base_Start(&TIM_HandleStruct);
 	}
 
-	uint32_t Stm32HalTimerService::GetTick()
+	const uint32_t Stm32HalTimerService::GetTick()
 	{
 		return _tick | TIM->CNT;
 	}
 
-	void Stm32HalTimerService::ScheduleCallBack(uint32_t tick)
+	void Stm32HalTimerService::ScheduleCallBack(const uint32_t inTick)
 	{
 		//tick overhead compensation
-		tick -= _tickCompensation;
+		uint32_t tick = inTick - _tickCompensation;
 		uint32_t counter = _tick | TIM->CNT;
 		if (_tick == (tick & 0xFFFF0000))
 		{
@@ -332,7 +332,7 @@ namespace Stm32
 		}
 	}
 
-	uint32_t Stm32HalTimerService::GetTicksPerSecond()
+	const uint32_t Stm32HalTimerService::GetTicksPerSecond()
 	{
 		return _ticksPerSecond;
 	}
