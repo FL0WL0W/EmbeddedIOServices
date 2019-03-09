@@ -100,7 +100,7 @@ namespace HardwareAbstraction
 	{
 		task->Tick = tick;
 		Task **end = CallBackStackPointer + StackSize;
-		if (std::find(CallBackStackPointer, end, task) == end)
+		if (task->Scheduled == false)
 		{
 			CallBackStackPointer[StackSize] = task;
 			StackSize++;
