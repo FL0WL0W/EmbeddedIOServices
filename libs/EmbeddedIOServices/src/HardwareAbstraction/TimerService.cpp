@@ -62,6 +62,7 @@ namespace HardwareAbstraction
 		{
 			Task *callTask = ScheduledTask;
 			ScheduledTask = callTask->NextTask;
+			callTask->NextTask = 0;
 			callTask->Execute();
 			if (callTask->DeleteOnExecution)
 				delete callTask;
@@ -84,7 +85,9 @@ namespace HardwareAbstraction
 
 	const bool ITimerService::ScheduleTask(Task *task, const uint32_t tick)
 	{
+		DisableCallBack();
 		task->Tick = tick;
+		task->NextTask = 0;
 		if(ScheduledTask == 0)
 		{
 			ScheduledTask = task;
@@ -102,16 +105,20 @@ namespace HardwareAbstraction
 		{
 			ScheduleCallBack(tick);
 		}
+		
+		EnableCallBack();
 		return true;
 	}
 
 	const bool ITimerService::ReScheduleTask(Task *task, const uint32_t tick)
 	{
+		DisableCallBack();
 		//if next scheduled task and not moving
 		if(ScheduledTask == task && (ScheduledTask->NextTask == 0 || TickLessThanTick(tick, ScheduledTask->NextTask->Tick)))
 		{
 			task->Tick = tick;
 			ScheduleCallBack(tick);
+			EnableCallBack();
 			return true;
 		}
 		else
@@ -123,6 +130,7 @@ namespace HardwareAbstraction
 
 	const bool ITimerService::UnScheduleTask(Task *task)
 	{
+		DisableCallBack();
 		//if is next scheduled task
 		if(ScheduledTask == task)
 		{
@@ -139,6 +147,7 @@ namespace HardwareAbstraction
 			task->NextTask = 0;
 		}
 		
+		EnableCallBack();
 		return true;
 	}
 	

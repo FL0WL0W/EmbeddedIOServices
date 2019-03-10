@@ -23,7 +23,8 @@ namespace UnitTests
 		EXPECT_CALL(timerService, GetTick())
 			.WillRepeatedly(Return(0));
 
-		HardwareAbstraction::Task *task1 = timerService.ScheduleTask(testCallback1, 0, 100, true);
+		HardwareAbstraction::Task *task1 = new HardwareAbstraction::Task(testCallback1, 0, true);
+		timerService.ReScheduleTask(task1, 100);
 		//ASSERT_EQ(true, task1->Scheduled) << "first callback not set as scheduled";
 		ASSERT_EQ((void *)task1, (void *)timerService.ScheduledTask) << "ScheduledTask not set to first";
 			

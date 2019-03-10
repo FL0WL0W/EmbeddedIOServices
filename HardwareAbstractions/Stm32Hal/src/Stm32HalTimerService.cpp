@@ -262,45 +262,44 @@ namespace Stm32
 		return _tick | TIM->CNT;
 	}
 
-	void Stm32HalTimerService::ScheduleCallBack(const uint32_t inTick)
+	void Stm32HalTimerService::ScheduleCallBack(const uint32_t tick)
 	{
 		//tick overhead compensation
-		uint32_t tick = inTick - _tickCompensation;
+		uint32_t compensatedTick = tick - _tickCompensation;
 		uint32_t counter = _tick | TIM->CNT;
-		if (_tick == (tick & 0xFFFF0000))
+		if (_tick == (compensatedTick & 0xFFFF0000))
 		{
-			if (tick <= counter)
+			if (compensatedTick - _tickCompensation <= counter)
 			{
 				ReturnCallBack();
 			}
 			else
 			{
-				_futureTock = false;
 				_futureTick = true;
 				switch (_compare_IT)
 				{
 				case TIM_IT_CC1:
-					TIM->CCR1 = tick & 0xFFFF;
+					TIM->CCR1 = compensatedTick & 0xFFFF;
 					break;
 				case TIM_IT_CC2:
-					TIM->CCR2 = tick & 0xFFFF;
+					TIM->CCR2 = compensatedTick & 0xFFFF;
 					break;
 				case TIM_IT_CC3:
-					TIM->CCR3 = tick & 0xFFFF;
+					TIM->CCR3 = compensatedTick & 0xFFFF;
 					break;
 				case TIM_IT_CC4:
-					TIM->CCR4 = tick & 0xFFFF;
+					TIM->CCR4 = compensatedTick & 0xFFFF;
 					break;
 				}
 			}	
 		}
-		else if ((tick < counter && (counter - tick <= 2147483648)) || (tick > counter && (tick - counter > 2147483648)))
+		//catch ticks that have already passed
+		else if ((compensatedTick < counter && (counter - compensatedTick <= 2147483648)) || (compensatedTick > counter && (compensatedTick - counter > 2147483648)))
 		{
 			ReturnCallBack();
 		}
 		else
 		{
-			_futureTock = true;
 			_futureTick = false;
 			_callTick = tick;
 		}
@@ -309,7 +308,6 @@ namespace Stm32
 	void Stm32HalTimerService::ReturnCallBack(void)
 	{
 		_futureTick = false;
-		_futureTock = false;
 		ITimerService::ReturnCallBack();
 	}
 	
@@ -324,10 +322,7 @@ namespace Stm32
 		}
 		if (TIM->SR & TIM_IT_UPDATE) {
 			_tick += 0x00010000;	
-			if (_futureTock)
-			{
-				ScheduleCallBack(_callTick);
-			}
+			ScheduleCallBack(_callTick);
 			TIM->SR = ~TIM_IT_UPDATE;
 		}
 	}

@@ -38,10 +38,12 @@ namespace HardwareAbstraction
 	protected:
 		virtual void ScheduleCallBack(const uint32_t tick) = 0;
 	public:
-		Task *ScheduledTask = 0;
-
+		virtual void DisableCallBack() = 0;
+		virtual void EnableCallBack() = 0;
 		virtual const uint32_t GetTick() = 0;
 		virtual const uint32_t GetTicksPerSecond() = 0;
+
+		Task *ScheduledTask = 0;
 
 		void ReturnCallBack(void);
 		Task *ScheduleTask(void(*)(void *), void *, const uint32_t, const bool);
