@@ -33,17 +33,17 @@ namespace HardwareAbstraction
 		_callBackList.clear();
 	}
 	
-	bool ITimerService::TickLessThanTick(const uint32_t i, const uint32_t j)
+	constexpr bool ITimerService::TickLessThanTick(const uint32_t i, const uint32_t j)
 	{
 		return (j > 2147483647 && i + 2147483647 < j + 2147483647) || (j <= 2147483647 && i < j);
 	}
 
-	bool ITimerService::TickLessThanEqualToTick(const uint32_t i, const uint32_t j)
+	constexpr bool ITimerService::TickLessThanEqualToTick(const uint32_t i, const uint32_t j)
 	{
 		return (j > 2147483647 && i + 2147483647 <= j + 2147483647) || (j <= 2147483647 && i <= j);
 	}
 
-	uint32_t ITimerService::TickMinusTick(const uint32_t i, const uint32_t j)
+	constexpr uint32_t ITimerService::TickMinusTick(const uint32_t i, const uint32_t j)
 	{
 		if(j > 2147483647)
 		{
@@ -109,15 +109,16 @@ namespace HardwareAbstraction
 			task->NextTask = iterator->NextTask;
 			iterator->NextTask = task;			
 		}
+
+		_disableCallBack = disableCallBackPrim;
+		if(!disableCallBackPrim && _callBackCalledWhileDisabled)
+			ReturnCallBack();
 		
 		if (ScheduledTask == task)
 		{
 			ScheduleCallBack(tick);
 		}
 		
-		_disableCallBack = disableCallBackPrim;
-		if(!disableCallBackPrim && _callBackCalledWhileDisabled)
-			ReturnCallBack();
 		return true;
 	}
 
@@ -133,16 +134,19 @@ namespace HardwareAbstraction
 			task->Tick = tick;
 			ScheduleCallBack(tick);
 			success = true;
+			_disableCallBack = disableCallBackPrim;
+			if(!disableCallBackPrim && _callBackCalledWhileDisabled)
+				ReturnCallBack();
 		}
 		else
 		{
+			_disableCallBack = disableCallBackPrim;
+			if(!disableCallBackPrim && _callBackCalledWhileDisabled)
+				ReturnCallBack();
 			UnScheduleTask(task);
 			bool success = ScheduleTask(task, tick);
 		}
 
-		_disableCallBack = disableCallBackPrim;
-		if(!disableCallBackPrim && _callBackCalledWhileDisabled)
-			ReturnCallBack();
 		return success;
 	}
 
