@@ -130,7 +130,7 @@ namespace HardwareAbstraction
 			task->NextTask = 0;
 			ScheduleCallBack(ScheduledTask->Tick);
 		}
-		else 
+		else if(ScheduledTask != 0)
 		{
 			Task *iterator = ScheduledTask;
 			while(iterator->NextTask != 0 && iterator->NextTask != task) iterator = iterator->NextTask;
