@@ -57,6 +57,13 @@ namespace HardwareAbstraction
 
 	void ITimerService::ReturnCallBack(void)
 	{
+		if(_disableCallBack)
+		{
+			_callBackCalledWhileDisabled = true;
+			return;
+		}
+		_callBackCalledWhileDisabled = false;
+
 		uint32_t tick;
 		while (ScheduledTask != 0 && TickLessThanEqualToTick(ScheduledTask->Tick, GetTick()))
 		{
@@ -85,7 +92,9 @@ namespace HardwareAbstraction
 
 	const bool ITimerService::ScheduleTask(Task *task, const uint32_t tick)
 	{
-		DisableCallBack();
+		bool disableCallBackPrim = _disableCallBack;
+		_disableCallBack = true;
+
 		task->Tick = tick;
 		task->NextTask = 0;
 		if(ScheduledTask == 0)
@@ -106,31 +115,42 @@ namespace HardwareAbstraction
 			ScheduleCallBack(tick);
 		}
 		
-		EnableCallBack();
+		_disableCallBack = disableCallBackPrim;
+		if(!disableCallBackPrim && _callBackCalledWhileDisabled)
+			ReturnCallBack();
 		return true;
 	}
 
 	const bool ITimerService::ReScheduleTask(Task *task, const uint32_t tick)
 	{
-		DisableCallBack();
+		bool disableCallBackPrim = _disableCallBack;
+		_disableCallBack = true;
+
+		bool success = false;
 		//if next scheduled task and not moving
 		if(ScheduledTask == task && (ScheduledTask->NextTask == 0 || TickLessThanTick(tick, ScheduledTask->NextTask->Tick)))
 		{
 			task->Tick = tick;
 			ScheduleCallBack(tick);
-			EnableCallBack();
-			return true;
+			success = true;
 		}
 		else
 		{
 			UnScheduleTask(task);
-			return ScheduleTask(task, tick);
+			bool success = ScheduleTask(task, tick);
 		}
+
+		_disableCallBack = disableCallBackPrim;
+		if(!disableCallBackPrim && _callBackCalledWhileDisabled)
+			ReturnCallBack();
+		return success;
 	}
 
 	const bool ITimerService::UnScheduleTask(Task *task)
 	{
-		DisableCallBack();
+		bool disableCallBackPrim = _disableCallBack;
+		_disableCallBack = true;
+
 		//if is next scheduled task
 		if(ScheduledTask == task)
 		{
@@ -147,7 +167,9 @@ namespace HardwareAbstraction
 			task->NextTask = 0;
 		}
 		
-		EnableCallBack();
+		_disableCallBack = disableCallBackPrim;
+		if(!disableCallBackPrim && _callBackCalledWhileDisabled)
+			ReturnCallBack();
 		return true;
 	}
 	

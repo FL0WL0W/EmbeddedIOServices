@@ -35,11 +35,12 @@ namespace HardwareAbstraction
 
 	class ITimerService
 	{
+	private:
+		bool _disableCallBack = false;
+		bool _callBackCalledWhileDisabled = false;
 	protected:
 		virtual void ScheduleCallBack(const uint32_t tick) = 0;
 	public:
-		virtual void DisableCallBack() = 0;
-		virtual void EnableCallBack() = 0;
 		virtual const uint32_t GetTick() = 0;
 		virtual const uint32_t GetTicksPerSecond() = 0;
 
