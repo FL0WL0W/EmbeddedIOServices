@@ -5,13 +5,26 @@
 #ifdef ITIMERSERVICE_H
 namespace HardwareAbstraction
 {	
-	bool GreaterThan(Task *i, Task *j)
+	static bool TickLessThanTick(const uint32_t i, const uint32_t j)
 	{
-		return (i->Tick > j->Tick);
+		return (j > 2147483647 && i + 2147483647 < j + 2147483647) || (j <= 2147483647 && i < j);
 	}
-	bool OverFlowGreaterThan(Task *i, Task *j)
+
+	static bool TickLessThanEqualToTick(const uint32_t i, const uint32_t j)
 	{
-		return (i->Tick + 2147483647 > j->Tick + 2147483647);
+		return (j > 2147483647 && i + 2147483647 <= j + 2147483647) || (j <= 2147483647 && i <= j);
+	}
+
+	static uint32_t TickMinusTick(const uint32_t i, const uint32_t j)
+	{
+		if(j > 2147483647)
+		{
+			return (i + 2147483647) - (j + 2147483647);
+		}
+		else
+		{
+			return i - j;
+		}
 	}
 	
 	void CallBackGroup::Execute()
@@ -44,33 +57,20 @@ namespace HardwareAbstraction
 
 	void ITimerService::ReturnCallBack(void)
 	{
-		if (StackSize == 0)
-			return;
-
-		HardwareAbstraction::Task *callTask = CallBackStackPointer[StackSize - 1];
-		uint32_t runTick = callTask->Tick;
-		while (StackSize > 0 && ((callTask = CallBackStackPointer[StackSize - 1]))->Tick == runTick)
+		uint32_t tick;
+		while (ScheduledTask != 0 && TickLessThanEqualToTick(ScheduledTask->Tick, GetTick()))
 		{
-			callTask = CallBackStackPointer[StackSize - 1];
-			StackSize--;
+			Task *callTask = ScheduledTask;
+			ScheduledTask = callTask->NextTask;
 			callTask->Execute();
 			if (callTask->DeleteOnExecution)
 				delete callTask;
-			callTask->Scheduled = false;
 		}
 
-		if (StackSize == 0)
+		if (ScheduledTask == 0)
 			return;
 
-		ScheduleCallBack(CallBackStackPointer[StackSize - 1]->Tick);
-	}
-	
-	void ITimerService::SortCallBackStack()
-	{
-		if(GetTick() <= 2147483648)
-			std::sort(CallBackStackPointer, CallBackStackPointer + StackSize, GreaterThan);
-		else
-			std::sort(CallBackStackPointer, CallBackStackPointer + StackSize, OverFlowGreaterThan);
+		ScheduleCallBack(ScheduledTask->Tick);
 	}
 
 	Task *ITimerService::ScheduleTask(void(*callBack)(void *), void *parameters, uint32_t tick, bool deleteOnExecution)
@@ -85,65 +85,66 @@ namespace HardwareAbstraction
 	const bool ITimerService::ScheduleTask(Task *task, const uint32_t tick)
 	{
 		task->Tick = tick;
-		CallBackStackPointer[StackSize] = task;
-		StackSize++;
-		SortCallBackStack();
-		if (CallBackStackPointer[StackSize - 1] == task)
+		if(ScheduledTask == 0)
 		{
-			ScheduleCallBack(task->Tick);
+			ScheduledTask = task;
 		}
-		task->Scheduled = true;
+		else
+		{
+			Task *iterator = ScheduledTask;
+			while(iterator->NextTask != 0 && TickLessThanTick(iterator->NextTask->Tick, tick)) iterator = iterator->NextTask;
+
+			task->NextTask = iterator->NextTask;
+			iterator->NextTask = task;			
+		}
+		
+		if (ScheduledTask == task)
+		{
+			ScheduleCallBack(tick);
+		}
 		return true;
 	}
 
 	const bool ITimerService::ReScheduleTask(Task *task, const uint32_t tick)
 	{
-		task->Tick = tick;
-		Task **end = CallBackStackPointer + StackSize;
-		if (task->Scheduled == false)
+		//if next scheduled task and not moving
+		if(ScheduledTask == task && (ScheduledTask->NextTask == 0 || TickLessThanTick(tick, ScheduledTask->NextTask->Tick)))
 		{
-			CallBackStackPointer[StackSize] = task;
-			StackSize++;
-			SortCallBackStack();
+			task->Tick = tick;
+			ScheduleCallBack(tick);
+			return true;
 		}
 		else
 		{
-			SortCallBackStack();
+			UnScheduleTask(task);
+			return ScheduleTask(task, tick);
 		}
-		if (CallBackStackPointer[StackSize - 1] == task)
-		{
-			ScheduleCallBack(task->Tick);
-		}
-		task->Scheduled = true;
-		return true;
 	}
 
 	const bool ITimerService::UnScheduleTask(Task *task)
 	{
-		Task **end = CallBackStackPointer + StackSize;
-		if (CallBackStackPointer[StackSize - 1] == task)
+		//if is next scheduled task
+		if(ScheduledTask == task)
 		{
-			StackSize = static_cast<uint8_t>(std::remove(CallBackStackPointer, end, task) - CallBackStackPointer);
-			ScheduleCallBack(CallBackStackPointer[StackSize - 1]->Tick);
+			ScheduledTask = ScheduledTask->NextTask;
+			task->NextTask = 0;
+			ScheduleCallBack(ScheduledTask->Tick);
 		}
-		else
+		else 
 		{
-			StackSize = static_cast<uint8_t>(std::remove(CallBackStackPointer, end, task) - CallBackStackPointer);
+			Task *iterator = ScheduledTask;
+			while(iterator->NextTask != 0 && iterator->NextTask != task) iterator = iterator->NextTask;
+			if(iterator->NextTask != 0)
+				iterator->NextTask = iterator->NextTask->NextTask;
+			task->NextTask = 0;
 		}
-		task->Scheduled = false;
+		
 		return true;
 	}
 	
 	const uint32_t ITimerService::GetElapsedTick(const uint32_t lastTick)
 	{
-		uint32_t tick = GetTick();
-		uint32_t compareTick = lastTick;
-		if (tick < compareTick)
-		{
-			compareTick += 2147483647;
-			tick += 2147483647;
-		}
-		return tick - compareTick;
+		return TickMinusTick(GetTick(), lastTick);
 	}
 	
 	const float ITimerService::GetElapsedTime(const uint32_t lastTick)

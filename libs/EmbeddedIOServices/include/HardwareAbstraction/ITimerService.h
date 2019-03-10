@@ -4,8 +4,6 @@
 #ifndef ITIMERSERVICE_H
 #define ITIMERSERVICE_H
 
-#define TIMERSERVICE_MAX_STACK_SIZE 256
-
 namespace HardwareAbstraction
 {
 	class Task
@@ -31,24 +29,16 @@ namespace HardwareAbstraction
 		ICallBack *CallBackInstance;
 		bool DeleteOnExecution;
 		//only let TimerService edit these values
-		bool Scheduled = false;
+		Task *NextTask = 0;
 		uint32_t Tick;
 	};
 
 	class ITimerService
 	{
 	protected:
-		void SortCallBackStack();
 		virtual void ScheduleCallBack(const uint32_t tick) = 0;
 	public:
-#if TIMERSERVICE_MAX_STACK_SIZE <= 2^8
-		uint8_t StackSize = 0;
-#elif TIMERSERVICE_MAX_STACK_SIZE <= 2^16
-		uint16_t StackSize = 0;
-#elif TIMERSERVICE_MAX_STACK_SIZE <= 2^32
-		uint32_t StackSize = 0;
-#endif
-		Task *CallBackStackPointer[TIMERSERVICE_MAX_STACK_SIZE];
+		Task *ScheduledTask = 0;
 
 		virtual const uint32_t GetTick() = 0;
 		virtual const uint32_t GetTicksPerSecond() = 0;
