@@ -4,29 +4,7 @@
 
 #ifdef ITIMERSERVICE_H
 namespace HardwareAbstraction
-{	
-	static bool TickLessThanTick(const uint32_t i, const uint32_t j)
-	{
-		return (j > 2147483647 && i + 2147483647 < j + 2147483647) || (j <= 2147483647 && i < j);
-	}
-
-	static bool TickLessThanEqualToTick(const uint32_t i, const uint32_t j)
-	{
-		return (j > 2147483647 && i + 2147483647 <= j + 2147483647) || (j <= 2147483647 && i <= j);
-	}
-
-	static uint32_t TickMinusTick(const uint32_t i, const uint32_t j)
-	{
-		if(j > 2147483647)
-		{
-			return (i + 2147483647) - (j + 2147483647);
-		}
-		else
-		{
-			return i - j;
-		}
-	}
-	
+{		
 	void CallBackGroup::Execute()
 	{
 		for (std::list<ICallBack *>::const_iterator iterator = _callBackList.begin(), end = _callBackList.end(); iterator != end; ++iterator)
@@ -53,6 +31,28 @@ namespace HardwareAbstraction
 	void CallBackGroup::Clear()
 	{
 		_callBackList.clear();
+	}
+	
+	bool ITimerService::TickLessThanTick(const uint32_t i, const uint32_t j)
+	{
+		return (j > 2147483647 && i + 2147483647 < j + 2147483647) || (j <= 2147483647 && i < j);
+	}
+
+	bool ITimerService::TickLessThanEqualToTick(const uint32_t i, const uint32_t j)
+	{
+		return (j > 2147483647 && i + 2147483647 <= j + 2147483647) || (j <= 2147483647 && i <= j);
+	}
+
+	uint32_t ITimerService::TickMinusTick(const uint32_t i, const uint32_t j)
+	{
+		if(j > 2147483647)
+		{
+			return (i + 2147483647) - (j + 2147483647);
+		}
+		else
+		{
+			return i - j;
+		}
 	}
 
 	void ITimerService::ReturnCallBack(void)

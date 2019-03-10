@@ -294,7 +294,7 @@ namespace Stm32
 			}	
 		}
 		//catch ticks that have already passed
-		else if ((compensatedTick < counter && (counter - compensatedTick <= 2147483648)) || (compensatedTick > counter && (compensatedTick - counter > 2147483648)))
+		else if (TickLessThanEqualToTick(compensatedTick, counter))
 		{
 			ReturnCallBack();
 		}
@@ -304,7 +304,7 @@ namespace Stm32
 			_callTick = tick;
 		}
 	}
-
+	
 	void Stm32HalTimerService::ReturnCallBack(void)
 	{
 		_futureTick = false;

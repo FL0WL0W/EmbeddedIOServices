@@ -41,6 +41,10 @@ namespace HardwareAbstraction
 	protected:
 		virtual void ScheduleCallBack(const uint32_t tick) = 0;
 	public:
+		static bool TickLessThanTick(const uint32_t i, const uint32_t j);
+		static bool TickLessThanEqualToTick(const uint32_t i, const uint32_t j);
+		static uint32_t TickMinusTick(const uint32_t i, const uint32_t j);
+
 		virtual const uint32_t GetTick() = 0;
 		virtual const uint32_t GetTicksPerSecond() = 0;
 
