@@ -16,8 +16,7 @@ namespace Stm32
 		uint16_t _tickCompensation;
 		uint32_t _tick = 0;
 		uint32_t _callTick = 0;
-		bool _futureTick = false;
-		bool _futureTock = false;
+		bool _callBack = false;
 		void ReturnCallBack();
 		void ScheduleCallBack(const uint32_t tick);
 	public:

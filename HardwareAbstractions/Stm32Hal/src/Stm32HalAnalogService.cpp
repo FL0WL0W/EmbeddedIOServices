@@ -985,7 +985,7 @@ defined(ADC4_IN15_PIN)
 		}
 
 		sConfig.Rank = ADC_REGULAR_RANK_1;
-		sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+		sConfig.SamplingTime = ADC_SAMPLETIME_71CYCLES_5;
 
 		HAL_ADC_ConfigChannel(&hadc, &sConfig);
 		HAL_ADC_Start(&hadc);

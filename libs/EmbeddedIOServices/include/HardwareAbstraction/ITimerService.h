@@ -27,8 +27,9 @@ namespace HardwareAbstraction
 		}
 
 		ICallBack *CallBackInstance;
-		bool DeleteOnExecution;
+		bool DeleteOnExecution = false;
 		//only let TimerService edit these values
+		bool Scheduled = false;
 		Task *NextTask = 0;
 		uint32_t Tick;
 	};
@@ -41,19 +42,19 @@ namespace HardwareAbstraction
 	protected:
 		virtual void ScheduleCallBack(const uint32_t tick) = 0;
 	public:
-		constexpr static bool TickLessThanTick(const uint32_t i, const uint32_t j);
-		constexpr static bool TickLessThanEqualToTick(const uint32_t i, const uint32_t j);
-		constexpr static uint32_t TickMinusTick(const uint32_t i, const uint32_t j);
+		static bool TickLessThanTick(const uint32_t i, const uint32_t j);
+		static bool TickLessThanEqualToTick(const uint32_t i, const uint32_t j);
+		static uint32_t TickMinusTick(const uint32_t i, const uint32_t j);
+		static int64_t TickMinusTickSigned(uint32_t i, uint32_t j);
 
 		virtual const uint32_t GetTick() = 0;
 		virtual const uint32_t GetTicksPerSecond() = 0;
 
-		Task *ScheduledTask = 0;
+		Task *FirstTask = 0;
 
 		void ReturnCallBack(void);
 		Task *ScheduleTask(void(*)(void *), void *, const uint32_t, const bool);
 		const bool ScheduleTask(Task *, const uint32_t);
-		const bool ReScheduleTask(Task *, const uint32_t);
 		const bool UnScheduleTask(Task *);
 		
 		const uint32_t GetElapsedTick(const uint32_t);

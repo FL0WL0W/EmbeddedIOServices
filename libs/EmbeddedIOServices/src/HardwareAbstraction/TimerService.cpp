@@ -33,17 +33,17 @@ namespace HardwareAbstraction
 		_callBackList.clear();
 	}
 	
-	constexpr bool ITimerService::TickLessThanTick(const uint32_t i, const uint32_t j)
+	bool ITimerService::TickLessThanTick(const uint32_t i, const uint32_t j)
 	{
-		return (j > 2147483647 && i + 2147483647 < j + 2147483647) || (j <= 2147483647 && i < j);
+		return (j > 2147483647 && static_cast<uint32_t>(i + 2147483647) < static_cast<uint32_t>(j + 2147483647)) || (j <= 2147483647 && i < j);
 	}
 
-	constexpr bool ITimerService::TickLessThanEqualToTick(const uint32_t i, const uint32_t j)
+	bool ITimerService::TickLessThanEqualToTick(const uint32_t i, const uint32_t j)
 	{
-		return (j > 2147483647 && i + 2147483647 <= j + 2147483647) || (j <= 2147483647 && i <= j);
+		return (j > 2147483647 && static_cast<uint32_t>(i + 2147483647) <= static_cast<uint32_t>(j + 2147483647)) || (j <= 2147483647 && i <= j);
 	}
 
-	constexpr uint32_t ITimerService::TickMinusTick(const uint32_t i, const uint32_t j)
+	uint32_t ITimerService::TickMinusTick(const uint32_t i, const uint32_t j)
 	{
 		if(j > 2147483647)
 		{
@@ -55,30 +55,65 @@ namespace HardwareAbstraction
 		}
 	}
 
+	int64_t ITimerService::TickMinusTickSigned(uint32_t i, uint32_t j)
+	{
+		if(j > 2147483647)
+		{
+			i = i + 2147483647;
+			j = j + 2147483647;
+		}
+		return i - j;
+	}
+
 	void ITimerService::ReturnCallBack(void)
 	{
 		if(_disableCallBack)
-		{
-			_callBackCalledWhileDisabled = true;
 			return;
-		}
-		_callBackCalledWhileDisabled = false;
+		_disableCallBack = true;
 
 		uint32_t tick;
-		while (ScheduledTask != 0 && TickLessThanEqualToTick(ScheduledTask->Tick, GetTick()))
+		Task *iterator = FirstTask;
+		Task *next = 0;
+		Task *prev = 0;
+		while (iterator != 0)
 		{
-			Task *callTask = ScheduledTask;
-			ScheduledTask = callTask->NextTask;
-			callTask->NextTask = 0;
-			callTask->Execute();
-			if (callTask->DeleteOnExecution)
-				delete callTask;
+			next = iterator->NextTask;
+			if(TickLessThanEqualToTick(iterator->Tick, GetTick()))
+			{
+				iterator->Execute();
+				if(FirstTask == iterator)
+				{
+					FirstTask = iterator->NextTask;
+					iterator->Scheduled = false;
+					iterator->NextTask = 0;
+					if (iterator->DeleteOnExecution)
+						delete iterator;
+					prev = iterator;
+				}
+				else
+				{
+					prev->NextTask = iterator->NextTask;
+					iterator->Scheduled = false;
+					iterator->NextTask = 0;
+					if (iterator->DeleteOnExecution)
+						delete iterator;
+				}
+			}
+			else
+			{
+				prev = iterator;
+			}
+			
+			iterator = next;
 		}
 
-		if (ScheduledTask == 0)
-			return;
-
-		ScheduleCallBack(ScheduledTask->Tick);
+		if(FirstTask != 0)
+		{
+			_disableCallBack = false;
+			ScheduleCallBack(FirstTask->Tick);
+		}
+		else
+			_disableCallBack = false;
 	}
 
 	Task *ITimerService::ScheduleTask(void(*callBack)(void *), void *parameters, uint32_t tick, bool deleteOnExecution)
@@ -92,62 +127,86 @@ namespace HardwareAbstraction
 
 	const bool ITimerService::ScheduleTask(Task *task, const uint32_t tick)
 	{
-		bool disableCallBackPrim = _disableCallBack;
+		bool disabledCallBackPrim = _disableCallBack;
 		_disableCallBack = true;
 
-		task->Tick = tick;
-		task->NextTask = 0;
-		if(ScheduledTask == 0)
-		{
-			ScheduledTask = task;
-		}
+		//min tick is current tick
+		if(TickLessThanTick(tick, GetTick()))
+		 	task->Tick = GetTick();
 		else
-		{
-			Task *iterator = ScheduledTask;
-			while(iterator->NextTask != 0 && TickLessThanTick(iterator->NextTask->Tick, tick)) iterator = iterator->NextTask;
-
-			task->NextTask = iterator->NextTask;
-			iterator->NextTask = task;			
-		}
-
-		_disableCallBack = disableCallBackPrim;
-		if(!disableCallBackPrim && _callBackCalledWhileDisabled)
-			ReturnCallBack();
-		
-		if (ScheduledTask == task)
-		{
-			ScheduleCallBack(tick);
-		}
-		
-		return true;
-	}
-
-	const bool ITimerService::ReScheduleTask(Task *task, const uint32_t tick)
-	{
-		bool disableCallBackPrim = _disableCallBack;
-		_disableCallBack = true;
-
-		bool success = false;
-		//if next scheduled task and not moving
-		if(ScheduledTask == task && (ScheduledTask->NextTask == 0 || TickLessThanTick(tick, ScheduledTask->NextTask->Tick)))
-		{
 			task->Tick = tick;
-			ScheduleCallBack(tick);
-			success = true;
-			_disableCallBack = disableCallBackPrim;
-			if(!disableCallBackPrim && _callBackCalledWhileDisabled)
-				ReturnCallBack();
+
+		//set to not scheduled
+		task->Scheduled = false;
+
+		//remove all FirstTasks where not scheduled
+		while(FirstTask != 0 && !FirstTask->Scheduled)
+		{
+			FirstTask = FirstTask->NextTask;
+		}
+
+		if(FirstTask != 0)
+		{
+			//task is somewhere in the task list
+			//remove task
+			Task *iterator = FirstTask;
+			while (iterator->NextTask != 0)
+			{
+				if(!iterator->NextTask->Scheduled)
+				{
+					//unschedule task
+					iterator->NextTask = iterator->NextTask->NextTask;
+				}
+				else
+				{
+					iterator = iterator->NextTask;
+				}
+			}
+
+			if(TickLessThanTick(task->Tick, FirstTask->Tick))
+			{
+				//task is FirstTask
+				task->Scheduled = true;
+				task->NextTask = FirstTask;
+				FirstTask = task;
+			}
+			else
+			{
+				//insert task
+				iterator = FirstTask;
+				while (iterator->NextTask != 0 && !task->Scheduled)
+				{
+					//this is where our task is to be scheduled
+					if(TickLessThanTick(task->Tick, iterator->NextTask->Tick))
+					{
+						task->Scheduled = true;
+						task->NextTask = iterator->NextTask;
+						iterator->NextTask = task;
+					}
+
+					iterator = iterator->NextTask;
+				}
+
+				if(!task->Scheduled)
+				{
+					task->Scheduled = true;
+					task->NextTask = 0;
+					iterator->NextTask = task;
+				}		
+			}
 		}
 		else
 		{
-			_disableCallBack = disableCallBackPrim;
-			if(!disableCallBackPrim && _callBackCalledWhileDisabled)
-				ReturnCallBack();
-			UnScheduleTask(task);
-			bool success = ScheduleTask(task, tick);
+			//task is only task
+			task->Scheduled = true;
+			task->NextTask = 0;
+			FirstTask = task;
 		}
 
-		return success;
+		_disableCallBack = disabledCallBackPrim;
+		ScheduleCallBack(FirstTask->Tick);
+
+		return true;
 	}
 
 	const bool ITimerService::UnScheduleTask(Task *task)
@@ -156,24 +215,29 @@ namespace HardwareAbstraction
 		_disableCallBack = true;
 
 		//if is next scheduled task
-		if(ScheduledTask == task)
+		Task *iterator = FirstTask;
+		if(iterator == task)
 		{
-			ScheduledTask = ScheduledTask->NextTask;
+			FirstTask = iterator->NextTask;
 			task->NextTask = 0;
-			ScheduleCallBack(ScheduledTask->Tick);
 		}
-		else if(ScheduledTask != 0)
+		else if(iterator != 0)
 		{
-			Task *iterator = ScheduledTask;
 			while(iterator->NextTask != 0 && iterator->NextTask != task) iterator = iterator->NextTask;
 			if(iterator->NextTask != 0)
 				iterator->NextTask = iterator->NextTask->NextTask;
 			task->NextTask = 0;
 		}
 		
-		_disableCallBack = disableCallBackPrim;
-		if(!disableCallBackPrim && _callBackCalledWhileDisabled)
-			ReturnCallBack();
+		if(FirstTask != 0)
+		{
+			_disableCallBack = disableCallBackPrim;
+			if(!_disableCallBack)
+				ScheduleCallBack(FirstTask->Tick);
+		}
+		else
+			_disableCallBack = disableCallBackPrim;
+
 		return true;
 	}
 	

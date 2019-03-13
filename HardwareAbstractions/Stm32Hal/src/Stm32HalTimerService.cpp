@@ -259,70 +259,54 @@ namespace Stm32
 
 	const uint32_t Stm32HalTimerService::GetTick()
 	{
-		return _tick | TIM->CNT;
+		uint16_t cnt = TIM->CNT;
+		if (TIM->SR & TIM_IT_UPDATE && cnt < 0x8000) 
+			return _tick | cnt + 0x10000;
+		else
+			return _tick | cnt;
 	}
 
 	void Stm32HalTimerService::ScheduleCallBack(const uint32_t tick)
 	{
 		//tick overhead compensation
-		uint32_t compensatedTick = tick - _tickCompensation;
-		uint32_t counter = _tick | TIM->CNT;
-		if (_tick == (compensatedTick & 0xFFFF0000))
+		uint32_t compensatedTick = tick;//- _tickCompensation;
+		_callTick = compensatedTick;
+		_callBack = false;
+		uint16_t ccr = compensatedTick & 0xFFFF;
+		switch (_compare_IT)
 		{
-			if (compensatedTick - _tickCompensation <= counter)
-			{
-				ReturnCallBack();
-			}
-			else
-			{
-				_futureTick = true;
-				switch (_compare_IT)
-				{
-				case TIM_IT_CC1:
-					TIM->CCR1 = compensatedTick & 0xFFFF;
-					break;
-				case TIM_IT_CC2:
-					TIM->CCR2 = compensatedTick & 0xFFFF;
-					break;
-				case TIM_IT_CC3:
-					TIM->CCR3 = compensatedTick & 0xFFFF;
-					break;
-				case TIM_IT_CC4:
-					TIM->CCR4 = compensatedTick & 0xFFFF;
-					break;
-				}
-			}	
+		case TIM_IT_CC1:
+			TIM->CCR1 = ccr;
+			break;
+		case TIM_IT_CC2:
+			TIM->CCR2 = ccr;
+			break;
+		case TIM_IT_CC3:
+			TIM->CCR3 = ccr;
+			break;
+		case TIM_IT_CC4:
+			TIM->CCR4 = ccr;
+			break;
 		}
-		//catch ticks that have already passed
-		else if (TickLessThanEqualToTick(compensatedTick, counter))
-		{
-			ReturnCallBack();
-		}
-		else
-		{
-			_futureTick = false;
-			_callTick = tick;
-		}
+
+		ReturnCallBack();
 	}
 	
 	void Stm32HalTimerService::ReturnCallBack(void)
 	{
-		_futureTick = false;
-		ITimerService::ReturnCallBack();
+		_callBack = true;
+		if(TickLessThanEqualToTick(_callTick, GetTick()))
+			ITimerService::ReturnCallBack();
 	}
 	
 	void Stm32HalTimerService::Interrupt(void)
 	{		
 		if (TIM->SR & _compare_IT) {
-			if (_futureTick)
-			{
-				ReturnCallBack();
-			}
+			ReturnCallBack();
 			TIM->SR = ~_compare_IT;
 		}
 		if (TIM->SR & TIM_IT_UPDATE) {
-			_tick += 0x00010000;	
-			ScheduleCallBack(_callTick);
+			_tick += 0x00010000;
 			TIM->SR = ~TIM_IT_UPDATE;
 		}
 	}
