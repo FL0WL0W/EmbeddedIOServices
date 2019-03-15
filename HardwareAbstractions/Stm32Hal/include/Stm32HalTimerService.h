@@ -13,14 +13,21 @@ namespace Stm32
 		uint32_t _ticksPerSecond;
 		TIM_TypeDef *TIM;
 		uint16_t _compare_IT;
-		uint16_t _tickCompensation;
 		uint32_t _tick = 0;
 		uint32_t _callTick = 0;
-		bool _callBack = false;
+		bool _interruptDisabled = false;
+
+
+		uint32_t _functionCallCompensation;
+		void SetFunctionCallCompensation();
+		
+		uint32_t _returnCallBackCompensation;
+
+
 		void ReturnCallBack();
 		void ScheduleCallBack(const uint32_t tick);
 	public:
-		Stm32HalTimerService(uint8_t timer, uint8_t compareRegister, uint32_t ticksPerSecond);
+		Stm32HalTimerService(uint8_t timer);
 		void Interrupt();
 		const uint32_t GetTick() override;
 		const uint32_t GetTicksPerSecond() override;

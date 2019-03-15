@@ -49,7 +49,9 @@ namespace Stm32
 	Stm32HalTimerService *TimerService14 = 0;
 #endif
 	
-	Stm32HalTimerService::Stm32HalTimerService(uint8_t timer, uint8_t compareRegister, uint32_t ticksPerSecond)
+	TIM_HandleTypeDef TIM_HandleStruct = {0};
+
+	Stm32HalTimerService::Stm32HalTimerService(uint8_t timer)
 	{	
 		switch (timer)
 		{
@@ -186,27 +188,16 @@ namespace Stm32
 		EnableTimerInterrupts(timer);
 		EnableTimerClock(timer);
 		
-		TIM_HandleTypeDef TIM_HandleStruct = {0};
-		TIM_HandleStruct.Instance = TIM;
-
 		//set prescaler
-		uint32_t clockFrequency = HAL_RCC_GetSysClockFreq();
-		TIM_HandleStruct.Init.Prescaler = clockFrequency / ticksPerSecond;
-		_ticksPerSecond = clockFrequency / TIM_HandleStruct.Init.Prescaler;
-		
-		//tick overhead compensation
-		//no optimizations = 110 instructions from TIM_CC_HANDLER to the callback
-		//-O3 = less than 108 instructions from TIM_CC_HANDLER to the callback
-		//lets just go with a wild ass guess of 110 clock cycles. probably too little for debug buy maybe just right for -O3?
-		//time = 110 / clockFrequency
-		//tickComp = time / (1 / _ticksPerSecond) = (110 * _ticksPerSecond) / clockFrequency
-		_tickCompensation = round((110.0f * _ticksPerSecond) / clockFrequency);
-		
+		_ticksPerSecond = HAL_RCC_GetSysClockFreq();
+				
 		//set mode
+		TIM_HandleStruct.Instance = TIM;
 		TIM_HandleStruct.Init.CounterMode = TIM_COUNTERMODE_UP;
 		TIM_HandleStruct.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  		TIM_HandleStruct.Init.Period = 0xFFFF;
   		TIM_HandleStruct.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+		TIM_HandleStruct.Init.Prescaler = _ticksPerSecond / (100 * 1000) - 1; // set ticks to 10 us
+  		TIM_HandleStruct.Init.Period = 0xFFFF; // autoreload at max
 		
 		//init
 		HAL_TIM_Base_Init(&TIM_HandleStruct);
@@ -215,99 +206,103 @@ namespace Stm32
 		TIM_ClockConfigTypeDef TIM_ClockConfigStruct = {0};
 		TIM_ClockConfigStruct.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
 		HAL_TIM_ConfigClockSource(&TIM_HandleStruct, &TIM_ClockConfigStruct);
-	
-		//configure channel
+
 		uint32_t Channel;
 		TIM_OC_InitTypeDef TIM_OC_InitStruct = {0};
 		TIM_OC_InitStruct.OCMode = TIM_OCMODE_TIMING;
 		TIM_OC_InitStruct.OCPolarity = TIM_OCPOLARITY_HIGH;
 		TIM_OC_InitStruct.Pulse = 0;
 		
-		switch (compareRegister)
-		{
-		case 1:
-			Channel = TIM_CHANNEL_1;
-			_compare_IT = TIM_IT_CC1;
-			break;
-		case 2:
-			Channel = TIM_CHANNEL_2;
-			_compare_IT = TIM_IT_CC2;
-			break;
-		case 3:
-			Channel = TIM_CHANNEL_3;
-			_compare_IT = TIM_IT_CC3;
-			break;
-		case 4:
-			Channel = TIM_CHANNEL_4;
-			_compare_IT = TIM_IT_CC4;
-			break;
-		}
-
-		__HAL_TIM_ENABLE_IT(&TIM_HandleStruct, _compare_IT);
-
-		HAL_TIM_OC_ConfigChannel(&TIM_HandleStruct, &TIM_OC_InitStruct, Channel);
-
-		//enable update interrupt
-		__HAL_TIM_ENABLE_IT(&TIM_HandleStruct, TIM_IT_UPDATE);
+		__HAL_TIM_ENABLE_IT(&TIM_HandleStruct, TIM_IT_CC1);
+		
+		HAL_TIM_OC_ConfigChannel(&TIM_HandleStruct, &TIM_OC_InitStruct, TIM_CHANNEL_1);
 	
-		//start channel
-		HAL_TIM_OC_Start(&TIM_HandleStruct, Channel);
-
 		//start timer
 		HAL_TIM_Base_Start(&TIM_HandleStruct);
+
+		CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
+		DWT->CTRL |= 1; 
+
+		//calibrate. this stuff will probably need to be tweaked
+		//set _functionCallCompensation
+		uint32_t beforeTick;
+		uint32_t afterTick;
+		beforeTick = DWT->CYCCNT;
+		afterTick = DWT->CYCCNT;
+		uint32_t getTickCompensation = afterTick - beforeTick;
+
+		_functionCallCompensation = DWT->CYCCNT;
+		SetFunctionCallCompensation();
+		_functionCallCompensation -= getTickCompensation;
+
+		//set _returnCallBackCompensation
+		uint32_t returnCallBackCompensation;
+		_returnCallBackCompensation = DWT->CYCCNT;
+		if(TickLessThanEqualToTick(_callTick, DWT->CYCCNT + _functionCallCompensation + _returnCallBackCompensation + TIM->PSC << 2), _callTick == 0)
+		{
+			uint32_t tick = _callTick - _functionCallCompensation;
+			if(TickLessThanTick(DWT->CYCCNT, tick)) ;
+			_callTick = 0;
+		}
+		returnCallBackCompensation = DWT->CYCCNT;
+		_returnCallBackCompensation = returnCallBackCompensation - _returnCallBackCompensation - getTickCompensation;
+
+		TimerCallBackAdvance = (TIM->PSC << 2) + _functionCallCompensation + _returnCallBackCompensation;
 	}
+
+	#pragma GCC push_options
+	#pragma GCC optimize("O0")
+	void Stm32HalTimerService::SetFunctionCallCompensation() 
+	{
+		uint32_t tick = DWT->CYCCNT;
+		_functionCallCompensation = tick - _functionCallCompensation;
+	}
+	#pragma GCC pop_options
 
 	const uint32_t Stm32HalTimerService::GetTick()
 	{
-		uint16_t cnt = TIM->CNT;
-		if (TIM->SR & TIM_IT_UPDATE && cnt < 0x8000) 
-			return _tick | cnt + 0x10000;
-		else
-			return _tick | cnt;
+		return DWT->CYCCNT;
 	}
 
 	void Stm32HalTimerService::ScheduleCallBack(const uint32_t tick)
 	{
-		//tick overhead compensation
-		uint32_t compensatedTick = tick;//- _tickCompensation;
-		_callTick = compensatedTick;
-		_callBack = false;
-		uint16_t ccr = compensatedTick & 0xFFFF;
-		switch (_compare_IT)
-		{
-		case TIM_IT_CC1:
-			TIM->CCR1 = ccr;
-			break;
-		case TIM_IT_CC2:
-			TIM->CCR2 = ccr;
-			break;
-		case TIM_IT_CC3:
-			TIM->CCR3 = ccr;
-			break;
-		case TIM_IT_CC4:
-			TIM->CCR4 = ccr;
-			break;
-		}
+		__disable_irq();
+		_callTick = tick;
+		if(_callTick == 0)
+			_callTick = 1;
 
-		ReturnCallBack();
+		if(TickLessThanTick(_callTick, DWT->CYCCNT + TimerCallBackAdvance))
+		{
+			_interruptDisabled = true;
+			__enable_irq();
+			ReturnCallBack();
+			_interruptDisabled = false;
+		}
+		else
+		{
+			uint32_t ccr = (_callTick - _functionCallCompensation - _returnCallBackCompensation - DWT->CYCCNT) / (TIM->PSC + 1);
+			TIM->CCR1 = TIM->CNT + ccr;
+			__enable_irq();
+		}		
 	}
 	
 	void Stm32HalTimerService::ReturnCallBack(void)
 	{
-		_callBack = true;
-		if(TickLessThanEqualToTick(_callTick, GetTick()))
+		if(_callTick != 0)// && TickLessThanEqualToTick(_callTick - _functionCallCompensation - _returnCallBackCompensation, DWT->CYCCNT + TIM->PSC << 3))
+		{
+			// uint32_t tick = _callTick - _functionCallCompensation;
+			// while(TickLessThanTick(DWT->CYCCNT, tick)) ;
+			_callTick = 0;
 			ITimerService::ReturnCallBack();
+		}
 	}
 	
 	void Stm32HalTimerService::Interrupt(void)
 	{		
-		if (TIM->SR & _compare_IT) {
-			ReturnCallBack();
-			TIM->SR = ~_compare_IT;
-		}
-		if (TIM->SR & TIM_IT_UPDATE) {
-			_tick += 0x00010000;
-			TIM->SR = ~TIM_IT_UPDATE;
+		if (TIM->SR & TIM_IT_CC1) {
+			if(!_interruptDisabled)
+				ReturnCallBack();
+			TIM->SR = ~TIM_IT_CC1;
 		}
 	}
 

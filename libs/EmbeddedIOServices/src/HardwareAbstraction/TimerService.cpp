@@ -33,87 +33,35 @@ namespace HardwareAbstraction
 		_callBackList.clear();
 	}
 	
-	bool ITimerService::TickLessThanTick(const uint32_t i, const uint32_t j)
-	{
-		return (j > 2147483647 && static_cast<uint32_t>(i + 2147483647) < static_cast<uint32_t>(j + 2147483647)) || (j <= 2147483647 && i < j);
-	}
-
-	bool ITimerService::TickLessThanEqualToTick(const uint32_t i, const uint32_t j)
-	{
-		return (j > 2147483647 && static_cast<uint32_t>(i + 2147483647) <= static_cast<uint32_t>(j + 2147483647)) || (j <= 2147483647 && i <= j);
-	}
-
-	uint32_t ITimerService::TickMinusTick(const uint32_t i, const uint32_t j)
-	{
-		if(j > 2147483647)
-		{
-			return (i + 2147483647) - (j + 2147483647);
-		}
-		else
-		{
-			return i - j;
-		}
-	}
-
-	int64_t ITimerService::TickMinusTickSigned(uint32_t i, uint32_t j)
-	{
-		if(j > 2147483647)
-		{
-			i = i + 2147483647;
-			j = j + 2147483647;
-		}
-		return i - j;
-	}
-
 	void ITimerService::ReturnCallBack(void)
 	{
-		if(_disableCallBack)
-			return;
-		_disableCallBack = true;
-
 		uint32_t tick;
-		Task *iterator = FirstTask;
 		Task *next = 0;
-		Task *prev = 0;
-		while (iterator != 0)
+		int i = 0;
+		while (FirstTask != 0 && TickLessThanEqualToTick(FirstTask->Tick, GetTick() + TimerCallBackAdvance))
 		{
-			next = iterator->NextTask;
-			if(TickLessThanEqualToTick(iterator->Tick, GetTick()))
-			{
-				iterator->Execute();
-				if(FirstTask == iterator)
-				{
-					FirstTask = iterator->NextTask;
-					iterator->Scheduled = false;
-					iterator->NextTask = 0;
-					if (iterator->DeleteOnExecution)
-						delete iterator;
-					prev = iterator;
-				}
-				else
-				{
-					prev->NextTask = iterator->NextTask;
-					iterator->Scheduled = false;
-					iterator->NextTask = 0;
-					if (iterator->DeleteOnExecution)
-						delete iterator;
-				}
-			}
-			else
-			{
-				prev = iterator;
-			}
+			i++;
+			next = FirstTask->NextTask;
 			
-			iterator = next;
+			uint32_t delay = GetTick() - FirstTask->Tick;
+			if(delay > _maxDelay && delay < 0x10000000)
+			{
+				_maxDelay = delay;
+				_delayStack = i;
+			}
+
+			while(TickLessThanTick(GetTick(), FirstTask->Tick)) ;
+			
+			FirstTask->Execute();
+			FirstTask->Scheduled = false;
+			if (FirstTask->DeleteOnExecution)
+				delete FirstTask;
+			
+			FirstTask = next;
 		}
 
 		if(FirstTask != 0)
-		{
-			_disableCallBack = false;
 			ScheduleCallBack(FirstTask->Tick);
-		}
-		else
-			_disableCallBack = false;
 	}
 
 	Task *ITimerService::ScheduleTask(void(*callBack)(void *), void *parameters, uint32_t tick, bool deleteOnExecution)
@@ -127,14 +75,11 @@ namespace HardwareAbstraction
 
 	const bool ITimerService::ScheduleTask(Task *task, const uint32_t tick)
 	{
-		bool disabledCallBackPrim = _disableCallBack;
-		_disableCallBack = true;
+		//make this not static 1ms
+		if(FirstTask != 0 && TickLessThanTick(FirstTask->Tick, GetTick() + 72000))
+			return false;
 
-		//min tick is current tick
-		if(TickLessThanTick(tick, GetTick()))
-		 	task->Tick = GetTick();
-		else
-			task->Tick = tick;
+		task->Tick = tick;
 
 		//set to not scheduled
 		task->Scheduled = false;
@@ -203,7 +148,6 @@ namespace HardwareAbstraction
 			FirstTask = task;
 		}
 
-		_disableCallBack = disabledCallBackPrim;
 		ScheduleCallBack(FirstTask->Tick);
 
 		return true;
@@ -243,7 +187,7 @@ namespace HardwareAbstraction
 	
 	const uint32_t ITimerService::GetElapsedTick(const uint32_t lastTick)
 	{
-		return TickMinusTick(GetTick(), lastTick);
+		return GetTick() - lastTick;
 	}
 	
 	const float ITimerService::GetElapsedTime(const uint32_t lastTick)
