@@ -65,7 +65,7 @@ namespace UnitTests
 				.WillRepeatedly(Return(5000));
 			EXPECT_CALL(_pwmService, InitPin(1, In, analogConfig->MinFrequency)).Times(1);
 			unsigned int size = 0;
-			_floatInputService = IFloatInputService::CreateFloatInputService(&_hardwareAbstractionCollection, config, &size);
+			_floatInputService = IFloatInputService::CreateFloatInputService(&_hardwareAbstractionCollection, config, size);
 		}
 
 		~FloatInputService_FrequencyInterpolatedTableTest() override 

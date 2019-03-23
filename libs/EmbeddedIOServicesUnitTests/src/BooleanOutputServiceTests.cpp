@@ -37,14 +37,14 @@ namespace UnitTests
 			memcpy(((uint8_t *)config + 1), outputConfig, outputConfig->Size());
 
 			unsigned int size = 0;
-			_booleanOutputService0 = IBooleanOutputService::CreateBooleanOutputService(&_hardwareAbstractionCollection, config, &size);
+			_booleanOutputService0 = IBooleanOutputService::CreateBooleanOutputService(&_hardwareAbstractionCollection, config, size);
 
 			outputConfig->Pin = 3;
 			outputConfig->HighZ = true;
 			config = malloc(outputConfig->Size() + 1);
 			*(uint8_t *)config = 1;
 			memcpy(((uint8_t *)config + 1), outputConfig, outputConfig->Size());
-			_booleanOutputService2 = IBooleanOutputService::CreateBooleanOutputService(&_hardwareAbstractionCollection, config, &size);
+			_booleanOutputService2 = IBooleanOutputService::CreateBooleanOutputService(&_hardwareAbstractionCollection, config, size);
 
 			outputConfig->Pin = 2;
 			outputConfig->NormalOn = true;
@@ -52,14 +52,14 @@ namespace UnitTests
 			config = malloc(outputConfig->Size() + 1);
 			*(uint8_t *)config = 1;
 			memcpy(((uint8_t *)config + 1), outputConfig, outputConfig->Size());
-			_booleanOutputService1 = IBooleanOutputService::CreateBooleanOutputService(&_hardwareAbstractionCollection, config, &size);
+			_booleanOutputService1 = IBooleanOutputService::CreateBooleanOutputService(&_hardwareAbstractionCollection, config, size);
 
 			outputConfig->Pin = 4;
 			outputConfig->HighZ = true;
 			config = malloc(outputConfig->Size() + 1);
 			*(uint8_t *)config = 1;
 			memcpy(((uint8_t *)config + 1), outputConfig, outputConfig->Size());
-			_booleanOutputService3 = IBooleanOutputService::CreateBooleanOutputService(&_hardwareAbstractionCollection, config, &size);
+			_booleanOutputService3 = IBooleanOutputService::CreateBooleanOutputService(&_hardwareAbstractionCollection, config, size);
 		}
 
 		~BooleanOutputServiceTest() override 

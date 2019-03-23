@@ -32,7 +32,7 @@ namespace UnitTests
 			buildConfig = (void *)((uint8_t *)buildConfig + sizeof(float) + sizeof(float));
 
 			uint32_t size = 0;
-			_floatInputService = IFloatInputService::CreateFloatInputService(&_hardwareAbstractionCollection, config, &size);
+			_floatInputService = IFloatInputService::CreateFloatInputService(&_hardwareAbstractionCollection, config, size);
 		}
 
 		~FloatInputService_StaticTest() override 
