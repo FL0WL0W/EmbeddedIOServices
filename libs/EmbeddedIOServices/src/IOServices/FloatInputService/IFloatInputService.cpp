@@ -14,6 +14,11 @@ namespace IOServices
 		reinterpret_cast<IFloatInputService *>(floatInputService)->ReadValue();
 	}
 
+	IFloatInputService * IFloatInputService::CreateFloatInputService(ServiceLocator *serviceLocator, const void *config, unsigned int &sizeOut)
+	{
+		return CreateFloatInputService(serviceLocator->LocateAndCast<const HardwareAbstractionCollection>(HARDWARE_ABSTRACTION_COLLECTION_ID), config, sizeOut);
+	}
+	
 	IFloatInputService* IFloatInputService::CreateFloatInputService(const HardwareAbstractionCollection *hardwareAbstractionCollection, const void *config, unsigned int &sizeOut)
 	{
 		const uint8_t inputServiceId = *reinterpret_cast<const uint8_t *>(config);

@@ -34,6 +34,11 @@ namespace IOServices
 		reinterpret_cast<IButtonService*>(buttonService)->Tick();
 	}
 
+	IButtonService * IButtonService::CreateButtonService(ServiceLocator *serviceLocator, const void *config, unsigned int &sizeOut)
+	{
+		return CreateButtonService(serviceLocator->LocateAndCast<const HardwareAbstractionCollection>(HARDWARE_ABSTRACTION_COLLECTION_ID), config, sizeOut);
+	}
+	
 	IButtonService* IButtonService::CreateButtonService(const HardwareAbstractionCollection *hardwareAbstractionCollection, const void *config, unsigned int &sizeOut)
 	{
 		const uint8_t buttonServiceId = *reinterpret_cast<const uint8_t *>(config);
