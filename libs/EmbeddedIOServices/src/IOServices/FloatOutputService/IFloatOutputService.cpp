@@ -7,7 +7,7 @@
 #ifdef IFLOATOUTPUTSERVICE_H
 namespace IOServices
 {
-	IFloatOutputService * IFloatOutputService::CreateFloatOutputService(const ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut)
+	void* IFloatOutputService::CreateFloatOutputService(const ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut)
 	{
 		return CreateFloatOutputService(serviceLocator->LocateAndCast<const HardwareAbstractionCollection>(HARDWARE_ABSTRACTION_COLLECTION_ID), config, sizeOut);
 	}
