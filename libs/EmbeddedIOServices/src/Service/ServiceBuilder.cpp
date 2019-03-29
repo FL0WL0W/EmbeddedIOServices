@@ -14,7 +14,7 @@ namespace Service
 
 			void*(*factory)(const ServiceLocator * const &, const void *, unsigned int &) = ServiceLocator::LocateAndCast<void*(const ServiceLocator * const&, const void *, unsigned int &)>(serviceId);
 
-			void *service = CreateServiceAndOffset(factory, serviceLocator, config, sizeOut);
+			void *service = CreateServiceAndOffset<void>(factory, serviceLocator, config, sizeOut);
 			
 			RegisterIfNotNull(serviceLocator, serviceId, service);
 		}

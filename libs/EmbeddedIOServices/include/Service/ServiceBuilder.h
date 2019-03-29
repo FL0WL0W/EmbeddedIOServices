@@ -12,8 +12,7 @@ namespace Service
 	public:
 		void Build(ServiceLocator *&serviceLocator, const void *config, unsigned int &sizeOut);
 		
-		template<typename Service> 
-		void Register(uint16_t serviceId, Service*(*factory)(ServiceLocator *serviceLocator))
+		void Register(uint16_t serviceId, void*(*factory)(const ServiceLocator * const &, const void *, unsigned int &))
 		{
 			ServiceLocator::Register(serviceId, reinterpret_cast<void *>(factory));
 		}
@@ -40,10 +39,10 @@ namespace Service
 		}
 
 		template<typename Service> 
-		static constexpr Service *CreateServiceAndOffset(Service*(*factory)(const ServiceLocator * const &, const void *, unsigned int &), const ServiceLocator * const &serviceLocator, const void *&config, unsigned int &totalSize)
+		static constexpr Service *CreateServiceAndOffset(void*(*factory)(const ServiceLocator * const &, const void *, unsigned int &), const ServiceLocator * const &serviceLocator, const void *&config, unsigned int &totalSize)
 		{
 			unsigned int size;
-			Service *service = factory(serviceLocator, config, size);
+			Service *service = reinterpret_cast<Service *>(factory(serviceLocator, config, size));
 			OffsetConfig(config, totalSize, size);
 			return service;
 		}
