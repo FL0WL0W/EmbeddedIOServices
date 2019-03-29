@@ -36,7 +36,13 @@ namespace IOServices
 
 	IButtonService * IButtonService::CreateButtonService(ServiceLocator *serviceLocator, const void *config, unsigned int &sizeOut)
 	{
-		return CreateButtonService(serviceLocator->LocateAndCast<const HardwareAbstractionCollection>(HARDWARE_ABSTRACTION_COLLECTION_ID), config, sizeOut);
+		IButtonService *ret = CreateButtonService(serviceLocator->LocateAndCast<const HardwareAbstractionCollection>(HARDWARE_ABSTRACTION_COLLECTION_ID), config, sizeOut);
+		
+		serviceLocator->LocateAndCast<CallBackGroup>(TICK_CALL_BACK_GROUP)->AddIfParametersNotNull(
+			IButtonService::TickCallBack,
+			ret);
+
+		return ret;
 	}
 	
 	IButtonService* IButtonService::CreateButtonService(const HardwareAbstractionCollection *hardwareAbstractionCollection, const void *config, unsigned int &sizeOut)

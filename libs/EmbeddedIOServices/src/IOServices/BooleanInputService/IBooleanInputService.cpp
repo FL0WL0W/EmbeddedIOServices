@@ -12,7 +12,13 @@ namespace IOServices
 
 	IBooleanInputService * IBooleanInputService::CreateBooleanInputService(ServiceLocator *serviceLocator, const void *config, unsigned int &sizeOut)
 	{
-		return CreateBooleanInputService(serviceLocator->LocateAndCast<const HardwareAbstractionCollection>(HARDWARE_ABSTRACTION_COLLECTION_ID), config, sizeOut);
+		IBooleanInputService *ret = CreateBooleanInputService(serviceLocator->LocateAndCast<const HardwareAbstractionCollection>(HARDWARE_ABSTRACTION_COLLECTION_ID), config, sizeOut);
+		
+		serviceLocator->LocateAndCast<CallBackGroup>(TICK_CALL_BACK_GROUP)->AddIfParametersNotNull(
+			IBooleanInputService::ReadValueCallBack,
+			ret);
+
+		return ret;
 	}
 
 	IBooleanInputService* IBooleanInputService::CreateBooleanInputService(const HardwareAbstractionCollection *hardwareAbstractionCollection, const void *config, unsigned int &sizeOut)
