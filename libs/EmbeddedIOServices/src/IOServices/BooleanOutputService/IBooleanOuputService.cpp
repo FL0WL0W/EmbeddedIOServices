@@ -14,7 +14,7 @@ namespace IOServices
 		reinterpret_cast<IBooleanOutputService *>(booleanOutputService)->OutputReset();
 	}
 	
-	IBooleanOutputService * IBooleanOutputService::CreateBooleanOutputService(const ServiceLocator *serviceLocator, const void *config, unsigned int &sizeOut)
+	IBooleanOutputService * IBooleanOutputService::CreateBooleanOutputService(const ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut)
 	{
 		return CreateBooleanOutputService(serviceLocator->LocateAndCast<const HardwareAbstractionCollection>(HARDWARE_ABSTRACTION_COLLECTION_ID), config, sizeOut);
 	}

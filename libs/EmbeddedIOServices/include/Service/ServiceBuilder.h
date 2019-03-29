@@ -10,7 +10,7 @@ namespace Service
 	class ServiceBuilder : protected ServiceLocator
 	{
 	public:
-		void Build(ServiceLocator *&serviceLocator, const void *config, unsigned int &size);
+		void Build(ServiceLocator *&serviceLocator, const void *config, unsigned int &sizeOut);
 		
 		template<typename Service> 
 		void Register(uint16_t serviceId, Service*(*factory)(ServiceLocator *serviceLocator))
@@ -40,7 +40,7 @@ namespace Service
 		}
 
 		template<typename Service> 
-		static constexpr Service *CreateServiceAndOffset(Service*(*factory)(const ServiceLocator *serviceLocator, const void *config, unsigned int &size), ServiceLocator *&serviceLocator, const void *&config, unsigned int &totalSize)
+		static constexpr Service *CreateServiceAndOffset(Service*(*factory)(const ServiceLocator * const &, const void *, unsigned int &), const ServiceLocator * const &serviceLocator, const void *&config, unsigned int &totalSize)
 		{
 			unsigned int size;
 			Service *service = factory(serviceLocator, config, size);

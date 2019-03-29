@@ -3,18 +3,18 @@
 #ifdef SERVICEBUILDER_H
 namespace Service
 {
-	void ServiceBuilder::Build(ServiceLocator *&serviceLocator, const void *config, unsigned int &size)
+	void ServiceBuilder::Build(ServiceLocator *&serviceLocator, const void *config, unsigned int &sizeOut)
 	{
-		size = 0;
+		sizeOut = 0;
 		uint16_t serviceId;
 
 		while ((serviceId = *reinterpret_cast<const uint16_t *>(config)) != 0)
 		{
-			OffsetConfig(config, size, sizeof(const uint16_t));
+			OffsetConfig(config, sizeOut, sizeof(const uint16_t));
 
-			void*(*factory)(const ServiceLocator *, const void *config, unsigned int &size) = ServiceLocator::LocateAndCast<void*(const ServiceLocator *, const void *config, unsigned int &size)>(serviceId);
+			void*(*factory)(const ServiceLocator * const &, const void *, unsigned int &) = ServiceLocator::LocateAndCast<void*(const ServiceLocator * const&, const void *, unsigned int &)>(serviceId);
 
-			void *service = CreateServiceAndOffset(factory, serviceLocator, config, size);
+			void *service = CreateServiceAndOffset(factory, serviceLocator, config, sizeOut);
 			
 			RegisterIfNotNull(serviceLocator, serviceId, service);
 		}
