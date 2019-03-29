@@ -38,6 +38,9 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
     <li>Static Value</li>
   </ul>
   <li>ButtonService</li>
+  <ul>
+    <li>Polling</li>
+  </ul>
   <li>BooleanOutputService</li>
   <ul>
     <li>Digital Pin</li>
