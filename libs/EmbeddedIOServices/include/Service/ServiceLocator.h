@@ -21,9 +21,9 @@ namespace Service
 		std::map<uint16_t, void *> _services;
 	public:
 		void Register(uint16_t serviceId, void *service);
-		void* Locate(uint16_t serviceId);
+		void* Locate(uint16_t serviceId) const;
 		template<typename K>
-		K *LocateAndCast(uint16_t serviceId)
+		K *LocateAndCast(uint16_t serviceId) const
 		{
 			return reinterpret_cast<K *>(Locate(serviceId));
 		}

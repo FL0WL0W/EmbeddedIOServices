@@ -12,7 +12,7 @@ namespace Service
 		{
 			OffsetConfig(config, size, sizeof(const uint16_t));
 
-			void*(*factory)(ServiceLocator *, const void *config, unsigned int &size) = ServiceLocator::LocateAndCast<void*(ServiceLocator *, const void *config, unsigned int &size)>(serviceId);
+			void*(*factory)(const ServiceLocator *, const void *config, unsigned int &size) = ServiceLocator::LocateAndCast<void*(const ServiceLocator *, const void *config, unsigned int &size)>(serviceId);
 
 			void *service = CreateServiceAndOffset(factory, serviceLocator, config, size);
 			

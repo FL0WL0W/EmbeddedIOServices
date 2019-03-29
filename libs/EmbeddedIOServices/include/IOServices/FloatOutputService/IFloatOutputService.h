@@ -15,7 +15,7 @@ namespace IOServices
 		virtual void SetOutput(float output) = 0;
 		virtual void Calibrate() = 0;
 		
-		static IFloatOutputService* CreateFloatOutputService(ServiceLocator *serviceLocator, const void *config, unsigned int &sizeOut);
+		static IFloatOutputService* CreateFloatOutputService(const ServiceLocator *serviceLocator, const void *config, unsigned int &sizeOut);
 		static IFloatOutputService* CreateFloatOutputService(const HardwareAbstractionCollection *hardwareAbstractionCollection, const void *config, unsigned int &sizeOut);
 	};
 }

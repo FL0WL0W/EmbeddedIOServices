@@ -10,7 +10,7 @@ namespace IOServices
 		reinterpret_cast<IBooleanInputService *>(booleanInputService)->ReadValue();
 	}
 
-	IBooleanInputService * IBooleanInputService::CreateBooleanInputService(ServiceLocator *serviceLocator, const void *config, unsigned int &sizeOut)
+	IBooleanInputService * IBooleanInputService::CreateBooleanInputService(const ServiceLocator *serviceLocator, const void *config, unsigned int &sizeOut)
 	{
 		IBooleanInputService *ret = CreateBooleanInputService(serviceLocator->LocateAndCast<const HardwareAbstractionCollection>(HARDWARE_ABSTRACTION_COLLECTION_ID), config, sizeOut);
 		

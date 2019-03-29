@@ -40,7 +40,7 @@ namespace Service
 		}
 
 		template<typename Service> 
-		static constexpr Service *CreateServiceAndOffset(Service*(*factory)(ServiceLocator *serviceLocator, const void *config, unsigned int &size), ServiceLocator *&serviceLocator, const void *&config, unsigned int &totalSize)
+		static constexpr Service *CreateServiceAndOffset(Service*(*factory)(const ServiceLocator *serviceLocator, const void *config, unsigned int &size), ServiceLocator *&serviceLocator, const void *&config, unsigned int &totalSize)
 		{
 			unsigned int size;
 			Service *service = factory(serviceLocator, config, size);
