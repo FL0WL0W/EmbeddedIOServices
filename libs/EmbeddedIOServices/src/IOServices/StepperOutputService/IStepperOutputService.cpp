@@ -3,6 +3,7 @@
 #include "IOServices/StepperOutputService/StepperOutputService_FullStepControl.h"
 #include "IOServices/StepperOutputService/StepperOutputService_HalfStepControl.h"
 #include "IOServices/StepperOutputService/StepperOutputService_StaticStepCalibrationWrapper.h"
+#include "Service/HardwareAbstractionServiceBuilder.h"
 #include "Service/ServiceBuilder.h"
 
 #ifdef ISTEPPEROUTPUTSERVICE_H

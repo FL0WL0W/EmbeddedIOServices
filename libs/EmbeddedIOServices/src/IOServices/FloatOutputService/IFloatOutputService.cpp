@@ -3,6 +3,7 @@
 #include "IOServices/FloatOutputService/FloatOutputService_PwmInterpolatedTable.h"
 #include "IOServices/FloatOutputService/FloatOutputService_StepperPolynomial.h"
 #include "IOServices/FloatOutputService/FloatOutputService_StepperInterpolatedTable.h"
+#include "Service/HardwareAbstractionServiceBuilder.h"
 #include "Service/ServiceBuilder.h"
 
 #ifdef IFLOATOUTPUTSERVICE_H

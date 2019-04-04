@@ -1,6 +1,7 @@
 #include "IOServices/BooleanInputService/IBooleanInputService.h"
 #include "IOServices/BooleanInputService/BooleanInputService_Static.h"
 #include "IOServices/BooleanInputService/BooleanInputService.h"
+#include "Service/HardwareAbstractionServiceBuilder.h"
 #include "Service/ServiceBuilder.h"
 
 #ifdef IBOOLEANINPUTSERVICE_H

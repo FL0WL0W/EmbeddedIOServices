@@ -5,6 +5,7 @@
 #include "IOServices/FloatInputService/FloatInputService_FrequencyPolynomial.h"
 #include "IOServices/FloatInputService/FloatInputService_FrequencyInterpolatedTable.h"
 #include "IOServices/FloatInputService/FloatInputService_FaultDetectionWrapper.h"
+#include "Service/HardwareAbstractionServiceBuilder.h"
 #include "Service/ServiceBuilder.h"
 
 #ifdef IFLOATINPUTSERVICE_H

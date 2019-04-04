@@ -1,5 +1,6 @@
 #include "IOServices/ButtonService/ButtonService_Polling.h"
 #include "IOServices/ButtonService/IButtonService.h"
+#include "Service/HardwareAbstractionServiceBuilder.h"
 #include "Service/ServiceBuilder.h"
 
 #ifdef IBUTTONSERVICE_H

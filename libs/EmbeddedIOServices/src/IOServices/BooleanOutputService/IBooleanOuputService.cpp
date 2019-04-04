@@ -1,5 +1,6 @@
 #include "IOServices/BooleanOutputService/IBooleanOutputService.h"
 #include "IOServices/BooleanOutputService/BooleanOutputService.h"
+#include "Service/HardwareAbstractionServiceBuilder.h"
 #include "Service/ServiceBuilder.h"
 
 #ifdef IBOOLEANOUTPUTSERVICE_H

@@ -1,5 +1,4 @@
 #include "Service/ServiceLocator.h"
-#include <map>
 #include "stdint.h"
 
 #ifndef SERVICEBUILDER_H
