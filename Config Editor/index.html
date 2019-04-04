@@ -6,14 +6,11 @@
         <script src="Units.js"></script>
         <script src="SpeeduinoIni.js"></script>
         <script src="IOServicesConfig.js"></script>
-        <script src="SensorServicesConfig.js"></script>
-        <script src="TransmissionControlServicesConfig.js"></script>
-        <script src="EngineControlServicesConfig.js"></script>
         <script src="ConfigGui/ConfigGui.js"></script>
         <link rel = "stylesheet" type = "text/css" href = "style.css" />
         <script type="text/javascript">
             $(document).ready(function() {
-                var b = new ConfigGui(undefined, EngineControlServicesIni);
+                var b = new ConfigGui(undefined, IOServicesIni);
                 $('#chkAdvanced').change(function(){
                     ShowAdvanced = this.checked;
                                         
