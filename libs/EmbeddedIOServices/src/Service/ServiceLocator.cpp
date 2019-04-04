@@ -27,24 +27,26 @@ namespace Service
 
 		if(serviceArray == 0)
 		{
-			serviceArray = malloc((instanceId + 2) * sizeof(void *));
-			*reinterpret_cast<uint8_t *>(serviceArray) = instanceId + 1;
+			serviceArray = malloc((instanceId + 1) * sizeof(void *) + sizeof(uint32_t));
+			*reinterpret_cast<uint32_t *>(serviceArray) = instanceId + 1;
+			Register(serviceId, serviceArray);
 		}
 		else
 		{
 			uint32_t size = *reinterpret_cast<uint32_t *>(serviceArray);
 			if(instanceId + 1 > size)
 			{
-				free(serviceArray);
-
-				serviceArray = malloc((instanceId + 2) * sizeof(void *));
+				void* oldServiceArray = serviceArray;
+				serviceArray = malloc((instanceId + 1) * sizeof(void *) + sizeof(uint32_t));
+				memcpy(serviceArray, oldServiceArray, size * sizeof(void *) + sizeof(uint32_t));
 				*reinterpret_cast<uint32_t *>(serviceArray) = instanceId + 1;
-
+				
 				Register(serviceId, serviceArray);
+				free(oldServiceArray);
 			}
 		}
 		
-		reinterpret_cast<void **>(serviceArray)[instanceId + 1] = service;
+		reinterpret_cast<void **>(reinterpret_cast<uint32_t *>(serviceArray) + 1)[instanceId] = service;
 	}
 
 	void ServiceLocator::RegisterIfNotNull(uint16_t const &serviceId, uint32_t const &instanceId, void * const &service)
@@ -67,9 +69,9 @@ namespace Service
 	{
 		void* serviceArray = Locate(serviceId);
 
-		if(serviceArray != 0 && *reinterpret_cast<uint32_t *>(serviceArray) < instanceId)
+		if(serviceArray != 0 && instanceId < *reinterpret_cast<uint32_t *>(serviceArray))
 		{
-			return reinterpret_cast<void **>(serviceArray)[instanceId + 1];
+			return reinterpret_cast<void **>(reinterpret_cast<uint32_t *>(serviceArray) + 1)[instanceId];
 		}
 
 		return 0;

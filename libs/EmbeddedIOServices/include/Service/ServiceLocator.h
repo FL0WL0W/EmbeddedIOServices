@@ -18,12 +18,12 @@ namespace Service
 		void* Locate(uint16_t const &serviceId) const;
 		void* Locate(uint16_t const &serviceId, uint32_t const &instanceId) const;
 		template<typename K>
-		K *LocateAndCast(uint16_t serviceId) const
+		K *LocateAndCast(uint16_t const &serviceId) const
 		{
 			return reinterpret_cast<K *>(Locate(serviceId));
 		}
 		template<typename K>
-		K *LocateAndCast(uint16_t serviceId, uint32_t instanceId) const
+		K *LocateAndCast(uint16_t const &serviceId, uint32_t const &instanceId) const
 		{
 			return reinterpret_cast<K *>(Locate(serviceId, instanceId));
 		}
