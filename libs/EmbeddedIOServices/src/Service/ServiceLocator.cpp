@@ -27,7 +27,7 @@ namespace Service
 
 		if(serviceArray == 0)
 		{
-			serviceArray = malloc((instanceId + 1) * sizeof(void *) + sizeof(uint32_t));
+			serviceArray = calloc((instanceId + 2) * sizeof(void *) + sizeof(uint32_t), (instanceId + 2) * sizeof(void *) + sizeof(uint32_t));
 			*reinterpret_cast<uint32_t *>(serviceArray) = instanceId + 1;
 			Register(serviceId, serviceArray);
 		}
@@ -37,8 +37,8 @@ namespace Service
 			if(instanceId + 1 > size)
 			{
 				void* oldServiceArray = serviceArray;
-				serviceArray = malloc((instanceId + 1) * sizeof(void *) + sizeof(uint32_t));
-				memcpy(serviceArray, oldServiceArray, size * sizeof(void *) + sizeof(uint32_t));
+				serviceArray = calloc((instanceId + 2) * sizeof(void *) + sizeof(uint32_t), (instanceId + 2) * sizeof(void *) + sizeof(uint32_t));
+				memcpy(serviceArray, oldServiceArray, (size + 1) * sizeof(void *) + sizeof(uint32_t));
 				*reinterpret_cast<uint32_t *>(serviceArray) = instanceId + 1;
 				
 				Register(serviceId, serviceArray);
