@@ -16,15 +16,7 @@ namespace Service
 	class IOServicesServiceBuilderRegister
 	{
 	public:
-		static void Register(ServiceBuilder *&serviceBuilder)
-		{
-			serviceBuilder->Register(BUILDER_IBOOLEANINPUTSERVICE, IBooleanInputService::BuildBooleanInputService);
-			serviceBuilder->Register(BUILDER_IBOOLEANOUTPUTSERVICE, IBooleanOutputService::BuildBooleanOutputService);
-			serviceBuilder->Register(BUILDER_IBUTTONSERVICE, IButtonService::BuildButtonService);
-			serviceBuilder->Register(BUILDER_IFLOATINPUTSERVICE, IFloatInputService::BuildFloatInputService);
-			serviceBuilder->Register(BUILDER_IFLOATOUTPUTSERVICE, IFloatOutputService::BuildFloatOutputService);
-			serviceBuilder->Register(BUILDER_ISTEPPEROUTPUTSERVICE, IStepperOutputService::BuildStepperOutputService);
-		}
+		static void Register(ServiceBuilder *&serviceBuilder);
 	};
 }
 #endif
