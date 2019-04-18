@@ -1,5 +1,7 @@
 #include "IOServices/ButtonService/ButtonService_Polling.h"
 
+using namespace HardwareAbstraction;
+
 #ifdef BUTTONSERVICE_POLLING_H
 namespace IOServices
 {

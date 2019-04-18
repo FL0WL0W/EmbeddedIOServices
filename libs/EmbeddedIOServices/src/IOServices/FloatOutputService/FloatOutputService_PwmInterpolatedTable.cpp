@@ -1,6 +1,8 @@
 #include "IOServices/FloatOutputService/FloatOutputService_PwmInterpolatedTable.h"
 #include "Interpolation.h"
 
+using namespace HardwareAbstraction;
+
 #ifdef FLOATOUTPUTSERVICE_PWMINTERPOLATEDTABLE_H
 namespace IOServices
 {

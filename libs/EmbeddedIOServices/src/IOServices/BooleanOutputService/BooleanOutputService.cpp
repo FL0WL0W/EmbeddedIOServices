@@ -1,5 +1,7 @@
 #include "IOServices/BooleanOutputService/BooleanOutputService.h"
 
+using namespace HardwareAbstraction;
+
 #ifdef BOOLEANOUTPUTSERVICE_H
 namespace IOServices
 {

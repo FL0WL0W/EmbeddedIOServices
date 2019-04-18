@@ -3,11 +3,6 @@
 #ifdef STEPPEROUTPUTSERVICE_HALFSTEPCONTROL_H
 namespace IOServices
 {
-	void StepperOutputService_HalfStepControl::StepCallBack(void *stepperOutputService_HalfStepControl)
-	{
-		reinterpret_cast<StepperOutputService_HalfStepControl *>(stepperOutputService_HalfStepControl)->Step();
-	}
-
 	StepperOutputService_HalfStepControl::StepperOutputService_HalfStepControl(const HardwareAbstractionCollection *hardwareAbstractionCollection, const StepperOutputService_HalfStepControlConfig *config, IBooleanOutputService *coilAPlusBooleanOutputService, IBooleanOutputService *coilAMinusBooleanOutputService, IBooleanOutputService *coilBPlusBooleanOutputService, IBooleanOutputService *coilBMinusBooleanOutputService)
 	{
 		_hardwareAbstractionCollection = hardwareAbstractionCollection;
@@ -17,7 +12,7 @@ namespace IOServices
 		_coilBPlusBooleanOutputService = coilBPlusBooleanOutputService;
 		_coilBMinusBooleanOutputService = coilBMinusBooleanOutputService;
 		
-		_stepTask = new Task(StepCallBack, this, false);
+		_stepTask = new Task(new CallBack<StepperOutputService_HalfStepControl>(this, &StepperOutputService_HalfStepControl::Step), false);
 		SetState(0);
 	}
 

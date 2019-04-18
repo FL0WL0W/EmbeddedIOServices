@@ -31,7 +31,6 @@ namespace IOServices
 		int32_t _stepQueue = 0;
 		Task *_offTask;
 		Task *_stepTask;
-		static void StepCallBack(void *stepperOutputService_StepDirectionControl);
 		void Step();
 
 	public:

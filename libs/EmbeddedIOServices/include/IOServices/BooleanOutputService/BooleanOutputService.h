@@ -3,8 +3,6 @@
 #include "Packed.h"
 #include "stdint.h"
 
-using namespace HardwareAbstraction;
-
 #if !defined(BOOLEANOUTPUTSERVICE_H) && defined(IBOOLEANOUTPUTSERVICE_H) && defined(HARDWAREABSTRACTIONCOLLECTION_H)
 #define BOOLEANOUTPUTSERVICE_H
 namespace IOServices
@@ -26,11 +24,11 @@ namespace IOServices
 	class BooleanOutputService : public IBooleanOutputService
 	{
 	protected:
-		const HardwareAbstractionCollection *_hardwareAbstractionCollection;
+		const HardwareAbstraction::HardwareAbstractionCollection *_hardwareAbstractionCollection;
 		const BooleanOutputServiceConfig *_config;
 		
 	public:
-		BooleanOutputService(const HardwareAbstractionCollection *, const BooleanOutputServiceConfig *);
+		BooleanOutputService(const HardwareAbstraction::HardwareAbstractionCollection *, const BooleanOutputServiceConfig *);
 
 		void OutputSet() override;
 		void OutputReset() override;

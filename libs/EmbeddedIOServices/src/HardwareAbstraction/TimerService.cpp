@@ -5,25 +5,12 @@
 #ifdef ITIMERSERVICE_H
 namespace HardwareAbstraction
 {		
-	void CallBackGroup::AddIfParametersNotNull(void(*callBackPointer)(void *), void *parameters)
-	{
-		if(parameters != 0)
-		{
-			Add(callBackPointer, parameters);
-		}
-	}
-
 	void CallBackGroup::Execute()
 	{
 		for (std::list<ICallBack *>::const_iterator iterator = _callBackList.begin(), end = _callBackList.end(); iterator != end; ++iterator)
 		{
 			(*iterator)->Execute();
 		}
-	}
-	
-	void CallBackGroup::Add(void(*callBackPointer)(void *), void *parameters)
-	{
-		Add(new CallBack(callBackPointer, parameters));
 	}
 	
 	void CallBackGroup::Add(ICallBack *callBack)
@@ -62,15 +49,6 @@ namespace HardwareAbstraction
 
 		if(FirstTask != 0)
 			ScheduleCallBack(FirstTask->Tick);
-	}
-
-	Task *ITimerService::ScheduleTask(void(*callBack)(void *), void *parameters, uint32_t tick, bool deleteOnExecution)
-	{
-		Task *taskToSchedule = new Task(callBack, parameters, deleteOnExecution);
-
-		ScheduleTask(taskToSchedule, tick);
-
-		return taskToSchedule;
 	}
 
 	const bool ITimerService::ScheduleTask(Task *task, const uint32_t tick)

@@ -4,8 +4,6 @@
 #include "Packed.h"
 #include "stdint.h"
 
-using namespace HardwareAbstraction;
-
 #if !defined(FLOATINPUTSERVICE_FREQUENCYPOLYNOMIAL_H) && defined(IFLOATINPUTSERVICE_H) && defined(HARDWAREABSTRACTIONCOLLECTION_H) 
 #define FLOATINPUTSERVICE_FREQUENCYPOLYNOMIAL_H
 namespace IOServices
@@ -32,14 +30,14 @@ namespace IOServices
 	class FloatInputService_FrequencyPolynomial : public IFloatInputService
 	{
 	protected:
-		const HardwareAbstractionCollection *_hardwareAbstractionCollection;
+		const HardwareAbstraction::HardwareAbstractionCollection *_hardwareAbstractionCollection;
 		const FloatInputService_FrequencyPolynomialConfig<Degree> *_config;
 
 		uint32_t _lastReadTick = 0;
 		float _lastValue = 0;
 		
 	public:
-		FloatInputService_FrequencyPolynomial(const HardwareAbstractionCollection *hardwareAbstractionCollection, const FloatInputService_FrequencyPolynomialConfig<Degree> *config)
+		FloatInputService_FrequencyPolynomial(const HardwareAbstraction::HardwareAbstractionCollection *hardwareAbstractionCollection, const FloatInputService_FrequencyPolynomialConfig<Degree> *config)
 		{
 			_hardwareAbstractionCollection = hardwareAbstractionCollection;
 			_config = config;

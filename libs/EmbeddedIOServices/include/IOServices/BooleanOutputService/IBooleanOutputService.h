@@ -2,9 +2,6 @@
 #include "Service/ServiceLocator.h"
 #include "stdint.h"
 
-using namespace HardwareAbstraction;
-using namespace Service;
-
 #if !defined(IBOOLEANOUTPUTSERVICE_H) && defined(HARDWAREABSTRACTIONCOLLECTION_H)
 #define IBOOLEANOUTPUTSERVICE_H
 namespace IOServices
@@ -19,8 +16,8 @@ namespace IOServices
 		static void OutputSetCallBack(void *booleanOutputService);
 		static void OutputResetCallBack(void *booleanOutputService);
 		
-		static void *BuildBooleanOutputService(const ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut);
-		static IBooleanOutputService *CreateBooleanOutputService(const HardwareAbstractionCollection *hardwareAbstractionCollection, const void *config, unsigned int &sizeOut);
+		static void *BuildBooleanOutputService(const Service::ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut);
+		static IBooleanOutputService *CreateBooleanOutputService(const HardwareAbstraction::HardwareAbstractionCollection *hardwareAbstractionCollection, const void *config, unsigned int &sizeOut);
 	};
 }
 #endif

@@ -32,8 +32,7 @@ namespace IOServices
 		int32_t _stepQueue = 0;
 		int8_t _state;
 		Task *_stepTask;
-		static void StepCallBack(void *stepperOutputService_FullStepControl);
-		void Step();
+		void Tick();
 		void SetState(int8_t state);
 
 	public:

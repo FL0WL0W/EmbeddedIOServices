@@ -13,12 +13,12 @@ namespace IOServices
 	{
 	protected:
 		IBooleanInputService *_booleanInputService;
-		ITimerService *_timerService;
+		HardwareAbstraction::ITimerService *_timerService;
 		uint32_t _lastPressed = 0;
 		bool _pressed = false;
 
 	public:
-		ButtonService_Polling(ITimerService *timerService, IBooleanInputService *booleanInputService);
+		ButtonService_Polling(HardwareAbstraction::ITimerService *timerService, IBooleanInputService *booleanInputService);
 		void Tick() override;
 	};
 }

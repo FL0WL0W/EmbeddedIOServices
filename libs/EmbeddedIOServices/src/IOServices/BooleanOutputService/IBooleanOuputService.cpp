@@ -3,6 +3,9 @@
 #include "Service/HardwareAbstractionServiceBuilder.h"
 #include "Service/ServiceBuilder.h"
 
+using namespace HardwareAbstraction;
+using namespace Service;
+
 #ifdef IBOOLEANOUTPUTSERVICE_H
 namespace IOServices
 {

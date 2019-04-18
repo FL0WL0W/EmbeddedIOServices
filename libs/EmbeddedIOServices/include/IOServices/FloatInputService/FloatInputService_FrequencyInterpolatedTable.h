@@ -5,8 +5,6 @@
 #include "Interpolation.h"
 #include "stdint.h"
 
-using namespace HardwareAbstraction;
-
 #if !defined(FLOATINPUTSERVICE_FREQUENCYINTERPOLATEDTABLE_H) && defined(IFLOATINPUTSERVICE_H) && defined(HARDWAREABSTRACTIONCOLLECTION_H)
 #define FLOATINPUTSERVICE_FREQUENCYINTERPOLATEDTABLE_H
 namespace IOServices
@@ -39,14 +37,14 @@ namespace IOServices
 	class FloatInputService_FrequencyInterpolatedTable : public IFloatInputService
 	{
 	protected:
-		const HardwareAbstractionCollection *_hardwareAbstractionCollection;
+		const HardwareAbstraction::HardwareAbstractionCollection *_hardwareAbstractionCollection;
 		const FloatInputService_FrequencyInterpolatedTableConfig *_config;
 		
 		uint32_t _lastReadTick = 0;
 		float _lastValue = 0;
 		
 	public:
-		FloatInputService_FrequencyInterpolatedTable(const HardwareAbstractionCollection *hardwareAbstractionCollection, const FloatInputService_FrequencyInterpolatedTableConfig *config);
+		FloatInputService_FrequencyInterpolatedTable(const HardwareAbstraction::HardwareAbstractionCollection *hardwareAbstractionCollection, const FloatInputService_FrequencyInterpolatedTableConfig *config);
 
 		void ReadValue() override;
 	};

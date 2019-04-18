@@ -1,5 +1,7 @@
 #include "IOServices/FloatInputService/FloatInputService_FrequencyInterpolatedTable.h"
 
+using namespace HardwareAbstraction;
+
 #ifdef FLOATINPUTSERVICE_FREQUENCYINTERPOLATEDTABLE_H
 namespace IOServices
 {

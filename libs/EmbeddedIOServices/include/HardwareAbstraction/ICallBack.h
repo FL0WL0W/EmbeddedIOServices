@@ -11,9 +11,9 @@ namespace HardwareAbstraction
 		virtual void Execute() = 0;
 	};
 	
-	struct CallBack : public ICallBack
+	struct CallBackWithParameters : public ICallBack
 	{
-		CallBack(void(*callBackPointer)(void *), void *parameters)
+		CallBackWithParameters(void(*callBackPointer)(void *), void *parameters)
 		{
 			CallBackPointer = callBackPointer;
 			Parameters = parameters;
@@ -28,6 +28,24 @@ namespace HardwareAbstraction
 		void *Parameters;
 	};
 	
+	template<typename INSTANCETYPE>
+	struct CallBack : public ICallBack
+	{
+		CallBack(INSTANCETYPE *instance, void(INSTANCETYPE::*function)())
+		{
+			Instance = instance;
+			Function = function;
+		}
+
+		void Execute() override
+		{
+			(Instance->*Function)();
+		}
+
+		INSTANCETYPE *Instance;
+		void(INSTANCETYPE::*Function)();
+	};
+	
 	class CallBackGroup : public ICallBack
 	{
 	protected:
@@ -35,8 +53,6 @@ namespace HardwareAbstraction
 	public:		
 		void Execute() override;
 		void Add(ICallBack *callBack);
-		void Add(void(*callBackPointer)(void *), void *parameters);
-		void AddIfParametersNotNull(void(*callBackPointer)(void *), void *parameters);
 		void Remove(ICallBack *callBack);
 		void Clear();
 	};

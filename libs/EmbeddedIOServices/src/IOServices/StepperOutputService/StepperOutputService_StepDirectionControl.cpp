@@ -3,11 +3,6 @@
 #ifdef STEPPEROUTPUTSERVICE_STEPDIRECTIONCONTROL_H
 namespace IOServices
 {
-	void StepperOutputService_StepDirectionControl::StepCallBack(void *stepperOutputService_StepDirectionControl)
-	{
-		reinterpret_cast<StepperOutputService_StepDirectionControl *>(stepperOutputService_StepDirectionControl)->Step();
-	}
-
 	StepperOutputService_StepDirectionControl::StepperOutputService_StepDirectionControl(const HardwareAbstractionCollection *hardwareAbstractionCollection, const StepperOutputService_StepDirectionControlConfig *config, IBooleanOutputService *stepBooleanOutputService, IBooleanOutputService *directionBooleanOutputService)
 	{
 		_hardwareAbstractionCollection = hardwareAbstractionCollection;
@@ -15,8 +10,8 @@ namespace IOServices
 		_stepBooleanOutputService = stepBooleanOutputService;
 		_directionBooleanOutputService = directionBooleanOutputService;
 		
-		_offTask = new Task(IBooleanOutputService::OutputResetCallBack, _stepBooleanOutputService, false);
-		_stepTask = new Task(StepCallBack, this, false);
+		_offTask = new Task(new CallBack<IBooleanOutputService>(_stepBooleanOutputService, &IBooleanOutputService::OutputReset), false);
+		_stepTask = new Task(new CallBack<StepperOutputService_StepDirectionControl>(this, &StepperOutputService_StepDirectionControl::Step), false);
 	}
 
 	void StepperOutputService_StepDirectionControl::Step(int32_t steps)

@@ -8,21 +8,18 @@
 #include "Service/HardwareAbstractionServiceBuilder.h"
 #include "Service/ServiceBuilder.h"
 
+using namespace HardwareAbstraction;
+using namespace Service;
+
 #ifdef IFLOATINPUTSERVICE_H
 namespace IOServices
 {
-	void IFloatInputService::ReadValueCallBack(void *floatInputService)
-	{
-		reinterpret_cast<IFloatInputService *>(floatInputService)->ReadValue();
-	}
-
 	void* IFloatInputService::BuildFloatInputService(const ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut)
 	{
 		IFloatInputService *ret = CreateFloatInputService(serviceLocator->LocateAndCast<const HardwareAbstractionCollection>(HARDWARE_ABSTRACTION_COLLECTION_ID), config, sizeOut);
 		
-		serviceLocator->LocateAndCast<CallBackGroup>(TICK_CALL_BACK_GROUP)->AddIfParametersNotNull(
-			IFloatInputService::ReadValueCallBack,
-			ret);
+		serviceLocator->LocateAndCast<CallBackGroup>(TICK_CALL_BACK_GROUP)->Add(
+			new CallBack<IFloatInputService>(ret, &IFloatInputService::ReadValue));
 
 		return ret;
 	}

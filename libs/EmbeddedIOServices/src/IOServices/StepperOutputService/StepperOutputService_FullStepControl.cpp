@@ -3,11 +3,6 @@
 #ifdef STEPPEROUTPUTSERVICE_FULLSTEPCONTROL_H
 namespace IOServices
 {
-	void StepperOutputService_FullStepControl::StepCallBack(void *stepperOutputService_FullStepControl)
-	{
-		reinterpret_cast<StepperOutputService_FullStepControl *>(stepperOutputService_FullStepControl)->Step();
-	}
-
 	StepperOutputService_FullStepControl::StepperOutputService_FullStepControl(const HardwareAbstractionCollection *hardwareAbstractionCollection, const StepperOutputService_FullStepControlConfig *config, IBooleanOutputService *coilAPlusBooleanOutputService, IBooleanOutputService *coilAMinusBooleanOutputService, IBooleanOutputService *coilBPlusBooleanOutputService, IBooleanOutputService *coilBMinusBooleanOutputService)
 	{
 		_hardwareAbstractionCollection = hardwareAbstractionCollection;
@@ -17,7 +12,7 @@ namespace IOServices
 		_coilBPlusBooleanOutputService = coilBPlusBooleanOutputService;
 		_coilBMinusBooleanOutputService = coilBMinusBooleanOutputService;
 		
-		_stepTask = new Task(StepCallBack, this, false);
+		_stepTask = new Task(new CallBack<StepperOutputService_FullStepControl>(this, &StepperOutputService_FullStepControl::Tick), false);
 		SetState(0);
 	}
 
@@ -26,13 +21,13 @@ namespace IOServices
 		if(_stepQueue == 0)
 		{
 			_stepQueue += steps;
-			Step();
+			Tick();
 		}
 		else
 			_stepQueue += steps;
 	}
 
-	void StepperOutputService_FullStepControl::Step()
+	void StepperOutputService_FullStepControl::Tick()
 	{
 		if(_stepQueue == 0)
 			return;

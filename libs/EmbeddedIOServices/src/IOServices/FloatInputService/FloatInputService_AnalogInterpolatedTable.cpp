@@ -1,5 +1,7 @@
 #include "IOServices/FloatInputService/FloatInputService_AnalogInterpolatedTable.h"
 
+using namespace HardwareAbstraction;
+
 #ifdef FLOATINPUTSERVICE_ANALOGINTERPOLATEDTABLE_H
 namespace IOServices
 {

@@ -10,11 +10,6 @@ namespace HardwareAbstraction
 	{
 	public:
 		Task() {}
-		Task(void(*callBack)(void *), void *parameters, bool deleteOnExecution)
-		{
-			CallBackInstance = new CallBack(callBack, parameters);
-			DeleteOnExecution = deleteOnExecution;
-		}
 		Task(ICallBack *callBack, bool deleteOnExecution)
 		{
 			CallBackInstance = callBack;

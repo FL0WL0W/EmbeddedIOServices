@@ -1,5 +1,7 @@
 #include "IOServices/FloatInputService/FloatInputService_FaultDetectionWrapper.h"
 
+using namespace HardwareAbstraction;
+
 #ifdef FLOATINPUTSERVICE_FAULTDETECTIONWRAPPER_H
 namespace IOServices
 {

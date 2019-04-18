@@ -6,6 +6,9 @@
 #include "Service/HardwareAbstractionServiceBuilder.h"
 #include "Service/ServiceBuilder.h"
 
+using namespace HardwareAbstraction;
+using namespace Service;
+
 #ifdef IFLOATOUTPUTSERVICE_H
 namespace IOServices
 {

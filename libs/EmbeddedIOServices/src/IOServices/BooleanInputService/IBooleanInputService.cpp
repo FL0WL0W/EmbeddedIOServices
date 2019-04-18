@@ -4,21 +4,21 @@
 #include "Service/HardwareAbstractionServiceBuilder.h"
 #include "Service/ServiceBuilder.h"
 
+using namespace HardwareAbstraction;
+using namespace Service;
+
 #ifdef IBOOLEANINPUTSERVICE_H
 namespace IOServices
 {
-	void IBooleanInputService::ReadValueCallBack(void *booleanInputService)
-	{
-		reinterpret_cast<IBooleanInputService *>(booleanInputService)->ReadValue();
-	}
-
 	void* IBooleanInputService::BuildBooleanInputService(const ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut)
 	{
 		IBooleanInputService *ret = CreateBooleanInputService(serviceLocator->LocateAndCast<const HardwareAbstractionCollection>(HARDWARE_ABSTRACTION_COLLECTION_ID), config, sizeOut);
 		
-		serviceLocator->LocateAndCast<CallBackGroup>(TICK_CALL_BACK_GROUP)->AddIfParametersNotNull(
-			IBooleanInputService::ReadValueCallBack,
-			ret);
+		if(ret != 0)
+		{
+			serviceLocator->LocateAndCast<CallBackGroup>(TICK_CALL_BACK_GROUP)->Add(
+				new CallBack<IBooleanInputService>(ret, &IBooleanInputService::ReadValue));
+		}
 
 		return ret;
 	}
