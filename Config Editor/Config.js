@@ -769,7 +769,11 @@ class ConfigArray {
 function GetReferenceByNumberOrReference(referenceObj, numberOrReference, defaultValue) {
     var value = parseInt(numberOrReference);
     if(isNaN(value)) {
-        return GetReference(referenceObj, numberOrReference, { Value: defaultValue });
+        var ref = GetReference(referenceObj, numberOrReference, { Value: defaultValue });
+        if(isNaN(parseInt(ref.Value)) && numberOrReference != undefined) {
+            return GetReferenceByNumberOrReference(referenceObj, ref.Value, defaultValue);
+        }
+        return ref;
     }
 
     return { Value: value};
