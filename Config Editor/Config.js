@@ -846,6 +846,8 @@ function GetReference(referenceObj, reference, defaultReference) {
         var ref = referenceObj[reference];
         if(ref === undefined)
             return defaultReference;
+        if(!isNaN(ref))
+            return { Value: ref };
         return ref;
     }
 }
