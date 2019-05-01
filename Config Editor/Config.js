@@ -341,6 +341,12 @@ class ConfigNumber {
                 if(!this.Max)
                     this.Max = 340282300000000000000000000000000000000;
                 break;
+            case "variable":
+                if(!this.Min)
+                    this.Min = -340282300000000000000000000000000000000;
+                if(!this.Max)
+                    this.Max = 340282300000000000000000000000000000000;
+                break;
         }
         if(!this.Value)
             if(this.Min > 0)
