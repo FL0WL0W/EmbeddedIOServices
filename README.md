@@ -81,6 +81,7 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
   <li>PWMPinFloatVariable</li>
   <li>PolynomialTranslationFloatVariable</li>
   <li>LookupTableTranslationFloatVariable</li>
+  <li>2AxisTableTranslationFloatVariable</li>
   <li>FaultDetectionFloatVariable</li>
 </ul>
 
