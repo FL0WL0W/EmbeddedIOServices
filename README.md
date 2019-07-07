@@ -72,13 +72,13 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
 
 # Variable Bus (NEW)
 <ul>
-  <li>StaticBooleanVariable</li>
-  <li>StaticFloatVariable</li>
-  <li>DigitalPinPollingBooleanVariable</li>
-  <li>DigitalPinInterruptBooleanVariable</li>
-  <li>AnalogPinFloatVariable</li>
-  <li>FrequencyPinFloatVariable</li>
-  <li>PWMPinFloatVariable</li>
+  <li>BooleanVariable Static</li>
+  <li>BooleanVariable Pin</li>
+  <li>FloatVariable Static</li>
+  <li>FloatVariable Analog Pin</li>
+  <li>FloatVariable Frequency Pin</li>
+  <li>FloatVariable Pulse Width Pin</li>
+  <li>FloatVariable Duty Cycle Pin</li>
   <li>PolynomialTranslationFloatVariable</li>
   <li>LookupTableTranslationFloatVariable</li>
   <li>2AxisTableTranslationFloatVariable</li>
