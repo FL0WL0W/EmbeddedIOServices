@@ -70,6 +70,20 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
   </ul>
 </ul>
 
+# Variable Bus (NEW)
+<ul>
+  <li>StaticBooleanVariable</li>
+  <li>StaticFloatVariable</li>
+  <li>DigitalPinPollingBooleanVariable</li>
+  <li>DigitalPinInterruptBooleanVariable</li>
+  <li>AnalogPinFloatVariable</li>
+  <li>FrequencyPinFloatVariable</li>
+  <li>PWMPinFloatVariable</li>
+  <li>PolynomialTranslationFloatVariable</li>
+  <li>LookupTableTranslationFloatVariable</li>
+  <li>FaultDetectionFloatVariable</li>
+</ul>
+
 # Currently Supported Microcontroller
 <ul>
   <li>STM32F103C8</li>
