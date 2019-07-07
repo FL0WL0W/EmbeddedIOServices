@@ -77,12 +77,12 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
   <li>FloatVariable Static</li>
   <li>FloatVariable Analog Pin</li>
   <li>FloatVariable Frequency Pin</li>
-  <li>FloatVariable Pulse Width Pin</li>
-  <li>FloatVariable Duty Cycle Pin</li>
-  <li>PolynomialTranslationFloatVariable</li>
-  <li>LookupTableTranslationFloatVariable</li>
-  <li>2AxisTableTranslationFloatVariable</li>
-  <li>FaultDetectionFloatVariable</li>
+  <li>FloatVariable Pulse Width Pin(TODO)</li>
+  <li>FloatVariable Duty Cycle Pin(TODO)</li>
+  <li>FloatVariable Polynomial Translation(TODO)</li>
+  <li>FloatVariable Lookup Table Translation(TODO)</li>
+  <li>FloatVariable 2 Axis Table Translation(TODO)</li>
+  <li>FloatVariable Fault Detection(TODO)</li>
 </ul>
 
 # Currently Supported Microcontroller
