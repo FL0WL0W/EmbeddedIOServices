@@ -106,8 +106,7 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
     <li>ButtonService_Polling</li>
   </ul>
   <li>Create Stepper Feedback Limit Calibration Wrapper</li>
-  <li>Analog Feedback Float Output Service Wrapper</li>
-  <li>Analog Feedback Stepper Float Output Service Wrapper</li>
+  <li>Control Loops (PID, PI, Simple, etc.)</li>
   <li>Create PWM service that uses interrupt callback from DigitalService and Tick from TimerService to create software based PWM input and output.</li>
   <li>*Manual Test Stm32Hal Services</li>
   <ul>
