@@ -51,7 +51,7 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
     <li>Frequency Pin</li>
     <li>Pulse Width Pin</li>
     <li>Duty Cycle Pin</li>
-    <li>Fault Detection</li>
+    <li>Fault Detection (Probably Deprecated)</li>
     <li>Static Value</li>
   </ul>
   <li>FloatOutputService</li>
