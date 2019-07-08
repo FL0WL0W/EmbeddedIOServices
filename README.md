@@ -56,10 +56,10 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
   </ul>
   <li>FloatOutputService</li>
   <ul>
-    <li>PWM Polynomial Translation</li>
-    <li>PWM Lookup Table Translation</li>
-    <li>Stepper Polynomial Translation</li>
-    <li>Stepper Lookup Table Translation</li>
+    <li>Frequency</li>
+    <li>Pulse Width</li>
+    <li>Duty Cycle</li>
+    <li>Stepper</li>
   </ul>
   <li>StepperOutputService</li>
   <ul>
