@@ -77,7 +77,7 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
   <li>FloatVariable Static</li>
   <li>FloatVariable Analog Pin</li>
   <li>FloatVariable Frequency Pin</li>
-  <li>FloatVariable Pulse Width Pin(TODO)</li>
+  <li>FloatVariable Pulse Width Pin</li>
   <li>FloatVariable Duty Cycle Pin(TODO)</li>
   <li>FloatVariable Polynomial Translation</li>
   <li>FloatVariable Lookup Table Translation</li>
