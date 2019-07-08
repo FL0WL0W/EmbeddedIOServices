@@ -81,6 +81,7 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
   <ul>
     <li>Static Value</li>
     <li>Input (FloatInputService)</li>
+    <li>Filtering (TODO)</li>
     <li>Fault Detection (TODO)</li>
     <li>Polynomial Translation</li>
     <li>Lookup Table Translation</li>
