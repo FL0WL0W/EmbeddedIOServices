@@ -47,10 +47,10 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
   </ul>
   <li>FloatInputService</li>
   <ul>
-    <li>Analog Polynomial Translation</li>
-    <li>Analog Lookup Table Translation</li>
-    <li>Frequency Polynomial Translation</li>
-    <li>Frequency Lookup Table Translation</li>
+    <li>Analog Pin</li>
+    <li>Frequency Pin</li>
+    <li>Pulse Width Pin</li>
+    <li>Duty Cycle Pin</li>
     <li>Fault Detection</li>
     <li>Static Value</li>
   </ul>
@@ -72,17 +72,20 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
 
 # Variable Bus (NEW)
 <ul>
-  <li>BooleanVariable Static</li>
-  <li>BooleanVariable Pin</li>
-  <li>FloatVariable Static</li>
-  <li>FloatVariable Analog Pin</li>
-  <li>FloatVariable Frequency Pin</li>
-  <li>FloatVariable Pulse Width Pin</li>
-  <li>FloatVariable Duty Cycle Pin</li>
-  <li>FloatVariable Polynomial Translation</li>
-  <li>FloatVariable Lookup Table Translation</li>
-  <li>FloatVariable 2 Axis Table Translation</li>
-  <li>FloatVariable Fault Detection(TODO)</li>
+  <li>BooleanVariable</li>
+  <ul>
+    <li>Static Value</li>
+    <li>Input (BooleanInputService)</li>
+  </ul>
+  <li>FloatVariable</li>
+  <ul>
+    <li>Static Value</li>
+    <li>Input (FloatInputService)</li>
+    <li>Fault Detection (TODO)</li>
+    <li>Polynomial Translation</li>
+    <li>Lookup Table Translation</li>
+    <li>2 Axis Table Translation</li>
+  </ul>
 </ul>
 
 # Currently Supported Microcontroller
