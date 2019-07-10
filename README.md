@@ -99,6 +99,9 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
 <ul>
   <li>Create Unit Tests For</li>
   <ul>
+    <li>BooleanVariableService_Static</li>
+    <li>BooleanVariableService_Input</li>
+    <li>FloatVariableService_Static</li>
     <li>StepperOutputService_StepDirectionControl</li>
     <li>StepperOutputService_FullStepControl</li>
     <li>StepperOutputService_HalfStepControl</li>
