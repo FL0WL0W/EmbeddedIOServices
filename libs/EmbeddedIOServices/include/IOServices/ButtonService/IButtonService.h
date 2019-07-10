@@ -17,7 +17,8 @@ namespace IOServices
 		void Clear();
 		virtual void Tick() = 0;
 
-		static void* BuildButtonService(const Service::ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut);
+		static void BuildButtonService(Service::ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut);
+		static IButtonService* IButtonService::CreateButtonService(const Service::ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut);
 		static IButtonService* CreateButtonService(const HardwareAbstraction::HardwareAbstractionCollection *hardwareAbstractionCollection, const void *config, unsigned int &sizeOut);
 	};
 }

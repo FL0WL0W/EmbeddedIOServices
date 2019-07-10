@@ -17,19 +17,14 @@ namespace UnitTests
 
 		FloatInputService_StaticTest() 
 		{
-			float *analogConfig = (float *)malloc(sizeof(float) + sizeof(float));
-
-			void *config = malloc(sizeof(float) + sizeof(float) + sizeof(uint8_t));
+			void *config = malloc(sizeof(uint8_t) + sizeof(float));
 			void *buildConfig = config;
 			//analog static service id
 			*((uint8_t *)buildConfig) = 1;
 			buildConfig = (void *)(((uint8_t *)buildConfig) + 1);
 
-			*analogConfig = 5123.2f;
-			*(analogConfig + 1) = 2321.5;
-			
-			memcpy(buildConfig, analogConfig, sizeof(float) + sizeof(float));
-			buildConfig = (void *)((uint8_t *)buildConfig + sizeof(float) + sizeof(float));
+			*((float *)buildConfig) = 5123.2f;
+			buildConfig = (void *)(((float *)buildConfig) + 1);
 
 			uint32_t size = 0;
 			_floatInputService = IFloatInputService::CreateFloatInputService(&_hardwareAbstractionCollection, config, size);
@@ -45,6 +40,5 @@ namespace UnitTests
 	{
 		_floatInputService->ReadValue();
 		ASSERT_FLOAT_EQ(5123.2f, _floatInputService->Value);
-		ASSERT_FLOAT_EQ(2321.5f, _floatInputService->ValueDot);
 	}
 }

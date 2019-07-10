@@ -1,4 +1,12 @@
+#include "IOServices/BooleanInputService/IBooleanInputService.h"
+#include "IOServices/BooleanOutputService/IBooleanOutputService.h"
+#include "IOServices/ButtonService/IButtonService.h"
+#include "IOServices/FloatInputService/IFloatInputService.h"
+#include "IOServices/FloatOutputService/IFloatOutputService.h"
+#include "IOServices/StepperOutputService/IStepperOutputService.h"
 #include "Service/IOServicesServiceBuilderRegister.h"
+
+using namespace IOServices;
 
 #ifdef IOSERVICESSERVICEBUILDEREGISTER_H
 namespace Service

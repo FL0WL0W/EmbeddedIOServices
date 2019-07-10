@@ -16,7 +16,8 @@ namespace IOServices
 		static void OutputSetCallBack(void *booleanOutputService);
 		static void OutputResetCallBack(void *booleanOutputService);
 		
-		static void *BuildBooleanOutputService(const Service::ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut);
+		static void BuildBooleanOutputService(Service::ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut);
+		static IBooleanOutputService * IBooleanOutputService::CreateBooleanOutputService(const Service::ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut);
 		static IBooleanOutputService *CreateBooleanOutputService(const HardwareAbstraction::HardwareAbstractionCollection *hardwareAbstractionCollection, const void *config, unsigned int &sizeOut);
 	};
 }

@@ -1,11 +1,12 @@
 #include "IOServices/FloatInputService/IFloatInputService.h"
 #include "IOServices/FloatInputService/FloatInputService_Static.h"
-#include "IOServices/FloatInputService/FloatInputService_AnalogPolynomial.h"
-#include "IOServices/FloatInputService/FloatInputService_AnalogInterpolatedTable.h"
-#include "IOServices/FloatInputService/FloatInputService_FrequencyPolynomial.h"
-#include "IOServices/FloatInputService/FloatInputService_FrequencyInterpolatedTable.h"
+#include "IOServices/FloatInputService/FloatInputService_AnalogPin.h"
+#include "IOServices/FloatInputService/FloatInputService_FrequencyPin.h"
+#include "IOServices/FloatInputService/FloatInputService_PulseWidthPin.h"
+#include "IOServices/FloatInputService/FloatInputService_DutyCyclePin.h"
 #include "IOServices/FloatInputService/FloatInputService_FaultDetectionWrapper.h"
 #include "Service/HardwareAbstractionServiceBuilder.h"
+#include "Service/IOServicesServiceBuilderRegister.h"
 #include "Service/ServiceBuilder.h"
 
 using namespace HardwareAbstraction;
@@ -14,66 +15,73 @@ using namespace Service;
 #ifdef IFLOATINPUTSERVICE_H
 namespace IOServices
 {
-	void* IFloatInputService::BuildFloatInputService(const ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut)
+	void IFloatInputService::BuildFloatInputService(ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut)
 	{
-		IFloatInputService *ret = CreateFloatInputService(serviceLocator->LocateAndCast<const HardwareAbstractionCollection>(HARDWARE_ABSTRACTION_COLLECTION_ID), config, sizeOut);
+		uint8_t instanceId = ServiceBuilder::CastAndOffset<uint8_t>(config, sizeOut);
+
+		IFloatInputService *inputService = CreateFloatInputService(serviceLocator, config, sizeOut);
 		
 		serviceLocator->LocateAndCast<CallBackGroup>(TICK_CALL_BACK_GROUP)->Add(
-			new CallBack<IFloatInputService>(ret, &IFloatInputService::ReadValue));
+			new CallBack<IFloatInputService>(inputService, &IFloatInputService::ReadValue));
 
-		return ret;
+		serviceLocator->RegisterIfNotNull(BUILDER_IFLOATINPUTSERVICE, instanceId, inputService);
+	}
+
+	IFloatInputService* IFloatInputService::CreateFloatInputService(const ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut)
+	{
+		return CreateFloatInputService(serviceLocator->LocateAndCast<const HardwareAbstractionCollection>(HARDWARE_ABSTRACTION_COLLECTION_ID), config, sizeOut);
 	}
 	
 	IFloatInputService* IFloatInputService::CreateFloatInputService(const HardwareAbstractionCollection *hardwareAbstractionCollection, const void *config, unsigned int &sizeOut)
 	{
-		sizeOut = 0;		
 		IFloatInputService *inputService = 0;
 
 		switch (ServiceBuilder::CastAndOffset<uint8_t>(config, sizeOut))
 		{
 #ifdef FLOATINPUTSERVICE_STATIC_H
 		case 1:
-			sizeOut += 2 * sizeof(float);
-			inputService = new FloatInputService_Static(*reinterpret_cast<const float *>(config), *(reinterpret_cast<const float *>(config) + 1));
-			break;
+			{
+				const float value = ServiceBuilder::CastAndOffset<float>(config, sizeOut);
+				inputService = new FloatInputService_Static(value);
+				break;
+			}
 #endif
 			
-#ifdef FLOATINPUTSERVICE_ANALOGPOLYNOMIAL_H
+#ifdef FLOATINPUTSERVICE_ANALOGPIN_H
 		case 2:
 			{
-				const FloatInputService_AnalogPolynomialConfig<4> *analogPolynomialConfig = reinterpret_cast<const FloatInputService_AnalogPolynomialConfig<4> *>(config);
-				sizeOut += analogPolynomialConfig->Size();
-				inputService = new FloatInputService_AnalogPolynomial<4>(hardwareAbstractionCollection, analogPolynomialConfig);
+       			const uint16_t pin = ServiceBuilder::CastAndOffset<uint16_t>(config, sizeOut);
+				inputService = new FloatInputService_AnalogPin(hardwareAbstractionCollection->AnalogService, pin);
 				break;
 			}
 #endif
 			
-#ifdef FLOATINPUTSERVICE_FREQUENCYPOLYNOMIAL_H
+#ifdef FLOATINPUTSERVICE_FREQUENCYPIN_H
 		case 3:
 			{
-				const FloatInputService_FrequencyPolynomialConfig<4> *frequencyPolynomialConfig = reinterpret_cast<const FloatInputService_FrequencyPolynomialConfig<4> *>(config);
-				sizeOut += frequencyPolynomialConfig->Size();
-				inputService = new FloatInputService_FrequencyPolynomial<4>(hardwareAbstractionCollection, frequencyPolynomialConfig);
+       			const uint16_t pin = ServiceBuilder::CastAndOffset<uint16_t>(config, sizeOut);
+       			const uint16_t minFrequency = ServiceBuilder::CastAndOffset<uint16_t>(config, sizeOut);
+				inputService = new FloatInputService_FrequencyPin(hardwareAbstractionCollection->PwmService, pin, minFrequency);
 				break;
 			}
 #endif
 
-#ifdef FLOATINPUTSERVICE_ANALOGINTERPOLATEDTABLE_H
+#ifdef FLOATINPUTSERVICE_PULSEWIDTHPIN_H
 		case 4:
 			{
-				const FloatInputService_AnalogInterpolatedTableConfig *analogInterpolatedTableConfig = reinterpret_cast<const FloatInputService_AnalogInterpolatedTableConfig *>(config);
-				sizeOut += analogInterpolatedTableConfig->Size();
-				inputService = new FloatInputService_AnalogInterpolatedTable(hardwareAbstractionCollection, analogInterpolatedTableConfig);
+       			const uint16_t pin = ServiceBuilder::CastAndOffset<uint16_t>(config, sizeOut);
+       			const uint16_t minFrequency = ServiceBuilder::CastAndOffset<uint16_t>(config, sizeOut);
+				inputService = new FloatInputService_PulseWidthPin(hardwareAbstractionCollection->PwmService, pin, minFrequency);
 				break;
 			}
 #endif
 
-#ifdef FLOATINPUTSERVICE_FREQUENCYINTERPOLATEDTABLE_H
+#ifdef FLOATINPUTSERVICE_DUTYCYCLEPIN_H
 		case 5:
 			{
-				const FloatInputService_FrequencyInterpolatedTableConfig *frequencyInterpolatedTableConfig = reinterpret_cast<const FloatInputService_FrequencyInterpolatedTableConfig *>(config);
-				sizeOut += frequencyInterpolatedTableConfig->Size();
-				inputService = new FloatInputService_FrequencyInterpolatedTable(hardwareAbstractionCollection, frequencyInterpolatedTableConfig);
+       			const uint16_t pin = ServiceBuilder::CastAndOffset<uint16_t>(config, sizeOut);
+       			const uint16_t minFrequency = ServiceBuilder::CastAndOffset<uint16_t>(config, sizeOut);
+				inputService = new FloatInputService_DutyCyclePin(hardwareAbstractionCollection->PwmService, pin, minFrequency);
 				break;
 			}
 #endif

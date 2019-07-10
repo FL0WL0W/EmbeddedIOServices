@@ -1,5 +1,7 @@
 #include "IOServices/StepperOutputService/StepperOutputService_StepDirectionControl.h"
 
+using namespace HardwareAbstraction;
+
 #ifdef STEPPEROUTPUTSERVICE_STEPDIRECTIONCONTROL_H
 namespace IOServices
 {

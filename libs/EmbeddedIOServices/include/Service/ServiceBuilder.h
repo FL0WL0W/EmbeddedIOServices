@@ -11,11 +11,11 @@ namespace Service
 	public:
 		virtual void Build(ServiceLocator *&serviceLocator, const void *config, unsigned int &sizeOut);
 		
-		virtual void Register(uint16_t serviceId, void*(*factory)(const ServiceLocator * const &, const void *, unsigned int &));
+		virtual void Register(uint16_t serviceId, void(*factory)(ServiceLocator * const &, const void *, unsigned int &));
 
 		static constexpr void OffsetConfig(const void *&config, unsigned int &totalSize, unsigned int offset) 
 		{
-			config = reinterpret_cast<const void *>(reinterpret_cast<const unsigned char *>(config) + offset);
+			config = reinterpret_cast<const void *>(reinterpret_cast<const uint8_t *>(config) + offset);
 			totalSize += offset;
 		}
 		
@@ -37,14 +37,7 @@ namespace Service
 			return casted;
 		}
 
-		template<typename Service> 
-		static constexpr Service *CreateServiceAndOffset(void*(*factory)(const ServiceLocator * const &, const void *, unsigned int &), const ServiceLocator * const &serviceLocator, const void *&config, unsigned int &totalSize)
-		{
-			unsigned int size;
-			Service *service = reinterpret_cast<Service *>(factory(serviceLocator, config, size));
-			OffsetConfig(config, totalSize, size);
-			return service;
-		}
+		static void CreateServiceAndOffset(void(*factory)(ServiceLocator * const &, const void *, unsigned int &), ServiceLocator * const &serviceLocator, const void *&config, unsigned int &totalSize);
 	};
 }
 #endif

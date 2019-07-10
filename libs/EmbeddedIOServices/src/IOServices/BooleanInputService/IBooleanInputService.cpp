@@ -2,6 +2,7 @@
 #include "IOServices/BooleanInputService/BooleanInputService_Static.h"
 #include "IOServices/BooleanInputService/BooleanInputService.h"
 #include "Service/HardwareAbstractionServiceBuilder.h"
+#include "Service/IOServicesServiceBuilderRegister.h"
 #include "Service/ServiceBuilder.h"
 
 using namespace HardwareAbstraction;
@@ -10,22 +11,28 @@ using namespace Service;
 #ifdef IBOOLEANINPUTSERVICE_H
 namespace IOServices
 {
-	void* IBooleanInputService::BuildBooleanInputService(const ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut)
+	void IBooleanInputService::BuildBooleanInputService(ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut)
 	{
-		IBooleanInputService *ret = CreateBooleanInputService(serviceLocator->LocateAndCast<const HardwareAbstractionCollection>(HARDWARE_ABSTRACTION_COLLECTION_ID), config, sizeOut);
+		uint8_t instanceId = ServiceBuilder::CastAndOffset<uint8_t>(config, sizeOut);
+
+		IBooleanInputService *inputService = CreateBooleanInputService(serviceLocator->LocateAndCast<const HardwareAbstractionCollection>(HARDWARE_ABSTRACTION_COLLECTION_ID), config, sizeOut);
 		
-		if(ret != 0)
+		if(inputService != 0)
 		{
 			serviceLocator->LocateAndCast<CallBackGroup>(TICK_CALL_BACK_GROUP)->Add(
-				new CallBack<IBooleanInputService>(ret, &IBooleanInputService::ReadValue));
+				new CallBack<IBooleanInputService>(inputService, &IBooleanInputService::ReadValue));
 		}
 
-		return ret;
+		serviceLocator->RegisterIfNotNull(BUILDER_IBOOLEANINPUTSERVICE, instanceId, inputService);
+	}
+
+	IBooleanInputService* IBooleanInputService::CreateBooleanInputService(const ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut)
+	{
+		return CreateBooleanInputService(serviceLocator->LocateAndCast<const HardwareAbstractionCollection>(HARDWARE_ABSTRACTION_COLLECTION_ID), config, sizeOut);
 	}
 
 	IBooleanInputService* IBooleanInputService::CreateBooleanInputService(const HardwareAbstractionCollection *hardwareAbstractionCollection, const void *config, unsigned int &sizeOut)
 	{
-		sizeOut = 0;
 		IBooleanInputService *inputService = 0;
 
 		switch (ServiceBuilder::CastAndOffset<uint8_t>(config, sizeOut))
@@ -42,7 +49,7 @@ namespace IOServices
 			{
 				const BooleanInputServiceConfig *booleanInputServiceConfig = reinterpret_cast<const BooleanInputServiceConfig *>(config);
 				sizeOut += booleanInputServiceConfig->Size();
-				inputService = new BooleanInputService(hardwareAbstractionCollection, booleanInputServiceConfig);
+				inputService = new BooleanInputService(hardwareAbstractionCollection->DigitalService, booleanInputServiceConfig);
 				break;
 			}
 #endif

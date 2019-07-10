@@ -11,9 +11,9 @@ namespace IOServices
 	public:
 		virtual void ReadValue() = 0;
 		float Value = 0;
-		float ValueDot = 0;
-
-		static void* BuildFloatInputService(const Service::ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut);
+		
+		static void BuildFloatInputService(Service::ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut);
+		static IFloatInputService* IFloatInputService::CreateFloatInputService(const Service::ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut);
 		static IFloatInputService* CreateFloatInputService(const HardwareAbstraction::HardwareAbstractionCollection *hardwareAbstractionCollection, const void *config, unsigned int &sizeOut);
 	};
 }

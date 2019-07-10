@@ -5,17 +5,17 @@ using namespace HardwareAbstraction;
 #ifdef BOOLEANINPUTSERVICE_H
 namespace IOServices
 {
-	BooleanInputService::BooleanInputService(const HardwareAbstractionCollection *hardwareAbstractionCollection, const BooleanInputServiceConfig *config)
+	BooleanInputService::BooleanInputService(IDigitalService *digitalService, const BooleanInputServiceConfig *config)
 	{
-		_hardwareAbstractionCollection = hardwareAbstractionCollection;
+		_digitalService = digitalService;
 		_config = config;
 		
-		_hardwareAbstractionCollection->DigitalService->InitPin(_config->Pin, In);
+		_digitalService->InitPin(_config->Pin, In);
 	}
 	
 	void BooleanInputService::ReadValue()
 	{
-		Value = _hardwareAbstractionCollection->DigitalService->ReadPin(_config->Pin);
+		Value = _digitalService->ReadPin(_config->Pin);
 		if (_config->Inverted)
 			Value = !Value;
 	}

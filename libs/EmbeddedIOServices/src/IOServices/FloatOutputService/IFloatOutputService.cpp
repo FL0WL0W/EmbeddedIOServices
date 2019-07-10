@@ -4,6 +4,7 @@
 #include "IOServices/FloatOutputService/FloatOutputService_StepperPolynomial.h"
 #include "IOServices/FloatOutputService/FloatOutputService_StepperInterpolatedTable.h"
 #include "Service/HardwareAbstractionServiceBuilder.h"
+#include "Service/IOServicesServiceBuilderRegister.h"
 #include "Service/ServiceBuilder.h"
 
 using namespace HardwareAbstraction;
@@ -12,7 +13,16 @@ using namespace Service;
 #ifdef IFLOATOUTPUTSERVICE_H
 namespace IOServices
 {
-	void* IFloatOutputService::BuildFloatOutputService(const ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut)
+	void IFloatOutputService::BuildFloatOutputService(ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut)
+	{
+		uint8_t instanceId = ServiceBuilder::CastAndOffset<uint8_t>(config, sizeOut);
+
+		IFloatOutputService *inputService = CreateFloatOutputService(serviceLocator, config, sizeOut);
+
+		serviceLocator->RegisterIfNotNull(BUILDER_IFLOATOUTPUTSERVICE, instanceId, inputService);
+	}
+	
+	IFloatOutputService* IFloatOutputService::CreateFloatOutputService(const ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut)
 	{
 		return CreateFloatOutputService(serviceLocator->LocateAndCast<const HardwareAbstractionCollection>(HARDWARE_ABSTRACTION_COLLECTION_ID), config, sizeOut);
 	}

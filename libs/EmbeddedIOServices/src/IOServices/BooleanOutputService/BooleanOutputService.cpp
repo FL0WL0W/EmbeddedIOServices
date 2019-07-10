@@ -5,20 +5,20 @@ using namespace HardwareAbstraction;
 #ifdef BOOLEANOUTPUTSERVICE_H
 namespace IOServices
 {
-	BooleanOutputService::BooleanOutputService(const HardwareAbstractionCollection *hardwareAbstractionCollection, const BooleanOutputServiceConfig *config)
+	BooleanOutputService::BooleanOutputService(IDigitalService *digitalService, const BooleanOutputServiceConfig *config)
 	{
-		_hardwareAbstractionCollection = hardwareAbstractionCollection;
+		_digitalService = digitalService;
 		_config = config;		
 
 		if (_config->HighZ && _config->NormalOn)
 		{
-			_hardwareAbstractionCollection->DigitalService->InitPin(_config->Pin, In);
+			_digitalService->InitPin(_config->Pin, In);
 		}
 		else
 		{
-			_hardwareAbstractionCollection->DigitalService->InitPin(_config->Pin, Out);
+			_digitalService->InitPin(_config->Pin, Out);
 
-			_hardwareAbstractionCollection->DigitalService->WritePin(_config->Pin, _config->NormalOn);
+			_digitalService->WritePin(_config->Pin, _config->NormalOn);
 		}
 	}
 	
@@ -26,16 +26,16 @@ namespace IOServices
 	{
 		if (_config->HighZ && !_config->NormalOn)
 		{
-			_hardwareAbstractionCollection->DigitalService->InitPin(_config->Pin, In);
+			_digitalService->InitPin(_config->Pin, In);
 		}
 		else
 		{
 			if (_config->HighZ)
 			{
-				_hardwareAbstractionCollection->DigitalService->InitPin(_config->Pin, Out);
+				_digitalService->InitPin(_config->Pin, Out);
 			}
 			
-			_hardwareAbstractionCollection->DigitalService->WritePin(_config->Pin, !_config->NormalOn);
+			_digitalService->WritePin(_config->Pin, !_config->NormalOn);
 		}
 	}
 	
@@ -43,16 +43,16 @@ namespace IOServices
 	{
 		if (_config->HighZ && _config->NormalOn)
 		{
-			_hardwareAbstractionCollection->DigitalService->InitPin(_config->Pin, In);
+			_digitalService->InitPin(_config->Pin, In);
 		}
 		else
 		{
 			if (_config->HighZ)
 			{
-				_hardwareAbstractionCollection->DigitalService->InitPin(_config->Pin, Out);
+				_digitalService->InitPin(_config->Pin, Out);
 			}
 			
-			_hardwareAbstractionCollection->DigitalService->WritePin(_config->Pin, _config->NormalOn);
+			_digitalService->WritePin(_config->Pin, _config->NormalOn);
 		}
 	}
 		

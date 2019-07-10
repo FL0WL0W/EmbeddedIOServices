@@ -1,5 +1,7 @@
 #include "IOServices/StepperOutputService/StepperOutputService_FullStepControl.h"
 
+using namespace HardwareAbstraction;
+
 #ifdef STEPPEROUTPUTSERVICE_FULLSTEPCONTROL_H
 namespace IOServices
 {

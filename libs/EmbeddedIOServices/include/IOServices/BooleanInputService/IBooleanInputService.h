@@ -12,7 +12,8 @@ namespace IOServices
 		virtual void ReadValue() = 0;
 		bool Value = false;
 
-		static void* BuildBooleanInputService(const Service::ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut);
+		static void BuildBooleanInputService(Service::ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut);
+		static IBooleanInputService* IBooleanInputService::CreateBooleanInputService(const Service::ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut);
 		static IBooleanInputService* CreateBooleanInputService(const HardwareAbstraction::HardwareAbstractionCollection *hardwareAbstractionCollection, const void *config, unsigned int &sizeOut);
 	};
 }

@@ -24,17 +24,17 @@ namespace IOServices
 	class StepperOutputService_StepDirectionControl : public IStepperOutputService
 	{
 	protected:
-		const HardwareAbstractionCollection *_hardwareAbstractionCollection;
+		const HardwareAbstraction::HardwareAbstractionCollection *_hardwareAbstractionCollection;
 		const StepperOutputService_StepDirectionControlConfig *_config;
 		IBooleanOutputService *_stepBooleanOutputService;
 		IBooleanOutputService *_directionBooleanOutputService;
 		int32_t _stepQueue = 0;
-		Task *_offTask;
-		Task *_stepTask;
+		HardwareAbstraction::Task *_offTask;
+		HardwareAbstraction::Task *_stepTask;
 		void Step();
 
 	public:
-		StepperOutputService_StepDirectionControl(const HardwareAbstractionCollection *hardwareAbstractionCollection, const StepperOutputService_StepDirectionControlConfig *config, IBooleanOutputService *stepBooleanOutputService, IBooleanOutputService *directionBooleanOutputService);
+		StepperOutputService_StepDirectionControl(const HardwareAbstraction::HardwareAbstractionCollection *hardwareAbstractionCollection, const StepperOutputService_StepDirectionControlConfig *config, IBooleanOutputService *stepBooleanOutputService, IBooleanOutputService *directionBooleanOutputService);
 		void Step(int32_t steps) override;
 		void Calibrate() override;
 	};

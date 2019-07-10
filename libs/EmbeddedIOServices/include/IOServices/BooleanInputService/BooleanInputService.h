@@ -23,11 +23,11 @@ namespace IOServices
 	class BooleanInputService : public IBooleanInputService
 	{
 	protected:
-		const HardwareAbstraction::HardwareAbstractionCollection *_hardwareAbstractionCollection;
+		HardwareAbstraction::IDigitalService *_digitalService;
 		const BooleanInputServiceConfig *_config;
 		
 	public:
-		BooleanInputService(const HardwareAbstraction::HardwareAbstractionCollection *, const BooleanInputServiceConfig *);
+		BooleanInputService(HardwareAbstraction::IDigitalService *digitalService, const BooleanInputServiceConfig *config);
 		void ReadValue() override;
 	};
 }

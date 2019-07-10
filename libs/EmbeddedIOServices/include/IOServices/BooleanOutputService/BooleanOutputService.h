@@ -24,11 +24,11 @@ namespace IOServices
 	class BooleanOutputService : public IBooleanOutputService
 	{
 	protected:
-		const HardwareAbstraction::HardwareAbstractionCollection *_hardwareAbstractionCollection;
+		HardwareAbstraction::IDigitalService *_digitalService;
 		const BooleanOutputServiceConfig *_config;
 		
 	public:
-		BooleanOutputService(const HardwareAbstraction::HardwareAbstractionCollection *, const BooleanOutputServiceConfig *);
+		BooleanOutputService(HardwareAbstraction::IDigitalService *digitalService, const BooleanOutputServiceConfig *config);
 
 		void OutputSet() override;
 		void OutputReset() override;

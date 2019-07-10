@@ -23,7 +23,7 @@ namespace IOServices
 	class StepperOutputService_HalfStepControl : public IStepperOutputService
 	{
 	protected:
-		const HardwareAbstractionCollection *_hardwareAbstractionCollection;
+		const HardwareAbstraction::HardwareAbstractionCollection *_hardwareAbstractionCollection;
 		const StepperOutputService_HalfStepControlConfig *_config;
 		IBooleanOutputService *_coilAPlusBooleanOutputService;
 		IBooleanOutputService *_coilAMinusBooleanOutputService;
@@ -31,12 +31,12 @@ namespace IOServices
 		IBooleanOutputService *_coilBMinusBooleanOutputService;
 		int32_t _stepQueue = 0;
 		int8_t _state;
-		Task *_stepTask;
+		HardwareAbstraction::Task *_stepTask;
 		void Step();
 		void SetState(int8_t state);
 
 	public:
-		StepperOutputService_HalfStepControl(const HardwareAbstractionCollection *hardwareAbstractionCollection, const StepperOutputService_HalfStepControlConfig *config, IBooleanOutputService *coilAPlusBooleanOutputService, IBooleanOutputService *coilAMinusBooleanOutputService, IBooleanOutputService *coilBPlusBooleanOutputService, IBooleanOutputService *coilBMinusBooleanOutputService);
+		StepperOutputService_HalfStepControl(const HardwareAbstraction::HardwareAbstractionCollection *hardwareAbstractionCollection, const StepperOutputService_HalfStepControlConfig *config, IBooleanOutputService *coilAPlusBooleanOutputService, IBooleanOutputService *coilAMinusBooleanOutputService, IBooleanOutputService *coilBPlusBooleanOutputService, IBooleanOutputService *coilBMinusBooleanOutputService);
 		void Step(int32_t steps) override;
 		void Calibrate() override;
 	};
