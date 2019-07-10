@@ -1,7 +1,7 @@
 # EmbeddedIOServices
 This is a unit tested hardware abstraction for embedded systems. The timer service has a built in scheduling system that can be used to trigger callbacks at precise times. The services are configurable for translating raw inputs and outputs to their meaning. I.E. sensor voltage -> sensor value (temperature, pressure, etc.), Throttle position -> Stepper position.
 
-# Interfaces that need to be implemented when adding new hardware
+# Interfaces that need to be implemented when adding new hardware abstraction
 <ul>
   <li>IAnalogService</li>
   <ul>
@@ -30,7 +30,7 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
   </ul>
 </ul>
 
-# Available IO Services
+# IO Services
 <ul>
   <li>BooleanInputService</li>
   <ul>
@@ -47,19 +47,19 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
   </ul>
   <li>FloatInputService</li>
   <ul>
-    <li>Analog Polynomial Translation</li>
-    <li>Analog Lookup Table Translation</li>
-    <li>Frequency Polynomial Translation</li>
-    <li>Frequency Lookup Table Translation</li>
-    <li>Fault Detection</li>
+    <li>Analog Pin</li>
+    <li>Frequency Pin</li>
+    <li>Pulse Width Pin</li>
+    <li>Duty Cycle Pin</li>
+    <li>Fault Detection (Probably Deprecated)</li>
     <li>Static Value</li>
   </ul>
   <li>FloatOutputService</li>
   <ul>
-    <li>PWM Polynomial Translation</li>
-    <li>PWM Lookup Table Translation</li>
-    <li>Stepper Polynomial Translation</li>
-    <li>Stepper Lookup Table Translation</li>
+    <li>Frequency</li>
+    <li>Pulse Width</li>
+    <li>Duty Cycle</li>
+    <li>Stepper</li>
   </ul>
   <li>StepperOutputService</li>
   <ul>
@@ -67,6 +67,25 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
     <li>Full Step Coil Control</li>
     <li>Half Step Coil Control</li>
     <li>Static Step Calibration</li>
+  </ul>
+</ul>
+
+# Variable Bus (NEW)
+<ul>
+  <li>BooleanVariableService</li>
+  <ul>
+    <li>Static Value</li>
+    <li>Input (BooleanInputService)</li>
+  </ul>
+  <li>FloatVariableService</li>
+  <ul>
+    <li>Static Value</li>
+    <li>Input (FloatInputService)</li>
+    <li>Filtering (TODO)</li>
+    <li>Fault Detection (TODO)</li>
+    <li>Polynomial Translation</li>
+    <li>Lookup Table Translation</li>
+    <li>2 Axis Table Translation</li>
   </ul>
 </ul>
 
@@ -80,6 +99,9 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
 <ul>
   <li>Create Unit Tests For</li>
   <ul>
+    <li>BooleanVariableService_Static</li>
+    <li>BooleanVariableService_Input</li>
+    <li>FloatVariableService_Static</li>
     <li>StepperOutputService_StepDirectionControl</li>
     <li>StepperOutputService_FullStepControl</li>
     <li>StepperOutputService_HalfStepControl</li>
@@ -87,8 +109,7 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
     <li>ButtonService_Polling</li>
   </ul>
   <li>Create Stepper Feedback Limit Calibration Wrapper</li>
-  <li>Analog Feedback Float Output Service Wrapper</li>
-  <li>Analog Feedback Stepper Float Output Service Wrapper</li>
+  <li>Control Loops (PID, PI, Simple, etc.)</li>
   <li>Create PWM service that uses interrupt callback from DigitalService and Tick from TimerService to create software based PWM input and output.</li>
   <li>*Manual Test Stm32Hal Services</li>
   <ul>
