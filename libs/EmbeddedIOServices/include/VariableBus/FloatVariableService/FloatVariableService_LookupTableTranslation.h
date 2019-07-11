@@ -5,7 +5,6 @@
 #include "Packed.h"
 #include "Interpolation.h"
 
-#if !defined(FLOATVARIABLESERVICE_LOOKUPTABLETRANSLATION_H)
 #define FLOATVARIABLESERVICE_LOOKUPTABLETRANSLATION_H
 namespace VariableBus
 {
@@ -52,18 +51,18 @@ namespace VariableBus
 		{
 			float xVariable = *_xVariable;
 
-			Value = Interpolation::InterpolateTable1<K>(xVariable, _config->MaxXValue, _config->MinXValue, _config->XResolution, _config->Table()) * _config->PostMultiplier;
+			Value = static_cast<float>(Interpolation::InterpolateTable1<K>(xVariable, _config->MaxXValue, _config->MinXValue, _config->XResolution, _config->Table())) * _config->PostMultiplier;
 		}
 
 		static void BuildFloatVariableService_LookupTableTranslation(Service::ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut)
 		{
-			const uint8_t translations = ServiceBuilder::CastAndOffset<uint8_t>(config, sizeOut);
+			const uint8_t translations = Service::ServiceBuilder::CastAndOffset<uint8_t>(config, sizeOut);
 			uint32_t *variableIds = reinterpret_cast<uint32_t *>(std::malloc(sizeof(uint32_t) * translations));
 			float **xVariables = reinterpret_cast<float **>(std::malloc(sizeof(float *) * translations));
 			for(int i = 0; i < translations; i++) 
 			{
-				variableIds[i] = ServiceBuilder::CastAndOffset<uint16_t>(config, sizeOut);
-				xVariables[i] = serviceLocator->LocateAndCast<float>(VARIABLE_BUS, ServiceBuilder::CastAndOffset<uint16_t>(config, sizeOut));
+				variableIds[i] = Service::ServiceBuilder::CastAndOffset<uint16_t>(config, sizeOut);
+				xVariables[i] = serviceLocator->LocateAndCast<float>(VARIABLE_BUS, Service::ServiceBuilder::CastAndOffset<uint16_t>(config, sizeOut));
 			}
 			const FloatVariableService_LookupTableTranslationConfig<K> *lookupTableConfig = reinterpret_cast<const FloatVariableService_LookupTableTranslationConfig<K> *>(config);
 			sizeOut += lookupTableConfig->Size();
@@ -81,4 +80,3 @@ namespace VariableBus
 		}
 	};
 }
-#endif

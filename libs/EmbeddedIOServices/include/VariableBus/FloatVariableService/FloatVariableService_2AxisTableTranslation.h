@@ -4,7 +4,6 @@
 #include "Packed.h"
 #include "Interpolation.h"
 
-#if !defined(FLOATVARIABLESERVICE_2AXISTABLETRANSLATION_H)
 #define FLOATVARIABLESERVICE_2AXISTABLETRANSLATION_H
 namespace VariableBus
 {
@@ -57,20 +56,20 @@ namespace VariableBus
 			float xVariable = *_xVariable;
 			float yVariable = *_yVariable;
 
-			Value = Interpolation::InterpolateTable2<K>(xVariable, _config->MaxXValue, _config->MinXValue, _config->XResolution, yVariable, _config->MaxYValue, _config->MinYValue, _config->YResolution, _config->Table()) * _config->PostMultiplier;
+			Value = static_cast<float>(Interpolation::InterpolateTable2<K>(xVariable, _config->MaxXValue, _config->MinXValue, _config->XResolution, yVariable, _config->MaxYValue, _config->MinYValue, _config->YResolution, _config->Table())) * _config->PostMultiplier;
 		}
 
 		static void BuildFloatVariableService_2AxisTableTranslation(Service::ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut)
 		{
-			const uint8_t translations = ServiceBuilder::CastAndOffset<uint8_t>(config, sizeOut);
+			const uint8_t translations = Service::ServiceBuilder::CastAndOffset<uint8_t>(config, sizeOut);
 			uint32_t *variableIds = reinterpret_cast<uint32_t *>(std::malloc(sizeof(uint32_t) * translations));
 			float **xVariables = reinterpret_cast<float **>(std::malloc(sizeof(float *) * translations));
 			float **yVariables = reinterpret_cast<float **>(std::malloc(sizeof(float *) * translations));
 			for(int i = 0; i < translations; i++) 
 			{
-				variableIds[i] = ServiceBuilder::CastAndOffset<uint16_t>(config, sizeOut);
-				xVariables[i] = serviceLocator->LocateAndCast<float>(VARIABLE_BUS, ServiceBuilder::CastAndOffset<uint16_t>(config, sizeOut));
-				yVariables[i] = serviceLocator->LocateAndCast<float>(VARIABLE_BUS, ServiceBuilder::CastAndOffset<uint16_t>(config, sizeOut));
+				variableIds[i] = Service::ServiceBuilder::CastAndOffset<uint16_t>(config, sizeOut);
+				xVariables[i] = serviceLocator->LocateAndCast<float>(VARIABLE_BUS, Service::ServiceBuilder::CastAndOffset<uint16_t>(config, sizeOut));
+				yVariables[i] = serviceLocator->LocateAndCast<float>(VARIABLE_BUS, Service::ServiceBuilder::CastAndOffset<uint16_t>(config, sizeOut));
 			}
 			const FloatVariableService_2AxisTableTranslationConfig<K> *tableConfig = reinterpret_cast<const FloatVariableService_2AxisTableTranslationConfig<K> *>(config);
 			sizeOut += tableConfig->Size();
@@ -89,4 +88,3 @@ namespace VariableBus
 		}
 	};
 }
-#endif
