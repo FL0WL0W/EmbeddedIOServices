@@ -3,33 +3,36 @@
 #ifdef SERVICELOCATOR_H
 namespace Service
 {
-	void ServiceLocator::Register(uint16_t const &serviceId, void * const &service)
+	bool ServiceLocator::Register(uint16_t const &serviceId, void * const &service)
 	{
 		if(Locate(serviceId) != 0)
 			Unregister(serviceId);
 		_services.insert(std::pair<uint16_t, void *>(serviceId, service));
+		return true;
 	}
 
-	void ServiceLocator::RegisterIfNotNull(uint16_t const &serviceId, void * const &service)
+	bool ServiceLocator::RegisterIfNotNull(uint16_t const &serviceId, void * const &service)
 	{
 		if(service != 0)
 		{
-			Register(serviceId, service);
+			return Register(serviceId, service);
 		}
+		return false;
 	}
 
-	void ServiceLocator::Register(uint16_t const &serviceId, uint32_t const &instanceId, void * const &service)
+	bool ServiceLocator::Register(uint16_t const &serviceId, uint32_t const &instanceId, void * const &service)
 	{
 		if(Locate(serviceId, instanceId) != 0)
 			Unregister(serviceId, instanceId);
 
 		void* serviceArray = Locate(serviceId);
+		bool registered = false;
 
 		if(serviceArray == 0)
 		{
 			serviceArray = calloc((instanceId + 2) * sizeof(void *) + sizeof(uint32_t), (instanceId + 2) * sizeof(void *) + sizeof(uint32_t));
 			*reinterpret_cast<uint32_t *>(serviceArray) = instanceId + 1;
-			Register(serviceId, serviceArray);
+			registered = Register(serviceId, serviceArray);
 		}
 		else
 		{
@@ -41,20 +44,23 @@ namespace Service
 				memcpy(serviceArray, oldServiceArray, (size + 1) * sizeof(void *) + sizeof(uint32_t));
 				*reinterpret_cast<uint32_t *>(serviceArray) = instanceId + 1;
 				
-				Register(serviceId, serviceArray);
+				registered = Register(serviceId, serviceArray);
 				free(oldServiceArray);
 			}
 		}
 		
 		reinterpret_cast<void **>(reinterpret_cast<uint32_t *>(serviceArray) + 1)[instanceId] = service;
+
+		return registered;
 	}
 
-	void ServiceLocator::RegisterIfNotNull(uint16_t const &serviceId, uint32_t const &instanceId, void * const &service)
+	bool ServiceLocator::RegisterIfNotNull(uint16_t const &serviceId, uint32_t const &instanceId, void * const &service)
 	{
 		if(service != 0)
 		{
-			Register(serviceId, instanceId, service);
+			return Register(serviceId, instanceId, service);
 		}
+		return false;
 	}
 
 	void* ServiceLocator::Locate(uint16_t const &serviceId) const

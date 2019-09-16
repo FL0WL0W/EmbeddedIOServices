@@ -1,5 +1,6 @@
 #include <list>
 #include "stdint.h"
+#include <tuple>
 
 #ifndef ITASK_H
 #define ITASK_H
@@ -11,26 +12,37 @@ namespace HardwareAbstraction
 		virtual void Execute() = 0;
 	};
 	
-	struct CallBackWithParameters : public ICallBack
+	template<typename INSTANCETYPE, typename... PARAMS>
+	class CallBackWithParameters : public ICallBack
 	{
-		CallBackWithParameters(void(*callBackPointer)(void *), void *parameters)
+		std::tuple<PARAMS...> _params;
+
+		template<std::size_t... Is>
+		void ExecuteWithTuple(const std::tuple<PARAMS...>& tuple,
+			std::index_sequence<Is...>) {
+			(Instance->*Function)(*std::get<Is>(tuple)...);
+		}
+		public:
+		CallBackWithParameters(INSTANCETYPE *instance, void(INSTANCETYPE::*function)(PARAMS...), PARAMS... params)
 		{
-			CallBackPointer = callBackPointer;
-			Parameters = parameters;
+			Instance = instance;
+			Function = function;
+			_params = params;
 		}
 
 		void Execute() override
 		{
-			CallBackPointer(Parameters);
+			ExecuteWithTuple(_params, std::index_sequence_for<PARAMS...>());
 		}
 
-		void(*CallBackPointer)(void *);
-		void *Parameters;
+		INSTANCETYPE *Instance;
+		void(INSTANCETYPE::*Function)(PARAMS...);
 	};
 	
 	template<typename INSTANCETYPE>
-	struct CallBack : public ICallBack
+	class CallBack : public ICallBack
 	{
+		public:
 		CallBack(INSTANCETYPE *instance, void(INSTANCETYPE::*function)())
 		{
 			Instance = instance;

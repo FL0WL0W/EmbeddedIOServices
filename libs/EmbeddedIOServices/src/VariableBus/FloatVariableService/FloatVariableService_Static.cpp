@@ -1,7 +1,7 @@
 #include "VariableBus/FloatVariableService/FloatVariableService_Static.h"
 #include "Service/HardwareAbstractionServiceBuilder.h"
-#include "Service/VariableBusServiceBuilderRegister.h"
-#include "Service/ServiceBuilder.h"
+#include "Service/VariableBusServiceBuilderIds.h"
+#include "Service/IService.h"
 
 using namespace HardwareAbstraction;
 using namespace Service;
@@ -22,13 +22,13 @@ namespace VariableBus
 
 	void FloatVariableService_Static::BuildFloatVariableService_Static(Service::ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut)
 	{
-        const uint32_t variableId = ServiceBuilder::CastAndOffset<uint16_t>(config, sizeOut);
-		const float staticValue = ServiceBuilder::CastAndOffset<float>(config, sizeOut);
+        const uint32_t variableId = IService::CastAndOffset<uint16_t>(config, sizeOut);
+		const float staticValue = IService::CastAndOffset<float>(config, sizeOut);
 
 		FloatVariableService_Static *floatVariableService = new FloatVariableService_Static(staticValue);
         serviceLocator->LocateAndCast<CallBackGroup>(TICK_CALL_BACK_GROUP)->Add(new CallBack<FloatVariableService_Static>(floatVariableService, &FloatVariableService_Static::ReadValue));
 
-        serviceLocator->Register(VARIABLE_BUS, variableId, &floatVariableService->Value);
+        serviceLocator->Register(BUILDER_VARIABLEBUS, variableId, &floatVariableService->Value);
 	}
 }
 #endif

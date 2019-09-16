@@ -4,8 +4,8 @@
 #include "IOServices/StepperOutputService/StepperOutputService_HalfStepControl.h"
 #include "IOServices/StepperOutputService/StepperOutputService_StaticStepCalibrationWrapper.h"
 #include "Service/HardwareAbstractionServiceBuilder.h"
-#include "Service/IOServicesServiceBuilderRegister.h"
-#include "Service/ServiceBuilder.h"
+#include "Service/IOServicesServiceBuilderIds.h"
+#include "Service/IService.h"
 
 using namespace HardwareAbstraction;
 using namespace Service;
@@ -15,7 +15,7 @@ namespace IOServices
 {
 	void IStepperOutputService::BuildStepperOutputService(ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut)
 	{
-		uint8_t instanceId = ServiceBuilder::CastAndOffset<uint8_t>(config, sizeOut);
+		uint8_t instanceId = IService::CastAndOffset<uint8_t>(config, sizeOut);
 
 		IStepperOutputService *outputService = CreateStepperOutputService(serviceLocator->LocateAndCast<const HardwareAbstractionCollection>(HARDWARE_ABSTRACTION_COLLECTION_ID), config, sizeOut);
 
@@ -31,7 +31,7 @@ namespace IOServices
 	{	
 		IStepperOutputService *outputService = 0;
 		
-		switch (ServiceBuilder::CastAndOffset<uint8_t>(config, sizeOut))
+		switch (IService::CastAndOffset<uint8_t>(config, sizeOut))
 		{
 #ifdef STEPPEROUTPUTSERVICE_STEPDIRECTIONCONTROL_H
 		case 1:

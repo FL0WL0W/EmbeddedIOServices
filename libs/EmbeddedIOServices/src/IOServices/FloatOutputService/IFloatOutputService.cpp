@@ -1,11 +1,9 @@
 #include "IOServices/FloatOutputService/IFloatOutputService.h"
-#include "IOServices/FloatOutputService/FloatOutputService_PwmPolynomial.h"
-#include "IOServices/FloatOutputService/FloatOutputService_PwmInterpolatedTable.h"
 #include "IOServices/FloatOutputService/FloatOutputService_StepperPolynomial.h"
 #include "IOServices/FloatOutputService/FloatOutputService_StepperInterpolatedTable.h"
 #include "Service/HardwareAbstractionServiceBuilder.h"
-#include "Service/IOServicesServiceBuilderRegister.h"
-#include "Service/ServiceBuilder.h"
+#include "Service/IOServicesServiceBuilderIds.h"
+#include "Service/IService.h"
 
 using namespace HardwareAbstraction;
 using namespace Service;
@@ -15,7 +13,7 @@ namespace IOServices
 {
 	void IFloatOutputService::BuildFloatOutputService(ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut)
 	{
-		uint8_t instanceId = ServiceBuilder::CastAndOffset<uint8_t>(config, sizeOut);
+		uint8_t instanceId = IService::CastAndOffset<uint8_t>(config, sizeOut);
 
 		IFloatOutputService *inputService = CreateFloatOutputService(serviceLocator, config, sizeOut);
 
@@ -32,7 +30,7 @@ namespace IOServices
 		sizeOut = 0;		
 		IFloatOutputService *outputService = 0;
 		
-		switch (ServiceBuilder::CastAndOffset<uint8_t>(config, sizeOut))
+		switch (IService::CastAndOffset<uint8_t>(config, sizeOut))
 		{
 #ifdef FLOATOUTPUTSERVICE_PWMPOLYNOMIAL_H
 		case 1:
