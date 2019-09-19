@@ -74,7 +74,7 @@ namespace UnitTests
 		}
 	};
 
-	TEST_F(VariableService_DigitalPinRecordTests, WhenGettingHighForUninverted_ThenTrueIsReturned)
+	TEST_F(VariableService_DigitalPinRecordTests, WhenRecordingThenNonToggleStatesDoNotTriggerAFrame)
 	{
 		ASSERT_EQ(0, _record->Last);
 		EXPECT_CALL(_timerService, GetTick()).Times(1).WillOnce(Return(10));
@@ -101,22 +101,4 @@ namespace UnitTests
 		ASSERT_EQ(true, _record->Frames[_record->Last].State);
 		ASSERT_EQ(12, _record->Frames[_record->Last].Tick);
 	}
-
-	// TEST_F(VariableService_DigitalPinRecordTests, WhenGettingLowForUninverted_ThenFalseIsReturned)
-	// {
-	// 	EXPECT_CALL(_digitalService, ReadPin(1)).Times(1).WillOnce(Return(false));
-	// 	ASSERT_EQ(false, _operationUninverted->Execute());
-	// }
-
-	// TEST_F(VariableService_DigitalPinRecordTests, WhenGettingHighForInverted_ThenFalseIsReturned)
-	// {
-	// 	EXPECT_CALL(_digitalService, ReadPin(2)).Times(1).WillOnce(Return(true));
-	// 	ASSERT_EQ(false, _operationInverted->Execute());
-	// }
-
-	// TEST_F(VariableService_DigitalPinRecordTests, WhenGettingLowForInverted_ThenTrueIsReturned)
-	// {
-	// 	EXPECT_CALL(_digitalService, ReadPin(2)).Times(1).WillOnce(Return(false));
-	// 	ASSERT_EQ(true, _operationInverted->Execute());
-	// }
 }

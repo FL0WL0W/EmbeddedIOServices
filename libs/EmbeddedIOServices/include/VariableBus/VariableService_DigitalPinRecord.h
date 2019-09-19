@@ -28,6 +28,20 @@ namespace VariableBus
 			const uint32_t byteLength = sizeof(Frame) * length;
 			Frames = (Frame *)calloc(byteLength, byteLength);
 		}
+		static uint8_t Subtract(const uint8_t &val1, uint8_t val2, const uint8_t &length)
+		{
+			val2 %= length;
+			if(val2 > val1)
+				return length - (val2 - val1);
+			return val1 - val2;
+		}
+		static uint8_t Add(const uint8_t &val1, uint16_t val2, const uint8_t &length)
+		{
+			val2 %= length;
+			if(val1 + val2 > length)
+				return (val1 + val2) - length;
+			return val1 + val2;
+		}
 
 		uint8_t Length; //Don't modify this -_-
 		uint8_t Last = 0;
