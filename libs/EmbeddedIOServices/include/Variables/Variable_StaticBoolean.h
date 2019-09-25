@@ -6,6 +6,7 @@
 #define VARIABLE_STATICBOOLEAN_H
 namespace Variables
 {
+	//todo: move this to operations as a template
 	class Variable_StaticBoolean : public IVariable
 	{
 	protected:

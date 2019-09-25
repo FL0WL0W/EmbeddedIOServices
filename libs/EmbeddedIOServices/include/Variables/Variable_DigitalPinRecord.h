@@ -8,6 +8,16 @@
 #include "Interpolation.h"
 #include <tuple>
 
+/*
+To use this variable
+uint16									7001(BUILDER_VARIABLE)
+uint16									5(FactoryID)
+uint16									xx(InstanceID of Variable)
+uint8 									length
+uint16 									pin
+bool 									inverted
+*/
+
 #ifndef VARIABLE_DIGITALPINRECORD_H
 #define VARIABLE_DIGITALPINRECORD_H
 namespace Variables

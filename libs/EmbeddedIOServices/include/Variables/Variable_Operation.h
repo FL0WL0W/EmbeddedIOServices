@@ -8,6 +8,10 @@
 #include "Interpolation.h"
 #include <tuple>
 
+/*
+To use this variable refer to the operations header
+*/
+
 #define VARIABLE_OPERATION_H
 namespace Variables
 {
