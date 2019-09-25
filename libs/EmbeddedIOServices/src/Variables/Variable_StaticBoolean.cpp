@@ -28,7 +28,7 @@ namespace Variables
 		Variable_StaticBoolean *variableService = new Variable_StaticBoolean(staticValue);
         serviceLocator->LocateAndCast<CallBackGroup>(TICK_CALL_BACK_GROUP)->Add(new CallBack<Variable_StaticBoolean>(variableService, &Variable_StaticBoolean::TranslateValue));
 
-        serviceLocator->Register(BUILDER_VARIABLES, variableId, &variableService->Value);
+        serviceLocator->Register(BUILDER_VARIABLE, variableId, &variableService->Value);
 
 		return variableService;
 	}

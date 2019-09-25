@@ -5,6 +5,24 @@
 #include "Interpolation.h"
 #include "VariableType.h"
 
+/*
+To create this operator
+uint16									6001(BUILDER_OPERATION)
+uint16									xx(InstanceID of Operation)
+uint16									1(FactoryID)
+float 									MinValue
+float 									MaxValue
+uint8 									Degree
+float[Degree]							A(coefficients)
+
+To use this operator on a variable
+uint16									7001(BUILDER_VARIABLE)
+uint16									1(FactoryID)
+uint16									xx(InstanceID of Variable Result)
+uint16									xx(InstanceID of Operation)
+uint16									xx(InstanceID of Variable Input)
+*/
+
 #ifndef OPERATION_POLYNOMIAL_H
 #define OPERATION_POLYNOMIAL_H
 namespace Operations

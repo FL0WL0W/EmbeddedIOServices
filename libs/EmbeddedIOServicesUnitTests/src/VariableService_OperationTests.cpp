@@ -81,10 +81,10 @@ namespace UnitTests
 			_tickCallbackGroup = new CallBackGroup();
 			_serviceLocator->Register(TICK_CALL_BACK_GROUP, _tickCallbackGroup);
 			_inputValuePointer = (float *)malloc(sizeof(float));
-			_serviceLocator->Register(BUILDER_VARIABLES, 2, _inputValuePointer);
+			_serviceLocator->Register(BUILDER_VARIABLE, 2, _inputValuePointer);
 			_inputValuePointer2 = (bool *)malloc(sizeof(bool));
 			*_inputValuePointer2 = 0;
-			_serviceLocator->Register(BUILDER_VARIABLES, 3, _inputValuePointer2);
+			_serviceLocator->Register(BUILDER_VARIABLE, 3, _inputValuePointer2);
 			Operations::Operation_PolynomialConfig *operationPolynomialConfig = (Operations::Operation_PolynomialConfig *)malloc(sizeof(Operations::Operation_PolynomialConfig) + sizeof(float) * 2);
 			operationPolynomialConfig->Degree = 1;
 			operationPolynomialConfig->MinValue = -1000;
@@ -101,7 +101,7 @@ namespace UnitTests
 			EXPECT_EQ(expectedSize, size);
 			IVariable::Build(_serviceLocator, config2, size2);
 			EXPECT_EQ(expectedSize2, size2);
-			_outputValuePointer = _serviceLocator->LocateAndCast<float>(BUILDER_VARIABLES, 1);
+			_outputValuePointer = _serviceLocator->LocateAndCast<float>(BUILDER_VARIABLE, 1);
 		}
 	};
 

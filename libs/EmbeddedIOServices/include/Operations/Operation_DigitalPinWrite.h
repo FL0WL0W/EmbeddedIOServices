@@ -6,6 +6,22 @@
 #include "Interpolation.h"
 #include "VariableType.h"
 
+/*
+To create this operator
+uint16									6001(BUILDER_OPERATION)
+uint16									xx(InstanceID of Operation)
+uint16									10(FactoryID)
+uint16 									pin
+bool 									normalOn
+bool 									highZ
+
+To use this operator on a variable
+uint16									7001(BUILDER_VARIABLE)
+uint16									10(FactoryID)
+uint16									xx(InstanceID of Operation)
+uint16									xx(InstanceID of Variable)
+*/
+
 #ifndef OPERATION_DIGITALPINWRITE_H
 #define OPERATION_DIGITALPINWRITE_H
 namespace Operations

@@ -28,7 +28,7 @@ namespace Variables
         return factory(serviceLocator, config, sizeOut);
     }
     
-    ISERVICE_REGISTERSERVICEFACTORY_CPP(IVariable, BUILDER_VARIABLES)
+    ISERVICE_REGISTERSERVICEFACTORY_CPP(IVariable, BUILDER_VARIABLE)
 }
 
 #endif

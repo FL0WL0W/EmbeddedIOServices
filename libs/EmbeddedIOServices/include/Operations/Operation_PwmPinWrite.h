@@ -6,6 +6,22 @@
 #include "Interpolation.h"
 #include "VariableType.h"
 
+/*
+To create this operator
+uint16									6001(BUILDER_OPERATION)
+uint16									xx(InstanceID of Operation)
+uint16									11(FactoryID)
+uint16 									pin
+uint16 									minFrequency
+
+To use this operator on a variable
+uint16									7001(BUILDER_VARIABLE)
+uint16									11(FactoryID)
+uint16									xx(InstanceID of Operation)
+uint16									xx(InstanceID of Variable Period)
+uint16									xx(InstanceID of Variable PulseWidth)
+*/
+
 #ifndef OPERATION_PWMPINWRITE_H
 #define OPERATION_PWMPINWRITE_H
 namespace Operations

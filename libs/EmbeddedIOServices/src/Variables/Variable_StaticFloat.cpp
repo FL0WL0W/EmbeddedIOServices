@@ -28,7 +28,7 @@ namespace Variables
 		Variable_StaticFloat *variableService = new Variable_StaticFloat(staticValue);
         serviceLocator->LocateAndCast<CallBackGroup>(TICK_CALL_BACK_GROUP)->Add(new CallBack<Variable_StaticFloat>(variableService, &Variable_StaticFloat::TranslateValue));
 
-        serviceLocator->Register(BUILDER_VARIABLES, variableId, &variableService->Value);
+        serviceLocator->Register(BUILDER_VARIABLE, variableId, &variableService->Value);
 
 		return variableService;
 	}

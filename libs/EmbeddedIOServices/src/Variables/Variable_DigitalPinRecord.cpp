@@ -46,7 +46,7 @@ namespace Variables
 					
 		Variable_DigitalPinRecord *variableService = new Variable_DigitalPinRecord(serviceLocator->LocateAndCast<HardwareAbstraction::IDigitalService>(DIGITAL_SERVICE_ID), serviceLocator->LocateAndCast<HardwareAbstraction::ITimerService>(TIMER_SERVICE_ID), length, pin, inverted);
 
-		serviceLocator->Register(BUILDER_VARIABLES, variableId, variableService->_record);
+		serviceLocator->Register(BUILDER_VARIABLE, variableId, variableService->_record);
 
 		return variableService;
 	}

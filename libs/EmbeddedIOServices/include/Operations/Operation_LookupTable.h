@@ -5,6 +5,25 @@
 #include "Interpolation.h"
 #include "VariableType.h"
 
+/*
+To create this operator
+uint16									6001(BUILDER_OPERATION)
+uint16									xx(InstanceID of Operation)
+uint16									2(FactoryID)
+float 									MinXValue
+float 									MaxXValue
+uint8 									XResolution
+VariableType							TableType
+TableType[XResolution]					Table
+
+To use this operator on a variable
+uint16									7001(BUILDER_VARIABLE)
+uint16									2(FactoryID)
+uint16									xx(InstanceID of Variable Result)
+uint16									xx(InstanceID of Operation)
+uint16									xx(InstanceID of Variable Input)
+*/
+
 #ifndef OPERATION_LOOKUPTABLE_H
 #define OPERATION_LOOKUPTABLE_H
 namespace Operations

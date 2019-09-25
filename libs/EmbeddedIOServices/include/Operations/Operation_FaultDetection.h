@@ -5,6 +5,23 @@
 #include "Interpolation.h"
 #include "VariableType.h"
 
+/*
+To create this operator
+uint16									6001(BUILDER_OPERATION)
+uint16									xx(InstanceID of Operation)
+uint16									9(FactoryID)
+float 									MinValue
+float 									MaxValue
+float 									DefaultValue
+
+To use this operator on a variable
+uint16									7001(BUILDER_VARIABLE)
+uint16									9(FactoryID)
+uint16									xx(InstanceID of Variable Result)
+uint16									xx(InstanceID of Operation)
+uint16									xx(InstanceID of Variable Input)
+*/
+
 #ifndef OPERATION_FAULTDETECTION_H
 #define OPERATION_FAULTDETECTION_H
 namespace Operations

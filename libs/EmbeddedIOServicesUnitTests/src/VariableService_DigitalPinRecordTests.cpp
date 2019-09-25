@@ -70,7 +70,7 @@ namespace UnitTests
 			Variable_DigitalPinRecord::RegisterFactory();
 			_variableService = IVariable::Create(_serviceLocator, config, size);
 			EXPECT_EQ(expectedSize, size);
-			_record = _serviceLocator->LocateAndCast<Record>(BUILDER_VARIABLES, 1);
+			_record = _serviceLocator->LocateAndCast<Record>(BUILDER_VARIABLE, 1);
 		}
 	};
 
