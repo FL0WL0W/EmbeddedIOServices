@@ -1,7 +1,7 @@
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
-#include "VariableBus/IVariableService.h"
-#include "VariableBus/VariableService_DigitalPinRecord.h"
+#include "Variables/IVariable.h"
+#include "Variables/Variable_DigitalPinRecord.h"
 #include "Service/ServiceLocator.h"
 #include "MockDigitalService.h"
 #include "MockTimerService.h"
@@ -14,22 +14,22 @@ using::testing::_;
 
 using namespace HardwareAbstraction;
 using namespace Service;
-using namespace VariableBus;
+using namespace Variables;
 
 namespace UnitTests
 {
-	class VariableService_DigitalPinRecordTests : public ::testing::Test 
+	class Variable_DigitalPinRecordTests : public ::testing::Test 
 	{
 		protected:
 		MockDigitalService _digitalService;
 		MockTimerService _timerService;
 		HardwareAbstractionCollection _hardwareAbstractionCollection;
 		ServiceLocator *_serviceLocator;
-		IVariableService *_variableService;
+		IVariable *_variableService;
 		ICallBack *_callBack = 0;
 		Record *_record;
 
-		VariableService_DigitalPinRecordTests() 
+		Variable_DigitalPinRecordTests() 
 		{
 			_serviceLocator = new ServiceLocator();
 
@@ -44,7 +44,7 @@ namespace UnitTests
 			void *buildConfig = config;
 
 			//digital pin factory id
-			*((uint16_t *)buildConfig) = 4;
+			*((uint16_t *)buildConfig) = 12;
 			buildConfig = (void *)(((uint16_t *)buildConfig) + 1);
 
 			//variable id
@@ -67,14 +67,14 @@ namespace UnitTests
 				.WillOnce(SaveArg<1>(&_callBack));
 
 			unsigned int size = 0;
-			VariableService_DigitalPinRecord::RegisterFactory();
-			_variableService = IVariableService::Create(_serviceLocator, config, size);
+			Variable_DigitalPinRecord::RegisterFactory();
+			_variableService = IVariable::Create(_serviceLocator, config, size);
 			EXPECT_EQ(expectedSize, size);
-			_record = _serviceLocator->LocateAndCast<Record>(BUILDER_VARIABLEBUS, 1);
+			_record = _serviceLocator->LocateAndCast<Record>(BUILDER_VARIABLES, 1);
 		}
 	};
 
-	TEST_F(VariableService_DigitalPinRecordTests, WhenRecordingThenNonToggleStatesDoNotTriggerAFrame)
+	TEST_F(Variable_DigitalPinRecordTests, WhenRecordingThenNonToggleStatesDoNotTriggerAFrame)
 	{
 		ASSERT_EQ(0, _record->Last);
 		EXPECT_CALL(_timerService, GetTick()).Times(1).WillOnce(Return(10));

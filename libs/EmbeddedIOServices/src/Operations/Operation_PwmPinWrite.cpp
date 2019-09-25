@@ -1,3 +1,4 @@
+#include "Variables/Variable_Operation.h"
 #include "Operations/Operation_PwmPinWrite.h"
 
 #ifdef OPERATION_PWMPINWRITE_H
@@ -24,6 +25,6 @@ namespace Operations
 		return new Operation_PwmPinWrite(serviceLocator->LocateAndCast<HardwareAbstraction::IPwmService>(PWM_SERVICE_ID), pin, minFrequency);
 	}
 
-	ISERVICE_REGISTERFACTORY_CPP(Operation_PwmPinWrite, 11)
+	IOPERATION_REGISTERFACTORY_CPP(Operation_PwmPinWrite, 11, void, float, float)
 }
 #endif

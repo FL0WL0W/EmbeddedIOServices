@@ -1,3 +1,4 @@
+#include "Variables/Variable_Operation.h"
 #include "Operations/Operation_2AxisTable.h"
 
 #ifdef OPERATION_2AXISTABLE_H
@@ -43,6 +44,6 @@ namespace Operations
 		return new Operation_2AxisTable(tableConfig);
 	}
 	
-	ISERVICE_REGISTERFACTORY_CPP(Operation_2AxisTable, 3)
+	IOPERATION_REGISTERFACTORY_CPP(Operation_2AxisTable, 3, float, float, float)
 }
 #endif

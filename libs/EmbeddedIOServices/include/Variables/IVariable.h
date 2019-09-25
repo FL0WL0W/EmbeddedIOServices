@@ -1,10 +1,10 @@
 #include "Service/IService.h"
 
-#ifndef IVARIABLESERVICE_H
-#define IVARIABLESERVICE_H
-namespace VariableBus
+#ifndef IVARIABLE_H
+#define IVARIABLE_H
+namespace Variables
 {
-    class IVariableService : public Service::IService
+    class IVariable : public Service::IService
     {
         protected:
         static Service::ServiceLocator factoryLocator;
@@ -12,7 +12,7 @@ namespace VariableBus
 		virtual void TranslateValue() = 0;
 		static void Build(Service::ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut);
 
-		static IVariableService *Create(Service::ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut);
+		static IVariable *Create(Service::ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut);
         
         ISERVICE_REGISTERSERVICEFACTORY_H
     };

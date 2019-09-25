@@ -72,12 +72,12 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
 
 # Variable Bus (NEW)
 <ul>
-  <li>BooleanVariableService</li>
+  <li>BooleanVariables</li>
   <ul>
     <li>Static Value</li>
     <li>Input (BooleanInputService)</li>
   </ul>
-  <li>FloatVariableService</li>
+  <li>FloatVariables</li>
   <ul>
     <li>Static Value</li>
     <li>Input (FloatInputService)</li>
@@ -99,9 +99,9 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
 <ul>
   <li>Create Unit Tests For</li>
   <ul>
-    <li>BooleanVariableService_Static</li>
-    <li>BooleanVariableService_Input</li>
-    <li>FloatVariableService_Static</li>
+    <li>BooleanVariables_Static</li>
+    <li>BooleanVariables_Input</li>
+    <li>FloatVariables_Static</li>
     <li>StepperOutputService_StepDirectionControl</li>
     <li>StepperOutputService_FullStepControl</li>
     <li>StepperOutputService_HalfStepControl</li>

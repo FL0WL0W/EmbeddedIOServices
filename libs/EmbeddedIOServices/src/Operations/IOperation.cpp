@@ -1,5 +1,5 @@
 #include "Operations/IOperation.h"
-#include "Service/OperationBusServiceBuilderIds.h"
+#include "Service/EmbeddedOperationsRegister.h"
 
 #ifdef IOPERATION_H
 
@@ -13,7 +13,7 @@ namespace Operations
 
         IOperationBase *operation = Create(serviceLocator, config, sizeOut);
 
-        serviceLocator->RegisterIfNotNull(BUILDER_OPERATIONBUS, instanceId, operation);
+        serviceLocator->RegisterIfNotNull(BUILDER_OPERATION, instanceId, operation);
     }
 
     IOperationBase *IOperationBase::Create(Service::ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut)
@@ -27,7 +27,7 @@ namespace Operations
         return factory(serviceLocator, config, sizeOut);
     }
     
-    ISERVICE_REGISTERSERVICEFACTORY_CPP(IOperationBase, BUILDER_OPERATIONBUS)
+    ISERVICE_REGISTERSERVICEFACTORY_CPP(IOperationBase, BUILDER_OPERATION)
 }
 
 #endif

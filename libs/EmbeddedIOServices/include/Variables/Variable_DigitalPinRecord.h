@@ -1,16 +1,16 @@
 #include "Service/HardwareAbstractionServiceBuilder.h"
-#include "Service/OperationBusServiceBuilderIds.h"
-#include "Service/VariableBusServiceBuilderIds.h"
-#include "VariableBus/IVariableService.h"
+#include "Service/EmbeddedOperationsRegister.h"
+#include "Service/EmbeddedVariablesRegister.h"
+#include "Variables/IVariable.h"
 #include "Operations/IOperation.h"
 #include "stdint.h"
 #include "Packed.h"
 #include "Interpolation.h"
 #include <tuple>
 
-#ifndef VARIABLESERVICE_DIGITALPINRECORD_H
-#define VARIABLESERVICE_DIGITALPINRECORD_H
-namespace VariableBus
+#ifndef VARIABLE_DIGITALPINRECORD_H
+#define VARIABLE_DIGITALPINRECORD_H
+namespace Variables
 {
 	PACK(struct Frame
 	{
@@ -48,7 +48,7 @@ namespace VariableBus
 		Frame *Frames;
 	};
 
-	class VariableService_DigitalPinRecord : public IVariableService
+	class Variable_DigitalPinRecord : public IVariable
 	{
 	protected:
 		HardwareAbstraction::IDigitalService *_digitalService;
@@ -57,11 +57,11 @@ namespace VariableBus
 		bool _inverted;
 		Record *_record;
 	public:	
-        VariableService_DigitalPinRecord(HardwareAbstraction::IDigitalService *digitalService, HardwareAbstraction::ITimerService *timerService, uint8_t length, uint16_t pin, bool inverted);
+        Variable_DigitalPinRecord(HardwareAbstraction::IDigitalService *digitalService, HardwareAbstraction::ITimerService *timerService, uint8_t length, uint16_t pin, bool inverted);
 		void TranslateValue() override;
 		void InterruptCallBack();
 
-		static IVariableService *Create(Service::ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut);
+		static IVariable *Create(Service::ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut);
 		ISERVICE_REGISTERFACTORY_H
 	};
 }

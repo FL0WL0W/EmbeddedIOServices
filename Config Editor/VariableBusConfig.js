@@ -1,4 +1,4 @@
-var VariableBusIni = {
+var VariablesIni = {
     ButtonService_PollingConfig : { Variables : [
         { ButtonService_PollingConfigTypeId: { Type: "uint8", Value: 1, Static: true } },
         { BooleanInputServiceConfig: { IniName: "IBooleanInputServiceConfig" } }

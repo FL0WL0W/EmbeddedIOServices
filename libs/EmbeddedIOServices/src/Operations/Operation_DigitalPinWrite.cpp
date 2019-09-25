@@ -1,3 +1,4 @@
+#include "Variables/Variable_Operation.h"
 #include "Operations/Operation_DigitalPinWrite.h"
 
 #ifdef OPERATION_DIGITALPINWRITE_H
@@ -66,6 +67,6 @@ namespace Operations
 		return new Operation_DigitalPinWrite(serviceLocator->LocateAndCast<HardwareAbstraction::IDigitalService>(DIGITAL_SERVICE_ID), pin, normalOn, highZ);
 	}
 
-	ISERVICE_REGISTERFACTORY_CPP(Operation_DigitalPinWrite, 10)
+	IOPERATION_REGISTERFACTORY_CPP(Operation_DigitalPinWrite, 10, void, bool)
 }
 #endif

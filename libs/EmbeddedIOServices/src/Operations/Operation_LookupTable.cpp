@@ -1,3 +1,4 @@
+#include "Variables/Variable_Operation.h"
 #include "Operations/Operation_LookupTable.h"
 
 #ifdef OPERATION_LOOKUPTABLE_H
@@ -43,6 +44,6 @@ namespace Operations
 		return new Operation_LookupTable(tableConfig);
 	}
 	
-	ISERVICE_REGISTERFACTORY_CPP(Operation_LookupTable, 2)
+	IOPERATION_REGISTERFACTORY_CPP(Operation_LookupTable, 2, float, float)
 }
 #endif
