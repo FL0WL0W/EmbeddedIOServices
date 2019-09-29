@@ -18,8 +18,8 @@ namespace UnitTests
 		MockDigitalService _digitalService;
 		HardwareAbstractionCollection _hardwareAbstractionCollection;
 		ServiceLocator *_serviceLocator;
-		IOperation<bool> *_operationInverted;
-		IOperation<bool> *_operationUninverted;
+		IOperation<ScalarVariable> *_operationInverted;
+		IOperation<ScalarVariable> *_operationUninverted;
 
 		Operation_DigitalPinReadTests() 
 		{
@@ -64,8 +64,8 @@ namespace UnitTests
 			unsigned int sizeInverted = 0;
 			unsigned int sizeUnInverted = 0;
 			Operation_DigitalPinRead::RegisterFactory();
-			_operationUninverted = static_cast<IOperation<bool> *>(IOperationBase::Create(_serviceLocator, configUninverted, sizeInverted));
-			_operationInverted = static_cast<IOperation<bool> *>(IOperationBase::Create(_serviceLocator, configInverted, sizeUnInverted));
+			_operationUninverted = static_cast<IOperation<ScalarVariable> *>(IOperationBase::Create(_serviceLocator, configUninverted, sizeInverted));
+			_operationInverted = static_cast<IOperation<ScalarVariable> *>(IOperationBase::Create(_serviceLocator, configInverted, sizeUnInverted));
 			EXPECT_EQ(expectedSizeUninverted, sizeUnInverted);
 			EXPECT_EQ(expectedSizeInverted, sizeInverted);
 		}
@@ -74,24 +74,24 @@ namespace UnitTests
 	TEST_F(Operation_DigitalPinReadTests, WhenGettingHighForUninverted_ThenTrueIsReturned)
 	{
 		EXPECT_CALL(_digitalService, ReadPin(1)).Times(1).WillOnce(Return(true));
-		ASSERT_EQ(true, _operationUninverted->Execute());
+		ASSERT_EQ(true, ScalarVariableTo<bool>(_operationUninverted->Execute()));
 	}
 
 	TEST_F(Operation_DigitalPinReadTests, WhenGettingLowForUninverted_ThenFalseIsReturned)
 	{
 		EXPECT_CALL(_digitalService, ReadPin(1)).Times(1).WillOnce(Return(false));
-		ASSERT_EQ(false, _operationUninverted->Execute());
+		ASSERT_EQ(false, ScalarVariableTo<bool>(_operationUninverted->Execute()));
 	}
 
 	TEST_F(Operation_DigitalPinReadTests, WhenGettingHighForInverted_ThenFalseIsReturned)
 	{
 		EXPECT_CALL(_digitalService, ReadPin(2)).Times(1).WillOnce(Return(true));
-		ASSERT_EQ(false, _operationInverted->Execute());
+		ASSERT_EQ(false, ScalarVariableTo<bool>(_operationInverted->Execute()));
 	}
 
 	TEST_F(Operation_DigitalPinReadTests, WhenGettingLowForInverted_ThenTrueIsReturned)
 	{
 		EXPECT_CALL(_digitalService, ReadPin(2)).Times(1).WillOnce(Return(false));
-		ASSERT_EQ(true, _operationInverted->Execute());
+		ASSERT_EQ(true, ScalarVariableTo<bool>(_operationInverted->Execute()));
 	}
 }

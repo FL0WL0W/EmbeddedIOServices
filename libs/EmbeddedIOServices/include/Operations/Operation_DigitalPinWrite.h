@@ -4,7 +4,7 @@
 #include "Service/HardwareAbstractionServiceBuilder.h"
 #include "Packed.h"
 #include "Interpolation.h"
-#include "VariableType.h"
+#include "ScalarVariable.h"
 
 /*
 To create this operator
@@ -26,7 +26,7 @@ uint16									xx(InstanceID of Variable)
 #define OPERATION_DIGITALPINWRITE_H
 namespace Operations
 {
-	class Operation_DigitalPinWrite : public IOperation<void, bool>
+	class Operation_DigitalPinWrite : public IOperation<void, ScalarVariable>
 	{
 	protected:
 		HardwareAbstraction::IDigitalService *_digitalService;
@@ -36,7 +36,7 @@ namespace Operations
 	public:		
         Operation_DigitalPinWrite(HardwareAbstraction::IDigitalService *digitalService, uint16_t pin, const bool normalOn, const bool highZ);
 
-		void Execute(bool x) override;
+		void Execute(ScalarVariable x) override;
 
 		static IOperationBase *Create(Service::ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut);
 		ISERVICE_REGISTERFACTORY_H

@@ -24,9 +24,9 @@ namespace UnitTests
 		MockDigitalService _digitalService;
 		ServiceLocator *_serviceLocator;
 		CallBackGroup *_tickCallbackGroup;
-		float *_inputValuePointer = 0;
-		bool *_inputValuePointer2 = 0;
-		float *_outputValuePointer = 0;
+		ScalarVariable *_inputValuePointer = 0;
+		ScalarVariable *_inputValuePointer2 = 0;
+		ScalarVariable *_outputValuePointer = 0;
 
 		Variable_OperationTests() 
 		{
@@ -80,10 +80,10 @@ namespace UnitTests
 			unsigned int size2 = 0;
 			_tickCallbackGroup = new CallBackGroup();
 			_serviceLocator->Register(TICK_CALL_BACK_GROUP, _tickCallbackGroup);
-			_inputValuePointer = (float *)malloc(sizeof(float));
+			_inputValuePointer = (ScalarVariable *)malloc(sizeof(ScalarVariable));
 			_serviceLocator->Register(BUILDER_VARIABLE, 2, _inputValuePointer);
-			_inputValuePointer2 = (bool *)malloc(sizeof(bool));
-			*_inputValuePointer2 = 0;
+			_inputValuePointer2 = (ScalarVariable *)malloc(sizeof(ScalarVariable));
+			*_inputValuePointer2 = ScalarVariableFrom(0);
 			_serviceLocator->Register(BUILDER_VARIABLE, 3, _inputValuePointer2);
 			Operations::Operation_PolynomialConfig *operationPolynomialConfig = (Operations::Operation_PolynomialConfig *)malloc(sizeof(Operations::Operation_PolynomialConfig) + sizeof(float) * 2);
 			operationPolynomialConfig->Degree = 1;
@@ -95,29 +95,29 @@ namespace UnitTests
 			EXPECT_CALL(_digitalService, InitPin(1, Out)).Times(1);
 			EXPECT_CALL(_digitalService, WritePin(1, false)).Times(1);
 			_serviceLocator->Register(BUILDER_OPERATION, 2, new Operations::Operation_DigitalPinWrite(&_digitalService, 1, false, false));
-			Variable_Operation<float, float>::RegisterFactory(1);
-			Variable_Operation<void, bool>::RegisterFactory(10);
+			Variable_Operation<ScalarVariable, ScalarVariable>::RegisterFactory(1);
+			Variable_Operation<void, ScalarVariable>::RegisterFactory(10);
 			IVariable::Build(_serviceLocator, config, size);
 			EXPECT_EQ(expectedSize, size);
 			IVariable::Build(_serviceLocator, config2, size2);
 			EXPECT_EQ(expectedSize2, size2);
-			_outputValuePointer = _serviceLocator->LocateAndCast<float>(BUILDER_VARIABLE, 1);
+			_outputValuePointer = _serviceLocator->LocateAndCast<ScalarVariable>(BUILDER_VARIABLE, 1);
 		}
 	};
 
 	TEST_F(Variable_OperationTests, WhenGettingValue_ThenCorrectValueIsReturned)
 	{
 		EXPECT_CALL(_digitalService, WritePin(1, true)).Times(1);
-		*_inputValuePointer2 = true;
-		*_inputValuePointer = 13.37f;
+		*_inputValuePointer2 = ScalarVariableFrom(true);
+		*_inputValuePointer = ScalarVariableFrom(13.37f);
 		_tickCallbackGroup->Execute();
-		ASSERT_FLOAT_EQ(*_inputValuePointer, *_outputValuePointer);
+		ASSERT_FLOAT_EQ(ScalarVariableTo<float>(*_inputValuePointer), ScalarVariableTo<float>(*_outputValuePointer));
 		
-		*_inputValuePointer = 12.34f;
-		ASSERT_FLOAT_EQ(13.37f, *_outputValuePointer);
+		*_inputValuePointer = ScalarVariableFrom(12.34f);
+		ASSERT_FLOAT_EQ(13.37f, ScalarVariableTo<float>(*_outputValuePointer));
 		EXPECT_CALL(_digitalService, WritePin(1, false)).Times(1);
-		*_inputValuePointer2 = 0;
+		*_inputValuePointer2 = ScalarVariableFrom(false);
 		_tickCallbackGroup->Execute();
-		ASSERT_FLOAT_EQ(*_inputValuePointer, *_outputValuePointer);
+		ASSERT_FLOAT_EQ(ScalarVariableTo<float>(*_inputValuePointer), ScalarVariableTo<float>(*_outputValuePointer));
 	}
 }

@@ -13,10 +13,10 @@ namespace Operations
 		_pwmService->InitPin(_pin, In, _minFrequency);
 	}
 
-	float Operation_DutyCyclePinRead::Execute()
+	ScalarVariable Operation_DutyCyclePinRead::Execute()
 	{
 		const PwmValue value = _pwmService->ReadPin(_pin);
-		return value.PulseWidth / value.Period;
+		return ScalarVariableFrom(value.PulseWidth / value.Period);
 	}
 
 	IOperationBase *Operation_DutyCyclePinRead::Create(Service::ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut)
@@ -26,6 +26,6 @@ namespace Operations
 		return new Operation_DutyCyclePinRead(serviceLocator->LocateAndCast<HardwareAbstraction::IPwmService>(PWM_SERVICE_ID), pin, minFrequency);
 	}
 
-	IOPERATION_REGISTERFACTORY_CPP(Operation_DutyCyclePinRead, 8, float)
+	IOPERATION_REGISTERFACTORY_CPP(Operation_DutyCyclePinRead, 8, ScalarVariable)
 }
 #endif

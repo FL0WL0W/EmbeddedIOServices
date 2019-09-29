@@ -1,8 +1,7 @@
 #include "Service/EmbeddedVariablesRegister.h"
 #include "Variables/IVariable.h"
 #include "Variables/Variable_DigitalPinRecord.h"
-#include "Variables/Variable_StaticBoolean.h"
-#include "Variables/Variable_StaticFloat.h"
+#include "Variables/Variable_StaticScalar.h"
 
 #ifdef EMBEDDEDVARIABLESREGISTER_H
 using namespace Variables;
@@ -25,8 +24,7 @@ namespace Service
         /*10    *///Operation_DigitalPinWrite::RegisterFactory();
         /*11    *///Operation_PwmPinWrite::RegisterFactory();
         /*12    */Variable_DigitalPinRecord::RegisterFactory();
-        /*13    */Variable_StaticBoolean::RegisterFactory();
-        /*14    */Variable_StaticFloat::RegisterFactory();
+        /*13    */Variable_StaticScalar::RegisterFactory();
     }
 }
 #endif

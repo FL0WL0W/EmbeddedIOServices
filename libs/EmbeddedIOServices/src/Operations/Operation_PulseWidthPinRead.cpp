@@ -13,9 +13,9 @@ namespace Operations
 		_pwmService->InitPin(_pin, In, _minFrequency);
 	}
 
-	float Operation_PulseWidthPinRead::Execute()
+	ScalarVariable Operation_PulseWidthPinRead::Execute()
 	{
-		return _pwmService->ReadPin(_pin).PulseWidth;
+		return ScalarVariableFrom(_pwmService->ReadPin(_pin).PulseWidth);
 	}
 
 	IOperationBase *Operation_PulseWidthPinRead::Create(Service::ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut)
@@ -25,6 +25,6 @@ namespace Operations
 		return new Operation_PulseWidthPinRead(serviceLocator->LocateAndCast<HardwareAbstraction::IPwmService>(PWM_SERVICE_ID), pin, minFrequency);
 	}
 
-	IOPERATION_REGISTERFACTORY_CPP(Operation_PulseWidthPinRead, 7, float)
+	IOPERATION_REGISTERFACTORY_CPP(Operation_PulseWidthPinRead, 7, ScalarVariable)
 }
 #endif

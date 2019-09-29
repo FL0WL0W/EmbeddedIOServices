@@ -23,8 +23,12 @@ namespace Operations
 		}
 	}
 
-	void Operation_DigitalPinWrite::Execute(bool x)
+	void Operation_DigitalPinWrite::Execute(ScalarVariable xIn)
 	{
+		if(xIn.Type != BOOLEAN)
+			return;
+		bool x = ScalarVariableTo<bool>(xIn);
+
 		if(x) 
 		{
 			if (_highZ && !_normalOn)
@@ -67,6 +71,6 @@ namespace Operations
 		return new Operation_DigitalPinWrite(serviceLocator->LocateAndCast<HardwareAbstraction::IDigitalService>(DIGITAL_SERVICE_ID), pin, normalOn, highZ);
 	}
 
-	IOPERATION_REGISTERFACTORY_CPP(Operation_DigitalPinWrite, 10, void, bool)
+	IOPERATION_REGISTERFACTORY_CPP(Operation_DigitalPinWrite, 10, void, ScalarVariable)
 }
 #endif

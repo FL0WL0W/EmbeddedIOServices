@@ -9,10 +9,37 @@ namespace Operations
 		_config = config;
 	}
 
-	float Operation_FaultDetection::Execute(float x)
+	ScalarVariable Operation_FaultDetection::Execute(ScalarVariable x)
 	{
-		if(x < _config->MinValue || x > _config->MaxValue)
-			return _config->DefaultValue;
+		float test = ScalarVariableTo<float>(x);
+		if(test < _config->MinValue || test > _config->MaxValue)
+		{
+			switch(x.Type)
+			{
+				case UINT8:
+					return ScalarVariableFrom(static_cast<uint8_t>(_config->DefaultValue));
+				case UINT16:
+					return ScalarVariableFrom(static_cast<uint16_t>(_config->DefaultValue));
+				case UINT32:
+					return ScalarVariableFrom(static_cast<uint32_t>(_config->DefaultValue));
+				case UINT64:
+					return ScalarVariableFrom(static_cast<uint64_t>(_config->DefaultValue));
+				case INT8:
+					return ScalarVariableFrom(static_cast<int8_t>(_config->DefaultValue));
+				case INT16:
+					return ScalarVariableFrom(static_cast<int16_t>(_config->DefaultValue));
+				case INT32:
+					return ScalarVariableFrom(static_cast<int32_t>(_config->DefaultValue));
+				case INT64:
+					return ScalarVariableFrom(static_cast<int64_t>(_config->DefaultValue));
+				case FLOAT:
+					return ScalarVariableFrom(_config->DefaultValue);
+				case DOUBLE:
+					return ScalarVariableFrom(static_cast<double>(_config->DefaultValue));
+				case BOOLEAN:
+					return ScalarVariableFrom(static_cast<bool>(_config->DefaultValue));
+			}
+		}
 		return x;
 	}
 
@@ -23,6 +50,6 @@ namespace Operations
 		return new Operation_FaultDetection(faultConfig);
 	}
 	
-	IOPERATION_REGISTERFACTORY_CPP(Operation_FaultDetection, 9, float, float)
+	IOPERATION_REGISTERFACTORY_CPP(Operation_FaultDetection, 9, ScalarVariable, ScalarVariable)
 }
 #endif

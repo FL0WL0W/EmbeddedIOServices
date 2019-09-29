@@ -13,9 +13,9 @@ namespace Operations
 		_pwmService->InitPin(_pin, Out, _minFrequency);
 	}
 
-	void Operation_PwmPinWrite::Execute(float period, float pulseWidth)
+	void Operation_PwmPinWrite::Execute(ScalarVariable period, ScalarVariable pulseWidth)
 	{
-		_pwmService->WritePin(_pin, { period, pulseWidth });
+		_pwmService->WritePin(_pin, { ScalarVariableTo<float>(period), ScalarVariableTo<float>(pulseWidth) });
 	}
 
 	IOperationBase *Operation_PwmPinWrite::Create(Service::ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut)
@@ -25,6 +25,6 @@ namespace Operations
 		return new Operation_PwmPinWrite(serviceLocator->LocateAndCast<HardwareAbstraction::IPwmService>(PWM_SERVICE_ID), pin, minFrequency);
 	}
 
-	IOPERATION_REGISTERFACTORY_CPP(Operation_PwmPinWrite, 11, void, float, float)
+	IOPERATION_REGISTERFACTORY_CPP(Operation_PwmPinWrite, 11, void, ScalarVariable, ScalarVariable)
 }
 #endif

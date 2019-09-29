@@ -14,7 +14,7 @@ namespace UnitTests
 		protected:
 		ServiceLocator *_serviceLocator;
 		Operation_2AxisTableConfig *_config;
-		IOperation<float, float, float> *_operation;
+		IOperation<ScalarVariable, ScalarVariable, ScalarVariable> *_operation;
 		unsigned int _size = 0;
 
 		Operation_2AxisTableTest() 
@@ -28,7 +28,7 @@ namespace UnitTests
 			_config->MinYValue = 0;
 			_config->MaxYValue = 3.3f;
 			_config->YResolution = 4;
-			_config->TableType = VariableType::FLOAT;
+			_config->TableType = ScalarVariableType::FLOAT;
 			float * Table = (float *)(_config + 1);
 			Table[0] = -10;
 			Table[1] = 0;
@@ -82,7 +82,7 @@ namespace UnitTests
 			buildConfig = (void *)((uint8_t *)buildConfig + _config->Size());
 
 			Operation_2AxisTable::RegisterFactory();
-			_operation = static_cast<IOperation<float, float, float> *>(IOperationBase::Create(_serviceLocator, config, _size));
+			_operation = static_cast<IOperation<ScalarVariable, ScalarVariable, ScalarVariable> *>(IOperationBase::Create(_serviceLocator, config, _size));
 		}
 	};
 
@@ -96,30 +96,23 @@ namespace UnitTests
 
 	TEST_F(Operation_2AxisTableTest, WhenGettingValueInTable_ThenCorrectValueIsReturned)
 	{
-		ASSERT_NEAR(-10, _operation->Execute(0.0f, 0.0f), 0.001f);
-
-		ASSERT_NEAR(20, _operation->Execute(0.99f, 0.0f), 0.001f);
-
-		ASSERT_NEAR(0, _operation->Execute(0.33f, 0.0f), 0.001f);
-
-		ASSERT_NEAR(-1.25f, _operation->Execute(0.28875f, 0.0f), 0.001f);
-		
-		ASSERT_NEAR(0, _operation->Execute(0.0f, 1.1f), 0.001f);
-
-		ASSERT_NEAR(30, _operation->Execute(0.99f, 1.1f), 0.001f);
-
-		ASSERT_NEAR(10, _operation->Execute(0.33f, 1.1f), 0.001f);
-
-		ASSERT_NEAR(8.75f, _operation->Execute(0.28875f, 1.1f), 0.001f);
+		ASSERT_EQ(-10, ScalarVariableTo<int8_t>(_operation->Execute(ScalarVariableFrom(static_cast<uint8_t>(0)), ScalarVariableFrom(static_cast<int8_t>(0)))));
+		ASSERT_EQ(20, ScalarVariableTo<uint8_t>(_operation->Execute(ScalarVariableFrom(static_cast<float>(0.99f)), ScalarVariableFrom(static_cast<uint16_t>(0)))));
+		ASSERT_EQ(0, ScalarVariableTo<uint16_t>(_operation->Execute(ScalarVariableFrom(static_cast<double>(0.33f)), ScalarVariableFrom(static_cast<int16_t>(0)))));
+		ASSERT_NEAR(-1.25f, ScalarVariableTo<float>(_operation->Execute(ScalarVariableFrom(static_cast<float>(0.28875f)), ScalarVariableFrom(static_cast<uint32_t>(0)))), 0.001f);
+		ASSERT_EQ(0, ScalarVariableTo<int16_t>(_operation->Execute(ScalarVariableFrom(static_cast<int32_t>(0)), ScalarVariableFrom(static_cast<float>(1.1f)))));
+		ASSERT_EQ(30, ScalarVariableTo<uint32_t>(_operation->Execute(ScalarVariableFrom(static_cast<float>(0.99f)), ScalarVariableFrom(static_cast<float>(1.1f)))));
+		ASSERT_EQ(10, ScalarVariableTo<int32_t>(_operation->Execute(ScalarVariableFrom(static_cast<float>(0.33f)), ScalarVariableFrom(static_cast<float>(1.1f)))));
+		ASSERT_NEAR(8.75f, ScalarVariableTo<float>(_operation->Execute(ScalarVariableFrom(static_cast<float>(0.28875f)), ScalarVariableFrom(static_cast<float>(1.1f)))), 0.001f);
 	}
 
 	TEST_F(Operation_2AxisTableTest, WhenGettingValueAboveMaxValue_ThenCorrectValueIsReturned)
 	{
-		ASSERT_FLOAT_EQ(80, _operation->Execute(100.0f, 0.0f));
+		ASSERT_EQ(80, ScalarVariableTo<uint64_t>(_operation->Execute(ScalarVariableFrom(static_cast<float>(100.0f)), ScalarVariableFrom(static_cast<uint64_t>(0)))));
 	}
 
 	TEST_F(Operation_2AxisTableTest, WhenGettingValueBelowMinValue_ThenCorrectValueIsReturned)
 	{
-		ASSERT_FLOAT_EQ(-10, _operation->Execute(-1.0f, 0.0f));
+		ASSERT_EQ(-10, ScalarVariableTo<int64_t>(_operation->Execute(ScalarVariableFrom(static_cast<float>(-1.0f)), ScalarVariableFrom(static_cast<int64_t>(0)))));
 	}
 }

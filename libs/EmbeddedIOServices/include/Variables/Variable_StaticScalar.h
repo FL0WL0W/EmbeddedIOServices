@@ -1,20 +1,20 @@
 #include "HardwareAbstraction/HardwareAbstractionCollection.h"
 #include "Service/ServiceLocator.h"
 #include "Variables/IVariable.h"
+#include "ScalarVariable.h"
 
-#if !defined(VARIABLE_STATICBOOLEAN_H)
-#define VARIABLE_STATICBOOLEAN_H
+#if !defined(VARIABLE_STATICSCALAR_H)
+#define VARIABLE_STATICSCALAR_H
 namespace Variables
 {
-	//todo: move this to operations as a template
-	class Variable_StaticBoolean : public IVariable
+	class Variable_StaticScalar : public IVariable
 	{
 	protected:
-        bool _staticValue = false;
+        ScalarVariable _staticValue;
 	public:		
-		bool Value = false;
-        Variable_StaticBoolean(const bool &staticValue);
-		virtual void TranslateValue();
+		ScalarVariable Value;
+        Variable_StaticScalar(const ScalarVariable &staticValue);
+		void TranslateValue() override;
 
 		static IVariable *Create(Service::ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut);
 		ISERVICE_REGISTERFACTORY_H

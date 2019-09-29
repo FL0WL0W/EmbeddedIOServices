@@ -3,7 +3,7 @@
 #include "Service/ServiceLocator.h"
 #include "Packed.h"
 #include "Interpolation.h"
-#include "VariableType.h"
+#include "ScalarVariable.h"
 
 /*
 To create this operator
@@ -40,14 +40,14 @@ namespace Operations
 		float DefaultValue;
 	});
 
-	class Operation_FaultDetection : public IOperation<float, float>
+	class Operation_FaultDetection : public IOperation<ScalarVariable, ScalarVariable>
 	{
 	protected:
 		const Operation_FaultDetectionConfig *_config;
 	public:		
         Operation_FaultDetection(const Operation_FaultDetectionConfig * const &config);
 
-		float Execute(float x) override;
+		ScalarVariable Execute(ScalarVariable x) override;
 
 		static IOperationBase *Create(Service::ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut);
 		ISERVICE_REGISTERFACTORY_H

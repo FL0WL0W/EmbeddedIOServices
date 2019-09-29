@@ -13,11 +13,11 @@ namespace Operations
 		_digitalService->InitPin(_pin, In);
 	}
 
-	bool Operation_DigitalPinRead::Execute()
+	ScalarVariable Operation_DigitalPinRead::Execute()
 	{
 		if (_inverted)
-			return !_digitalService->ReadPin(_pin);
-		return _digitalService->ReadPin(_pin);
+			return ScalarVariableFrom(!_digitalService->ReadPin(_pin));
+		return ScalarVariableFrom(_digitalService->ReadPin(_pin));
 	}
 
 	IOperationBase *Operation_DigitalPinRead::Create(Service::ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut)
@@ -27,6 +27,6 @@ namespace Operations
 		return new Operation_DigitalPinRead(serviceLocator->LocateAndCast<HardwareAbstraction::IDigitalService>(DIGITAL_SERVICE_ID), pin, inverted);
 	}
 
-	IOPERATION_REGISTERFACTORY_CPP(Operation_DigitalPinRead, 4, bool)
+	IOPERATION_REGISTERFACTORY_CPP(Operation_DigitalPinRead, 4, ScalarVariable)
 }
 #endif

@@ -14,7 +14,7 @@ namespace UnitTests
 		protected:
 		ServiceLocator *_serviceLocator;
 		Operation_LookupTableConfig *_config;
-		IOperation<float, float> *_operation;
+		IOperation<ScalarVariable, ScalarVariable> *_operation;
 		unsigned int _size = 0;
 
 		Operation_LookupTableTests() 
@@ -26,7 +26,7 @@ namespace UnitTests
 			_config->MinXValue = 0;
 			_config->MaxXValue = 3.3f;
 			_config->XResolution = 11;
-			_config->TableType = VariableType::FLOAT;
+			_config->TableType = ScalarVariableType::FLOAT;
 			float * Table = (float *)(_config + 1);
 			Table[0] = -10;
 			Table[1] = 0;
@@ -51,7 +51,7 @@ namespace UnitTests
 			buildConfig = (void *)((uint8_t *)buildConfig + _config->Size());
 
 			Operation_LookupTable::RegisterFactory();
-			_operation = static_cast<IOperation<float, float> *>(IOperationBase::Create(_serviceLocator, config, _size));
+			_operation = static_cast<IOperation<ScalarVariable, ScalarVariable> *>(IOperationBase::Create(_serviceLocator, config, _size));
 		}
 	};
 
@@ -65,22 +65,22 @@ namespace UnitTests
 
 	TEST_F(Operation_LookupTableTests, WhenGettingValueInTable_ThenCorrectValueIsReturned)
 	{
-		ASSERT_FLOAT_EQ(-10, _operation->Execute(0.0f));
+		ASSERT_FLOAT_EQ(-10, ScalarVariableTo<float>(_operation->Execute(ScalarVariableFrom(0.0f))));
 
-		ASSERT_FLOAT_EQ(20, _operation->Execute(0.99f));
+		ASSERT_FLOAT_EQ(20, ScalarVariableTo<float>(_operation->Execute(ScalarVariableFrom(0.99f))));
 
-		ASSERT_NEAR(0, _operation->Execute(0.33f), 0.001f);
+		ASSERT_NEAR(0, ScalarVariableTo<float>(_operation->Execute(ScalarVariableFrom(0.33f))), 0.001f);
 
-		ASSERT_NEAR(-1.25f, _operation->Execute(0.28875f), 0.001f);
+		ASSERT_NEAR(-1.25f, ScalarVariableTo<float>(_operation->Execute(ScalarVariableFrom(0.28875f))), 0.001f);
 	}
 
 	TEST_F(Operation_LookupTableTests, WhenGettingValueAboveMaxValue_ThenCorrectValueIsReturned)
 	{
-		ASSERT_FLOAT_EQ(90, _operation->Execute(100.0f));
+		ASSERT_FLOAT_EQ(90, ScalarVariableTo<float>(_operation->Execute(ScalarVariableFrom(100.0f))));
 	}
 
 	TEST_F(Operation_LookupTableTests, WhenGettingValueBelowMinValue_ThenCorrectValueIsReturned)
 	{
-		ASSERT_FLOAT_EQ(-10, _operation->Execute(-1.0f));
+		ASSERT_FLOAT_EQ(-10, ScalarVariableTo<float>(_operation->Execute(ScalarVariableFrom(-1.0f))));
 	}
 }

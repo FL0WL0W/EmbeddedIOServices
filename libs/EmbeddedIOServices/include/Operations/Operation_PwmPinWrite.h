@@ -4,7 +4,7 @@
 #include "Service/HardwareAbstractionServiceBuilder.h"
 #include "Packed.h"
 #include "Interpolation.h"
-#include "VariableType.h"
+#include "ScalarVariable.h"
 
 /*
 To create this operator
@@ -26,7 +26,7 @@ uint16									xx(InstanceID of Variable PulseWidth)
 #define OPERATION_PWMPINWRITE_H
 namespace Operations
 {
-	class Operation_PwmPinWrite : public IOperation<void, float, float>
+	class Operation_PwmPinWrite : public IOperation<void, ScalarVariable, ScalarVariable>
 	{
 	protected:
 		HardwareAbstraction::IPwmService *_pwmService;
@@ -35,7 +35,7 @@ namespace Operations
 	public:		
         Operation_PwmPinWrite(HardwareAbstraction::IPwmService *pwmService, const uint16_t pin, const uint16_t minFrequency);
 
-		void Execute(float period, float pulseWidth) override;
+		void Execute(ScalarVariable period, ScalarVariable pulseWidth) override;
 
 		static IOperationBase *Create(Service::ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut);
 		ISERVICE_REGISTERFACTORY_H

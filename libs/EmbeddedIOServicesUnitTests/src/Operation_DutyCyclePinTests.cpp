@@ -18,7 +18,7 @@ namespace UnitTests
 		MockPwmService _pwmService;
 		HardwareAbstractionCollection _hardwareAbstractionCollection;
 		ServiceLocator *_serviceLocator;
-		IOperation<float> *_operation;
+		IOperation<ScalarVariable> *_operation;
 
 		Operation_DutyCyclePinReadTests() 
 		{
@@ -47,7 +47,7 @@ namespace UnitTests
 			EXPECT_CALL(_pwmService, InitPin(1, In, 2)).Times(1);
 			unsigned int size = 0;
 			Operation_DutyCyclePinRead::RegisterFactory();
-			_operation = static_cast<IOperation<float> *>(IOperationBase::Create(_serviceLocator, config, size));
+			_operation = static_cast<IOperation<ScalarVariable> *>(IOperationBase::Create(_serviceLocator, config, size));
 			EXPECT_EQ(expectedSize, size);
 		}
 	};
@@ -56,18 +56,18 @@ namespace UnitTests
 	{
 		PwmValue pwmValue = { 0.1f, 0.05f };
 		EXPECT_CALL(_pwmService, ReadPin(1)).Times(1).WillOnce(Return(pwmValue));
-		ASSERT_NEAR(0.5f, _operation->Execute(), 0.001f);
+		ASSERT_NEAR(0.5f, ScalarVariableTo<float>(_operation->Execute()), 0.001f);
 
 		pwmValue = { 0.025f, 0.004f };
 		EXPECT_CALL(_pwmService, ReadPin(1)).Times(1).WillOnce(Return(pwmValue));
-		ASSERT_NEAR(0.16f, _operation->Execute(), 0.001f);
+		ASSERT_NEAR(0.16f, ScalarVariableTo<float>(_operation->Execute()), 0.001f);
 
 		pwmValue = { 0.05f, 0.04f };
 		EXPECT_CALL(_pwmService, ReadPin(1)).Times(1).WillOnce(Return(pwmValue));
-		ASSERT_NEAR(0.8f, _operation->Execute(), 0.001f);
+		ASSERT_NEAR(0.8f, ScalarVariableTo<float>(_operation->Execute()), 0.001f);
 
 		pwmValue = { 0.05333333333333f, 0.04f };
 		EXPECT_CALL(_pwmService, ReadPin(1)).Times(1).WillOnce(Return(pwmValue));
-		ASSERT_NEAR(0.75f, _operation->Execute(), 0.001f);
+		ASSERT_NEAR(0.75f, ScalarVariableTo<float>(_operation->Execute()), 0.001f);
 	}
 }

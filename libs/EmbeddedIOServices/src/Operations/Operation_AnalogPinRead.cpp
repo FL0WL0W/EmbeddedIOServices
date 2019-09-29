@@ -12,9 +12,9 @@ namespace Operations
 		_analogService->InitPin(_pin);
 	}
 
-	float Operation_AnalogPinRead::Execute()
+	ScalarVariable Operation_AnalogPinRead::Execute()
 	{
-		return _analogService->ReadPin(_pin);
+		return ScalarVariableFrom(_analogService->ReadPin(_pin));
 	}
 
 	IOperationBase *Operation_AnalogPinRead::Create(Service::ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut)
@@ -22,6 +22,6 @@ namespace Operations
 		return new Operation_AnalogPinRead(serviceLocator->LocateAndCast<HardwareAbstraction::IAnalogService>(ANALOG_SERVICE_ID), IService::CastAndOffset<uint16_t>(config, sizeOut));
 	}
 
-	IOPERATION_REGISTERFACTORY_CPP(Operation_AnalogPinRead, 5, float)
+	IOPERATION_REGISTERFACTORY_CPP(Operation_AnalogPinRead, 5, ScalarVariable)
 }
 #endif

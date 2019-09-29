@@ -11,6 +11,7 @@
 #include "Operations/Operation_Polynomial.h"
 #include "Operations/Operation_PulseWidthPinRead.h"
 #include "Operations/Operation_PwmPinWrite.h"
+#include "Operations/Operation_Math.h"
 
 #ifdef EMBEDDEDOPERATIONSREGISTER_H
 using namespace Operations;
@@ -33,8 +34,8 @@ namespace Service
         /*10    */Operation_DigitalPinWrite::RegisterFactory();
         /*11    */Operation_PwmPinWrite::RegisterFactory();
         /*12    *///Variable_DigitalPinRecord::RegisterFactory();
-        /*13    *///Variable_StaticBoolean::RegisterFactory();
-        /*14    *///Variable_StaticFloat::RegisterFactory();
+        /*13    *///Variable_StaticScalar::RegisterFactory();
+        /*14    */Operation_Math::RegisterFactory();\
     }
 }
 #endif

@@ -14,7 +14,7 @@ namespace UnitTests
 		protected:
 		ServiceLocator *_serviceLocator;
 		Operation_PolynomialConfig *_config;
-		IOperation<float, float> *_operation;
+		IOperation<ScalarVariable, ScalarVariable> *_operation;
 		unsigned int _size = 0;
 
 		Operation_PolynomialTest() 
@@ -43,7 +43,7 @@ namespace UnitTests
 			buildConfig = (void *)((uint8_t *)buildConfig + _config->Size());
 
 			Operation_Polynomial::RegisterFactory();
-			_operation = static_cast<IOperation<float, float> *>(IOperationBase::Create(_serviceLocator, config, _size));
+			_operation = static_cast<IOperation<ScalarVariable, ScalarVariable> *>(IOperationBase::Create(_serviceLocator, config, _size));
 		}
 	};
 
@@ -55,20 +55,20 @@ namespace UnitTests
 
 	TEST_F(Operation_PolynomialTest, WhenGettingValueWithinLimits_ThenCorrectValueIsReturned)
 	{
-		ASSERT_FLOAT_EQ(-10, _operation->Execute(0.0f));
+		ASSERT_FLOAT_EQ(-10, ScalarVariableTo<float>(_operation->Execute(ScalarVariableFrom(0.0f))));
 
-		ASSERT_FLOAT_EQ(20, _operation->Execute(1.0f));
+		ASSERT_FLOAT_EQ(20, ScalarVariableTo<float>(_operation->Execute(ScalarVariableFrom(1.0f))));
 
-		ASSERT_FLOAT_EQ(-1.25f, _operation->Execute(0.5f));
+		ASSERT_FLOAT_EQ(-1.25f, ScalarVariableTo<float>(_operation->Execute(ScalarVariableFrom(0.5f))));
 	}
 
 	TEST_F(Operation_PolynomialTest, WhenGettingValueAboveMaxValue_ThenCorrectValueIsReturned)
 	{
-		ASSERT_FLOAT_EQ(150, _operation->Execute(100.0f));
+		ASSERT_FLOAT_EQ(150, ScalarVariableTo<float>(_operation->Execute(ScalarVariableFrom(100.0f))));
 	}
 
 	TEST_F(Operation_PolynomialTest, WhenGettingValueBelowMinValue_ThenCorrectValueIsReturned)
 	{
-		ASSERT_FLOAT_EQ(-40, _operation->Execute(-100.0f));
+		ASSERT_FLOAT_EQ(-40, ScalarVariableTo<float>(_operation->Execute(ScalarVariableFrom(-100.0f))));
 	}
 }

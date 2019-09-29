@@ -3,7 +3,7 @@
 #include "Service/ServiceLocator.h"
 #include "Packed.h"
 #include "Interpolation.h"
-#include "VariableType.h"
+#include "ScalarVariable.h"
 
 /*
 To create this operator
@@ -49,14 +49,14 @@ namespace Operations
 		uint8_t Degree;
 	});
 
-	class Operation_Polynomial : public IOperation<float, float>
+	class Operation_Polynomial : public IOperation<ScalarVariable, ScalarVariable>
 	{
 	protected:
 		const Operation_PolynomialConfig *_config;
 	public:		
         Operation_Polynomial(const Operation_PolynomialConfig * const &config);
 
-		float Execute(float x) override;
+		ScalarVariable Execute(ScalarVariable x) override;
 
 		static IOperationBase *Create(Service::ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut);
 		ISERVICE_REGISTERFACTORY_H
