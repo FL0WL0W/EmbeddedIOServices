@@ -15,7 +15,7 @@ namespace Operations
 
 	void Operation_PwmPinWrite::Execute(ScalarVariable period, ScalarVariable pulseWidth)
 	{
-		_pwmService->WritePin(_pin, { ScalarVariableTo<float>(period), ScalarVariableTo<float>(pulseWidth) });
+		_pwmService->WritePin(_pin, { period.To<float>(), pulseWidth.To<float>() });
 	}
 
 	IOperationBase *Operation_PwmPinWrite::Create(Service::ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut)

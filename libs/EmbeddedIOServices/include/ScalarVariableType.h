@@ -15,7 +15,8 @@ const enum ScalarVariableType
     INT64 = 8,
     FLOAT = 9,
     DOUBLE = 10,
-    BOOLEAN = 11
+    BOOLEAN = 11,
+    TICK = 12
 };
 constexpr uint8_t ScalarVariableTypeSizeOf(ScalarVariableType type)
 {
@@ -24,6 +25,7 @@ constexpr uint8_t ScalarVariableTypeSizeOf(ScalarVariableType type)
         case ScalarVariableType::UINT8: return sizeof(uint8_t);
         case ScalarVariableType::UINT16: return sizeof(uint16_t);
         case ScalarVariableType::UINT32: return sizeof(uint32_t);
+        case ScalarVariableType::TICK: return sizeof(uint32_t);
         case ScalarVariableType::UINT64: return sizeof(uint64_t);
         case ScalarVariableType::INT8: return sizeof(int8_t);
         case ScalarVariableType::INT16: return sizeof(int16_t);

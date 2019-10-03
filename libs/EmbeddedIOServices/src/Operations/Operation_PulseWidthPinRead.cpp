@@ -15,7 +15,7 @@ namespace Operations
 
 	ScalarVariable Operation_PulseWidthPinRead::Execute()
 	{
-		return ScalarVariableFrom(_pwmService->ReadPin(_pin).PulseWidth);
+		return ScalarVariable(_pwmService->ReadPin(_pin).PulseWidth);
 	}
 
 	IOperationBase *Operation_PulseWidthPinRead::Create(Service::ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut)

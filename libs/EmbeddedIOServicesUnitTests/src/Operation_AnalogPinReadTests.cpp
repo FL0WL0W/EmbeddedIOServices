@@ -51,12 +51,12 @@ namespace UnitTests
 	TEST_F(Operation_AnalogPinReadTests, WhenGettingValue_ThenCorrectValueIsReturned)
 	{
 		EXPECT_CALL(_analogService, ReadPin(1)).Times(1).WillOnce(Return(0.0f));
-		ASSERT_FLOAT_EQ(0.0f, ScalarVariableTo<float>(_operation->Execute()));
+		ASSERT_FLOAT_EQ(0.0f, _operation->Execute().To<float>());
 
 		EXPECT_CALL(_analogService, ReadPin(1)).Times(1).WillOnce(Return(1.0f));
-		ASSERT_FLOAT_EQ(1.0f, ScalarVariableTo<float>(_operation->Execute()));
+		ASSERT_FLOAT_EQ(1.0f, _operation->Execute().To<float>());
 
 		EXPECT_CALL(_analogService, ReadPin(1)).Times(1).WillOnce(Return(0.5f));
-		ASSERT_FLOAT_EQ(0.5f, ScalarVariableTo<float>(_operation->Execute()));
+		ASSERT_FLOAT_EQ(0.5f, _operation->Execute().To<float>());
 	}
 }

@@ -132,50 +132,50 @@ namespace UnitTests
 	TEST_F(Operation_DigitalPinWriteTests, WhenWritingTrueForNormalOff_ThenPinWrittenTrue)
 	{
 		EXPECT_CALL(_digitalService, WritePin(1, true)).Times(1);
-		_operationNormalOff->Execute(ScalarVariableFrom(true));
+		_operationNormalOff->Execute(ScalarVariable(true));
 	}
 	
 	TEST_F(Operation_DigitalPinWriteTests, WhenWritingFalseForNormalOff_ThenPinWrittenFalse)
 	{
 		EXPECT_CALL(_digitalService, WritePin(1, false)).Times(1);
-		_operationNormalOff->Execute(ScalarVariableFrom(false));
+		_operationNormalOff->Execute(ScalarVariable(false));
 	}
 	
 	TEST_F(Operation_DigitalPinWriteTests, WhenWritingTrueForNormalOn_ThenPinWrittenFalse)
 	{
 		EXPECT_CALL(_digitalService, WritePin(2, false)).Times(1);
-		_operationNormalOn->Execute(ScalarVariableFrom(true));
+		_operationNormalOn->Execute(ScalarVariable(true));
 	}
 	
 	TEST_F(Operation_DigitalPinWriteTests, WhenWritingFalseForNormalOn_ThenPinWrittenTrue)
 	{
 		EXPECT_CALL(_digitalService, WritePin(2, true)).Times(1);
-		_operationNormalOn->Execute(ScalarVariableFrom(false));
+		_operationNormalOn->Execute(ScalarVariable(false));
 	}
 	
 	TEST_F(Operation_DigitalPinWriteTests, WhenWritingTrueForNormalOffHighZ_ThenPinConfiguredAsInput)
 	{
 		EXPECT_CALL(_digitalService, InitPin(3, In)).Times(1);
-		_operationNormalOffHighZ->Execute(ScalarVariableFrom(true));
+		_operationNormalOffHighZ->Execute(ScalarVariable(true));
 	}
 	
 	TEST_F(Operation_DigitalPinWriteTests, WhenWritingFalseForNormalOffHighZ_ThenPinWrittenFalse)
 	{
 		EXPECT_CALL(_digitalService, InitPin(3, Out)).Times(1);
 		EXPECT_CALL(_digitalService, WritePin(3, false)).Times(1);
-		_operationNormalOffHighZ->Execute(ScalarVariableFrom(false));
+		_operationNormalOffHighZ->Execute(ScalarVariable(false));
 	}
 	
 	TEST_F(Operation_DigitalPinWriteTests, WhenWritingTrueForNormalOnHighZ_ThenPinWrittenFalse)
 	{
 		EXPECT_CALL(_digitalService, InitPin(4, Out)).Times(1);
 		EXPECT_CALL(_digitalService, WritePin(4, false)).Times(1);
-		_operationNormalOnHighZ->Execute(ScalarVariableFrom(true));
+		_operationNormalOnHighZ->Execute(ScalarVariable(true));
 	}
 	
 	TEST_F(Operation_DigitalPinWriteTests, WhenWritingFalseForNormalOnHighZ_ThenPinConfiguredAsInput)
 	{
 		EXPECT_CALL(_digitalService, InitPin(4, In)).Times(1);
-		_operationNormalOnHighZ->Execute(ScalarVariableFrom(false));
+		_operationNormalOnHighZ->Execute(ScalarVariable(false));
 	}
 }

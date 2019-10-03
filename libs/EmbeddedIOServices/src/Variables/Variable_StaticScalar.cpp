@@ -26,7 +26,7 @@ namespace Variables
 		const ScalarVariable staticValue = IService::CastAndOffset<ScalarVariable>(config, sizeOut);
 
 		Variable_StaticScalar *variableService = new Variable_StaticScalar(staticValue);
-        serviceLocator->LocateAndCast<CallBackGroup>(TICK_CALL_BACK_GROUP)->Add(new CallBack<Variable_StaticScalar>(variableService, &Variable_StaticScalar::TranslateValue));
+        serviceLocator->LocateAndCast<CallBackGroup>(MAIN_LOOP_CALL_BACK_GROUP)->Add(new CallBack<Variable_StaticScalar>(variableService, &Variable_StaticScalar::TranslateValue));
 
         serviceLocator->Register(BUILDER_VARIABLE, variableId, &variableService->Value);
 

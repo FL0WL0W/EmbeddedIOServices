@@ -12,6 +12,7 @@
 #include "Operations/Operation_PulseWidthPinRead.h"
 #include "Operations/Operation_PwmPinWrite.h"
 #include "Operations/Operation_Math.h"
+#include "Operations/Operation_ScheduleCallBack.h"
 
 #ifdef EMBEDDEDOPERATIONSREGISTER_H
 using namespace Operations;
@@ -35,7 +36,8 @@ namespace Service
         /*11    */Operation_PwmPinWrite::RegisterFactory();
         /*12    *///Variable_DigitalPinRecord::RegisterFactory();
         /*13    *///Variable_StaticScalar::RegisterFactory();
-        /*14    */Operation_Math::RegisterFactory();\
+        /*14    */Operation_Math::RegisterFactory();
+        /*15    */Operation_ScheduleCallBack::RegisterFactory();
     }
 }
 #endif

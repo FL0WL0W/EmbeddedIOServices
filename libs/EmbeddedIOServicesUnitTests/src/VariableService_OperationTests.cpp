@@ -32,13 +32,9 @@ namespace UnitTests
 		{
 			_serviceLocator = new ServiceLocator();
 			
-			unsigned int expectedSize = sizeof(uint8_t) + sizeof(uint16_t) * 4;
+			unsigned int expectedSize = sizeof(uint16_t) * 4;
 			void *config = malloc(expectedSize);
 			void *buildConfig = config;
-
-			//instanceId 1
-			*((uint8_t *)buildConfig) = 1;
-			buildConfig = (void *)(((uint8_t *)buildConfig) + 1);
 
 			//factoryId 1
 			*((uint16_t *)buildConfig) = 1;
@@ -56,13 +52,9 @@ namespace UnitTests
 			*((uint16_t *)buildConfig) = 2;
 			buildConfig = (void *)(((uint16_t *)buildConfig) + 1);
 			
-			unsigned int expectedSize2 = sizeof(uint8_t) + sizeof(uint16_t) * 3;
+			unsigned int expectedSize2 = sizeof(uint16_t) * 3;
 			void *config2 = malloc(expectedSize2);
 			buildConfig = config2;
-
-			//instanceId 1
-			*((uint8_t *)buildConfig) = 1;
-			buildConfig = (void *)(((uint8_t *)buildConfig) + 1);
 
 			//factoryId 10
 			*((uint16_t *)buildConfig) = 10;
@@ -79,11 +71,11 @@ namespace UnitTests
 			unsigned int size = 0;
 			unsigned int size2 = 0;
 			_tickCallbackGroup = new CallBackGroup();
-			_serviceLocator->Register(TICK_CALL_BACK_GROUP, _tickCallbackGroup);
+			_serviceLocator->Register(MAIN_LOOP_CALL_BACK_GROUP, _tickCallbackGroup);
 			_inputValuePointer = (ScalarVariable *)malloc(sizeof(ScalarVariable));
 			_serviceLocator->Register(BUILDER_VARIABLE, 2, _inputValuePointer);
 			_inputValuePointer2 = (ScalarVariable *)malloc(sizeof(ScalarVariable));
-			*_inputValuePointer2 = ScalarVariableFrom(0);
+			*_inputValuePointer2 = ScalarVariable(0);
 			_serviceLocator->Register(BUILDER_VARIABLE, 3, _inputValuePointer2);
 			Operations::Operation_PolynomialConfig *operationPolynomialConfig = (Operations::Operation_PolynomialConfig *)malloc(sizeof(Operations::Operation_PolynomialConfig) + sizeof(float) * 2);
 			operationPolynomialConfig->Degree = 1;
@@ -95,8 +87,8 @@ namespace UnitTests
 			EXPECT_CALL(_digitalService, InitPin(1, Out)).Times(1);
 			EXPECT_CALL(_digitalService, WritePin(1, false)).Times(1);
 			_serviceLocator->Register(BUILDER_OPERATION, 2, new Operations::Operation_DigitalPinWrite(&_digitalService, 1, false, false));
-			Variable_Operation<ScalarVariable, ScalarVariable>::RegisterFactory(1);
-			Variable_Operation<void, ScalarVariable>::RegisterFactory(10);
+			Operations::Operation_Polynomial::RegisterFactory();
+			Operations::Operation_DigitalPinWrite::RegisterFactory();
 			IVariable::Build(_serviceLocator, config, size);
 			EXPECT_EQ(expectedSize, size);
 			IVariable::Build(_serviceLocator, config2, size2);
@@ -108,16 +100,16 @@ namespace UnitTests
 	TEST_F(Variable_OperationTests, WhenGettingValue_ThenCorrectValueIsReturned)
 	{
 		EXPECT_CALL(_digitalService, WritePin(1, true)).Times(1);
-		*_inputValuePointer2 = ScalarVariableFrom(true);
-		*_inputValuePointer = ScalarVariableFrom(13.37f);
+		*_inputValuePointer2 = ScalarVariable(true);
+		*_inputValuePointer = ScalarVariable(13.37f);
 		_tickCallbackGroup->Execute();
-		ASSERT_FLOAT_EQ(ScalarVariableTo<float>(*_inputValuePointer), ScalarVariableTo<float>(*_outputValuePointer));
+		ASSERT_FLOAT_EQ(_inputValuePointer->To<float>(), _outputValuePointer->To<float>());
 		
-		*_inputValuePointer = ScalarVariableFrom(12.34f);
-		ASSERT_FLOAT_EQ(13.37f, ScalarVariableTo<float>(*_outputValuePointer));
+		*_inputValuePointer = ScalarVariable(12.34f);
+		ASSERT_FLOAT_EQ(13.37f, _outputValuePointer->To<float>());
 		EXPECT_CALL(_digitalService, WritePin(1, false)).Times(1);
-		*_inputValuePointer2 = ScalarVariableFrom(false);
+		*_inputValuePointer2 = ScalarVariable(false);
 		_tickCallbackGroup->Execute();
-		ASSERT_FLOAT_EQ(ScalarVariableTo<float>(*_inputValuePointer), ScalarVariableTo<float>(*_outputValuePointer));
+		ASSERT_FLOAT_EQ(_inputValuePointer->To<float>(), _outputValuePointer->To<float>());
 	}
 }

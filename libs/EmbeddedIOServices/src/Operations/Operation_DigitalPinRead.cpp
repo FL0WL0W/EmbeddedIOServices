@@ -16,8 +16,8 @@ namespace Operations
 	ScalarVariable Operation_DigitalPinRead::Execute()
 	{
 		if (_inverted)
-			return ScalarVariableFrom(!_digitalService->ReadPin(_pin));
-		return ScalarVariableFrom(_digitalService->ReadPin(_pin));
+			return ScalarVariable(!_digitalService->ReadPin(_pin));
+		return ScalarVariable(_digitalService->ReadPin(_pin));
 	}
 
 	IOperationBase *Operation_DigitalPinRead::Create(Service::ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut)

@@ -65,22 +65,22 @@ namespace UnitTests
 
 	TEST_F(Operation_LookupTableTests, WhenGettingValueInTable_ThenCorrectValueIsReturned)
 	{
-		ASSERT_FLOAT_EQ(-10, ScalarVariableTo<float>(_operation->Execute(ScalarVariableFrom(0.0f))));
+		ASSERT_FLOAT_EQ(-10, _operation->Execute(ScalarVariable(0.0f)).To<float>());
 
-		ASSERT_FLOAT_EQ(20, ScalarVariableTo<float>(_operation->Execute(ScalarVariableFrom(0.99f))));
+		ASSERT_FLOAT_EQ(20, _operation->Execute(ScalarVariable(0.99f)).To<float>());
 
-		ASSERT_NEAR(0, ScalarVariableTo<float>(_operation->Execute(ScalarVariableFrom(0.33f))), 0.001f);
+		ASSERT_NEAR(0, _operation->Execute(ScalarVariable(0.33f)).To<float>(), 0.001f);
 
-		ASSERT_NEAR(-1.25f, ScalarVariableTo<float>(_operation->Execute(ScalarVariableFrom(0.28875f))), 0.001f);
+		ASSERT_NEAR(-1.25f, _operation->Execute(ScalarVariable(0.28875f)).To<float>(), 0.001f);
 	}
 
 	TEST_F(Operation_LookupTableTests, WhenGettingValueAboveMaxValue_ThenCorrectValueIsReturned)
 	{
-		ASSERT_FLOAT_EQ(90, ScalarVariableTo<float>(_operation->Execute(ScalarVariableFrom(100.0f))));
+		ASSERT_FLOAT_EQ(90, _operation->Execute(ScalarVariable(100.0f)).To<float>());
 	}
 
 	TEST_F(Operation_LookupTableTests, WhenGettingValueBelowMinValue_ThenCorrectValueIsReturned)
 	{
-		ASSERT_FLOAT_EQ(-10, ScalarVariableTo<float>(_operation->Execute(ScalarVariableFrom(-1.0f))));
+		ASSERT_FLOAT_EQ(-10, _operation->Execute(ScalarVariable(-1.0f)).To<float>());
 	}
 }

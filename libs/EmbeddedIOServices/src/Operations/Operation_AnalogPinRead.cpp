@@ -14,7 +14,7 @@ namespace Operations
 
 	ScalarVariable Operation_AnalogPinRead::Execute()
 	{
-		return ScalarVariableFrom(_analogService->ReadPin(_pin));
+		return ScalarVariable(_analogService->ReadPin(_pin));
 	}
 
 	IOperationBase *Operation_AnalogPinRead::Create(Service::ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut)

@@ -11,6 +11,7 @@ namespace Service
 	void EmbeddedVariablesRegister::Register()
     {
         /*7001  */IVariable::RegisterServiceFactory();
+        /*7002  */IVariable::RegisterCallBackFactory();
 
         /*1     *///Operation_Polynomial::RegisterFactory();
         /*2     *///Operation_LookupTable::RegisterFactory();
@@ -25,6 +26,8 @@ namespace Service
         /*11    *///Operation_PwmPinWrite::RegisterFactory();
         /*12    */Variable_DigitalPinRecord::RegisterFactory();
         /*13    */Variable_StaticScalar::RegisterFactory();
+        /*14    *///Operation_Math::RegisterFactory();
+        /*15    *///Operation_ScheduleCallBack::RegisterFactory();
     }
 }
 #endif

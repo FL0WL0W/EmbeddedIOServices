@@ -74,24 +74,24 @@ namespace UnitTests
 	TEST_F(Operation_DigitalPinReadTests, WhenGettingHighForUninverted_ThenTrueIsReturned)
 	{
 		EXPECT_CALL(_digitalService, ReadPin(1)).Times(1).WillOnce(Return(true));
-		ASSERT_EQ(true, ScalarVariableTo<bool>(_operationUninverted->Execute()));
+		ASSERT_EQ(true, _operationUninverted->Execute().To<bool>());
 	}
 
 	TEST_F(Operation_DigitalPinReadTests, WhenGettingLowForUninverted_ThenFalseIsReturned)
 	{
 		EXPECT_CALL(_digitalService, ReadPin(1)).Times(1).WillOnce(Return(false));
-		ASSERT_EQ(false, ScalarVariableTo<bool>(_operationUninverted->Execute()));
+		ASSERT_EQ(false, _operationUninverted->Execute().To<bool>());
 	}
 
 	TEST_F(Operation_DigitalPinReadTests, WhenGettingHighForInverted_ThenFalseIsReturned)
 	{
 		EXPECT_CALL(_digitalService, ReadPin(2)).Times(1).WillOnce(Return(true));
-		ASSERT_EQ(false, ScalarVariableTo<bool>(_operationInverted->Execute()));
+		ASSERT_EQ(false, _operationInverted->Execute().To<bool>());
 	}
 
 	TEST_F(Operation_DigitalPinReadTests, WhenGettingLowForInverted_ThenTrueIsReturned)
 	{
 		EXPECT_CALL(_digitalService, ReadPin(2)).Times(1).WillOnce(Return(false));
-		ASSERT_EQ(true, ScalarVariableTo<bool>(_operationInverted->Execute()));
+		ASSERT_EQ(true, _operationInverted->Execute().To<bool>());
 	}
 }

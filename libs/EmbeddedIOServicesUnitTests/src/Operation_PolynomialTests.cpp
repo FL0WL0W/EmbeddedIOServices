@@ -55,20 +55,20 @@ namespace UnitTests
 
 	TEST_F(Operation_PolynomialTest, WhenGettingValueWithinLimits_ThenCorrectValueIsReturned)
 	{
-		ASSERT_FLOAT_EQ(-10, ScalarVariableTo<float>(_operation->Execute(ScalarVariableFrom(0.0f))));
+		ASSERT_FLOAT_EQ(-10, _operation->Execute(ScalarVariable(0.0f)).To<float>());
 
-		ASSERT_FLOAT_EQ(20, ScalarVariableTo<float>(_operation->Execute(ScalarVariableFrom(1.0f))));
+		ASSERT_FLOAT_EQ(20, _operation->Execute(ScalarVariable(1.0f)).To<float>());
 
-		ASSERT_FLOAT_EQ(-1.25f, ScalarVariableTo<float>(_operation->Execute(ScalarVariableFrom(0.5f))));
+		ASSERT_FLOAT_EQ(-1.25f, _operation->Execute(ScalarVariable(0.5f)).To<float>());
 	}
 
 	TEST_F(Operation_PolynomialTest, WhenGettingValueAboveMaxValue_ThenCorrectValueIsReturned)
 	{
-		ASSERT_FLOAT_EQ(150, ScalarVariableTo<float>(_operation->Execute(ScalarVariableFrom(100.0f))));
+		ASSERT_FLOAT_EQ(150, _operation->Execute(ScalarVariable(100.0f)).To<float>());
 	}
 
 	TEST_F(Operation_PolynomialTest, WhenGettingValueBelowMinValue_ThenCorrectValueIsReturned)
 	{
-		ASSERT_FLOAT_EQ(-40, ScalarVariableTo<float>(_operation->Execute(ScalarVariableFrom(-100.0f))));
+		ASSERT_FLOAT_EQ(-40, _operation->Execute(ScalarVariable(-100.0f)).To<float>());
 	}
 }

@@ -56,18 +56,18 @@ namespace UnitTests
 	{
 		PwmValue pwmValue = { 0.1f, 0.05f };
 		EXPECT_CALL(_pwmService, ReadPin(1)).Times(1).WillOnce(Return(pwmValue));
-		ASSERT_FLOAT_EQ(10, ScalarVariableTo<float>(_operation->Execute()));
+		ASSERT_FLOAT_EQ(10, _operation->Execute().To<float>());
 
 		pwmValue = { 0.025f, 0.004f };
 		EXPECT_CALL(_pwmService, ReadPin(1)).Times(1).WillOnce(Return(pwmValue));
-		ASSERT_FLOAT_EQ(40, ScalarVariableTo<float>(_operation->Execute()));
+		ASSERT_FLOAT_EQ(40, _operation->Execute().To<float>());
 
 		pwmValue = { 0.05f, 0.04f };
 		EXPECT_CALL(_pwmService, ReadPin(1)).Times(1).WillOnce(Return(pwmValue));
-		ASSERT_NEAR(20, ScalarVariableTo<float>(_operation->Execute()), 0.001f);
+		ASSERT_NEAR(20, _operation->Execute().To<float>(), 0.001f);
 
 		pwmValue = { 0.05333333333333f, 0.04f };
 		EXPECT_CALL(_pwmService, ReadPin(1)).Times(1).WillOnce(Return(pwmValue));
-		ASSERT_NEAR(18.75f, ScalarVariableTo<float>(_operation->Execute()), 0.001f);
+		ASSERT_NEAR(18.75f, _operation->Execute().To<float>(), 0.001f);
 	}
 }

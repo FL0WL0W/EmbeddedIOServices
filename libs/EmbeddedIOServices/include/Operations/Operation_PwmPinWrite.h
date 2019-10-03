@@ -14,8 +14,16 @@ uint16									11(FactoryID)
 uint16 									pin
 uint16 									minFrequency
 
-To use this operator on a variable
+To use this operator on a variable in the main loop
 uint16									7001(BUILDER_VARIABLE)
+uint16									11(FactoryID)
+uint16									xx(InstanceID of Operation)
+uint16									xx(InstanceID of Variable Period)
+uint16									xx(InstanceID of Variable PulseWidth)
+
+To create a CallBack to use this operator on a variable
+uint16									7002(BUILDER_VARIABLE_TRANSLATE_CALL_BACK)
+uint16									xx(InstanceID of CallBack)
 uint16									11(FactoryID)
 uint16									xx(InstanceID of Operation)
 uint16									xx(InstanceID of Variable Period)

@@ -14,29 +14,31 @@ namespace Operations
 		switch(_config->TableType)
 		{
 			case ScalarVariableType::UINT8:
-				return ScalarVariableFrom(Interpolation::InterpolateTable1<uint8_t>(ScalarVariableTo<float>(x), _config->MaxXValue, _config->MinXValue, _config->XResolution, reinterpret_cast<const uint8_t*>(_config->Table())));
+				return ScalarVariable(Interpolation::InterpolateTable1<uint8_t>(x.To<float>(), _config->MaxXValue, _config->MinXValue, _config->XResolution, reinterpret_cast<const uint8_t*>(_config->Table())));
 			case ScalarVariableType::UINT16:
-				return ScalarVariableFrom(Interpolation::InterpolateTable1<uint16_t>(ScalarVariableTo<float>(x), _config->MaxXValue, _config->MinXValue, _config->XResolution, reinterpret_cast<const uint16_t*>(_config->Table())));
+				return ScalarVariable(Interpolation::InterpolateTable1<uint16_t>(x.To<float>(), _config->MaxXValue, _config->MinXValue, _config->XResolution, reinterpret_cast<const uint16_t*>(_config->Table())));
 			case ScalarVariableType::UINT32:
-				return ScalarVariableFrom(Interpolation::InterpolateTable1<uint16_t>(ScalarVariableTo<float>(x), _config->MaxXValue, _config->MinXValue, _config->XResolution, reinterpret_cast<const uint16_t*>(_config->Table())));
+				return ScalarVariable(Interpolation::InterpolateTable1<uint16_t>(x.To<float>(), _config->MaxXValue, _config->MinXValue, _config->XResolution, reinterpret_cast<const uint16_t*>(_config->Table())));
+			// case ScalarVariableType::TICK:
+			// 	return ScalarVariable.FromTick(Interpolation::InterpolateTable1<uint16_t>(x.To<float>(), _config->MaxXValue, _config->MinXValue, _config->XResolution, reinterpret_cast<const uint16_t*>(_config->Table())));
 			case ScalarVariableType::UINT64:
-				return ScalarVariableFrom(Interpolation::InterpolateTable1<uint64_t>(ScalarVariableTo<float>(x), _config->MaxXValue, _config->MinXValue, _config->XResolution, reinterpret_cast<const uint64_t*>(_config->Table())));
+				return ScalarVariable(Interpolation::InterpolateTable1<uint64_t>(x.To<float>(), _config->MaxXValue, _config->MinXValue, _config->XResolution, reinterpret_cast<const uint64_t*>(_config->Table())));
 			case ScalarVariableType::INT8:
-				return ScalarVariableFrom(Interpolation::InterpolateTable1<int8_t>(ScalarVariableTo<float>(x), _config->MaxXValue, _config->MinXValue, _config->XResolution, reinterpret_cast<const int8_t*>(_config->Table())));
+				return ScalarVariable(Interpolation::InterpolateTable1<int8_t>(x.To<float>(), _config->MaxXValue, _config->MinXValue, _config->XResolution, reinterpret_cast<const int8_t*>(_config->Table())));
 			case ScalarVariableType::INT16:
-				return ScalarVariableFrom(Interpolation::InterpolateTable1<int16_t>(ScalarVariableTo<float>(x), _config->MaxXValue, _config->MinXValue, _config->XResolution, reinterpret_cast<const int16_t*>(_config->Table())));
+				return ScalarVariable(Interpolation::InterpolateTable1<int16_t>(x.To<float>(), _config->MaxXValue, _config->MinXValue, _config->XResolution, reinterpret_cast<const int16_t*>(_config->Table())));
 			case ScalarVariableType::INT32:
-				return ScalarVariableFrom(Interpolation::InterpolateTable1<int32_t>(ScalarVariableTo<float>(x), _config->MaxXValue, _config->MinXValue, _config->XResolution, reinterpret_cast<const int32_t*>(_config->Table())));
+				return ScalarVariable(Interpolation::InterpolateTable1<int32_t>(x.To<float>(), _config->MaxXValue, _config->MinXValue, _config->XResolution, reinterpret_cast<const int32_t*>(_config->Table())));
 			case ScalarVariableType::INT64:
-				return ScalarVariableFrom(Interpolation::InterpolateTable1<int64_t>(ScalarVariableTo<float>(x), _config->MaxXValue, _config->MinXValue, _config->XResolution, reinterpret_cast<const int64_t*>(_config->Table())));
+				return ScalarVariable(Interpolation::InterpolateTable1<int64_t>(x.To<float>(), _config->MaxXValue, _config->MinXValue, _config->XResolution, reinterpret_cast<const int64_t*>(_config->Table())));
 			case ScalarVariableType::FLOAT:
-				return ScalarVariableFrom(Interpolation::InterpolateTable1<float>(ScalarVariableTo<float>(x), _config->MaxXValue, _config->MinXValue, _config->XResolution, reinterpret_cast<const float*>(_config->Table())));
+				return ScalarVariable(Interpolation::InterpolateTable1<float>(x.To<float>(), _config->MaxXValue, _config->MinXValue, _config->XResolution, reinterpret_cast<const float*>(_config->Table())));
 			case ScalarVariableType::DOUBLE:
-				return ScalarVariableFrom(Interpolation::InterpolateTable1<double>(ScalarVariableTo<float>(x), _config->MaxXValue, _config->MinXValue, _config->XResolution, reinterpret_cast<const double*>(_config->Table())));
+				return ScalarVariable(Interpolation::InterpolateTable1<double>(x.To<float>(), _config->MaxXValue, _config->MinXValue, _config->XResolution, reinterpret_cast<const double*>(_config->Table())));
 			case ScalarVariableType::BOOLEAN:
-				return ScalarVariableFrom(Interpolation::InterpolateTable1<bool>(ScalarVariableTo<float>(x), _config->MaxXValue, _config->MinXValue, _config->XResolution, reinterpret_cast<const bool*>(_config->Table())));
+				return ScalarVariable(Interpolation::InterpolateTable1<bool>(x.To<float>(), _config->MaxXValue, _config->MinXValue, _config->XResolution, reinterpret_cast<const bool*>(_config->Table())));
 		}
-		return { ScalarVariableType::UINT8, 0 };
+		return ScalarVariable(static_cast<uint8_t>(0));
 	}
 
 	IOperationBase *Operation_LookupTable::Create(Service::ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut)

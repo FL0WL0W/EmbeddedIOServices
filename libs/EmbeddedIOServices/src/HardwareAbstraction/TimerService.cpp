@@ -51,6 +51,15 @@ namespace HardwareAbstraction
 			ScheduleCallBack(FirstTask->Tick);
 	}
 
+	Task *ITimerService::ScheduleTask(ICallBack *callBack, const uint32_t tick, const bool deleteOnExecution)
+	{
+		Task *taskToSchedule = new Task(callBack, deleteOnExecution);
+
+		ScheduleTask(taskToSchedule, tick);
+
+		return taskToSchedule;
+	}
+
 	const bool ITimerService::ScheduleTask(Task *task, const uint32_t tick)
 	{
 		//make this not static 1ms

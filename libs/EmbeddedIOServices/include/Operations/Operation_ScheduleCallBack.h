@@ -10,36 +10,38 @@
 To create this operator
 uint16									6001(BUILDER_OPERATION)
 uint16									xx(InstanceID of Operation)
-uint16									5(FactoryID)
+uint16									10(FactoryID)
 uint16 									pin
+bool 									normalOn
+bool 									highZ
 
 To use this operator on a variable in the main loop
 uint16									7001(BUILDER_VARIABLE)
-uint16									5(FactoryID)
-uint16									xx(InstanceID of Variable)
+uint16									10(FactoryID)
 uint16									xx(InstanceID of Operation)
+uint16									xx(InstanceID of Variable)
 
 To create a CallBack to use this operator on a variable
 uint16									7002(BUILDER_VARIABLE_TRANSLATE_CALL_BACK)
 uint16									xx(InstanceID of CallBack)
-uint16									5(FactoryID)
-uint16									xx(InstanceID of Variable)
+uint16									10(FactoryID)
 uint16									xx(InstanceID of Operation)
+uint16									xx(InstanceID of Variable)
 */
 
-#ifndef OPERATION_ANALOGPINREAD_H
-#define OPERATION_ANALOGPINREAD_H
+#ifndef OPERATION_SCHEDULECALLBACK_H
+#define OPERATION_SCHEDULECALLBACK_H
 namespace Operations
 {
-	class Operation_AnalogPinRead : public IOperation<ScalarVariable>
+	class Operation_ScheduleCallBack : public IOperation<void, ScalarVariable>
 	{
 	protected:
-		HardwareAbstraction::IAnalogService *_analogService;
-		uint16_t _pin;
+		HardwareAbstraction::ITimerService *_timerService;
+		HardwareAbstraction::Task *_task;
 	public:		
-        Operation_AnalogPinRead( HardwareAbstraction::IAnalogService *analogService, const uint16_t pin);
+        Operation_ScheduleCallBack(HardwareAbstraction::ITimerService *timerService, HardwareAbstraction::ICallBack *callBack);
 
-		ScalarVariable Execute() override;
+		void Execute(ScalarVariable x) override;
 
 		static IOperationBase *Create(Service::ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut);
 		ISERVICE_REGISTERFACTORY_H

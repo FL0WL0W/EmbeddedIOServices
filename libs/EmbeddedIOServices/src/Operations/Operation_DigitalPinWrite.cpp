@@ -27,7 +27,7 @@ namespace Operations
 	{
 		if(xIn.Type != BOOLEAN)
 			return;
-		bool x = ScalarVariableTo<bool>(xIn);
+		bool x = xIn.To<bool>();
 
 		if(x) 
 		{

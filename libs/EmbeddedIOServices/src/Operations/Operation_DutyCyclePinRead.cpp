@@ -16,7 +16,7 @@ namespace Operations
 	ScalarVariable Operation_DutyCyclePinRead::Execute()
 	{
 		const PwmValue value = _pwmService->ReadPin(_pin);
-		return ScalarVariableFrom(value.PulseWidth / value.Period);
+		return ScalarVariable(value.PulseWidth / value.Period);
 	}
 
 	IOperationBase *Operation_DutyCyclePinRead::Create(Service::ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut)

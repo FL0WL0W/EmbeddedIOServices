@@ -96,23 +96,23 @@ namespace UnitTests
 
 	TEST_F(Operation_2AxisTableTest, WhenGettingValueInTable_ThenCorrectValueIsReturned)
 	{
-		ASSERT_EQ(-10, ScalarVariableTo<int8_t>(_operation->Execute(ScalarVariableFrom(static_cast<uint8_t>(0)), ScalarVariableFrom(static_cast<int8_t>(0)))));
-		ASSERT_EQ(20, ScalarVariableTo<uint8_t>(_operation->Execute(ScalarVariableFrom(static_cast<float>(0.99f)), ScalarVariableFrom(static_cast<uint16_t>(0)))));
-		ASSERT_EQ(0, ScalarVariableTo<uint16_t>(_operation->Execute(ScalarVariableFrom(static_cast<double>(0.33f)), ScalarVariableFrom(static_cast<int16_t>(0)))));
-		ASSERT_NEAR(-1.25f, ScalarVariableTo<float>(_operation->Execute(ScalarVariableFrom(static_cast<float>(0.28875f)), ScalarVariableFrom(static_cast<uint32_t>(0)))), 0.001f);
-		ASSERT_EQ(0, ScalarVariableTo<int16_t>(_operation->Execute(ScalarVariableFrom(static_cast<int32_t>(0)), ScalarVariableFrom(static_cast<float>(1.1f)))));
-		ASSERT_EQ(30, ScalarVariableTo<uint32_t>(_operation->Execute(ScalarVariableFrom(static_cast<float>(0.99f)), ScalarVariableFrom(static_cast<float>(1.1f)))));
-		ASSERT_EQ(10, ScalarVariableTo<int32_t>(_operation->Execute(ScalarVariableFrom(static_cast<float>(0.33f)), ScalarVariableFrom(static_cast<float>(1.1f)))));
-		ASSERT_NEAR(8.75f, ScalarVariableTo<float>(_operation->Execute(ScalarVariableFrom(static_cast<float>(0.28875f)), ScalarVariableFrom(static_cast<float>(1.1f)))), 0.001f);
+		ASSERT_EQ(-10, _operation->Execute(ScalarVariable(static_cast<uint8_t>(0)), ScalarVariable(static_cast<int8_t>(0))).To<int8_t>());
+		ASSERT_EQ(20, _operation->Execute(ScalarVariable(static_cast<float>(0.99f)), ScalarVariable(static_cast<uint16_t>(0))).To<uint8_t>());
+		ASSERT_EQ(0, _operation->Execute(ScalarVariable(static_cast<double>(0.33f)), ScalarVariable(static_cast<int16_t>(0))).To<uint16_t>());
+		ASSERT_NEAR(-1.25f, _operation->Execute(ScalarVariable(static_cast<float>(0.28875f)), ScalarVariable(static_cast<uint32_t>(0))).To<float>(), 0.001f);
+		ASSERT_EQ(0, _operation->Execute(ScalarVariable(static_cast<int32_t>(0)), ScalarVariable(static_cast<float>(1.1f))).To<int16_t>());
+		ASSERT_EQ(30, _operation->Execute(ScalarVariable(static_cast<float>(0.99f)), ScalarVariable(static_cast<float>(1.1f))).To<uint32_t>());
+		ASSERT_EQ(10, _operation->Execute(ScalarVariable(static_cast<float>(0.33f)), ScalarVariable(static_cast<float>(1.1f))).To<int32_t>());
+		ASSERT_NEAR(8.75f, _operation->Execute(ScalarVariable(static_cast<float>(0.28875f)), ScalarVariable(static_cast<float>(1.1f))).To<float>(), 0.001f);
 	}
 
 	TEST_F(Operation_2AxisTableTest, WhenGettingValueAboveMaxValue_ThenCorrectValueIsReturned)
 	{
-		ASSERT_EQ(80, ScalarVariableTo<uint64_t>(_operation->Execute(ScalarVariableFrom(static_cast<float>(100.0f)), ScalarVariableFrom(static_cast<uint64_t>(0)))));
+		ASSERT_EQ(80, _operation->Execute(ScalarVariable(static_cast<float>(100.0f)), ScalarVariable(static_cast<uint64_t>(0))).To<uint64_t>());
 	}
 
 	TEST_F(Operation_2AxisTableTest, WhenGettingValueBelowMinValue_ThenCorrectValueIsReturned)
 	{
-		ASSERT_EQ(-10, ScalarVariableTo<int64_t>(_operation->Execute(ScalarVariableFrom(static_cast<float>(-1.0f)), ScalarVariableFrom(static_cast<int64_t>(0)))));
+		ASSERT_EQ(-10, _operation->Execute(ScalarVariable(static_cast<float>(-1.0f)), ScalarVariable(static_cast<int64_t>(0))).To<int64_t>());
 	}
 }

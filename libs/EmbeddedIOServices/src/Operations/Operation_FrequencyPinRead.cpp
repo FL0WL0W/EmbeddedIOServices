@@ -15,7 +15,7 @@ namespace Operations
 
 	ScalarVariable Operation_FrequencyPinRead::Execute()
 	{
-		return ScalarVariableFrom(1 / _pwmService->ReadPin(_pin).Period);
+		return ScalarVariable(1 / _pwmService->ReadPin(_pin).Period);
 	}
 
 	IOperationBase *Operation_FrequencyPinRead::Create(Service::ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut)
