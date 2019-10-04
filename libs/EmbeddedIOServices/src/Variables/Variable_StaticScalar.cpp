@@ -9,26 +9,25 @@ using namespace Service;
 #ifdef VARIABLE_STATICSCALAR_H
 namespace Variables
 {
-	Variable_StaticScalar::Variable_StaticScalar(const ScalarVariable &staticValue)
+	Variable_StaticScalar::Variable_StaticScalar(ScalarVariable *variable, const ScalarVariable &staticValue)
 	{
 		_staticValue = staticValue;
-		Value = _staticValue;
+		_variable = variable;
+		*_variable = _staticValue;
 	}
 	
 	void Variable_StaticScalar::TranslateValue()
 	{
-		Value = _staticValue;
+		*_variable = _staticValue;
 	}
 
 	IVariable *Variable_StaticScalar::Create(Service::ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut)
 	{
-        const uint32_t variableId = IService::CastAndOffset<uint16_t>(config, sizeOut);
+		ScalarVariable *variable = GetOrCreateVariable<ScalarVariable>(serviceLocator, Service::IService::CastAndOffset<uint16_t>(config, sizeOut));
 		const ScalarVariable staticValue = IService::CastAndOffset<ScalarVariable>(config, sizeOut);
-
-		Variable_StaticScalar *variableService = new Variable_StaticScalar(staticValue);
+		
+		Variable_StaticScalar *variableService = new Variable_StaticScalar(variable, staticValue);
         serviceLocator->LocateAndCast<CallBackGroup>(MAIN_LOOP_CALL_BACK_GROUP)->Add(new CallBack<Variable_StaticScalar>(variableService, &Variable_StaticScalar::TranslateValue));
-
-        serviceLocator->Register(BUILDER_VARIABLE, variableId, &variableService->Value);
 
 		return variableService;
 	}

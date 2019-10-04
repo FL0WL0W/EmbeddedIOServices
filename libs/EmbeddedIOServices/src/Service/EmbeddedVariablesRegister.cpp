@@ -29,6 +29,7 @@ namespace Service
         /*14    *///Operation_Math::RegisterFactory();
         /*15    *///Operation_ScheduleCallBack::RegisterFactory();
         /*16    *///Operation_GetTick::RegisterFactory();
+        /*17    *///Operation_SecondsToTicks::RegisterFactory();
     }
 }
 #endif

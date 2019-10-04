@@ -1,4 +1,5 @@
 #include "Service/IService.h"
+#define BUILDER_OPERATION 6001
 
 #define IOPERATION_REGISTERFACTORY_CPP(cl, id, ...)    				            \
 void cl::RegisterFactory()                                         				\

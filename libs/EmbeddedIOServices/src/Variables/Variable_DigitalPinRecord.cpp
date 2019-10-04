@@ -3,13 +3,17 @@
 #ifdef VARIABLE_DIGITALPINRECORD_H
 namespace Variables
 {
-	Variable_DigitalPinRecord::Variable_DigitalPinRecord(HardwareAbstraction::IDigitalService *digitalService, HardwareAbstraction::ITimerService *timerService, uint8_t length, uint16_t pin, bool inverted)
+	Variable_DigitalPinRecord::Variable_DigitalPinRecord(Record *record, HardwareAbstraction::IDigitalService *digitalService, HardwareAbstraction::ITimerService *timerService, uint8_t length, uint16_t pin, bool inverted)
 	{
 		_digitalService = digitalService;
 		_timerService = timerService;
 		_pin = pin;
 		_inverted = inverted;
-		_record = new Record(length);
+		_record = record;
+		if(_record->Length != length)
+		{
+			_record->Initialize(length);
+		}
 
 		_digitalService->ScheduleRecurringInterrupt(_pin, new HardwareAbstraction::CallBack<Variable_DigitalPinRecord>(this, &Variable_DigitalPinRecord::InterruptCallBack));
 	}
@@ -44,7 +48,7 @@ namespace Variables
 		const uint16_t pin = IService::CastAndOffset<uint16_t>(config, sizeOut);
 		const bool inverted = IService::CastAndOffset<bool>(config, sizeOut);
 					
-		Variable_DigitalPinRecord *variableService = new Variable_DigitalPinRecord(serviceLocator->LocateAndCast<HardwareAbstraction::IDigitalService>(DIGITAL_SERVICE_ID), serviceLocator->LocateAndCast<HardwareAbstraction::ITimerService>(TIMER_SERVICE_ID), length, pin, inverted);
+		Variable_DigitalPinRecord *variableService = new Variable_DigitalPinRecord(GetOrCreateVariable<Record>(serviceLocator, variableId), serviceLocator->LocateAndCast<HardwareAbstraction::IDigitalService>(DIGITAL_SERVICE_ID), serviceLocator->LocateAndCast<HardwareAbstraction::ITimerService>(TIMER_SERVICE_ID), length, pin, inverted);
 
 		serviceLocator->Register(BUILDER_VARIABLE, variableId, variableService->_record);
 
