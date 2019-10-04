@@ -28,6 +28,7 @@ namespace Service
         /*13    */Variable_StaticScalar::RegisterFactory();
         /*14    *///Operation_Math::RegisterFactory();
         /*15    *///Operation_ScheduleCallBack::RegisterFactory();
+        /*16    *///Operation_GetTick::RegisterFactory();
     }
 }
 #endif

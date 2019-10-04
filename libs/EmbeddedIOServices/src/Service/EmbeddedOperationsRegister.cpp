@@ -13,6 +13,7 @@
 #include "Operations/Operation_PwmPinWrite.h"
 #include "Operations/Operation_Math.h"
 #include "Operations/Operation_ScheduleCallBack.h"
+#include "Operations/Operation_GetTick.h"
 
 #ifdef EMBEDDEDOPERATIONSREGISTER_H
 using namespace Operations;
@@ -38,6 +39,7 @@ namespace Service
         /*13    *///Variable_StaticScalar::RegisterFactory();
         /*14    */Operation_Math::RegisterFactory();
         /*15    */Operation_ScheduleCallBack::RegisterFactory();
+        /*16    */Operation_GetTick::RegisterFactory();
     }
 }
 #endif
