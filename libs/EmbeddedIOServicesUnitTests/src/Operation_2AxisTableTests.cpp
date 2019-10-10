@@ -88,8 +88,8 @@ namespace UnitTests
 
 	TEST_F(Operation_2AxisTableTest, ConfigsAreCorrect)
 	{
-		ASSERT_EQ(182, _config->Size());
-		ASSERT_EQ(184, _size);
+		ASSERT_EQ(179, _config->Size());
+		ASSERT_EQ(181, _size);
 		ASSERT_EQ((float *)(_config + 1), _config->Table());
 		ASSERT_EQ(-10, ((float *)_config->Table())[0]);
 	}

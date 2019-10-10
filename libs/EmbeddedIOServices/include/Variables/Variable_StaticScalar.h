@@ -3,6 +3,14 @@
 #include "Variables/IVariable.h"
 #include "ScalarVariable.h"
 
+/*
+To use this variable
+uint16									7001(BUILDER_VARIABLE)
+uint16									13(FactoryID)
+uint16									xx(InstanceID of Variable)
+ScalarVariable							Value
+*/
+
 #if !defined(VARIABLE_STATICSCALAR_H)
 #define VARIABLE_STATICSCALAR_H
 namespace Variables

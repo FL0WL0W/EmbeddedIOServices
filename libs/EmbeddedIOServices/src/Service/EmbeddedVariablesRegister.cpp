@@ -11,7 +11,6 @@ namespace Service
 	void EmbeddedVariablesRegister::Register()
     {
         /*7001  */IVariable::RegisterServiceFactory();
-        /*7002  */IVariable::RegisterCallBackFactory();
 
         /*1     *///Operation_Polynomial::RegisterFactory();
         /*2     *///Operation_LookupTable::RegisterFactory();

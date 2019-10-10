@@ -57,8 +57,8 @@ namespace UnitTests
 
 	TEST_F(Operation_LookupTableTests, ConfigsAreCorrect)
 	{
-		ASSERT_EQ(57, _config->Size());
-		ASSERT_EQ(59, _size);
+		ASSERT_EQ(54, _config->Size());
+		ASSERT_EQ(56, _size);
 		ASSERT_EQ((float *)(_config + 1), _config->Table());
 		ASSERT_EQ(-10, reinterpret_cast<const float*>(_config->Table())[0]);
 	}

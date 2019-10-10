@@ -1,6 +1,5 @@
 #include "Service/IService.h"
 #define BUILDER_VARIABLE 7001
-#define BUILDER_VARIABLE_TRANSLATE_CALL_BACK 7002
 
 #ifndef IVARIABLE_H
 #define IVARIABLE_H
@@ -13,7 +12,6 @@ namespace Variables
         public:
 		virtual void TranslateValue() = 0;
 		static void Build(Service::ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut);
-		static void BuildCallBack(Service::ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut);
 
 		static IVariable *Create(Service::ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut);
         template<typename RET>
@@ -30,7 +28,6 @@ namespace Variables
         }
         
         ISERVICE_REGISTERSERVICEFACTORY_H
-        static void RegisterCallBackFactory();
     };
 }
 #endif
