@@ -177,5 +177,6 @@ var EmbeddedIOServicesIni = {
     Main: { Tabbed: true, Variables: [
         { Operations: { Label: "Operations", Name: "Operation", IniName: "IOperation", NamedList: true } },
         { Variables: { Label: "Variables", Name: "Variable", IniName: "IVariable", NamedList: true } },
+        { EOF: { Type: "uint16", Value: 0, Static: true } }
     ] }
 };
