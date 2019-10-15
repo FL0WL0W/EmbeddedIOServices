@@ -97,7 +97,7 @@ class ConfigGui extends Config {
             if(this[variableRowKey] && 
                 (this[variableRowKey] instanceof ConfigNumberSelectionGui)
                 || this[variableRowKey] instanceof ConfigNumberGui
-                || this[variableRowKey] instanceof ConfigBooleanGui
+                || this[variableRowKey] instanceof ConfigNamedListGui
                 || this[variableRowKey] instanceof ConfigGui
                 || this[variableRowKey] instanceof ConfigArrayGui
                 || this[variableRowKey] instanceof ConfigNamedListGui
@@ -109,8 +109,6 @@ class ConfigGui extends Config {
                 this[variableRowKey] = new ConfigNumberSelectionGui();
             } else if(this[variableRowKey] instanceof ConfigNumber) {
                 this[variableRowKey] = new ConfigNumberGui();
-            } else if(this[variableRowKey] instanceof ConfigBoolean) {
-                this[variableRowKey] = new ConfigBooleanGui();
             } else if(this[variableRowKey] instanceof Config) {
                 this[variableRowKey] = new ConfigGui();
             } else if(this[variableRowKey] instanceof ConfigArray) {
@@ -211,6 +209,7 @@ class ConfigSelectionGui extends ConfigSelection {
     }
 }
 
+var checkBoxConfigGuiTemplate;
 var numberConfigGuiTemplate;
 class ConfigNumberGui extends ConfigNumber {
     constructor(){
@@ -229,8 +228,15 @@ class ConfigNumberGui extends ConfigNumber {
 
             var units = this.GetUnits();
             var unit = units[objProperty.UnitIndex];
+            var type = this.GetType();
+            
+            if(type !== this.CurrentType) {
+                $("#span" + this.GUID).replaceWith(this.GetHtml());
+            } else {
+                $("#" + this.GUID).val(objProperty.Value * unit.DisplayMultiplier + unit.DisplayOffset);
+            }
 
-            $("#" + this.GUID).val(objProperty.Value * unit.DisplayMultiplier + unit.DisplayOffset);
+            this.CurrentType = type;
         }
     }
     GetHtml() {
@@ -241,55 +247,78 @@ class ConfigNumberGui extends ConfigNumber {
             return "";
 
         var template = "";
-        if(!numberConfigGuiTemplate) {
-            numberConfigGuiTemplate = getFileContents("ConfigGui/Number.html");
-        }
-        template = numberConfigGuiTemplate;
-
-        template = template.replace(/[$]id[$]/g, this.GUID);
-        template = template.replace(/[$]label[$]/g, iniProperty.Label);
-        var units = this.GetUnits();
-        var unit = units[objProperty.UnitIndex];
-        var min = this.GetMin();
-        var max = this.GetMax();
-        var step = this.GetStep();
-        template = template.replace(/[$]value[$]/g, objProperty.Value * unit.DisplayMultiplier + unit.DisplayOffset);
-        template = template.replace(/[$]units[$]/g, unit.Name);
-        min = min * unit.DisplayMultiplier + unit.DisplayOffset;
-        max = max * unit.DisplayMultiplier + unit.DisplayOffset;
-        step = step * unit.DisplayMultiplier;
+        var type = this.GetType();
+        if(type === "bool") {
+            if(!checkBoxConfigGuiTemplate)
+                checkBoxConfigGuiTemplate = getFileContents("ConfigGui/CheckBox.html");
+            template = checkBoxConfigGuiTemplate;
+            template = template.replace(/[$]id[$]/g, this.GUID);
+            template = template.replace(/[$]label[$]/g, iniProperty.Label);
+            if(objProperty.Value)
+                template = template.replace(/[$]checked[$]/g, "checked");
+            else
+                template = template.replace(/[$]checked[$]/g, "");
         
-        if(min > 999999999999999)
-            min = 999999999999999;
-        if(min < -999999999999999)
-            min = -999999999999999;
-        if(max > 999999999999999)
-            max = 999999999999999;
-        if(max < -999999999999999)
-            max = -999999999999999;
-        if(step > 999999999999999)
-            step = 999999999999999;
-        if(step < -999999999999999)
-            step = -999999999999999;
+            var thisClass = this;
 
-        template = template.replace(/[$]min[$]/g, min);
-        template = template.replace(/[$]max[$]/g, max);
-        template = template.replace(/[$]step[$]/g, step);
+            $(document).off("change."+this.GUID);
+            $(document).on("change."+this.GUID, "#" + this.GUID, function(){
 
-        var thisClass = this;
+                thisClass.GetObjProperty().Value = this.checked;
+                CallObjFunctionIfExists(thisClass.Obj, "Update");
+            });
+        } else {
+            if(!numberConfigGuiTemplate) {
+                numberConfigGuiTemplate = getFileContents("ConfigGui/Number.html");
+            }
+            template = numberConfigGuiTemplate;
 
-        $(document).off("change."+this.GUID);
-        $(document).on("change."+this.GUID, "#" + this.GUID, function(){
-            var val = parseFloat($(this).val());
-            val /= unit.DisplayMultiplier - unit.DisplayOffset;
+            template = template.replace(/[$]id[$]/g, this.GUID);
+            template = template.replace(/[$]label[$]/g, iniProperty.Label);
+            var units = this.GetUnits();
+            var unit = units[objProperty.UnitIndex];
+            var min = this.GetMin();
+            var max = this.GetMax();
+            var step = this.GetStep();
+            template = template.replace(/[$]value[$]/g, objProperty.Value * unit.DisplayMultiplier + unit.DisplayOffset);
+            template = template.replace(/[$]units[$]/g, unit.Name);
+            min = min * unit.DisplayMultiplier + unit.DisplayOffset;
+            max = max * unit.DisplayMultiplier + unit.DisplayOffset;
+            step = step * unit.DisplayMultiplier;
+            
+            if(min > 999999999999999)
+                min = 999999999999999;
+            if(min < -999999999999999)
+                min = -999999999999999;
+            if(max > 999999999999999)
+                max = 999999999999999;
+            if(max < -999999999999999)
+                max = -999999999999999;
+            if(step > 999999999999999)
+                step = 999999999999999;
+            if(step < -999999999999999)
+                step = -999999999999999;
 
-            thisClass.GetObjProperty().Value = val;
-            CallObjFunctionIfExists(thisClass.Obj, "Update");
-        });
-        $(document).off("focus."+this.GUID);
-        $(document).on("focus."+this.GUID, "#" + this.GUID, function(){
-            $(this).select();
-        });
+            template = template.replace(/[$]min[$]/g, min);
+            template = template.replace(/[$]max[$]/g, max);
+            template = template.replace(/[$]step[$]/g, step);
+
+            var thisClass = this;
+
+            $(document).off("change."+this.GUID);
+            $(document).on("change."+this.GUID, "#" + this.GUID, function(){
+                var val = parseFloat($(this).val());
+                val /= unit.DisplayMultiplier - unit.DisplayOffset;
+
+                thisClass.GetObjProperty().Value = val;
+                CallObjFunctionIfExists(thisClass.Obj, "Update");
+            });
+            $(document).off("focus."+this.GUID);
+            $(document).on("focus."+this.GUID, "#" + this.GUID, function(){
+                $(this).select();
+            });
+        }
+
         return template;
     }
     InitProperty() {
@@ -366,55 +395,6 @@ class ConfigNumberSelectionGui extends ConfigNumber {
     }
 }
 
-var checkBoxConfigGuiTemplate;
-class ConfigBooleanGui extends ConfigBoolean {
-    constructor(){
-        super();
-        this.GUID = getGUID();
-    }
-
-    ObjUpdateEvent() {
-        super.ObjUpdateEvent();
-        $("#" + this.GUID).val(this.GetObjProperty().Value);
-    }
-
-    GetHtml() {
-        var objProperty = this.GetObjProperty();
-        var iniProperty = this.GetIniProperty();
-
-        if(iniProperty.Hidden)
-            return "";
-
-        if(!checkBoxConfigGuiTemplate)
-            checkBoxConfigGuiTemplate = getFileContents("ConfigGui/CheckBox.html");
-        var template = checkBoxConfigGuiTemplate;
-        template = template.replace(/[$]id[$]/g, this.GUID);
-        template = template.replace(/[$]label[$]/g, iniProperty.Label);
-        if(objProperty.Value)
-            template = template.replace(/[$]checked[$]/g, "checked");
-        else
-            template = template.replace(/[$]checked[$]/g, "");
-    
-        var thisClass = this;
-
-        $(document).off("change."+this.GUID);
-        $(document).on("change."+this.GUID, "#" + this.GUID, function(){
-
-            thisClass.GetObjProperty().Value = this.checked;
-            CallObjFunctionIfExists(thisClass.Obj, "Update");
-        });
-    
-        return template;
-    }
-
-    InitProperty() {
-        var objProperty = super.InitProperty();
-        if(!objProperty)
-            return false;
-
-        return objProperty;
-    }
-}
 
 document.addEventListener("dragstart", function(e){
     if($(e.target).hasClass("selected"))
@@ -1139,6 +1119,18 @@ class ConfigNamedListGui extends ConfigNamedList {
             var temp = thisClass.Value[i-1];
             thisClass.Value[i-1] = thisClass.Value[i];
             thisClass.Value[i] = temp;
+            var objProperty = thisClass.GetObjProperty();
+            if(objProperty !== undefined && objProperty.Value !== undefined)
+                objProperty = objProperty.Value;
+            objProperty[i].iterator--;
+            objProperty[i-1].iterator++;
+            temp = objProperty[i-1];
+            objProperty[i-1] = objProperty[i];
+            objProperty[i] = temp;
+            var prevObj = thisClass.Value[i].Obj;
+            var prevObjLocation = thisClass.Value[i].ObjLocation;
+            thisClass.Value[i].SetObj(thisClass.Value[i-1].Obj, thisClass.Value[i-1].ObjLocation);
+            thisClass.Value[i-1].SetObj(prevObj, prevObjLocation);
             thisClass.moved = true;
             CallObjFunctionIfExists(thisClass.Obj, "Update");
         });
@@ -1149,6 +1141,18 @@ class ConfigNamedListGui extends ConfigNamedList {
             var temp = thisClass.Value[i+1];
             thisClass.Value[i+1] = thisClass.Value[i];
             thisClass.Value[i] = temp;
+            var objProperty = thisClass.GetObjProperty();
+            if(objProperty !== undefined && objProperty.Value !== undefined)
+                objProperty = objProperty.Value;
+            objProperty[i].iterator++;
+            objProperty[i+1].iterator--;
+            temp = objProperty[i+1];
+            objProperty[i+1] = objProperty[i];
+            objProperty[i] = temp;
+            var prevObj = thisClass.Value[i].Obj;
+            var prevObjLocation = thisClass.Value[i].ObjLocation;
+            thisClass.Value[i].SetObj(thisClass.Value[i+1].Obj, thisClass.Value[i+1].ObjLocation);
+            thisClass.Value[i+1].SetObj(prevObj, prevObjLocation);
             thisClass.moved = true;
             CallObjFunctionIfExists(thisClass.Obj, "Update");
         });

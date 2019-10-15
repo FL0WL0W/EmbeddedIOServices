@@ -197,7 +197,7 @@ class Config extends ConfigBase {
                 if(variableRowIniProperty.BitOffset || variableRowIniProperty.BitSize) {
                     var bitSize = variableRowIniProperty.BitSize;
                     if(!bitSize) {
-                        if(variableRowConfig instanceof ConfigBoolean)
+                        if(variableRowConfig.GetType() === "bool")
                             bitSize = 1;
                         else
                             bitSize = subArrayBuffer.byteLength * 8;
@@ -256,7 +256,7 @@ class Config extends ConfigBase {
                     var bitSize = variableRowIniProperty.BitSize;
                     var byteSize = 1;
                     if(!bitSize) {
-                        if(variableRowConfig instanceof ConfigBoolean)
+                        if(variableRowConfig.GetType() === "bool")
                             bitSize = 1;
                         else {
                             if(variableRowConfig.GetType()) {
@@ -336,6 +336,7 @@ class Config extends ConfigBase {
                     case "int64":
                     case "float":
                     case "variable":
+                    case "bool":
                     default:
                         if(!this[variableRowKey] || !(this[variableRowKey] instanceof ConfigNumber)) {
                             this[variableRowKey] = new ConfigNumber();
@@ -344,11 +345,6 @@ class Config extends ConfigBase {
                     case "formula":
                         if(!this[variableRowKey] || !(this[variableRowKey] instanceof ConfigFormula)) {
                             this[variableRowKey] = new ConfigFormula();
-                        }
-                        break;
-                    case "bool":
-                        if(!this[variableRowKey] || !(this[variableRowKey] instanceof ConfigBoolean)) {
-                            this[variableRowKey] = new ConfigBoolean();
                         }
                         break;
                 }
@@ -547,6 +543,8 @@ class ConfigNumber extends ConfigBase {
                 return new Float32Array([val * valMult]).buffer;
             case "variable":
                 return new ArrayBuffer(0);
+            case "bool":
+                return new Uint8Array([this.GetObjProperty().Value & 0x01]).buffer;
         }
     }
     SetArrayBuffer(arrayBuffer) {
@@ -594,6 +592,10 @@ class ConfigNumber extends ConfigBase {
                 val = new Float32Array(arrayBuffer.slice(0,4))[0] / valMult;
                 size = 4;
                 break;
+            case "bool":
+                val = new Uint8Array(arrayBuffer)[0] & 0x01;
+                size = 4;
+                break;
         }
 
         if(!this.GetStatic()) {
@@ -631,31 +633,6 @@ class ConfigNumber extends ConfigBase {
             }
         } else {
             objProperty.Value = undefined;
-        }
-
-        return objProperty;
-    }
-}
-
-class ConfigBoolean extends ConfigBase {
-    GetArrayBuffer() {
-        return new Uint8Array([this.GetObjProperty().Value & 0x01]).buffer;
-    }
-    SetArrayBuffer(arrayBuffer) {
-        this.GetObjProperty().Value = new Uint8Array(arrayBuffer)[0] & 0x01;
-        return 1;
-    }
-    InitProperty() {
-        var objProperty = super.InitProperty();
-        if(!objProperty)
-            return false;
-
-        var iniProperty = this.GetIniProperty();
-        if(objProperty.Value === undefined && iniProperty.Value !== undefined) {
-            objProperty.Value = iniProperty.Value;
-        }
-        if(objProperty.Value === undefined) {
-            objProperty.Value = false;
         }
 
         return objProperty;
@@ -1277,6 +1254,7 @@ function GetIniPropertyMin() {
             case "uint16":
             case "uint32":
             case "uint64":
+            case "bool":
                 min = 0;
                 break;
             case "int8":
@@ -1310,6 +1288,8 @@ function GetIniPropertyMax() {
     }
     if(max === undefined) {
         switch(this.GetType()) {
+            case "bool":
+                max = 1;
             case "uint8":
                 max = 255 / this.GetValueMultiplier();
                 break;
