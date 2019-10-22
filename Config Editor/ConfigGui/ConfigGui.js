@@ -1020,15 +1020,8 @@ class ConfigNamedListGui extends ConfigNamedList {
     ObjUpdateEvent() {
         super.ObjUpdateEvent();
         var tableArrayLength = this.GetTableArrayLength();
-        if(this.CurrentTableArrayLength > tableArrayLength || this.moved)
-        {
-            $("#span" + this.GUID).replaceWith(this.GetHtml());
-        }
-        else
-        {
-            for(var i = 0; i < this.Value.length; i++) {
-                $("#span" + this.GUID + "-" + i).hide();
-            }
+        
+        if(this.CurrentTableArrayLength !== tableArrayLength) {
             for(var i = 0; i < tableArrayLength; i++) {
                 if(!(this.Value[i] instanceof ConfigGui)) {
                     var prev = this.Value[i];
@@ -1045,32 +1038,50 @@ class ConfigNamedListGui extends ConfigNamedList {
                             valueObjProperty.Name = "I" + i;
                     }
                 }
-                if(!($("#span" + this.GUID + "-" + i).length))
-                {
-                    var valueObjProperty = this.Value[i].GetObjProperty();
-                    $("#span" + this.GUID + "container").append(this.GetRow(i));
-                }
-                else
-                    $("#span" + this.GUID + "-" + i).show();
             }
+            
+            $("#left"+this.GUID).html(this.GetLeft());
+            var selected = parseInt($("#" + this.GUID + "-Selection").val());
+            $("#right"+this.GUID).html(this.GetRight(selected));
         }
-        this.moved = false;
+
         this.CurrentTableArrayLength = tableArrayLength;
     }
 
-    GetRow(i)
-    {
-        var valueObjProperty = this.Value[i].GetObjProperty();
-        return "<span id=\"span" + this.GUID + "-" + i + "\" class=\"namedListRow\">"+
-            "<span data-i=" + i + " class=\"namedListOpen\" style=\"display: inline-block;\">⮞</span>" + 
-            "<input data-i=" + i + " class=\"namedListName\" style=\"display: inline-block;\" type=\"textbox\" value=\"" + valueObjProperty.Name + "\"><span class=\"sameLineSpacer\"></span>" +
-            "<span data-i=" + i + " class=\"namedListDelete\" style=\"display: inline-block;\">-</span>" + 
-            "<span data-i=" + i + " class=\"namedListUp\" style=\"display: inline-block;\">🠕</span>" + 
-            "<span data-i=" + i + " class=\"namedListDown\" style=\"display: inline-block;\">🠗</span>" + 
-                "<span id=\"span" + this.GUID + "-" + i + "container\" style=\"display: none;\">" +
-                    "<span class=\"sameLineSpacer\"></span><span style=\"display: inline-block;\">" + this.Value[i].GetHtml() + "</span>"+
-                "</span>"+
-            "</span>";
+    GetLeft() {
+        //action bar
+        var template = "<span>";
+        template += "<span id=\""+this.GUID+"-Add\" class=\"namedListOperation\" style=\"padding: 3px 7px;\">+</span>";
+        template += "<span id=\""+this.GUID+"-Delete\" class=\"namedListOperation\" style=\"padding: 3px 8px;\">-</span>";
+        template += "<span id=\""+this.GUID+"-Up\" class=\"namedListOperation\" style=\"padding: 3px 4px;\">⮝</span>";
+        template += "<span id=\""+this.GUID+"-Down\" class=\"namedListOperation\" style=\"padding: 3px 4px;\">⮟</span>";
+        template += "</span>";
+
+        //select list
+        template += "<select id=\""+this.GUID+"-Selection\" size = 20 style=\"width: 150px;\">";
+        var selected = parseInt($("#" + this.GUID + "-Selection").val());
+        for(var i = 0; i < this.GetTableArrayLength(); i++) {
+            var valueObjProperty = this.Value[i].GetObjProperty();
+            template += "<option " + (selected === i? "selected" : "") + " value=" + i + ">" + valueObjProperty.Name + "</option>";
+        }
+        template += "</select>";
+
+        return template;
+    }
+
+    GetRight(selected) {
+        var template = "";
+        for(var i = 0; i < this.Value.length; i++) {
+            template += "<span id=\""+this.GUID+"-Work" + i + "\" " + (i===selected? "" : "style=\"display: none;\"") + ">";
+            var valueObjProperty = this.Value[i].GetObjProperty();
+            template += "<input id=\""+this.GUID+"-Name\" data-i=" + i + " type=\"textbox\" value=\"" + valueObjProperty.Name + "\">";
+            template += "<span class=\"configContainer\">";
+            template += this.Value[i].GetHtml();
+            template += "</span>";
+            template += "</span>";
+        }
+
+        return template;
     }
 
     GetHtml() {
@@ -1082,86 +1093,99 @@ class ConfigNamedListGui extends ConfigNamedList {
 
         var template = "<span id=\"span"+this.GUID+"\">";
 
-        template += "<span id=\"span"+this.GUID+"container\">";
-        for(var i = 0; i < this.GetTableArrayLength(); i++) {
-            template += this.GetRow(i);
-        }
+        //left column
+        template += "<span id=\"left"+this.GUID+"\" style=\"display: inline-block; vertical-align:top;\">";
+            template += this.GetLeft();
         template += "</span>";
-
-        template += "<span id=\""+this.GUID+"Add\" class=\"namedListAdd\">+</span>";
+        //right column
+        var selected = parseInt($("#" + this.GUID + "-Selection option:selected").val());
+        template += "<span id=\"right"+this.GUID+"\" style=\"display: inline-block; vertical-align:top; padding: 10px; min-width: 500px;\">";
+            template += this.GetRight(selected);
+        template += "</span>";
 
         var thisClass = this;
         $(document).off("click."+this.GUID);
-        $(document).on("click."+this.GUID, "#" + this.GUID + "Add", function(){
+        $(document).on("click."+this.GUID, "#" + this.GUID + "-Add", function(){
             thisClass.GetObjProperty().Length++;
             CallObjFunctionIfExists(thisClass.Obj, "Update");
         });
-        $(document).on("click."+this.GUID, "#span" + this.GUID + " .namedListOpen", function(){
-            var i = $(this).data("i");
-            $("#span" + thisClass.GUID + "-" + i + "container").show();
-            $(this).replaceWith("<span data-i=" + i + " class=\"namedListClose\"style=\"display: inline-block;\">⮟</span>")
-        });
-        $(document).on("click."+this.GUID, "#span" + this.GUID + " .namedListClose", function(){
-            var i = $(this).data("i");
-            $("#span" + thisClass.GUID + "-" + i + "container").hide();
-            $(this).replaceWith("<span data-i=" + i + " class=\"namedListOpen\"style=\"display: inline-block;\">⮞</span>")
-        });
-        $(document).on("click."+this.GUID, "#span" + this.GUID + " .namedListDelete", function(){
-            var i = $(this).data("i");
-            thisClass.Value.splice(i, 1);
-            thisClass.GetObjProperty().Length--;
+        $(document).on("click."+this.GUID, "#" + this.GUID + "-Delete", function(){
+            var selected = parseInt($("#" + thisClass.GUID + "-Selection option:selected").val());
+
+            thisClass.Value = [];
+            objProperty = thisClass.GetObjProperty();
+            objProperty.Value.splice(selected, 1);
+            objProperty.Length--;
             CallObjFunctionIfExists(thisClass.Obj, "Update");
         });
-        $(document).on("click."+this.GUID, "#span" + this.GUID + " .namedListUp", function(){
-            var i = $(this).data("i");
-            if(i===0)
-                return;
-            var temp = thisClass.Value[i-1];
-            thisClass.Value[i-1] = thisClass.Value[i];
-            thisClass.Value[i] = temp;
-            var objProperty = thisClass.GetObjProperty();
-            if(objProperty !== undefined && objProperty.Value !== undefined)
-                objProperty = objProperty.Value;
-            objProperty[i].iterator--;
-            objProperty[i-1].iterator++;
-            temp = objProperty[i-1];
-            objProperty[i-1] = objProperty[i];
-            objProperty[i] = temp;
-            var prevObj = thisClass.Value[i].Obj;
-            var prevObjLocation = thisClass.Value[i].ObjLocation;
-            thisClass.Value[i].SetObj(thisClass.Value[i-1].Obj, thisClass.Value[i-1].ObjLocation);
-            thisClass.Value[i-1].SetObj(prevObj, prevObjLocation);
-            thisClass.moved = true;
-            CallObjFunctionIfExists(thisClass.Obj, "Update");
-        });
-        $(document).on("click."+this.GUID, "#span" + this.GUID + " .namedListDown", function(){
-            var i = $(this).data("i");
-            if(i===thisClass.Value.length-1)
-                return;
-            var temp = thisClass.Value[i+1];
-            thisClass.Value[i+1] = thisClass.Value[i];
-            thisClass.Value[i] = temp;
-            var objProperty = thisClass.GetObjProperty();
-            if(objProperty !== undefined && objProperty.Value !== undefined)
-                objProperty = objProperty.Value;
-            objProperty[i].iterator++;
-            objProperty[i+1].iterator--;
-            temp = objProperty[i+1];
-            objProperty[i+1] = objProperty[i];
-            objProperty[i] = temp;
-            var prevObj = thisClass.Value[i].Obj;
-            var prevObjLocation = thisClass.Value[i].ObjLocation;
-            thisClass.Value[i].SetObj(thisClass.Value[i+1].Obj, thisClass.Value[i+1].ObjLocation);
-            thisClass.Value[i+1].SetObj(prevObj, prevObjLocation);
-            thisClass.moved = true;
-            CallObjFunctionIfExists(thisClass.Obj, "Update");
-        });
+
         $(document).off("change."+this.GUID);
-        $(document).on("change."+this.GUID, "#span" + this.GUID + " .namedListName", function(){
+        $(document).on("change."+this.GUID, "#" + this.GUID + "-Selection", function(){
+            $("#right"+thisClass.GUID).children().hide();
+            $("#"+thisClass.GUID+"-Work" + $(this).children("option:selected").val()).show();
+        });
+        $(document).on("change."+this.GUID, "#" + this.GUID + "-Name", function(){
             var i = $(this).data("i");
-            thisClass.Value[i].GetObjProperty().Name = $(this).val();
+            var name = $(this).val();
+            thisClass.Value[i].GetObjProperty().Name = name;
+            $("#" + thisClass.GUID + "-Selection option[value=" + i + "]").text(name);
             CallObjFunctionIfExists(thisClass.Obj, "Update");
         });
+
+        // $(document).on("click."+this.GUID, "#span" + this.GUID + " .namedListOpen", function(){
+        //     var i = $(this).data("i");
+        //     $("#span" + thisClass.GUID + "-" + i + "container").show();
+        //     $(this).replaceWith("<span data-i=" + i + " class=\"namedListClose\"style=\"display: inline-block;\">⮟</span>")
+        // });
+        // $(document).on("click."+this.GUID, "#span" + this.GUID + " .namedListClose", function(){
+        //     var i = $(this).data("i");
+        //     $("#span" + thisClass.GUID + "-" + i + "container").hide();
+        //     $(this).replaceWith("<span data-i=" + i + " class=\"namedListOpen\"style=\"display: inline-block;\">⮞</span>")
+        // });
+        // $(document).on("click."+this.GUID, "#span" + this.GUID + " .namedListUp", function(){
+        //     var i = $(this).data("i");
+        //     if(i===0)
+        //         return;
+        //     var temp = thisClass.Value[i-1];
+        //     thisClass.Value[i-1] = thisClass.Value[i];
+        //     thisClass.Value[i] = temp;
+        //     var objProperty = thisClass.GetObjProperty();
+        //     if(objProperty !== undefined && objProperty.Value !== undefined)
+        //         objProperty = objProperty.Value;
+        //     objProperty[i].iterator--;
+        //     objProperty[i-1].iterator++;
+        //     temp = objProperty[i-1];
+        //     objProperty[i-1] = objProperty[i];
+        //     objProperty[i] = temp;
+        //     var prevObj = thisClass.Value[i].Obj;
+        //     var prevObjLocation = thisClass.Value[i].ObjLocation;
+        //     thisClass.Value[i].SetObj(thisClass.Value[i-1].Obj, thisClass.Value[i-1].ObjLocation);
+        //     thisClass.Value[i-1].SetObj(prevObj, prevObjLocation);
+        //     thisClass.moved = true;
+        //     CallObjFunctionIfExists(thisClass.Obj, "Update");
+        // });
+        // $(document).on("click."+this.GUID, "#span" + this.GUID + " .namedListDown", function(){
+        //     var i = $(this).data("i");
+        //     if(i===thisClass.Value.length-1)
+        //         return;
+        //     var temp = thisClass.Value[i+1];
+        //     thisClass.Value[i+1] = thisClass.Value[i];
+        //     thisClass.Value[i] = temp;
+        //     var objProperty = thisClass.GetObjProperty();
+        //     if(objProperty !== undefined && objProperty.Value !== undefined)
+        //         objProperty = objProperty.Value;
+        //     objProperty[i].iterator++;
+        //     objProperty[i+1].iterator--;
+        //     temp = objProperty[i+1];
+        //     objProperty[i+1] = objProperty[i];
+        //     objProperty[i] = temp;
+        //     var prevObj = thisClass.Value[i].Obj;
+        //     var prevObjLocation = thisClass.Value[i].ObjLocation;
+        //     thisClass.Value[i].SetObj(thisClass.Value[i+1].Obj, thisClass.Value[i+1].ObjLocation);
+        //     thisClass.Value[i+1].SetObj(prevObj, prevObjLocation);
+        //     thisClass.moved = true;
+        //     CallObjFunctionIfExists(thisClass.Obj, "Update");
+        // });
 
         return template + "</span>";
     }
