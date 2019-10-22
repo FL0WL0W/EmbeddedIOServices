@@ -25,7 +25,7 @@ uint16									xx(InstanceID of Variable Y)
 #define OPERATION_MATH_H
 namespace Operations
 {
-	const enum MathOperation : uint8_t
+	enum MathOperation : uint8_t
 	{
 		ADD = 0,
 		SUBTRACT = 1,

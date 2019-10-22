@@ -5,8 +5,8 @@
 void cl::RegisterFactory()                                         				\
 {                                                           					\
     if(factoryLocator.Locate(id) == 0)                                       	\
-        factoryLocator.Register(id, Create); 									\
-    Variables::Variable_Operation<##__VA_ARGS__>::RegisterFactory(id);          \
+        factoryLocator.Register(id, reinterpret_cast<void *>(Create));			\
+    Variables::Variable_Operation<__VA_ARGS__>::RegisterFactory(id);            \
 }     
 
 #ifndef IOPERATION_H

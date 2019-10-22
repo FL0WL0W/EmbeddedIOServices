@@ -1132,16 +1132,6 @@ class ConfigNamedListGui extends ConfigNamedList {
             CallObjFunctionIfExists(thisClass.Obj, "Update");
         });
 
-        // $(document).on("click."+this.GUID, "#span" + this.GUID + " .namedListOpen", function(){
-        //     var i = $(this).data("i");
-        //     $("#span" + thisClass.GUID + "-" + i + "container").show();
-        //     $(this).replaceWith("<span data-i=" + i + " class=\"namedListClose\"style=\"display: inline-block;\">⮟</span>")
-        // });
-        // $(document).on("click."+this.GUID, "#span" + this.GUID + " .namedListClose", function(){
-        //     var i = $(this).data("i");
-        //     $("#span" + thisClass.GUID + "-" + i + "container").hide();
-        //     $(this).replaceWith("<span data-i=" + i + " class=\"namedListOpen\"style=\"display: inline-block;\">⮞</span>")
-        // });
         // $(document).on("click."+this.GUID, "#span" + this.GUID + " .namedListUp", function(){
         //     var i = $(this).data("i");
         //     if(i===0)
