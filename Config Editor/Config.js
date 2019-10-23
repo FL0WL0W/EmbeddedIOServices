@@ -83,6 +83,10 @@ class ConfigBase {
 
         this.InitProperty();
     }
+    DeAttachObjUpdateEvent() {
+        if(this.Obj)
+            RemoveFunctionFromObjToObj(this.Obj, "Update", this, "ObjUpdateEvent");
+    }
     ObjUpdateEvent() { }
     InitProperty() {
         if(!this.Obj || !this.Ini)
@@ -407,6 +411,18 @@ class Config extends ConfigBase {
         
         return objProperty;
     }
+    DeAttachObjUpdateEvent() {
+        super.DeAttachObjUpdateEvent();
+        var iniProperty = this.GetIniProperty();
+        for(var variableRowIndex in iniProperty.Variables) {
+            var variableRow = iniProperty.Variables[variableRowIndex];
+            var variableRowKey = Object.keys(variableRow)[0];
+
+            if(this[variableRowKey]) {
+                this[variableRowKey].DeAttachObjUpdateEvent();
+            } 
+        }
+    }
 }
 
 class ConfigSelection extends ConfigBase {
@@ -478,6 +494,10 @@ class ConfigSelection extends ConfigBase {
         this.Value.SetObj(this.Obj, this.ObjLocation + "/Value")
         
         return objProperty;
+    }
+    DeAttachObjUpdateEvent() {
+        super.DeAttachObjUpdateEvent();
+        this.Value.DeAttachObjUpdateEvent();
     }
 }
 
@@ -1205,6 +1225,21 @@ function AttachFunctionFromObjToObj(obj, functionName, handleObj, handleFunction
 
     if(!handleAlreadyExists)
         obj[functionName + "HandlesEFJ"].push({ Obj: handleObj, FunctionName: handleFunctionName});
+}
+function RemoveFunctionFromObjToObj(obj, functionName, handleObj, handleFunctionName) {
+    if(!obj[functionName] || !obj[functionName + "HandlesEFJ"]){
+        return;
+    }
+
+    var handlePosition = -1;
+    $.each(obj[functionName + "HandlesEFJ"], function(index, handle) {
+        if(handle.Obj === handleObj && handle.FunctionName === handleFunctionName) {
+            handlePosition = index;
+        }
+    });
+
+    if(handlePosition > -1) 
+        obj[functionName + "HandlesEFJ"].splice(handlePosition, 1);
 }
 function CallObjFunctionIfExists(obj, functionName) {
     if(obj[functionName]) {

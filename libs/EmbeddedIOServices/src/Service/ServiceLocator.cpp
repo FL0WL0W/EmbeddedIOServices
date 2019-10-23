@@ -1,4 +1,5 @@
 #include "Service/ServiceLocator.h"
+#include <cstring>
 
 #ifdef SERVICELOCATOR_H
 namespace Service
