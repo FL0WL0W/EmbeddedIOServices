@@ -121,29 +121,29 @@ class ConfigBase {
             return val; 
         val = parseInt(val);
         switch(val){
-            case 0:
-                return "uint8";
             case 1:
-                return "uint16";
+                return "uint8";
             case 2:
-                return "uint32";
+                return "uint16";
             case 3:
-                return "uint64";
+                return "uint32";
             case 4:
-                return "int8";
+                return "uint64";
             case 5:
-                return "int16";
+                return "int8";
             case 6:
-                return "int32";
+                return "int16";
             case 7:
-                return "int64";
+                return "int32";
             case 8:
-                return "float";
+                return "int64";
             case 9:
-                return "double";
+                return "float";
             case 10:
-                return "bool";
+                return "double";
             case 11:
+                return "bool";
+            case 12:
                 return "uint32";
         }
     }
