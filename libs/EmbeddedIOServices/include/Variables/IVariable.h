@@ -20,7 +20,7 @@ namespace Variables
 			RET *variable = serviceLocator->LocateAndCast<RET>(BUILDER_VARIABLE, variableId);
 			if(variable == 0)
 			{
-				variable = (RET *)calloc(sizeof(RET), sizeof(RET));
+				variable = (RET *)calloc(1, sizeof(RET));
 				serviceLocator->Register(BUILDER_VARIABLE, variableId, variable);
 			}
 
