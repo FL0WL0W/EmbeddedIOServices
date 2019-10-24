@@ -87,6 +87,9 @@ class ConfigBase {
         if(this.Obj)
             RemoveFunctionFromObjToObj(this.Obj, "Update", this, "ObjUpdateEvent");
     }
+    DeAttach(){
+        this.DeAttachObjUpdateEvent();
+    }
     ObjUpdateEvent() { }
     InitProperty() {
         if(!this.Obj || !this.Ini)
@@ -411,15 +414,15 @@ class Config extends ConfigBase {
         
         return objProperty;
     }
-    DeAttachObjUpdateEvent() {
-        super.DeAttachObjUpdateEvent();
+    DeAttach() {
+        super.DeAttach();
         var iniProperty = this.GetIniProperty();
         for(var variableRowIndex in iniProperty.Variables) {
             var variableRow = iniProperty.Variables[variableRowIndex];
             var variableRowKey = Object.keys(variableRow)[0];
 
             if(this[variableRowKey]) {
-                this[variableRowKey].DeAttachObjUpdateEvent();
+                this[variableRowKey].DeAttach();
             } 
         }
     }
@@ -495,9 +498,9 @@ class ConfigSelection extends ConfigBase {
         
         return objProperty;
     }
-    DeAttachObjUpdateEvent() {
-        super.DeAttachObjUpdateEvent();
-        this.Value.DeAttachObjUpdateEvent();
+    DeAttach() {
+        super.DeAttach();
+        this.Value.DeAttach();
     }
 }
 
