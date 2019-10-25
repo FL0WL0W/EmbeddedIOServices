@@ -91,7 +91,7 @@ struct ScalarVariable
     ScalarVariable(bool variable)
     {
         Type = ScalarVariableType::BOOLEAN;
-        Value = *reinterpret_cast<uint64_t *>(&variable);
+        Value = variable;
     }
     static ScalarVariable FromTick(uint32_t tick)
     {

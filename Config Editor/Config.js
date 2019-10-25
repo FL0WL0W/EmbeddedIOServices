@@ -515,7 +515,7 @@ class ConfigNumber extends ConfigBase {
         if(!this.GetStatic()) {
             var objProperty = this.GetObjProperty();
 
-            var val = parseInt(this.GetValue());
+            var val = parseFloat(this.GetValue());
             if(!isNaN(val)) {
                 switch(this.GetType()) {
                     case "uint8":

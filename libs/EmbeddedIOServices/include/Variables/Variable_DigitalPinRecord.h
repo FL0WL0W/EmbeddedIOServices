@@ -11,7 +11,7 @@
 /*
 To use this variable
 uint16									7001(BUILDER_VARIABLE)
-uint16									12(FactoryID)
+uint16									5(FactoryID)
 uint16									xx(InstanceID of Variable)
 uint8 									length
 uint16 									pin

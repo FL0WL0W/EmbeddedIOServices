@@ -9,7 +9,10 @@ namespace Variables
 		_timerService = timerService;
 		_pin = pin;
 		_inverted = inverted;
-		_record = record;
+		if(record != 0)
+			_record = record;
+		else
+			_record = new Record();
 		if(_record->Length != length)
 		{
 			_record->Initialize(length);
@@ -48,9 +51,9 @@ namespace Variables
 		const uint16_t pin = IService::CastAndOffset<uint16_t>(config, sizeOut);
 		const bool inverted = IService::CastAndOffset<bool>(config, sizeOut);
 					
-		Variable_DigitalPinRecord *variableService = new Variable_DigitalPinRecord(GetOrCreateVariable<Record>(serviceLocator, variableId), serviceLocator->LocateAndCast<HardwareAbstraction::IDigitalService>(DIGITAL_SERVICE_ID), serviceLocator->LocateAndCast<HardwareAbstraction::ITimerService>(TIMER_SERVICE_ID), length, pin, inverted);
+		Variable_DigitalPinRecord *variableService = new Variable_DigitalPinRecord(serviceLocator->LocateAndCast<Record>(BUILDER_VARIABLE, variableId), serviceLocator->LocateAndCast<HardwareAbstraction::IDigitalService>(DIGITAL_SERVICE_ID), serviceLocator->LocateAndCast<HardwareAbstraction::ITimerService>(TIMER_SERVICE_ID), length, pin, inverted);
 
-		serviceLocator->Register(BUILDER_VARIABLE, variableId, variableService->_record);
+		serviceLocator->Register(BUILDER_VARIABLE, variableId, &variableService->_record);
 
 		return variableService;
 	}

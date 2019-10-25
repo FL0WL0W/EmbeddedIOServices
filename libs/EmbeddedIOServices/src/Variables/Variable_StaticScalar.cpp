@@ -38,7 +38,7 @@ namespace Variables
 				staticValue = new ScalarVariable(IService::CastAndOffset<uint32_t>(config, sizeOut));
 				break;
 			case ScalarVariableType::TICK:
-				staticValue = &ScalarVariable::FromTick(IService::CastAndOffset<uint32_t>(config, sizeOut));
+				//staticValue = &ScalarVariable::FromTick(IService::CastAndOffset<uint32_t>(config, sizeOut));
 				break;
 			case ScalarVariableType::UINT64:
 				staticValue = new ScalarVariable(IService::CastAndOffset<uint64_t>(config, sizeOut));
@@ -66,7 +66,7 @@ namespace Variables
 				break;
 		}
 		
-		Variable_StaticScalar *variableService = new Variable_StaticScalar(variable, staticValue);
+		Variable_StaticScalar *variableService = new Variable_StaticScalar(variable, *staticValue);
         serviceLocator->LocateAndCast<CallBackGroup>(MAIN_LOOP_CALL_BACK_GROUP)->Add(new CallBack<Variable_StaticScalar>(variableService, &Variable_StaticScalar::TranslateValue));
 
 		return variableService;
