@@ -16,12 +16,12 @@
                 $('#chkAdvanced').change(function(){
                     ShowAdvanced = this.checked;
                                         
-                    $('#workspace').html(wrapInConfigContainerGui("", b.GetHtml()));
+                    $('#workspace').html(b.GetHtml());
                 });
-                $('#workspace').html(wrapInConfigContainerGui("", b.GetHtml()));
+                $('#workspace').html(b.GetHtml());
                 $("#btnNew").click(function(){
                     b.SetObj();
-                    $('#workspace').html(wrapInConfigContainerGui("", b.GetHtml()));
+                    $('#workspace').html(b.GetHtml());
                 });
                 $("#btnSaveBin").click(function(){
                     AutoIncrement = {};
@@ -38,7 +38,7 @@
                         }
 
                         b.SetArrayBuffer(evt.target.result);
-                        $('#workspace').html(wrapInConfigContainerGui("", b.GetHtml()));
+                        $('#workspace').html(b.GetHtml());
                         $("#btnLoad").val(undefined);
                     };
                     
@@ -58,7 +58,7 @@
                         }
 
                         b.SetObj(JSON.parse(evt.target.result));
-                        $('#workspace').html(wrapInConfigContainerGui("", b.GetHtml()));
+                        $('#workspace').html(b.GetHtml());
                         $("#btnLoadIni").val(undefined);
                     };
                     
