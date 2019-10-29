@@ -47,7 +47,7 @@ namespace UnitTests
 		// ASSERT_EQ(false, task1->Scheduled) << "first callback still set as scheduled";
 		// ASSERT_EQ(true, task2->Scheduled) << "second callback not still scheduled";
 		ASSERT_EQ(1, timerTestClassInstance->lastCallBack) << "first callback not called";
-		ASSERT_EQ((void *)task2, (void *)timerService.FirstTask) << "Schedule not set to second after first task called";
+		ASSERT_EQ(false, timerService.FirstTask->Scheduled) << "Schedule not set to second after first task called";
 
 		EXPECT_CALL(timerService, GetTick())
 			.WillRepeatedly(Return(150));
@@ -79,13 +79,13 @@ namespace UnitTests
 			.WillRepeatedly(Return(3000000000));
 		timerService.ReturnCallBack();
 		ASSERT_EQ(1, timerTestClassInstance->lastCallBack) << "first callback not called";
-		ASSERT_EQ((void *)task2, (void *)timerService.FirstTask) << "Schedule tick not set to second overflow task after first task called";
+		ASSERT_EQ(false, timerService.FirstTask->Scheduled) << "Schedule tick not set to second overflow task after first task called";
 
 		EXPECT_CALL(timerService, GetTick())
 			.WillRepeatedly(Return(300));
 		timerService.ReturnCallBack();
 		ASSERT_EQ(2, timerTestClassInstance->lastCallBack) << "second callback not called";
-		ASSERT_EQ(0, timerService.FirstTask) << "Schedule tick not set to second overflow task after second task called";
+		ASSERT_EQ(false, timerService.FirstTask->NextTask->Scheduled) << "Schedule tick not set to second overflow task after second task called";
 
 		//make sure another callback doesnt mess it up
 		timerTestClassInstance->lastCallBack = 0;
