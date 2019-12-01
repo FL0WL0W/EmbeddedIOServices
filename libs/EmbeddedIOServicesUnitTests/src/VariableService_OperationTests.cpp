@@ -32,7 +32,7 @@ namespace UnitTests
 		{
 			_serviceLocator = new ServiceLocator();
 			
-			unsigned int expectedSize = sizeof(uint16_t) * 4;
+			unsigned int expectedSize = sizeof(uint16_t) * 4 + sizeof(bool);
 			void *config = malloc(expectedSize);
 			void *buildConfig = config;
 
@@ -44,6 +44,10 @@ namespace UnitTests
 			*((uint16_t *)buildConfig) = 1;
 			buildConfig = (void *)(((uint16_t *)buildConfig) + 1);
 
+			//immediate false
+			*((bool *)buildConfig) = false;
+			buildConfig = (void *)(((bool *)buildConfig) + 1);
+
 			//operation id 1
 			*((uint16_t *)buildConfig) = 1;
 			buildConfig = (void *)(((uint16_t *)buildConfig) + 1);
@@ -52,13 +56,17 @@ namespace UnitTests
 			*((uint16_t *)buildConfig) = 2;
 			buildConfig = (void *)(((uint16_t *)buildConfig) + 1);
 			
-			unsigned int expectedSize2 = sizeof(uint16_t) * 3;
+			unsigned int expectedSize2 = sizeof(uint16_t) * 3 + sizeof(bool);
 			void *config2 = malloc(expectedSize2);
 			buildConfig = config2;
 
 			//factoryId 10
 			*((uint16_t *)buildConfig) = 10;
 			buildConfig = (void *)(((uint16_t *)buildConfig) + 1);
+
+			//immediate false
+			*((bool *)buildConfig) = false;
+			buildConfig = (void *)(((bool *)buildConfig) + 1);
 
 			//operation id 2
 			*((uint16_t *)buildConfig) = 2;

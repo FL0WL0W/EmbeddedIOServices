@@ -32,6 +32,10 @@ namespace Variables
 	struct Record
 	{
 		public:
+		Record() 
+		{
+			Length = 0;
+		}
 		void Initialize(uint8_t length)
 		{
 			Length = length;
