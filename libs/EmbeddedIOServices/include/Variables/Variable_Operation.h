@@ -43,9 +43,6 @@ namespace Variables
 
 		static IVariable *Create(Service::ServiceLocator * const &serviceLocator, const void *config, unsigned int &sizeOut)
 		{
-			config = reinterpret_cast<const uint16_t *>(config) - 1;
-			sizeOut -= sizeof(uint16_t);
-			uint16_t factoryId = Service::IService::CastAndOffset<uint16_t>(config, sizeOut);
 			uint32_t variableId = Service::IService::CastAndOffset<uint16_t>(config, sizeOut);
 			bool immediate = Service::IService::CastAndOffset<bool>(config, sizeOut);
 			
@@ -55,11 +52,13 @@ namespace Variables
 			
 			if(immediate)
 			{
-				Operations::IOperationBase*(*factory)(Service::ServiceLocator * const &, const void *, unsigned int &) = Operations::IOperationBase::GetFactory(factoryId);
+				Operations::IOperationBase*(*factory)(Service::ServiceLocator * const &, const void *, unsigned int &) = Operations::IOperationBase::GetFactory(Service::IService::CastAndOffset<uint16_t>(config, sizeOut));
 				
 				if(factory == 0)
 					return 0;
-				operation = reinterpret_cast<Operations::IOperation<RET, PARAMS...> *>(factory(serviceLocator, config, sizeOut));
+		    	unsigned int size = 0;
+				operation = reinterpret_cast<Operations::IOperation<RET, PARAMS...> *>(factory(serviceLocator, config, size));
+		    	OffsetConfig(config, sizeOut, size);
 			}
 			else 
 			{
