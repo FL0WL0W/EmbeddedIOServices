@@ -1,4 +1,3 @@
-#include "Service/HardwareAbstractionServiceBuilder.h"
 #include "Operations/IOperation.h"
 #include "Service/IService.h"
 #include "Service/ServiceLocator.h"
@@ -20,17 +19,16 @@ uint16									xx(InstanceID of Variable Result)
 uint16									xx(InstanceID of Operation)
 */
 
-#ifndef OPERATION_GETTICK_H
-#define OPERATION_GETTICK_H
+#ifndef OPERATION_STATICSCALAR_H
+#define OPERATION_STATICSCALAR_H
 namespace Operations
 {
-	class Operation_GetTick : public IOperation<ScalarVariable>
+	class Operation_StaticScalar : public IOperation<ScalarVariable>
 	{
 	protected:
-		static Operation_GetTick *_instance;
-		HardwareAbstraction::ITimerService *_timerService;
+        ScalarVariable _staticValue;
 	public:		
-        Operation_GetTick(HardwareAbstraction::ITimerService *timerService);
+        Operation_StaticScalar(const ScalarVariable &staticValue);
 
 		ScalarVariable Execute() override;
 
