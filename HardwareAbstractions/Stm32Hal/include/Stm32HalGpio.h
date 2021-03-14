@@ -1,30 +1,28 @@
 #include "Stm32HalConf.h"
-#include "HardwareAbstraction/ICallBack.h"
+#include "ICallBack.h"
 #include "stdint.h"
-
-using namespace HardwareAbstraction;
 
 #ifndef STM32HALGPIO_H
 #define STM32HALGPIO_H
 
 namespace Stm32
 {
-    extern ICallBack *ExternatlInterrupt0Callback;
-    extern ICallBack *ExternatlInterrupt1Callback;
-    extern ICallBack *ExternatlInterrupt2Callback;
-    extern ICallBack *ExternatlInterrupt3Callback;
-    extern ICallBack *ExternatlInterrupt4Callback;
-    extern ICallBack *ExternatlInterrupt5Callback;
-    extern ICallBack *ExternatlInterrupt6Callback;
-    extern ICallBack *ExternatlInterrupt7Callback;
-    extern ICallBack *ExternatlInterrupt8Callback;
-    extern ICallBack *ExternatlInterrupt9Callback;
-    extern ICallBack *ExternatlInterrupt10Callback;
-    extern ICallBack *ExternatlInterrupt11Callback;
-    extern ICallBack *ExternatlInterrupt12Callback;
-    extern ICallBack *ExternatlInterrupt13Callback;
-    extern ICallBack *ExternatlInterrupt14Callback;
-    extern ICallBack *ExternatlInterrupt15Callback;
+    extern EmbeddedIOServices::ICallBack *ExternatlInterrupt0Callback;
+    extern EmbeddedIOServices::ICallBack *ExternatlInterrupt1Callback;
+    extern EmbeddedIOServices::ICallBack *ExternatlInterrupt2Callback;
+    extern EmbeddedIOServices::ICallBack *ExternatlInterrupt3Callback;
+    extern EmbeddedIOServices::ICallBack *ExternatlInterrupt4Callback;
+    extern EmbeddedIOServices::ICallBack *ExternatlInterrupt5Callback;
+    extern EmbeddedIOServices::ICallBack *ExternatlInterrupt6Callback;
+    extern EmbeddedIOServices::ICallBack *ExternatlInterrupt7Callback;
+    extern EmbeddedIOServices::ICallBack *ExternatlInterrupt8Callback;
+    extern EmbeddedIOServices::ICallBack *ExternatlInterrupt9Callback;
+    extern EmbeddedIOServices::ICallBack *ExternatlInterrupt10Callback;
+    extern EmbeddedIOServices::ICallBack *ExternatlInterrupt11Callback;
+    extern EmbeddedIOServices::ICallBack *ExternatlInterrupt12Callback;
+    extern EmbeddedIOServices::ICallBack *ExternatlInterrupt13Callback;
+    extern EmbeddedIOServices::ICallBack *ExternatlInterrupt14Callback;
+    extern EmbeddedIOServices::ICallBack *ExternatlInterrupt15Callback;
     
     extern bool ExternatlInterrupt0DeleteOnExecution;
     extern bool ExternatlInterrupt1DeleteOnExecution;
@@ -44,7 +42,7 @@ namespace Stm32
     extern bool ExternatlInterrupt15DeleteOnExecution;
 
     void EnableGPIOClock(uint16_t pin);
-    void EnableInterrupt(uint16_t pin, ICallBack *callBack, bool deleteOnExecution);
+    void EnableInterrupt(uint16_t pin, EmbeddedIOServices::ICallBack *callBack, bool deleteOnExecution);
     void DisableInterrupt(uint16_t pin);
     
     constexpr uint16_t PinToGPIO_Pin(uint16_t pin)

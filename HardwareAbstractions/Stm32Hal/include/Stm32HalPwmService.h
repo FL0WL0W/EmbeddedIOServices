@@ -1,16 +1,14 @@
-#include "HardwareAbstraction/PinDirection.h"
-#include "HardwareAbstraction/IPwmService.h"
+#include "PinDirection.h"
+#include "IPwmService.h"
 #include "Stm32HalGpio.h"
 #include "stdint.h"
-
-using namespace HardwareAbstraction;
 
 #ifndef STM32HALPWMSERVICE_H
 #define STM32HALPWMSERVICE_H
 
 namespace Stm32
 {
-	class Stm32HalPwmService : public HardwareAbstraction::IPwmService
+	class Stm32HalPwmService : public EmbeddedIOServices::IPwmService
 	{
 	protected:
 #if defined(TIM14)
@@ -58,9 +56,9 @@ namespace Stm32
 #endif
 	public:
 		Stm32HalPwmService();
-		void InitPin(uint16_t pin, PinDirection direction, uint16_t minFrequency);
-		PwmValue ReadPin(uint16_t pin);
-		void WritePin(uint16_t pin, PwmValue value);
+		void InitPin(uint16_t pin, EmbeddedIOServices::PinDirection direction, uint16_t minFrequency);
+		EmbeddedIOServices::PwmValue ReadPin(uint16_t pin);
+		void WritePin(uint16_t pin, EmbeddedIOServices::PwmValue value);
 #ifdef TIM1
 		void InterruptTim1(void);
 #endif

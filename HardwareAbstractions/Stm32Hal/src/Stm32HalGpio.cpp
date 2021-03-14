@@ -1,5 +1,7 @@
 #include "Stm32HalGpio.h"
 
+using namespace EmbeddedIOServices;
+
 namespace Stm32
 {
 	ICallBack *ExternatlInterrupt0Callback;

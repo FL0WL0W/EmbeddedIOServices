@@ -4,6 +4,8 @@
 #include <math.h>
 #include "Stm32HalTimer.h"
 
+using namespace EmbeddedIOServices;
+
 namespace Stm32
 {
     struct TimAndChannel
@@ -391,7 +393,7 @@ namespace Stm32
 		TIM_ClockConfigStruct.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
 		HAL_TIM_ConfigClockSource(&TIM_HandleStruct, &TIM_ClockConfigStruct);
 
-		if (direction == HardwareAbstraction::Out)
+		if (direction == Out)
 		{
 			TIM_OC_InitTypeDef TIM_OC_InitStruct = {0};
 
@@ -510,7 +512,7 @@ namespace Stm32
 		return value;
 	}
 	
-	void Stm32HalPwmService::WritePin(uint16_t pin, HardwareAbstraction::PwmValue value)
+	void Stm32HalPwmService::WritePin(uint16_t pin, PwmValue value)
 	{
 		if (pin == 0)
 			return;

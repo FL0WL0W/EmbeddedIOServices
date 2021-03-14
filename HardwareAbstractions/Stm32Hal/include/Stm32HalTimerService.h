@@ -1,4 +1,4 @@
-#include "HardwareAbstraction/ITimerService.h"
+#include "ITimerService.h"
 #include "Stm32HalTimer.h"
 #include "stdint.h"
 
@@ -7,7 +7,7 @@
 
 namespace Stm32
 {		
-	class Stm32HalTimerService : public HardwareAbstraction::ITimerService
+	class Stm32HalTimerService : public EmbeddedIOServices::ITimerService
 	{
 	private:
 		uint32_t _ticksPerSecond;

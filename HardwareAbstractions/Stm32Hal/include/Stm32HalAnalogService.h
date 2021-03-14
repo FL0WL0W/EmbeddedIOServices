@@ -1,4 +1,4 @@
-#include "HardwareAbstraction/IAnalogService.h"
+#include "IAnalogService.h"
 #include "Stm32HalConf.h"
 #include "Stm32HalGpio.h"
 #include "stdint.h"
@@ -8,7 +8,7 @@
 
 namespace Stm32
 {
-	class Stm32HalAnalogService : public HardwareAbstraction::IAnalogService
+	class Stm32HalAnalogService : public EmbeddedIOServices::IAnalogService
 	{
 	public:
 		Stm32HalAnalogService();
