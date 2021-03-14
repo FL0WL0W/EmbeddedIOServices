@@ -1,9 +1,9 @@
-#include "HardwareAbstraction/IDigitalService.h"
-#include "HardwareAbstraction/ICallBack.h"
+#include "IDigitalService.h"
+#include "ICallBack.h"
 
 #ifndef MOCKDIGITALSERVICE_H
 #define MOCKDIGITALSERVICE_H
-namespace HardwareAbstraction
+namespace EmbeddedIOServices
 {
 	class MockDigitalService : public IDigitalService
 	{

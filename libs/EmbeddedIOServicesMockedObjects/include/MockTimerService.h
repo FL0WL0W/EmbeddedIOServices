@@ -1,8 +1,8 @@
-#include "HardwareAbstraction/ITimerService.h"
+#include "ITimerService.h"
 
 #ifndef MOCKTIMERSERVICE_H
 #define MOCKTIMERSERVICE_H
-namespace HardwareAbstraction
+namespace EmbeddedIOServices
 {
 	class MockTimerService : public ITimerService
 	{

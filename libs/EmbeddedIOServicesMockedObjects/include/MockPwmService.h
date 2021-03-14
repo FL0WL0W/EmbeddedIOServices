@@ -1,8 +1,8 @@
-#include "HardwareAbstraction/IPwmService.h"
+#include "IPwmService.h"
 
 #ifndef MOCKPWMSERVICE_H
 #define MOCKPWNSERVICE_H
-namespace HardwareAbstraction
+namespace EmbeddedIOServices
 {
 	class MockPwmService : public IPwmService
 	{

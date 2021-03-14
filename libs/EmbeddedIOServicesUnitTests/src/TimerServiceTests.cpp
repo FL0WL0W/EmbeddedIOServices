@@ -1,8 +1,11 @@
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
-#include "HardwareAbstraction/ITimerService.h"
+#include "ITimerService.h"
 #include "MockTimerService.h"
 using ::testing::Return;
+using EmbeddedIOServices::MockTimerService;
+using EmbeddedIOServices::Task;
+using EmbeddedIOServices::CallBack;
 
 namespace UnitTests
 {
@@ -25,16 +28,16 @@ namespace UnitTests
 	{
         timerTestClass *timerTestClassInstance = new timerTestClass();
 
-		HardwareAbstraction::MockTimerService timerService;
+		MockTimerService timerService;
 		EXPECT_CALL(timerService, GetTick())
 			.WillRepeatedly(Return(0));
 
-		HardwareAbstraction::Task *task1 = new HardwareAbstraction::Task(new HardwareAbstraction::CallBack<timerTestClass>(timerTestClassInstance, &timerTestClass::testCallback1), true);
+		Task *task1 = new Task(new CallBack<timerTestClass>(timerTestClassInstance, &timerTestClass::testCallback1), true);
 		timerService.ScheduleTask(task1, 100);
 		//ASSERT_EQ(true, task1->Scheduled) << "first callback not set as scheduled";
 		ASSERT_EQ((void *)task1, (void *)timerService.FirstTask) << "ScheduledTask not set to first";
 			
-		HardwareAbstraction::Task *task2 = timerService.ScheduleTask(new HardwareAbstraction::CallBack<timerTestClass>(timerTestClassInstance, &timerTestClass::testCallback2), 150, true);
+		Task *task2 = timerService.ScheduleTask(new CallBack<timerTestClass>(timerTestClassInstance, &timerTestClass::testCallback2), 150, true);
 		// ASSERT_EQ(true, task1->Scheduled) << "first callback not still scheduled";
 		// ASSERT_EQ(true, task2->Scheduled) << "second callback not set as scheduled";
 		ASSERT_EQ((void *)task1, (void *)timerService.FirstTask) << "ScheduledTask not set to first after new later task added";
@@ -68,10 +71,10 @@ namespace UnitTests
 		EXPECT_CALL(timerService, GetTick())
 			.WillRepeatedly(Return(2900000000));
 
-		task1 = timerService.ScheduleTask(new HardwareAbstraction::CallBack<timerTestClass>(timerTestClassInstance, &timerTestClass::testCallback1), 3000000000, true);
+		task1 = timerService.ScheduleTask(new CallBack<timerTestClass>(timerTestClassInstance, &timerTestClass::testCallback1), 3000000000, true);
 		ASSERT_EQ((void *)task1, (void *)timerService.FirstTask) << "ScheduledTask not set to first";
 
-		task2 = timerService.ScheduleTask(new HardwareAbstraction::CallBack<timerTestClass>(timerTestClassInstance, &timerTestClass::testCallback2), 300, true);
+		task2 = timerService.ScheduleTask(new CallBack<timerTestClass>(timerTestClassInstance, &timerTestClass::testCallback2), 300, true);
 		ASSERT_EQ((void *)task1, (void *)timerService.FirstTask) << "ScheduledTask not set to first after new later task added";
 		ASSERT_EQ((void *)task2, (void *)timerService.FirstTask->NextTask) << "NextTask not set to second  after new later task added";
 

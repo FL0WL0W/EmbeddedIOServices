@@ -1,8 +1,8 @@
-#include "HardwareAbstraction/IAnalogService.h"
+#include "IAnalogService.h"
 
 #ifndef MOCKANALOGSERVICE_H
 #define MOCKANALOGSERVICE_H
-namespace HardwareAbstraction
+namespace EmbeddedIOServices
 {
 	class MockAnalogService : public IAnalogService
 	{
