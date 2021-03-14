@@ -30,65 +30,6 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
   </ul>
 </ul>
 
-# IO Services
-<ul>
-  <li>BooleanInputService</li>
-  <ul>
-    <li>Digital Pin</li>
-    <li>Static Value</li>
-  </ul>
-  <li>ButtonService</li>
-  <ul>
-    <li>Polling</li>
-  </ul>
-  <li>BooleanOutputService</li>
-  <ul>
-    <li>Digital Pin</li>
-  </ul>
-  <li>FloatInputService</li>
-  <ul>
-    <li>Analog Pin</li>
-    <li>Frequency Pin</li>
-    <li>Pulse Width Pin</li>
-    <li>Duty Cycle Pin</li>
-    <li>Fault Detection (Probably Deprecated)</li>
-    <li>Static Value</li>
-  </ul>
-  <li>FloatOutputService</li>
-  <ul>
-    <li>Frequency</li>
-    <li>Pulse Width</li>
-    <li>Duty Cycle</li>
-    <li>Stepper</li>
-  </ul>
-  <li>StepperOutputService</li>
-  <ul>
-    <li>Step/Direction Pin Control</li>
-    <li>Full Step Coil Control</li>
-    <li>Half Step Coil Control</li>
-    <li>Static Step Calibration</li>
-  </ul>
-</ul>
-
-# Variable Bus (NEW)
-<ul>
-  <li>BooleanVariables</li>
-  <ul>
-    <li>Static Value</li>
-    <li>Input (BooleanInputService)</li>
-  </ul>
-  <li>FloatVariables</li>
-  <ul>
-    <li>Static Value</li>
-    <li>Input (FloatInputService)</li>
-    <li>Filtering (TODO)</li>
-    <li>Fault Detection (TODO)</li>
-    <li>Polynomial Translation</li>
-    <li>Lookup Table Translation</li>
-    <li>2 Axis Table Translation</li>
-  </ul>
-</ul>
-
 # Currently Supported Microcontroller
 <ul>
   <li>STM32F103C8</li>
@@ -97,39 +38,7 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
 
 # TODO:
 <ul>
-  <li>Create Unit Tests For</li>
-  <ul>
-    <li>BooleanVariables_Static</li>
-    <li>BooleanVariables_Input</li>
-    <li>FloatVariables_Static</li>
-    <li>StepperOutputService_StepDirectionControl</li>
-    <li>StepperOutputService_FullStepControl</li>
-    <li>StepperOutputService_HalfStepControl</li>
-    <li>StepperOutputService_StaticStepCalibrationWrapper</li>
-    <li>ButtonService_Polling</li>
-  </ul>
-  <li>Create Stepper Feedback Limit Calibration Wrapper</li>
-  <li>Control Loops (PID, PI, Simple, etc.)</li>
-  <li>Create PWM service that uses interrupt callback from DigitalService and Tick from TimerService to create software based PWM input and output.</li>
-  <li>*Manual Test Stm32Hal Services</li>
-  <ul>
-    <li>Digital Pin Init Out (DONE)</li>
-    <li>Digital Pin Init In (DONE)</li>
-    <li>Digital Pin Write (DONE)</li>
-    <li>Digital Pin Read (DONE)</li>
-    <li>Digital Pin Interrupt</li>
-    <li>Analog Pin Init</li>
-    <li>Analog Pin Read</li>
-    <li>PWM Pin Init Out (DONE)</li>
-    <li>PWM Pin Init In (DONE)</li>
-    <li>PWM Pin Write (DONE)</li>
-    <li>PWM Pin Read (DONE)</li>
-    <li>Timer Init (DONE)</li>
-    <li>Timer Get Tick (DONE)</li>
-    <li>Timer Get Ticks Per Second (DONE)</li>
-    <li>Timer Schedule Callback (DONE)</li>
-    <li>Timer Scheduling Compensation (DONE)</li>
-  </ul>
-  <li>*Create integration tests with integration test hardware</li>
+  <li>Create Virtual PWM Service using TimerService scheduling rather than built in hardware PWM</li>
+  <li>Create integration tests with integration test hardware</li>
 </ul>
   
