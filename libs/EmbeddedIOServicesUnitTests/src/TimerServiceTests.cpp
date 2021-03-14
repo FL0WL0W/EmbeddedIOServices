@@ -2,10 +2,8 @@
 #include "gtest/gtest.h"
 #include "ITimerService.h"
 #include "MockTimerService.h"
-using ::testing::Return;
-using EmbeddedIOServices::MockTimerService;
-using EmbeddedIOServices::Task;
-using EmbeddedIOServices::CallBack;
+using namespace testing;
+using namespace EmbeddedIOServices;
 
 namespace UnitTests
 {
