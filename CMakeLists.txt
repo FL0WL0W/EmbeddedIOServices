@@ -1,20 +1,31 @@
-﻿# CMakeList.txt : Top-level CMake project file, do global configuration
-# and include sub-projects here.
+﻿# CMakeList.txt : CMake project for EmbeddedIOServices, include source and define
+# project specific logic here.
 #
 cmake_minimum_required (VERSION 3.8)
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+option(EmbeddedIOServices_build_tests "Build all of EmbeddedIOServices tests" OFF)
 
-set(LIBRARIES	libs)
+set(TARGET		EmbeddedIOServices)
 
-project(TopLevelBuild CXX)
+project(${TARGET} CXX)
 
-# Include sub-projects.
-add_subdirectory (${LIBRARIES}/EmbeddedIOServices)
+# headers are always in include/
+set(HDR_DIR		include)
+file(GLOB_RECURSE HDRS ${HDR_DIR}/*.h)
+include_directories(${HDR_DIR})
+# sources are always in src/
+set(SRCS_DIR	src)
+file(GLOB_RECURSE SRCS ${SRCS_DIR}/*.cpp)
 
-add_subdirectory (${LIBRARIES}/googletest)
-enable_testing()
+# create library
+add_library(${TARGET} STATIC ${HDRS} ${SRCS})
+target_include_directories(${TARGET} PUBLIC ${HDR_DIR})
 
-add_subdirectory (${LIBRARIES}/EmbeddedIOServicesMockedObjects)
-add_subdirectory (${LIBRARIES}/EmbeddedIOServicesUnitTests)
 
-# Compile all the abstractions
+if(EmbeddedIOServices_build_tests)
+    #include google test
+    add_subdirectory (libs/googletest)
+    #include mock
+    add_subdirectory (mock)
+    #include test
+    add_subdirectory(test)
+endif()
