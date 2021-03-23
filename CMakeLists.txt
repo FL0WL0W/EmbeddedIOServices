@@ -23,7 +23,7 @@ target_include_directories(${TARGET} PUBLIC ${HDR_DIR})
 
 if(EmbeddedIOServices_build_tests)
     #include google test
-    if (EXISTS "libs/googletest/CMakeLists.txt")
+    if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/libs/googletest/CMakeLists.txt)
         add_subdirectory (libs/googletest)
     endif()
     #include mock
