@@ -20,14 +20,14 @@ namespace EmbeddedIOServices
 		template<std::size_t... Is>
 		void ExecuteWithTuple(const std::tuple<PARAMS...>& tuple,
 			std::index_sequence<Is...>) {
-			(Instance->*Function)(*std::get<Is>(tuple)...);
+			(Instance->*Function)(std::get<Is>(tuple)...);
 		}
 		public:
 		CallBackWithParameters(INSTANCETYPE *instance, void(INSTANCETYPE::*function)(PARAMS...), PARAMS... params)
 		{
 			Instance = instance;
 			Function = function;
-			_params = std::tuple<PARAMS*...>(params...);
+			_params = std::tuple<PARAMS...>(params...);
 		}
 
 		void Execute() override
