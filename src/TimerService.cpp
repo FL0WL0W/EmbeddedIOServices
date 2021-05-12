@@ -34,10 +34,8 @@ namespace EmbeddedIOServices
 		while(next != 0 && !next->Scheduled)
 			next = next->NextTask;
 
-		while (next != 0 && TickLessThanEqualToTick(next->Tick, GetTick() + TimerCallBackAdvance))
+		while (next != 0 && TickLessThanEqualToTick(next->Tick, GetTick()))
 		{
-			while(TickLessThanTick(GetTick(), next->Tick)) ;
-			
 			next->Execute();
 			next->Scheduled = false;
 			

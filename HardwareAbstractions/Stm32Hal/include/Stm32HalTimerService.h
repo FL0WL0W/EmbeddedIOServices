@@ -18,9 +18,10 @@ namespace Stm32
 		bool _interruptDisabled = false;
 
 
+		uint32_t _getTickCompensation;
 		uint32_t _functionCallCompensation;
 		void SetFunctionCallCompensation();
-		
+		uint32_t _whileWaitCompensation;
 		uint32_t _returnCallBackCompensation;
 
 

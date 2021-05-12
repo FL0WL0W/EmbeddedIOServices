@@ -196,7 +196,7 @@ namespace Stm32
 		TIM_HandleStruct.Init.CounterMode = TIM_COUNTERMODE_UP;
 		TIM_HandleStruct.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   		TIM_HandleStruct.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-		TIM_HandleStruct.Init.Prescaler = _ticksPerSecond / (100 * 1000) - 1; // set ticks to 10 us
+		TIM_HandleStruct.Init.Prescaler = _ticksPerSecond / (1000 * 1000) - 1; // set ticks to 10 us
   		TIM_HandleStruct.Init.Period = 0xFFFF; // autoreload at max
 		
 		//init
@@ -229,25 +229,33 @@ namespace Stm32
 		uint32_t afterTick;
 		beforeTick = DWT->CYCCNT;
 		afterTick = DWT->CYCCNT;
-		uint32_t getTickCompensation = afterTick - beforeTick;
+		_getTickCompensation = afterTick - beforeTick;
 
 		_functionCallCompensation = DWT->CYCCNT;
 		SetFunctionCallCompensation();
-		_functionCallCompensation -= getTickCompensation;
+		_functionCallCompensation -= _getTickCompensation;
+
+		_callTick = afterTick;
+		if(_callTick == 0)
+			_callTick = 1;
+
+		//set _whileWaitCompensation
+		_whileWaitCompensation = DWT->CYCCNT;
+		while(TickLessThanTick(DWT->CYCCNT, _callTick)) ;
+		_whileWaitCompensation = DWT->CYCCNT - _whileWaitCompensation - _getTickCompensation;
 
 		//set _returnCallBackCompensation
-		uint32_t returnCallBackCompensation;
 		_returnCallBackCompensation = DWT->CYCCNT;
-		if(TickLessThanEqualToTick(_callTick, DWT->CYCCNT + _functionCallCompensation + _returnCallBackCompensation + TIM->PSC << 2), _callTick == 0)
+		if (TIM->SR & TIM_IT_CC1) ;
+		if(!_interruptDisabled) ;
+		if(_callTick != 0)
 		{
-			uint32_t tick = _callTick - _functionCallCompensation;
-			if(TickLessThanTick(DWT->CYCCNT, tick)) ;
-			_callTick = 0;
+			const uint32_t lt = _callTick - _whileWaitCompensation - _functionCallCompensation;
+			while(TickLessThanTick(DWT->CYCCNT, lt)) ;
 		}
-		returnCallBackCompensation = DWT->CYCCNT;
-		_returnCallBackCompensation = returnCallBackCompensation - _returnCallBackCompensation - getTickCompensation;
-
-		TimerCallBackAdvance = (TIM->PSC << 2) + _functionCallCompensation + _returnCallBackCompensation;
+		_returnCallBackCompensation = DWT->CYCCNT - _returnCallBackCompensation - _getTickCompensation + 150; //adding 150 clocks for interrupt latency. 
+		
+		_callTick = 0;
 	}
 
 	#pragma GCC push_options
@@ -267,33 +275,44 @@ namespace Stm32
 	void Stm32HalTimerService::ScheduleCallBack(const uint32_t tick)
 	{
 		__disable_irq();
-		_callTick = tick;
-		if(_callTick == 0)
-			_callTick = 1;
 
-		if(TickLessThanTick(_callTick, DWT->CYCCNT + TimerCallBackAdvance))
+		if(TickLessThanTick(tick, DWT->CYCCNT + 250))
 		{
 			_interruptDisabled = true;
 			__enable_irq();
-			ReturnCallBack();
+			const uint32_t lt = tick - _whileWaitCompensation - _functionCallCompensation;
+			while(TickLessThanTick(DWT->CYCCNT, lt)) ;
+			ITimerService::ReturnCallBack();
 			_interruptDisabled = false;
 		}
 		else
 		{
-			uint32_t ccr = (_callTick - _functionCallCompensation - _returnCallBackCompensation - DWT->CYCCNT) / (TIM->PSC + 1);
+			_callTick = tick;
+			if(_callTick == 0)
+				_callTick = 1;
+			uint32_t ccr = (_callTick - _functionCallCompensation * 2 - _returnCallBackCompensation - DWT->CYCCNT) / (TIM->PSC + 1);
 			TIM->CCR1 = TIM->CNT + ccr;
 			__enable_irq();
 		}		
 	}
 	
+	// extern "C" int minTickDiff;
+	// extern "C" int maxTickDiff;
+	// extern "C" int tickDiff;
 	void Stm32HalTimerService::ReturnCallBack(void)
 	{
-		if(_callTick != 0)// && TickLessThanEqualToTick(_callTick - _functionCallCompensation - _returnCallBackCompensation, DWT->CYCCNT + TIM->PSC << 3))
+		if(_callTick != 0)
 		{
-			// uint32_t tick = _callTick - _functionCallCompensation;
-			// while(TickLessThanTick(DWT->CYCCNT, tick)) ;
-			_callTick = 0;
+			const uint32_t lt = _callTick - _whileWaitCompensation - _functionCallCompensation;
+			while(TickLessThanTick(DWT->CYCCNT, lt)) ;
+			//tickDiff = DWT->CYCCNT;
 			ITimerService::ReturnCallBack();
+			_callTick = 0;
+			// tickDiff -= (lt + _whileWaitCompensation) + _getTickCompensation;
+			// if(minTickDiff > tickDiff)
+			// 	minTickDiff = tickDiff;
+			// else if(maxTickDiff < tickDiff)
+			// 	maxTickDiff = tickDiff;
 		}
 	}
 	
