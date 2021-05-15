@@ -18,63 +18,63 @@ namespace Stm32
 		bool _interruptDisabled = false;
 
 
-		uint32_t _getTickCompensation;
-		uint32_t _functionCallCompensation;
+		volatile uint16_t _interruptLatency = 0;
+		uint16_t _functionCallCompensation = 0;
+		uint16_t _whileWaitCompensation = 0;
+		uint16_t _returnCallBackCompensation = 0;
 		void SetFunctionCallCompensation();
-		uint32_t _whileWaitCompensation;
-		uint32_t _returnCallBackCompensation;
+		void SetInterruptLatency();
 
 
 		void ReturnCallBack();
 		void ScheduleCallBack(const uint32_t tick);
 	public:
 		Stm32HalTimerService(uint8_t timer);
-		void Interrupt();
 		const uint32_t GetTick() override;
 		const uint32_t GetTicksPerSecond() override;
 	};
 	
 #ifdef TIM1
-	extern Stm32HalTimerService *TimerService1;
+	extern EmbeddedIOServices::ICallBack *timerCallBack1;
 #endif
 #ifdef TIM2
-	extern Stm32HalTimerService *TimerService2;
+	extern EmbeddedIOServices::ICallBack *timerCallBack2;
 #endif
 #ifdef TIM3
-	extern Stm32HalTimerService *TimerService3;
+	extern EmbeddedIOServices::ICallBack *timerCallBack3;
 #endif
 #ifdef TIM4
-	extern Stm32HalTimerService *TimerService4;
+	extern EmbeddedIOServices::ICallBack *timerCallBack4;
 #endif
 #ifdef TIM5
-	extern Stm32HalTimerService *TimerService5;
+	extern EmbeddedIOServices::ICallBack *timerCallBack5;
 #endif
 #ifdef TIM6
-	extern Stm32HalTimerService *TimerService6;
+	extern EmbeddedIOServices::ICallBack *timerCallBack6;
 #endif
 #ifdef TIM7
-	extern Stm32HalTimerService *TimerService7;
+	extern EmbeddedIOServices::ICallBack *timerCallBack7;
 #endif
 #ifdef TIM8
-	extern Stm32HalTimerService *TimerService8;
+	extern EmbeddedIOServices::ICallBack *timerCallBack8;
 #endif
 #ifdef TIM9
-	extern Stm32HalTimerService *TimerService9;
+	extern EmbeddedIOServices::ICallBack *timerCallBack9;
 #endif
 #ifdef TIM10
-	extern Stm32HalTimerService *TimerService10;
+	extern EmbeddedIOServices::ICallBack *timerCallBack10;
 #endif
 #ifdef TIM11
-	extern Stm32HalTimerService *TimerService11;
+	extern EmbeddedIOServices::ICallBack *timerCallBack11;
 #endif
 #ifdef TIM12
-	extern Stm32HalTimerService *TimerService12;
+	extern EmbeddedIOServices::ICallBack *timerCallBack12;
 #endif
 #ifdef TIM13
-	extern Stm32HalTimerService *TimerService13;
+	extern EmbeddedIOServices::ICallBack *timerCallBack13;
 #endif
 #ifdef TIM14
-	extern Stm32HalTimerService *TimerService14;
+	extern EmbeddedIOServices::ICallBack *timerCallBack14;
 #endif
 }
 

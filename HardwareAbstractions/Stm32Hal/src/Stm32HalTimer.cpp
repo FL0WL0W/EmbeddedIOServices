@@ -1,6 +1,5 @@
 #include "Stm32HalTimer.h"
 #include "Stm32HalTimerService.h"
-#include "Stm32HalPwmService.h"
 
 namespace Stm32
 {
@@ -301,256 +300,915 @@ namespace Stm32
 
 	extern "C" 
 	{
+#if defined(TIM14)
+		uint16_t _prevCC[14][4];
+		uint16_t _currCC[14][4];
+#elif defined(TIM13)
+		uint16_t _prevCC[13][4];
+		uint16_t _currCC[13][4];
+#elif defined(TIM12)
+		uint16_t _prevCC[12][4];
+		uint16_t _currCC[12][4];
+#elif defined(TIM11)
+		uint16_t _prevCC[11][4];
+		uint16_t _currCC[11][4];
+#elif defined(TIM10)
+		uint16_t _prevCC[10][4];
+		uint16_t _currCC[10][4];
+#elif defined(TIM9)
+		uint16_t _prevCC[9][4];
+		uint16_t _currCC[9][4];
+#elif defined(TIM8)
+		uint16_t _prevCC[8][4];
+		uint16_t _currCC[8][4];
+#elif defined(TIM7)
+		uint16_t _prevCC[7][4];
+		uint16_t _currCC[7][4];
+#elif defined(TIM6)
+		uint16_t _prevCC[6][4];
+		uint16_t _currCC[6][4];
+#elif defined(TIM5)
+		uint16_t _prevCC[5][4];
+		uint16_t _currCC[5][4];
+#elif defined(TIM4)
+		uint16_t _prevCC[4][4];
+		uint16_t _currCC[4][4];
+#elif defined(TIM3)
+		uint16_t _prevCC[3][4];
+		uint16_t _currCC[3][4];
+#elif defined(TIM2)
+		uint16_t _prevCC[2][4];
+		uint16_t _currCC[2][4];
+#elif defined(TIM1)
+		uint16_t _prevCC[1][4];
+		uint16_t _currCC[1][4];
+#endif
 #if defined(TIM1)
 		void TIM1_IRQHandler(void)
 		{
-			if (TimerService1 != 0)
-				TimerService1->Interrupt();
-			if (HalPwmService != 0)
-				HalPwmService->InterruptTim1();
+			if (timerCallBack1 != 0 && TIM1->SR & TIM_IT_CC1)
+				timerCallBack1->Execute();;
+			if (TIM1->SR & TIM_IT_CC1)
+			{
+				_prevCC[0][0] = _currCC[0][0];
+				_currCC[0][0] = TIM1->CCR1;
+				TIM1->SR = ~TIM_IT_CC1;
+			}
+			if (TIM1->SR & TIM_IT_CC2)
+			{
+				_prevCC[0][1] = _currCC[0][1];
+				_currCC[0][1] = TIM1->CCR2;
+				TIM1->SR = ~TIM_IT_CC2;
+			}
+			if (TIM1->SR & TIM_IT_CC3)
+			{
+				_prevCC[0][2] = _currCC[0][2];
+				_currCC[0][2] = TIM1->CCR3;
+				TIM1->SR = ~TIM_IT_CC3;
+			}
+			if (TIM1->SR & TIM_IT_CC4)
+			{
+				_prevCC[0][3] = _currCC[0][3];
+				_currCC[0][3] = TIM1->CCR4;
+				TIM1->SR = ~TIM_IT_CC4;
+			}
 		}
 #endif
 #if defined(TIM1)
 		void TIM1_CC_IRQHandler(void)
 		{
-			if (TimerService1 != 0)
-				TimerService1->Interrupt();
-			if (HalPwmService != 0)
-				HalPwmService->InterruptTim1();
+			if (timerCallBack1 != 0 && TIM1->SR & TIM_IT_CC1)
+				timerCallBack1->Execute();;
+			if (TIM1->SR & TIM_IT_CC1)
+			{
+				_prevCC[0][0] = _currCC[0][0];
+				_currCC[0][0] = TIM1->CCR1;
+				TIM1->SR = ~TIM_IT_CC1;
+			}
+			if (TIM1->SR & TIM_IT_CC2)
+			{
+				_prevCC[0][1] = _currCC[0][1];
+				_currCC[0][1] = TIM1->CCR2;
+				TIM1->SR = ~TIM_IT_CC2;
+			}
+			if (TIM1->SR & TIM_IT_CC3)
+			{
+				_prevCC[0][2] = _currCC[0][2];
+				_currCC[0][2] = TIM1->CCR3;
+				TIM1->SR = ~TIM_IT_CC3;
+			}
+			if (TIM1->SR & TIM_IT_CC4)
+			{
+				_prevCC[0][3] = _currCC[0][3];
+				_currCC[0][3] = TIM1->CCR4;
+				TIM1->SR = ~TIM_IT_CC4;
+			}
 		}
 #endif
 #if defined(TIM2)
 		void TIM2_IRQHandler(void)
 		{
-			if (TimerService2 != 0)
-				TimerService2->Interrupt();
-			if (HalPwmService != 0)
-				HalPwmService->InterruptTim2();
+			if (timerCallBack2 != 0 && TIM2->SR & TIM_IT_CC1)
+				timerCallBack2->Execute();
+			if (TIM2->SR & TIM_IT_CC1)
+			{
+				_prevCC[1][0] = _currCC[1][0];
+				_currCC[1][0] = TIM2->CCR1;
+				TIM2->SR = ~TIM_IT_CC1;
+			}
+			if (TIM2->SR & TIM_IT_CC2)
+			{
+				_prevCC[1][1] = _currCC[1][1];
+				_currCC[1][1] = TIM2->CCR2;
+				TIM2->SR = ~TIM_IT_CC2;
+			}
+			if (TIM2->SR & TIM_IT_CC3)
+			{
+				_prevCC[1][2] = _currCC[1][2];
+				_currCC[1][2] = TIM2->CCR3;
+				TIM2->SR = ~TIM_IT_CC3;
+			}
+			if (TIM2->SR & TIM_IT_CC4)
+			{
+				_prevCC[1][3] = _currCC[1][3];
+				_currCC[1][3] = TIM2->CCR4;
+				TIM2->SR = ~TIM_IT_CC4;
+			}
 		}
 #endif
 #if defined(TIM2)
 		void TIM2_CC_IRQHandler(void)
 		{
-			if (TimerService2 != 0)
-				TimerService2->Interrupt();
-			if (HalPwmService != 0)
-				HalPwmService->InterruptTim2();
+			if (timerCallBack2 != 0 && TIM2->SR & TIM_IT_CC1)
+				timerCallBack2->Execute();
+			if (TIM2->SR & TIM_IT_CC1)
+			{
+				_prevCC[1][0] = _currCC[1][0];
+				_currCC[1][0] = TIM2->CCR1;
+				TIM2->SR = ~TIM_IT_CC1;
+			}
+			if (TIM2->SR & TIM_IT_CC2)
+			{
+				_prevCC[1][1] = _currCC[1][1];
+				_currCC[1][1] = TIM2->CCR2;
+				TIM2->SR = ~TIM_IT_CC2;
+			}
+			if (TIM2->SR & TIM_IT_CC3)
+			{
+				_prevCC[1][2] = _currCC[1][2];
+				_currCC[1][2] = TIM2->CCR3;
+				TIM2->SR = ~TIM_IT_CC3;
+			}
+			if (TIM2->SR & TIM_IT_CC4)
+			{
+				_prevCC[1][3] = _currCC[1][3];
+				_currCC[1][3] = TIM2->CCR4;
+				TIM2->SR = ~TIM_IT_CC4;
+			}
 		}
 #endif
 #if defined(TIM3)
 		void TIM3_IRQHandler(void)
 		{
-			if (TimerService3 != 0)
-				TimerService3->Interrupt();
-			if (HalPwmService != 0)
-				HalPwmService->InterruptTim3();
+			if (timerCallBack3 != 0 && TIM3->SR & TIM_IT_CC1)
+				timerCallBack3->Execute();
+			if (TIM3->SR & TIM_IT_CC1)
+			{
+				_prevCC[2][0] = _currCC[2][0];
+				_currCC[2][0] = TIM3->CCR1;
+				TIM3->SR = ~TIM_IT_CC1;
+			}
+			if (TIM3->SR & TIM_IT_CC2)
+			{
+				_prevCC[2][1] = _currCC[2][1];
+				_currCC[2][1] = TIM3->CCR2;
+				TIM3->SR = ~TIM_IT_CC2;
+			}
+			if (TIM3->SR & TIM_IT_CC3)
+			{
+				_prevCC[2][2] = _currCC[2][2];
+				_currCC[2][2] = TIM3->CCR3;
+				TIM3->SR = ~TIM_IT_CC3;
+			}
+			if (TIM3->SR & TIM_IT_CC4)
+			{
+				_prevCC[2][3] = _currCC[2][3];
+				_currCC[2][3] = TIM3->CCR4;
+				TIM3->SR = ~TIM_IT_CC4;
+			}
 		}
 #endif
 #if defined(TIM3)
 		void TIM3_CC_IRQHandler(void)
 		{
-			if (TimerService3 != 0)
-				TimerService3->Interrupt();
-			if (HalPwmService != 0)
-				HalPwmService->InterruptTim3();
+			if (timerCallBack3 != 0 && TIM3->SR & TIM_IT_CC1)
+				timerCallBack3->Execute();
+			if (TIM3->SR & TIM_IT_CC1)
+			{
+				_prevCC[2][0] = _currCC[2][0];
+				_currCC[2][0] = TIM3->CCR1;
+				TIM3->SR = ~TIM_IT_CC1;
+			}
+			if (TIM3->SR & TIM_IT_CC2)
+			{
+				_prevCC[2][1] = _currCC[2][1];
+				_currCC[2][1] = TIM3->CCR2;
+				TIM3->SR = ~TIM_IT_CC2;
+			}
+			if (TIM3->SR & TIM_IT_CC3)
+			{
+				_prevCC[2][2] = _currCC[2][2];
+				_currCC[2][2] = TIM3->CCR3;
+				TIM3->SR = ~TIM_IT_CC3;
+			}
+			if (TIM3->SR & TIM_IT_CC4)
+			{
+				_prevCC[2][3] = _currCC[2][3];
+				_currCC[2][3] = TIM3->CCR4;
+				TIM3->SR = ~TIM_IT_CC4;
+			}
 		}
 #endif
 #if defined(TIM4)
 		void TIM4_IRQHandler(void)
 		{
-			if (TimerService4 != 0)
-				TimerService4->Interrupt();
-			if (HalPwmService != 0)
-				HalPwmService->InterruptTim4();
+			if (timerCallBack4 != 0 && TIM4->SR & TIM_IT_CC1)
+				timerCallBack4->Execute();
+			if (TIM4->SR & TIM_IT_CC1)
+			{
+				_prevCC[3][0] = _currCC[3][0];
+				_currCC[3][0] = TIM4->CCR1;
+				TIM4->SR = ~TIM_IT_CC1;
+			}
+			if (TIM4->SR & TIM_IT_CC2)
+			{
+				_prevCC[3][1] = _currCC[3][1];
+				_currCC[3][1] = TIM4->CCR2;
+				TIM4->SR = ~TIM_IT_CC2;
+			}
+			if (TIM4->SR & TIM_IT_CC3)
+			{
+				_prevCC[3][2] = _currCC[3][2];
+				_currCC[3][2] = TIM4->CCR3;
+				TIM4->SR = ~TIM_IT_CC3;
+			}
+			if (TIM4->SR & TIM_IT_CC4)
+			{
+				_prevCC[3][3] = _currCC[3][3];
+				_currCC[3][3] = TIM4->CCR4;
+				TIM4->SR = ~TIM_IT_CC4;
+			}
 		}
 #endif
 #if defined(TIM4)
 		void TIM4_CC_IRQHandler(void)
 		{
-			if (TimerService4 != 0)
-				TimerService4->Interrupt();
-			if (HalPwmService != 0)
-				HalPwmService->InterruptTim4();
+			if (timerCallBack4 != 0 && TIM4->SR & TIM_IT_CC1)
+				timerCallBack4->Execute();
+			if (TIM4->SR & TIM_IT_CC1)
+			{
+				_prevCC[3][0] = _currCC[3][0];
+				_currCC[3][0] = TIM4->CCR1;
+				TIM4->SR = ~TIM_IT_CC1;
+			}
+			if (TIM4->SR & TIM_IT_CC2)
+			{
+				_prevCC[3][1] = _currCC[3][1];
+				_currCC[3][1] = TIM4->CCR2;
+				TIM4->SR = ~TIM_IT_CC2;
+			}
+			if (TIM4->SR & TIM_IT_CC3)
+			{
+				_prevCC[3][2] = _currCC[3][2];
+				_currCC[3][2] = TIM4->CCR3;
+				TIM4->SR = ~TIM_IT_CC3;
+			}
+			if (TIM4->SR & TIM_IT_CC4)
+			{
+				_prevCC[3][3] = _currCC[3][3];
+				_currCC[3][3] = TIM4->CCR4;
+				TIM4->SR = ~TIM_IT_CC4;
+			}
 		}
 #endif
 #if defined(TIM5)
 		void TIM5_IRQHandler(void)
 		{
-			if (TimerService5 != 0)
-				TimerService5->Interrupt();
-			if (HalPwmService != 0)
-				HalPwmService->InterruptTim5();
+			if (timerCallBack5 != 0 && TIM5->SR & TIM_IT_CC1)
+				timerCallBack5->Execute();
+			if (TIM5->SR & TIM_IT_CC1)
+			{
+				_prevCC[4][0] = _currCC[4][0];
+				_currCC[4][0] = TIM5->CCR1;
+				TIM5->SR = ~TIM_IT_CC1;
+			}
+			if (TIM5->SR & TIM_IT_CC2)
+			{
+				_prevCC[4][1] = _currCC[4][1];
+				_currCC[4][1] = TIM5->CCR2;
+				TIM5->SR = ~TIM_IT_CC2;
+			}
+			if (TIM5->SR & TIM_IT_CC3)
+			{
+				_prevCC[4][2] = _currCC[4][2];
+				_currCC[4][2] = TIM5->CCR3;
+				TIM5->SR = ~TIM_IT_CC3;
+			}
+			if (TIM5->SR & TIM_IT_CC4)
+			{
+				_prevCC[4][3] = _currCC[4][3];
+				_currCC[4][3] = TIM5->CCR4;
+				TIM5->SR = ~TIM_IT_CC4;
+			}
 		}
 #endif
 #if defined(TIM5)
 		void TIM5_CC_IRQHandler(void)
 		{
-			if (TimerService5 != 0)
-				TimerService5->Interrupt();
-			if (HalPwmService != 0)
-				HalPwmService->InterruptTim5();
+			if (timerCallBack5 != 0 && TIM5->SR & TIM_IT_CC1)
+				timerCallBack5->Execute();
+			if (TIM5->SR & TIM_IT_CC1)
+			{
+				_prevCC[4][0] = _currCC[4][0];
+				_currCC[4][0] = TIM5->CCR1;
+				TIM5->SR = ~TIM_IT_CC1;
+			}
+			if (TIM5->SR & TIM_IT_CC2)
+			{
+				_prevCC[4][1] = _currCC[4][1];
+				_currCC[4][1] = TIM5->CCR2;
+				TIM5->SR = ~TIM_IT_CC2;
+			}
+			if (TIM5->SR & TIM_IT_CC3)
+			{
+				_prevCC[4][2] = _currCC[4][2];
+				_currCC[4][2] = TIM5->CCR3;
+				TIM5->SR = ~TIM_IT_CC3;
+			}
+			if (TIM5->SR & TIM_IT_CC4)
+			{
+				_prevCC[4][3] = _currCC[4][3];
+				_currCC[4][3] = TIM5->CCR4;
+				TIM5->SR = ~TIM_IT_CC4;
+			}
 		}
 #endif
 #if defined(TIM6)
 		void TIM6_IRQHandler(void)
 		{
-			if (TimerService6 != 0)
-				TimerService6->Interrupt();
-			if (HalPwmService != 0)
-				HalPwmService->InterruptTim6();
+			if (timerCallBack6 != 0 && TIM6->SR & TIM_IT_CC1)
+				timerCallBack6->Execute();
+			if (TIM6->SR & TIM_IT_CC1)
+			{
+				_prevCC[5][0] = _currCC[5][0];
+				_currCC[5][0] = TIM6->CCR1;
+				TIM6->SR = ~TIM_IT_CC1;
+			}
+			if (TIM6->SR & TIM_IT_CC2)
+			{
+				_prevCC[5][1] = _currCC[5][1];
+				_currCC[5][1] = TIM6->CCR2;
+				TIM6->SR = ~TIM_IT_CC2;
+			}
+			if (TIM6->SR & TIM_IT_CC3)
+			{
+				_prevCC[5][2] = _currCC[5][2];
+				_currCC[5][2] = TIM6->CCR3;
+				TIM6->SR = ~TIM_IT_CC3;
+			}
+			if (TIM6->SR & TIM_IT_CC4)
+			{
+				_prevCC[5][3] = _currCC[5][3];
+				_currCC[5][3] = TIM6->CCR4;
+				TIM6->SR = ~TIM_IT_CC4;
+			}
 		}
 #endif
 #if defined(TIM6)
 		void TIM6_CC_IRQHandler(void)
 		{
-			if (TimerService6 != 0)
-				TimerService6->Interrupt();
-			if (HalPwmService != 0)
-				HalPwmService->InterruptTim6();
+			if (timerCallBack6 != 0 && TIM6->SR & TIM_IT_CC1)
+				timerCallBack6->Execute();
+			if (TIM6->SR & TIM_IT_CC1)
+			{
+				_prevCC[5][0] = _currCC[5][0];
+				_currCC[5][0] = TIM6->CCR1;
+				TIM6->SR = ~TIM_IT_CC1;
+			}
+			if (TIM6->SR & TIM_IT_CC2)
+			{
+				_prevCC[5][1] = _currCC[5][1];
+				_currCC[5][1] = TIM6->CCR2;
+				TIM6->SR = ~TIM_IT_CC2;
+			}
+			if (TIM6->SR & TIM_IT_CC3)
+			{
+				_prevCC[5][2] = _currCC[5][2];
+				_currCC[5][2] = TIM6->CCR3;
+				TIM6->SR = ~TIM_IT_CC3;
+			}
+			if (TIM6->SR & TIM_IT_CC4)
+			{
+				_prevCC[5][3] = _currCC[5][3];
+				_currCC[5][3] = TIM6->CCR4;
+				TIM6->SR = ~TIM_IT_CC4;
+			}
 		}
 #endif
 #if defined(TIM7)
 		void TIM7_IRQHandler(void)
 		{
-			if (TimerService7 != 0)
-				TimerService7->Interrupt();
-			if (HalPwmService != 0)
-				HalPwmService->InterruptTim7();
+			if (timerCallBack7 != 0 && TIM7->SR & TIM_IT_CC1)
+				timerCallBack7->Execute();
+			if (TIM7->SR & TIM_IT_CC1)
+			{
+				_prevCC[6][0] = _currCC[6][0];
+				_currCC[6][0] = TIM7->CCR1;
+				TIM7->SR = ~TIM_IT_CC1;
+			}
+			if (TIM7->SR & TIM_IT_CC2)
+			{
+				_prevCC[6][1] = _currCC[6][1];
+				_currCC[6][1] = TIM7->CCR2;
+				TIM7->SR = ~TIM_IT_CC2;
+			}
+			if (TIM7->SR & TIM_IT_CC3)
+			{
+				_prevCC[6][2] = _currCC[6][2];
+				_currCC[6][2] = TIM7->CCR3;
+				TIM7->SR = ~TIM_IT_CC3;
+			}
+			if (TIM7->SR & TIM_IT_CC4)
+			{
+				_prevCC[6][3] = _currCC[6][3];
+				_currCC[6][3] = TIM7->CCR4;
+				TIM7->SR = ~TIM_IT_CC4;
+			}
 		}
 #endif
 #if defined(TIM7)
 		void TIM7_CC_IRQHandler(void)
 		{
-			if (TimerService7 != 0)
-				TimerService7->Interrupt();
-			if (HalPwmService != 0)
-				HalPwmService->InterruptTim7();
+			if (timerCallBack7 != 0 && TIM7->SR & TIM_IT_CC1)
+				timerCallBack7->Execute();
+			if (TIM7->SR & TIM_IT_CC1)
+			{
+				_prevCC[6][0] = _currCC[6][0];
+				_currCC[6][0] = TIM7->CCR1;
+				TIM7->SR = ~TIM_IT_CC1;
+			}
+			if (TIM7->SR & TIM_IT_CC2)
+			{
+				_prevCC[6][1] = _currCC[6][1];
+				_currCC[6][1] = TIM7->CCR2;
+				TIM7->SR = ~TIM_IT_CC2;
+			}
+			if (TIM7->SR & TIM_IT_CC3)
+			{
+				_prevCC[6][2] = _currCC[6][2];
+				_currCC[6][2] = TIM7->CCR3;
+				TIM7->SR = ~TIM_IT_CC3;
+			}
+			if (TIM7->SR & TIM_IT_CC4)
+			{
+				_prevCC[6][3] = _currCC[6][3];
+				_currCC[6][3] = TIM7->CCR4;
+				TIM7->SR = ~TIM_IT_CC4;
+			}
 		}
 #endif
 #if defined(TIM8)
 		void TIM8_IRQHandler(void)
 		{
-			if (TimerService8 != 0)
-				TimerService8->Interrupt();
-			if (HalPwmService != 0)
-				HalPwmService->InterruptTim8();
+			if (timerCallBack8 != 0 && TIM8->SR & TIM_IT_CC1)
+				timerCallBack8->Execute();
+			if (TIM8->SR & TIM_IT_CC1)
+			{
+				_prevCC[7][0] = _currCC[7][0];
+				_currCC[7][0] = TIM8->CCR1;
+				TIM8->SR = ~TIM_IT_CC1;
+			}
+			if (TIM8->SR & TIM_IT_CC2)
+			{
+				_prevCC[7][1] = _currCC[7][1];
+				_currCC[7][1] = TIM8->CCR2;
+				TIM8->SR = ~TIM_IT_CC2;
+			}
+			if (TIM8->SR & TIM_IT_CC3)
+			{
+				_prevCC[7][2] = _currCC[7][2];
+				_currCC[7][2] = TIM8->CCR3;
+				TIM8->SR = ~TIM_IT_CC3;
+			}
+			if (TIM8->SR & TIM_IT_CC4)
+			{
+				_prevCC[7][3] = _currCC[7][3];
+				_currCC[7][3] = TIM8->CCR4;
+				TIM8->SR = ~TIM_IT_CC4;
+			}
 		}
 #endif
 #if defined(TIM8)
 		void TIM8_CC_IRQHandler(void)
 		{
-			if (TimerService8 != 0)
-				TimerService8->Interrupt();
-			if (HalPwmService != 0)
-				HalPwmService->InterruptTim8();
+			if (timerCallBack8 != 0 && TIM8->SR & TIM_IT_CC1)
+				timerCallBack8->Execute();
+			if (TIM8->SR & TIM_IT_CC1)
+			{
+				_prevCC[7][0] = _currCC[7][0];
+				_currCC[7][0] = TIM8->CCR1;
+				TIM8->SR = ~TIM_IT_CC1;
+			}
+			if (TIM8->SR & TIM_IT_CC2)
+			{
+				_prevCC[7][1] = _currCC[7][1];
+				_currCC[7][1] = TIM8->CCR2;
+				TIM8->SR = ~TIM_IT_CC2;
+			}
+			if (TIM8->SR & TIM_IT_CC3)
+			{
+				_prevCC[7][2] = _currCC[7][2];
+				_currCC[7][2] = TIM8->CCR3;
+				TIM8->SR = ~TIM_IT_CC3;
+			}
+			if (TIM8->SR & TIM_IT_CC4)
+			{
+				_prevCC[7][3] = _currCC[7][3];
+				_currCC[7][3] = TIM8->CCR4;
+				TIM8->SR = ~TIM_IT_CC4;
+			}
 		}
 #endif
 #if defined(TIM9)
 		void TIM9_IRQHandler(void)
 		{
-			if (TimerService9 != 0)
-				TimerService9->Interrupt();
-			if (HalPwmService != 0)
-				HalPwmService->InterruptTim9();
+			if (timerCallBack9 != 0 && TIM9->SR & TIM_IT_CC1)
+				timerCallBack9->Execute();
+			if (TIM9->SR & TIM_IT_CC1)
+			{
+				_prevCC[8][0] = _currCC[8][0];
+				_currCC[8][0] = TIM9->CCR1;
+				TIM9->SR = ~TIM_IT_CC1;
+			}
+			if (TIM9->SR & TIM_IT_CC2)
+			{
+				_prevCC[8][1] = _currCC[8][1];
+				_currCC[8][1] = TIM9->CCR2;
+				TIM9->SR = ~TIM_IT_CC2;
+			}
+			if (TIM9->SR & TIM_IT_CC3)
+			{
+				_prevCC[8][2] = _currCC[8][2];
+				_currCC[8][2] = TIM9->CCR3;
+				TIM9->SR = ~TIM_IT_CC3;
+			}
+			if (TIM9->SR & TIM_IT_CC4)
+			{
+				_prevCC[8][3] = _currCC[8][3];
+				_currCC[8][3] = TIM9->CCR4;
+				TIM9->SR = ~TIM_IT_CC4;
+			}
 		}
 #endif
 #if defined(TIM9)
 		void TIM9_CC_IRQHandler(void)
 		{
-			if (TimerService9 != 0)
-				TimerService9->Interrupt();
-			if (HalPwmService != 0)
-				HalPwmService->InterruptTim9();
+			if (timerCallBack9 != 0 && TIM9->SR & TIM_IT_CC1)
+				timerCallBack9->Execute();
+			if (TIM9->SR & TIM_IT_CC1)
+			{
+				_prevCC[8][0] = _currCC[8][0];
+				_currCC[8][0] = TIM9->CCR1;
+				TIM9->SR = ~TIM_IT_CC1;
+			}
+			if (TIM9->SR & TIM_IT_CC2)
+			{
+				_prevCC[8][1] = _currCC[8][1];
+				_currCC[8][1] = TIM9->CCR2;
+				TIM9->SR = ~TIM_IT_CC2;
+			}
+			if (TIM9->SR & TIM_IT_CC3)
+			{
+				_prevCC[8][2] = _currCC[8][2];
+				_currCC[8][2] = TIM9->CCR3;
+				TIM9->SR = ~TIM_IT_CC3;
+			}
+			if (TIM9->SR & TIM_IT_CC4)
+			{
+				_prevCC[8][3] = _currCC[8][3];
+				_currCC[8][3] = TIM9->CCR4;
+				TIM9->SR = ~TIM_IT_CC4;
+			}
 		}
 #endif
 #if defined(TIM10)
 		void TIM10_IRQHandler(void)
 		{
-			if (TimerService10 != 0)
-				TimerService10->Interrupt();
-			if (HalPwmService != 0)
-				HalPwmService->InterruptTim10();
+			if (timerCallBack10 != 0 && TIM10->SR & TIM_IT_CC1)
+				timerCallBack10->Execute();
+			if (TIM10->SR & TIM_IT_CC1)
+			{
+				_prevCC[9][0] = _currCC[9][0];
+				_currCC[9][0] = TIM10->CCR1;
+				TIM10->SR = ~TIM_IT_CC1;
+			}
+			if (TIM10->SR & TIM_IT_CC2)
+			{
+				_prevCC[9][1] = _currCC[9][1];
+				_currCC[9][1] = TIM10->CCR2;
+				TIM10->SR = ~TIM_IT_CC2;
+			}
+			if (TIM10->SR & TIM_IT_CC3)
+			{
+				_prevCC[9][2] = _currCC[9][2];
+				_currCC[9][2] = TIM10->CCR3;
+				TIM10->SR = ~TIM_IT_CC3;
+			}
+			if (TIM10->SR & TIM_IT_CC4)
+			{
+				_prevCC[9][3] = _currCC[9][3];
+				_currCC[9][3] = TIM10->CCR4;
+				TIM10->SR = ~TIM_IT_CC4;
+			}
 		}
 #endif
 #if defined(TIM10)
 		void TIM10_CC_IRQHandler(void)
 		{
-			if (TimerService10 != 0)
-				TimerService10->Interrupt();
-			if (HalPwmService != 0)
-				HalPwmService->InterruptTim10();
+			if (timerCallBack10 != 0 && TIM10->SR & TIM_IT_CC1)
+				timerCallBack10->Execute();
+			if (TIM10->SR & TIM_IT_CC1)
+			{
+				_prevCC[9][0] = _currCC[9][0];
+				_currCC[9][0] = TIM10->CCR1;
+				TIM10->SR = ~TIM_IT_CC1;
+			}
+			if (TIM10->SR & TIM_IT_CC2)
+			{
+				_prevCC[9][1] = _currCC[9][1];
+				_currCC[9][1] = TIM10->CCR2;
+				TIM10->SR = ~TIM_IT_CC2;
+			}
+			if (TIM10->SR & TIM_IT_CC3)
+			{
+				_prevCC[9][2] = _currCC[9][2];
+				_currCC[9][2] = TIM10->CCR3;
+				TIM10->SR = ~TIM_IT_CC3;
+			}
+			if (TIM10->SR & TIM_IT_CC4)
+			{
+				_prevCC[9][3] = _currCC[9][3];
+				_currCC[9][3] = TIM10->CCR4;
+				TIM10->SR = ~TIM_IT_CC4;
+			}
 		}
 #endif
 #if defined(TIM11)
 		void TIM11_IRQHandler(void)
 		{
-			if (TimerService11 != 0)
-				TimerService11->Interrupt();
-			if (HalPwmService != 0)
-				HalPwmService->InterruptTim11();
+			if (timerCallBack11 != 0 && TIM11->SR & TIM_IT_CC1)
+				timerCallBack11->Execute();
+			if (TIM11->SR & TIM_IT_CC1)
+			{
+				_prevCC[10][0] = _currCC[10][0];
+				_currCC[10][0] = TIM11->CCR1;
+				TIM11->SR = ~TIM_IT_CC1;
+			}
+			if (TIM11->SR & TIM_IT_CC2)
+			{
+				_prevCC[10][1] = _currCC[10][1];
+				_currCC[10][1] = TIM11->CCR2;
+				TIM11->SR = ~TIM_IT_CC2;
+			}
+			if (TIM11->SR & TIM_IT_CC3)
+			{
+				_prevCC[10][2] = _currCC[10][2];
+				_currCC[10][2] = TIM11->CCR3;
+				TIM11->SR = ~TIM_IT_CC3;
+			}
+			if (TIM11->SR & TIM_IT_CC4)
+			{
+				_prevCC[10][3] = _currCC[10][3];
+				_currCC[10][3] = TIM11->CCR4;
+				TIM11->SR = ~TIM_IT_CC4;
+			}
 		}
 #endif
 #if defined(TIM11)
 		void TIM11_CC_IRQHandler(void)
 		{
-			if (TimerService11 != 0)
-				TimerService11->Interrupt();
-			if (HalPwmService != 0)
-				HalPwmService->InterruptTim11();
+			if (timerCallBack11 != 0 && TIM11->SR & TIM_IT_CC1)
+				timerCallBack11->Execute();
+			if (TIM11->SR & TIM_IT_CC1)
+			{
+				_prevCC[10][0] = _currCC[10][0];
+				_currCC[10][0] = TIM11->CCR1;
+				TIM11->SR = ~TIM_IT_CC1;
+			}
+			if (TIM11->SR & TIM_IT_CC2)
+			{
+				_prevCC[10][1] = _currCC[10][1];
+				_currCC[10][1] = TIM11->CCR2;
+				TIM11->SR = ~TIM_IT_CC2;
+			}
+			if (TIM11->SR & TIM_IT_CC3)
+			{
+				_prevCC[10][2] = _currCC[10][2];
+				_currCC[10][2] = TIM11->CCR3;
+				TIM11->SR = ~TIM_IT_CC3;
+			}
+			if (TIM11->SR & TIM_IT_CC4)
+			{
+				_prevCC[10][3] = _currCC[10][3];
+				_currCC[10][3] = TIM11->CCR4;
+				TIM11->SR = ~TIM_IT_CC4;
+			}
 		}
 #endif
 #if defined(TIM12)
 		void TIM12_IRQHandler(void)
 		{
-			if (TimerService12 != 0)
-				TimerService12->Interrupt();
-			if (HalPwmService != 0)
-				HalPwmService->InterruptTim12();
+			if (timerCallBack12 != 0 && TIM12->SR & TIM_IT_CC1)
+				timerCallBack12->Execute();
+			if (TIM12->SR & TIM_IT_CC1)
+			{
+				_prevCC[11][0] = _currCC[11][0];
+				_currCC[11][0] = TIM12->CCR1;
+				TIM12->SR = ~TIM_IT_CC1;
+			}
+			if (TIM12->SR & TIM_IT_CC2)
+			{
+				_prevCC[11][1] = _currCC[11][1];
+				_currCC[11][1] = TIM12->CCR2;
+				TIM12->SR = ~TIM_IT_CC2;
+			}
+			if (TIM12->SR & TIM_IT_CC3)
+			{
+				_prevCC[11][2] = _currCC[11][2];
+				_currCC[11][2] = TIM12->CCR3;
+				TIM12->SR = ~TIM_IT_CC3;
+			}
+			if (TIM12->SR & TIM_IT_CC4)
+			{
+				_prevCC[11][3] = _currCC[11][3];
+				_currCC[11][3] = TIM12->CCR4;
+				TIM12->SR = ~TIM_IT_CC4;
+			}
 		}
 #endif
 #if defined(TIM12)
 		void TIM12_CC_IRQHandler(void)
 		{
-			if (TimerService12 != 0)
-				TimerService12->Interrupt();
-			if (HalPwmService != 0)
-				HalPwmService->InterruptTim12();
+			if (timerCallBack12 != 0 && TIM12->SR & TIM_IT_CC1)
+				timerCallBack12->Execute();
+			if (TIM12->SR & TIM_IT_CC1)
+			{
+				_prevCC[11][0] = _currCC[11][0];
+				_currCC[11][0] = TIM12->CCR1;
+				TIM12->SR = ~TIM_IT_CC1;
+			}
+			if (TIM12->SR & TIM_IT_CC2)
+			{
+				_prevCC[11][1] = _currCC[11][1];
+				_currCC[11][1] = TIM12->CCR2;
+				TIM12->SR = ~TIM_IT_CC2;
+			}
+			if (TIM12->SR & TIM_IT_CC3)
+			{
+				_prevCC[11][2] = _currCC[11][2];
+				_currCC[11][2] = TIM12->CCR3;
+				TIM12->SR = ~TIM_IT_CC3;
+			}
+			if (TIM12->SR & TIM_IT_CC4)
+			{
+				_prevCC[11][3] = _currCC[11][3];
+				_currCC[11][3] = TIM12->CCR4;
+				TIM12->SR = ~TIM_IT_CC4;
+			}
 		}
 #endif
 #if defined(TIM13)
 		void TIM13_IRQHandler(void)
 		{
-			if (TimerService13 != 0)
-				TimerService13->Interrupt();
-			if (HalPwmService != 0)
-				HalPwmService->InterruptTim13();
+			if (timerCallBack13 != 0 && TIM13->SR & TIM_IT_CC1)
+				timerCallBack13->Execute();
+			if (TIM13->SR & TIM_IT_CC1)
+			{
+				_prevCC[12][0] = _currCC[12][0];
+				_currCC[12][0] = TIM13->CCR1;
+				TIM13->SR = ~TIM_IT_CC1;
+			}
+			if (TIM13->SR & TIM_IT_CC2)
+			{
+				_prevCC[12][1] = _currCC[12][1];
+				_currCC[12][1] = TIM13->CCR2;
+				TIM13->SR = ~TIM_IT_CC2;
+			}
+			if (TIM13->SR & TIM_IT_CC3)
+			{
+				_prevCC[12][2] = _currCC[12][2];
+				_currCC[12][2] = TIM13->CCR3;
+				TIM13->SR = ~TIM_IT_CC3;
+			}
+			if (TIM13->SR & TIM_IT_CC4)
+			{
+				_prevCC[12][3] = _currCC[12][3];
+				_currCC[12][3] = TIM13->CCR4;
+				TIM13->SR = ~TIM_IT_CC4;
+			}
 		}
 #endif
 #if defined(TIM13)
 		void TIM13_CC_IRQHandler(void)
 		{
-			if (TimerService13 != 0)
-				TimerService13->Interrupt();
-			if (HalPwmService != 0)
-				HalPwmService->InterruptTim13();
+			if (timerCallBack13 != 0 && TIM13->SR & TIM_IT_CC1)
+				timerCallBack13->Execute();
+			if (TIM13->SR & TIM_IT_CC1)
+			{
+				_prevCC[12][0] = _currCC[12][0];
+				_currCC[12][0] = TIM13->CCR1;
+				TIM13->SR = ~TIM_IT_CC1;
+			}
+			if (TIM13->SR & TIM_IT_CC2)
+			{
+				_prevCC[12][1] = _currCC[12][1];
+				_currCC[12][1] = TIM13->CCR2;
+				TIM13->SR = ~TIM_IT_CC2;
+			}
+			if (TIM13->SR & TIM_IT_CC3)
+			{
+				_prevCC[12][2] = _currCC[12][2];
+				_currCC[12][2] = TIM13->CCR3;
+				TIM13->SR = ~TIM_IT_CC3;
+			}
+			if (TIM13->SR & TIM_IT_CC4)
+			{
+				_prevCC[12][3] = _currCC[12][3];
+				_currCC[12][3] = TIM13->CCR4;
+				TIM13->SR = ~TIM_IT_CC4;
+			}
 		}
 #endif
 #if defined(TIM14)
 		void TIM14_IRQHandler(void)
 		{
-			if (TimerService14 != 0)
-				TimerService14->Interrupt();
-			if (HalPwmService != 0)
-				HalPwmService->InterruptTim14();
+			if (timerCallBack14 != 0 && TIM14->SR & TIM_IT_CC1)
+				timerCallBack14->Execute();
+			if (TIM14->SR & TIM_IT_CC1)
+			{
+				_prevCC[13][0] = _currCC[13][0];
+				_currCC[13][0] = TIM14->CCR1;
+				TIM14->SR = ~TIM_IT_CC1;
+			}
+			if (TIM14->SR & TIM_IT_CC2)
+			{
+				_prevCC[13][1] = _currCC[13][1];
+				_currCC[13][1] = TIM14->CCR2;
+				TIM14->SR = ~TIM_IT_CC2;
+			}
+			if (TIM14->SR & TIM_IT_CC3)
+			{
+				_prevCC[13][2] = _currCC[13][2];
+				_currCC[13][2] = TIM14->CCR3;
+				TIM14->SR = ~TIM_IT_CC3;
+			}
+			if (TIM14->SR & TIM_IT_CC4)
+			{
+				_prevCC[13][3] = _currCC[13][3];
+				_currCC[13][3] = TIM14->CCR4;
+				TIM14->SR = ~TIM_IT_CC4;
+			}
 		}
 #endif
 #if defined(TIM14)
 		void TIM14_CC_IRQHandler(void)
 		{
-			if (TimerService14 != 0)
-				TimerService14->Interrupt();
-			if (HalPwmService != 0)
-				HalPwmService->InterruptTim14();
+			if (timerCallBack14 != 0 && TIM14->SR & TIM_IT_CC1)
+				timerCallBack14->Execute();
+			if (TIM14->SR & TIM_IT_CC1)
+			{
+				_prevCC[13][0] = _currCC[13][0];
+				_currCC[13][0] = TIM14->CCR1;
+				TIM14->SR = ~TIM_IT_CC1;
+			}
+			if (TIM14->SR & TIM_IT_CC2)
+			{
+				_prevCC[13][1] = _currCC[13][1];
+				_currCC[13][1] = TIM14->CCR2;
+				TIM14->SR = ~TIM_IT_CC2;
+			}
+			if (TIM14->SR & TIM_IT_CC3)
+			{
+				_prevCC[13][2] = _currCC[13][2];
+				_currCC[13][2] = TIM14->CCR3;
+				TIM14->SR = ~TIM_IT_CC3;
+			}
+			if (TIM14->SR & TIM_IT_CC4)
+			{
+				_prevCC[13][3] = _currCC[13][3];
+				_currCC[13][3] = TIM14->CCR4;
+				TIM14->SR = ~TIM_IT_CC4;
+			}
 		}
 #endif
 	}

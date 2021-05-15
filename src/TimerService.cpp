@@ -43,7 +43,7 @@ namespace EmbeddedIOServices
 		}
 
 		if(next != 0)
-			ScheduleCallBack(next->Tick);
+		 	ScheduleCallBack(next->Tick);
 	}
 
 	Task *ITimerService::ScheduleTask(ICallBack *callBack, const uint32_t tick, const bool deleteOnExecution)
@@ -65,11 +65,6 @@ namespace EmbeddedIOServices
 			if(del->DeleteOnExecution)
 				delete del;
 		}
-
-		//make this not static 1ms
-		uint32_t minTick = GetTick() + GetTicksPerSecond() / 1000;
-		if(TickLessThanTick(tick, minTick) || (task->Scheduled && TickLessThanTick(task->Tick, minTick)))
-			return false;
 
 		if(FirstTask == task)
 		{
