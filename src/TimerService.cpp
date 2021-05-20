@@ -100,12 +100,14 @@ namespace EmbeddedIOServices
 				task->NextTask = FirstTask;
 				task->Scheduled = true;
 				FirstTask = task;
+		if(task->NextTask == task)
+			asm("bkpt");
 			}
 			else
 			{
 				//insert task
 				Task *iterator = FirstTask;
-				while (iterator->NextTask != 0 && !task->Scheduled)
+				while (iterator->NextTask != 0 && iterator != task)
 				{
 					//this is where our task is to be scheduled
 					if(TickLessThanTick(tick, iterator->NextTask->Tick))
@@ -117,12 +119,16 @@ namespace EmbeddedIOServices
 
 					iterator = iterator->NextTask;
 				}
+		if(task->NextTask == task)
+			asm("bkpt");
 
-				if(!task->Scheduled)
+				if(iterator != task)
 				{
 					task->NextTask = 0;
 					task->Scheduled = true;
 					iterator->NextTask = task;
+		if(task->NextTask == task)
+			asm("bkpt");
 				}		
 			}
 		}
@@ -132,8 +138,12 @@ namespace EmbeddedIOServices
 			task->NextTask = 0;
 			task->Scheduled = true;
 			FirstTask = task;
+		if(task->NextTask == task)
+			asm("bkpt");
 		}
 
+		if(task->NextTask == task)
+			asm("bkpt");
 		ScheduleCallBack(FirstTask->Tick);
 
 		return true;
