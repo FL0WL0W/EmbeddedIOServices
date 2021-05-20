@@ -100,8 +100,6 @@ namespace EmbeddedIOServices
 				task->NextTask = FirstTask;
 				task->Scheduled = true;
 				FirstTask = task;
-		if(task->NextTask == task)
-			asm("bkpt");
 			}
 			else
 			{
@@ -119,16 +117,12 @@ namespace EmbeddedIOServices
 
 					iterator = iterator->NextTask;
 				}
-		if(task->NextTask == task)
-			asm("bkpt");
 
 				if(iterator != task)
 				{
 					task->NextTask = 0;
 					task->Scheduled = true;
 					iterator->NextTask = task;
-		if(task->NextTask == task)
-			asm("bkpt");
 				}		
 			}
 		}
@@ -138,12 +132,8 @@ namespace EmbeddedIOServices
 			task->NextTask = 0;
 			task->Scheduled = true;
 			FirstTask = task;
-		if(task->NextTask == task)
-			asm("bkpt");
 		}
 
-		if(task->NextTask == task)
-			asm("bkpt");
 		ScheduleCallBack(FirstTask->Tick);
 
 		return true;
