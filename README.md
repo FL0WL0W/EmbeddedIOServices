@@ -32,7 +32,7 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
 
 # Currently Supported Microcontroller
 <ul>
-  <li>STM32F103Cx</li>>
+  <li>STM32F103Cx</li>
   <li>STM32F104CC</li>
   <li>Full Stm32 Line, just add Stm32HalConf.h</li>
 </ul>
