@@ -35,10 +35,4 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
   <li>STM32F103C8</li>
   <li>Full Stm32 Line, just add Stm32HalConf.h</li>
 </ul>
-
-# TODO:
-<ul>
-  <li>Create Virtual PWM Service using TimerService scheduling rather than built in hardware PWM</li>
-  <li>Create integration tests with integration test hardware</li>
-</ul>
   
