@@ -54,8 +54,6 @@ namespace EmbeddedIOServices
 		const uint32_t GetElapsedTick(const uint32_t);
 		const float GetElapsedTime(const uint32_t);
 
-	#pragma GCC push_options
-	#pragma GCC optimize("O3")
 		constexpr static bool TickLessThanTick(const uint32_t i, const uint32_t j)
 		{
 			return i - j > 0x80000000;
@@ -65,7 +63,6 @@ namespace EmbeddedIOServices
 		{
 			return !TickLessThanTick(j, i);
 		}
-	#pragma GCC pop_options
 	};
 }
 #endif
