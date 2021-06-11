@@ -229,39 +229,39 @@ namespace Stm32
 #endif
 			break;
 #endif
-#ifdef TIM9
-		case 9:
-#ifdef TIM9_SEPERATE_UP_CC_IT
-			HAL_NVIC_SetPriority(TIM9_CC_IRQn, 1, 0);
-    		HAL_NVIC_EnableIRQ(TIM9_CC_IRQn);
-#else
-			HAL_NVIC_SetPriority(TIM9_IRQn, 1, 0);
-    		HAL_NVIC_EnableIRQ(TIM9_IRQn);
-#endif
-			break;
-#endif
-#ifdef TIM10
-		case 10:
-#ifdef TIM10_SEPERATE_UP_CC_IT
-			HAL_NVIC_SetPriority(TIM10_CC_IRQn, 1, 0);
-    		HAL_NVIC_EnableIRQ(TIM10_CC_IRQn);
-#else
-			HAL_NVIC_SetPriority(TIM10_IRQn, 1, 0);
-    		HAL_NVIC_EnableIRQ(TIM10_IRQn);
-#endif
-			break;
-#endif
-#ifdef TIM11
-		case 11:
-#ifdef TIM11_SEPERATE_UP_CC_IT
-			HAL_NVIC_SetPriority(TIM11_CC_IRQn, 1, 0);
-    		HAL_NVIC_EnableIRQ(TIM11_CC_IRQn);
-#else
-			HAL_NVIC_SetPriority(TIM11_IRQn, 1, 0);
-    		HAL_NVIC_EnableIRQ(TIM11_IRQn);
-#endif
-			break;
-#endif
+// #ifdef TIM9
+// 		case 9:
+// #ifdef TIM9_SEPERATE_UP_CC_IT
+// 			HAL_NVIC_SetPriority(TIM9_CC_IRQn, 1, 0);
+//     		HAL_NVIC_EnableIRQ(TIM9_CC_IRQn);
+// #else
+// 			HAL_NVIC_SetPriority(TIM9_IRQn, 1, 0);
+//     		HAL_NVIC_EnableIRQ(TIM9_IRQn);
+// #endif
+// 			break;
+// #endif
+// #ifdef TIM10
+// 		case 10:
+// #ifdef TIM10_SEPERATE_UP_CC_IT
+// 			HAL_NVIC_SetPriority(TIM10_CC_IRQn, 1, 0);
+//     		HAL_NVIC_EnableIRQ(TIM10_CC_IRQn);
+// #else
+// 			HAL_NVIC_SetPriority(TIM10_IRQn, 1, 0);
+//     		HAL_NVIC_EnableIRQ(TIM10_IRQn);
+// #endif
+// 			break;
+// #endif
+// #ifdef TIM11
+// 		case 11:
+// #ifdef TIM11_SEPERATE_UP_CC_IT
+// 			HAL_NVIC_SetPriority(TIM11_CC_IRQn, 1, 0);
+//     		HAL_NVIC_EnableIRQ(TIM11_CC_IRQn);
+// #else
+// 			HAL_NVIC_SetPriority(TIM11_IRQn, 1, 0);
+//     		HAL_NVIC_EnableIRQ(TIM11_IRQn);
+// #endif
+// 			break;
+// #endif
 #ifdef TIM12
 		case 12:
 #ifdef TIM12_SEPERATE_UP_CC_IT

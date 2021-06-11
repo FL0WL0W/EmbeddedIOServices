@@ -244,6 +244,9 @@ namespace Stm32
             return {14, TIM14, TIM_CHANNEL_4};
 #endif
 		}
+
+        //satisfy the compile warnings. should probably check this after calling the function to make sure we actually returned something
+        return TimAndChannel();
 	}
 		
 	void Stm32HalPwmService::InitPin(uint16_t pin, PinDirection direction, uint16_t minFrequency)
@@ -451,7 +454,7 @@ namespace Stm32
 			
 			GPIO_InitTypeDef GPIO_InitStruct = {0};
 			GPIO_InitStruct.Pin = PinToGPIO_Pin(pin);
-			GPIO_InitStruct.Mode = GPIO_MODE_AF_INPUT;
+			GPIO_InitStruct.Mode = MODE_AF;
 			GPIO_InitStruct.Pull = GPIO_NOPULL;
 			GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
 			HAL_GPIO_Init(PinToGPIO(pin), &GPIO_InitStruct);
@@ -523,37 +526,37 @@ namespace Stm32
 			|| (timAndChannel.TimNum == 3 && (TIM3_Freq_Locked || TIM1_Input)) 
 #endif
 #ifdef TIM4
-			|| (timAndChannel.TimNum == 4 && (TIM4_Freq_Locked || TIM4_Input)))
+			|| (timAndChannel.TimNum == 4 && (TIM4_Freq_Locked || TIM4_Input))
 #endif
 #ifdef TIM5
-			|| (timAndChannel.TimNum == 5 && (TIM5_Freq_Locked || TIM5_Input)))
+			|| (timAndChannel.TimNum == 5 && (TIM5_Freq_Locked || TIM5_Input))
 #endif
 #ifdef TIM6
-			|| (timAndChannel.TimNum == 6 && (TIM6_Freq_Locked || TIM6_Input)))
+			|| (timAndChannel.TimNum == 6 && (TIM6_Freq_Locked || TIM6_Input))
 #endif
 #ifdef TIM7
-			|| (timAndChannel.TimNum == 7 && (TIM7_Freq_Locked || TIM7_Input)))
+			|| (timAndChannel.TimNum == 7 && (TIM7_Freq_Locked || TIM7_Input))
 #endif
 #ifdef TIM8
-			|| (timAndChannel.TimNum == 8 && (TIM8_Freq_Locked || TIM8_Input)))
+			|| (timAndChannel.TimNum == 8 && (TIM8_Freq_Locked || TIM8_Input))
 #endif
 #ifdef TIM9
 			|| (timAndChannel.TimNum == 9 && (TIM9_Freq_Locked || TIM9_Input)))
 #endif
 #ifdef TIM10
-			|| (timAndChannel.TimNum == 10 && (TIM10_Freq_Locked || TIM10_Input)))
+			|| (timAndChannel.TimNum == 10 && (TIM10_Freq_Locked || TIM10_Input))
 #endif
 #ifdef TIM11
-			|| (timAndChannel.TimNum == 11 && (TIM11_Freq_Locked || TIM11_Input)))
+			|| (timAndChannel.TimNum == 11 && (TIM11_Freq_Locked || TIM11_Input))
 #endif
 #ifdef TIM12
-			|| (timAndChannel.TimNum == 12 && (TIM12_Freq_Locked || TIM12_Input)))
+			|| (timAndChannel.TimNum == 12 && (TIM12_Freq_Locked || TIM12_Input))
 #endif
 #ifdef TIM13
-			|| (timAndChannel.TimNum == 13 && (TIM13_Freq_Locked || TIM13_Input)))
+			|| (timAndChannel.TimNum == 13 && (TIM13_Freq_Locked || TIM13_Input))
 #endif
 #ifdef TIM14
-			|| (timAndChannel.TimNum == 14 && (TIM14_Freq_Locked || TIM14_Input)))
+			|| (timAndChannel.TimNum == 14 && (TIM14_Freq_Locked || TIM14_Input))
 #endif
 			)
 		{

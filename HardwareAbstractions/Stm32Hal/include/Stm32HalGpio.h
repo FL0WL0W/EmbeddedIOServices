@@ -82,6 +82,9 @@ namespace Stm32
         case 15:
             return GPIO_PIN_15;
         }
+
+        //satisfy the compile warnings. should probably check this after calling the function to make sure we actually returned something
+        return 0;
     }
     
     constexpr GPIO_TypeDef *PinToGPIO(uint16_t pin)
@@ -133,6 +136,9 @@ namespace Stm32
 			return GPIOK;
 #endif
 		}
+
+        //satisfy the compile warnings. should probably check this after calling the function to make sure we actually returned something
+        return 0;
     }
 }
 

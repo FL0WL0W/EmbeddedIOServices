@@ -71,7 +71,6 @@ namespace Stm32
 		TIM_ClockConfigStruct.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
 		HAL_TIM_ConfigClockSource(&TIM_HandleStruct, &TIM_ClockConfigStruct);
 
-		uint32_t Channel;
 		TIM_OC_InitTypeDef TIM_OC_InitStruct = {0};
 		TIM_OC_InitStruct.OCMode = TIM_OCMODE_TIMING;
 		TIM_OC_InitStruct.OCPolarity = TIM_OCPOLARITY_HIGH;
@@ -249,7 +248,7 @@ namespace Stm32
 		while(TickLessThanTick(TIM->CNT, _callTick)) ;
 		_whileWaitCompensation = TIM->CNT - _whileWaitCompensation - getTickCompensation;
 
-		//set _returnCallBackCompensation
+		//set _returnCallBackCompensation. ignore warnings, but the compiler is probably going to optimize these out anyway
 		_returnCallBackCompensation = TIM->CNT;
 		if(_callTick != 0) ;
 		const uint32_t lt = _callTick - _whileWaitCompensation;
