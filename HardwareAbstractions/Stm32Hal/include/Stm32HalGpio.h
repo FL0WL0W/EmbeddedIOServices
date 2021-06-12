@@ -47,7 +47,7 @@ namespace Stm32
     
     constexpr uint16_t PinToGPIO_Pin(uint16_t pin)
     {
-        switch ((pin - 1) % 16)
+        switch (pin % 16)
         {
         case 0:
             return GPIO_PIN_0;
@@ -89,7 +89,7 @@ namespace Stm32
     
     constexpr GPIO_TypeDef *PinToGPIO(uint16_t pin)
     {
-		switch((pin - 1) / 16)
+		switch(pin / 16)
 		{
 #ifdef GPIOA
 		case 0: //PA

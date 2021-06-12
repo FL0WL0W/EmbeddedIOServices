@@ -7,7 +7,7 @@ namespace Stm32
 {
 	void Stm32HalDigitalService::InitPin(uint16_t pin, PinDirection direction)
 	{		
-		if (pin == 0)
+		if (pin == 0xFFFF)
 			return;
 
 		EnableGPIOClock(pin);
@@ -22,7 +22,7 @@ namespace Stm32
 	
 	bool Stm32HalDigitalService::ReadPin(uint16_t pin)
 	{
-		if (pin == 0)
+		if (pin == 0xFFFF)
 			return false;
 		
 		return HAL_GPIO_ReadPin(PinToGPIO(pin), PinToGPIO_Pin(pin)) == GPIO_PIN_SET;
@@ -30,7 +30,7 @@ namespace Stm32
 	
 	void Stm32HalDigitalService::WritePin(uint16_t pin, bool value)
 	{
-		if (pin == 0)
+		if (pin == 0xFFFF)
 			return;
 		
   		HAL_GPIO_WritePin(PinToGPIO(pin), PinToGPIO_Pin(pin), value? GPIO_PIN_SET : GPIO_PIN_RESET);
