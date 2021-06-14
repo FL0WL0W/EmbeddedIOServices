@@ -48,8 +48,8 @@ namespace EmbeddedIOServices
 
 		void ReturnCallBack(void);
 		Task *ScheduleTask(ICallBack *callBack, const uint32_t, const bool);
-		const bool ScheduleTask(Task *, const uint32_t);
-		const bool UnScheduleTask(Task *);
+		void ScheduleTask(Task *, const uint32_t);
+		void UnScheduleTask(Task *);
 		
 		const uint32_t GetElapsedTick(const uint32_t);
 		const float GetElapsedTime(const uint32_t);

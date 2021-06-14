@@ -126,7 +126,7 @@ defined(ADC4_IN15_PIN)
 
 	void Stm32HalAnalogService::InitPin(uint16_t pin)
 	{
-		if (pin == 0)
+		if (pin == 0xFFFF)
 			return;
 
 		GPIO_InitTypeDef GPIO_InitStruct = {0};

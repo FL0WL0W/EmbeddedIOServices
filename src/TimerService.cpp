@@ -55,7 +55,7 @@ namespace EmbeddedIOServices
 		return taskToSchedule;
 	}
 
-	const bool ITimerService::ScheduleTask(Task *task, const uint32_t tick)
+	void ITimerService::ScheduleTask(Task *task, const uint32_t tick)
 	{
 		while(FirstTask != 0 && !FirstTask->Scheduled)
 		{
@@ -135,11 +135,9 @@ namespace EmbeddedIOServices
 		}
 
 		ScheduleCallBack(FirstTask->Tick);
-
-		return true;
 	}
 
-	const bool ITimerService::UnScheduleTask(Task *task)
+	void ITimerService::UnScheduleTask(Task *task)
 	{
 		while(FirstTask != 0 && !FirstTask->Scheduled)
 		{
@@ -149,11 +147,6 @@ namespace EmbeddedIOServices
 			if(del->DeleteOnExecution)
 				delete del;
 		}
-
-		//make this not static 1ms
-		uint32_t minTick = GetTick() + GetTicksPerSecond() / 1000;
-		if(task->Scheduled && TickLessThanTick(task->Tick, minTick))
-			return false;
 			
 		if(FirstTask == task)
 		{
@@ -181,8 +174,6 @@ namespace EmbeddedIOServices
 
 		if(FirstTask != 0)
 			ScheduleCallBack(FirstTask->Tick);
-
-		return true;
 	}
 	
 	const uint32_t ITimerService::GetElapsedTick(const uint32_t lastTick)
