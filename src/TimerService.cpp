@@ -4,176 +4,90 @@
 
 #ifdef ITIMERSERVICE_H
 namespace EmbeddedIOServices
-{		
-	void CallBackGroup::Execute()
+{	
+	void ITimerService::RemoveExecutedTasksFromList()
 	{
-		for (std::list<ICallBack *>::const_iterator iterator = _callBackList.begin(), end = _callBackList.end(); iterator != end; ++iterator)
+		std::forward_list<Task *>::iterator next = _taskList.begin();
+		while(next != _taskList.end() && (*next)->Scheduled == false)
 		{
-			(*iterator)->Execute();
+			if((*next)->DeleteAfterExecution)
+				delete *next;
+			_taskList.pop_front();
+			next++;
 		}
 	}
-	
-	void CallBackGroup::Add(ICallBack *callBack)
+
+	void ITimerService::ScheduleFirstTaskInList()
 	{
-		_callBackList.push_back(callBack);
+		std::forward_list<Task *>::iterator next = _taskList.begin();
+		if(next != _taskList.end())
+			ScheduleCallBack((*next)->Tick);
 	}
-	
-	void CallBackGroup::Remove(ICallBack *callBack)
-	{
-		_callBackList.remove(callBack);
-	}
-	
-	void CallBackGroup::Clear()
-	{
-		_callBackList.clear();
-	}
-	
+
 	void ITimerService::ReturnCallBack(void)
 	{
-		Task *next = FirstTask;
-		while(next != 0 && !next->Scheduled)
-			next = next->NextTask;
+		std::forward_list<Task *>::iterator next = _taskList.begin();;
+		while(next != _taskList.end() && (*next)->Scheduled == false)
+			next++;
 
-		while (next != 0 && TickLessThanEqualToTick(next->Tick, GetTick()))
+		while (next != _taskList.end() && TickLessThanEqualToTick((*next)->Tick, GetTick()))
 		{
-			next->Execute();
-			next->Scheduled = false;
-			
-			next = next->NextTask;
+			(*next)->CallBack();
+			(*next)->Scheduled = false;
+			next++;
 		}
 
-		if(next != 0)
-		 	ScheduleCallBack(next->Tick);
+		if(next != _taskList.end())
+		 	ScheduleCallBack((*next)->Tick);
 	}
 
-	Task *ITimerService::ScheduleTask(ICallBack *callBack, const uint32_t tick, const bool deleteOnExecution)
+	Task *ITimerService::ScheduleTask(std::function<void()> callBack, uint32_t tick, bool deleteAfterExecution)
 	{
-		Task *taskToSchedule = new Task(callBack, deleteOnExecution);
-
+		Task *taskToSchedule = new Task(callBack, deleteAfterExecution);
+		
 		ScheduleTask(taskToSchedule, tick);
 
 		return taskToSchedule;
 	}
 
-	void ITimerService::ScheduleTask(Task *task, const uint32_t tick)
+	void ITimerService::ScheduleTask(Task *task, uint32_t tick)
 	{
-		while(FirstTask != 0 && !FirstTask->Scheduled)
+		_taskList.remove(task);
+		RemoveExecutedTasksFromList();
+
+		if(_taskList.empty())
 		{
-			Task *del = FirstTask;
-			FirstTask = FirstTask->NextTask;
-
-			if(del->DeleteOnExecution)
-				delete del;
-		}
-
-		if(FirstTask == task)
-		{
-			FirstTask = FirstTask->NextTask;
-			task->Scheduled = false;
-		}
-		else if(FirstTask != 0)
-		{
-			Task *iterator = FirstTask;
-			while (iterator->NextTask != 0)
-			{
-				if(iterator->NextTask == task)
-				{
-					//unschedule task
-					iterator->NextTask = iterator->NextTask->NextTask;
-					task->Scheduled = false;
-					break;
-				}
-				else
-				{
-					iterator = iterator->NextTask;
-				}
-			}
-		}
-
-		task->Tick = tick;
-		
-		if(FirstTask != 0)
-		{
-			if(TickLessThanTick(tick, FirstTask->Tick))
-			{
-				//task is FirstTask
-				task->NextTask = FirstTask;
-				task->Scheduled = true;
-				FirstTask = task;
-			}
-			else
-			{
-				//insert task
-				Task *iterator = FirstTask;
-				while (iterator->NextTask != 0 && iterator != task)
-				{
-					//this is where our task is to be scheduled
-					if(TickLessThanTick(tick, iterator->NextTask->Tick))
-					{
-						task->NextTask = iterator->NextTask;
-						task->Scheduled = true;
-						iterator->NextTask = task;
-					}
-
-					iterator = iterator->NextTask;
-				}
-
-				if(iterator != task)
-				{
-					task->NextTask = 0;
-					task->Scheduled = true;
-					iterator->NextTask = task;
-				}		
-			}
+			task->Tick = tick;
+			task->Scheduled = true;
+			_taskList.push_front(task);
 		}
 		else
 		{
-			//task is only task
-			task->NextTask = 0;
-			task->Scheduled = true;
-			FirstTask = task;
+			std::forward_list<Task *>::iterator before = _taskList.before_begin();
+			std::forward_list<Task *>::iterator next = before;
+			next++;
+			while(next != _taskList.end())
+			{
+				if(TickLessThanTick(tick, (*next)->Tick))
+				{
+					task->Tick = tick;
+					task->Scheduled = true;
+					_taskList.insert_after(before, task);
+				}
+
+				before = next;
+				next++;
+			}
 		}
 
-		ScheduleCallBack(FirstTask->Tick);
+		ScheduleFirstTaskInList();
 	}
 
 	void ITimerService::UnScheduleTask(Task *task)
 	{
-		while(FirstTask != 0 && !FirstTask->Scheduled)
-		{
-			Task *del = FirstTask;
-			FirstTask = FirstTask->NextTask;
-
-			if(del->DeleteOnExecution)
-				delete del;
-		}
-			
-		if(FirstTask == task)
-		{
-			FirstTask = FirstTask->NextTask;
-			task->Scheduled = false;
-		}
-		else if(FirstTask != 0)
-		{
-			Task *iterator = FirstTask;
-			while (iterator->NextTask != 0)
-			{
-				if(iterator->NextTask == task)
-				{
-					//unschedule task
-					iterator->NextTask = iterator->NextTask->NextTask;
-					task->Scheduled = false;
-					break;
-				}
-				else
-				{
-					iterator = iterator->NextTask;
-				}
-			}
-		}
-
-		if(FirstTask != 0)
-			ScheduleCallBack(FirstTask->Tick);
+		_taskList.remove(task);
+		RemoveExecutedTasksFromList();
+		ScheduleFirstTaskInList();
 	}
 	
 	const uint32_t ITimerService::GetElapsedTick(const uint32_t lastTick)
