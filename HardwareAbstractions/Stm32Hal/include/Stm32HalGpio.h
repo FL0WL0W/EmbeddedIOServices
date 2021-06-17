@@ -1,49 +1,32 @@
 #include "Stm32HalConf.h"
-#include "ICallBack.h"
 #include "stdint.h"
+#include <functional>
 
 #ifndef STM32HALGPIO_H
 #define STM32HALGPIO_H
 
 namespace Stm32
 {
-    extern EmbeddedIOServices::ICallBack *ExternatlInterrupt0Callback;
-    extern EmbeddedIOServices::ICallBack *ExternatlInterrupt1Callback;
-    extern EmbeddedIOServices::ICallBack *ExternatlInterrupt2Callback;
-    extern EmbeddedIOServices::ICallBack *ExternatlInterrupt3Callback;
-    extern EmbeddedIOServices::ICallBack *ExternatlInterrupt4Callback;
-    extern EmbeddedIOServices::ICallBack *ExternatlInterrupt5Callback;
-    extern EmbeddedIOServices::ICallBack *ExternatlInterrupt6Callback;
-    extern EmbeddedIOServices::ICallBack *ExternatlInterrupt7Callback;
-    extern EmbeddedIOServices::ICallBack *ExternatlInterrupt8Callback;
-    extern EmbeddedIOServices::ICallBack *ExternatlInterrupt9Callback;
-    extern EmbeddedIOServices::ICallBack *ExternatlInterrupt10Callback;
-    extern EmbeddedIOServices::ICallBack *ExternatlInterrupt11Callback;
-    extern EmbeddedIOServices::ICallBack *ExternatlInterrupt12Callback;
-    extern EmbeddedIOServices::ICallBack *ExternatlInterrupt13Callback;
-    extern EmbeddedIOServices::ICallBack *ExternatlInterrupt14Callback;
-    extern EmbeddedIOServices::ICallBack *ExternatlInterrupt15Callback;
-    
-    extern bool ExternatlInterrupt0DeleteOnExecution;
-    extern bool ExternatlInterrupt1DeleteOnExecution;
-    extern bool ExternatlInterrupt2DeleteOnExecution;
-    extern bool ExternatlInterrupt3DeleteOnExecution;
-    extern bool ExternatlInterrupt4DeleteOnExecution;
-    extern bool ExternatlInterrupt5DeleteOnExecution;
-    extern bool ExternatlInterrupt6DeleteOnExecution;
-    extern bool ExternatlInterrupt7DeleteOnExecution;
-    extern bool ExternatlInterrupt8DeleteOnExecution;
-    extern bool ExternatlInterrupt9DeleteOnExecution;
-    extern bool ExternatlInterrupt10DeleteOnExecution;
-    extern bool ExternatlInterrupt11DeleteOnExecution;
-    extern bool ExternatlInterrupt12DeleteOnExecution;
-    extern bool ExternatlInterrupt13DeleteOnExecution;
-    extern bool ExternatlInterrupt14DeleteOnExecution;
-    extern bool ExternatlInterrupt15DeleteOnExecution;
+    extern std::function<void()> ExternatlInterrupt0Callback;
+    extern std::function<void()> ExternatlInterrupt1Callback;
+    extern std::function<void()> ExternatlInterrupt2Callback;
+    extern std::function<void()> ExternatlInterrupt3Callback;
+    extern std::function<void()> ExternatlInterrupt4Callback;
+    extern std::function<void()> ExternatlInterrupt5Callback;
+    extern std::function<void()> ExternatlInterrupt6Callback;
+    extern std::function<void()> ExternatlInterrupt7Callback;
+    extern std::function<void()> ExternatlInterrupt8Callback;
+    extern std::function<void()> ExternatlInterrupt9Callback;
+    extern std::function<void()> ExternatlInterrupt10Callback;
+    extern std::function<void()> ExternatlInterrupt11Callback;
+    extern std::function<void()> ExternatlInterrupt12Callback;
+    extern std::function<void()> ExternatlInterrupt13Callback;
+    extern std::function<void()> ExternatlInterrupt14Callback;
+    extern std::function<void()> ExternatlInterrupt15Callback;
 
     void EnableGPIOClock(uint16_t pin);
-    void EnableInterrupt(uint16_t pin, EmbeddedIOServices::ICallBack *callBack, bool deleteOnExecution);
-    void DisableInterrupt(uint16_t pin);
+    void attachInterrupt(uint16_t pin, std::function<void()> callBack);
+    void detachInterrupt(uint16_t pin);
     
     constexpr uint16_t PinToGPIO_Pin(uint16_t pin)
     {
@@ -89,7 +72,7 @@ namespace Stm32
     
     constexpr GPIO_TypeDef *PinToGPIO(uint16_t pin)
     {
-		switch(pin / 16)
+		switch(pin  / 16)
 		{
 #ifdef GPIOA
 		case 0: //PA

@@ -1,42 +1,23 @@
 #include "Stm32HalGpio.h"
 
-using namespace EmbeddedIOServices;
-
 namespace Stm32
 {
-	ICallBack *ExternatlInterrupt0Callback;
-	ICallBack *ExternatlInterrupt1Callback;
-	ICallBack *ExternatlInterrupt2Callback;
-	ICallBack *ExternatlInterrupt3Callback;
-	ICallBack *ExternatlInterrupt4Callback;
-	ICallBack *ExternatlInterrupt5Callback;
-	ICallBack *ExternatlInterrupt6Callback;
-	ICallBack *ExternatlInterrupt7Callback;
-	ICallBack *ExternatlInterrupt8Callback;
-	ICallBack *ExternatlInterrupt9Callback;
-	ICallBack *ExternatlInterrupt10Callback;
-	ICallBack *ExternatlInterrupt11Callback;
-	ICallBack *ExternatlInterrupt12Callback;
-	ICallBack *ExternatlInterrupt13Callback;
-	ICallBack *ExternatlInterrupt14Callback;
-	ICallBack *ExternatlInterrupt15Callback;
-	
-    bool ExternatlInterrupt0DeleteOnExecution;
-    bool ExternatlInterrupt1DeleteOnExecution;
-    bool ExternatlInterrupt2DeleteOnExecution;
-    bool ExternatlInterrupt3DeleteOnExecution;
-    bool ExternatlInterrupt4DeleteOnExecution;
-    bool ExternatlInterrupt5DeleteOnExecution;
-    bool ExternatlInterrupt6DeleteOnExecution;
-    bool ExternatlInterrupt7DeleteOnExecution;
-    bool ExternatlInterrupt8DeleteOnExecution;
-    bool ExternatlInterrupt9DeleteOnExecution;
-    bool ExternatlInterrupt10DeleteOnExecution;
-    bool ExternatlInterrupt11DeleteOnExecution;
-    bool ExternatlInterrupt12DeleteOnExecution;
-    bool ExternatlInterrupt13DeleteOnExecution;
-    bool ExternatlInterrupt14DeleteOnExecution;
-    bool ExternatlInterrupt15DeleteOnExecution;
+	std::function<void()> ExternatlInterrupt0Callback;
+	std::function<void()> ExternatlInterrupt1Callback;
+	std::function<void()> ExternatlInterrupt2Callback;
+	std::function<void()> ExternatlInterrupt3Callback;
+	std::function<void()> ExternatlInterrupt4Callback;
+	std::function<void()> ExternatlInterrupt5Callback;
+	std::function<void()> ExternatlInterrupt6Callback;
+	std::function<void()> ExternatlInterrupt7Callback;
+	std::function<void()> ExternatlInterrupt8Callback;
+	std::function<void()> ExternatlInterrupt9Callback;
+	std::function<void()> ExternatlInterrupt10Callback;
+	std::function<void()> ExternatlInterrupt11Callback;
+	std::function<void()> ExternatlInterrupt12Callback;
+	std::function<void()> ExternatlInterrupt13Callback;
+	std::function<void()> ExternatlInterrupt14Callback;
+	std::function<void()> ExternatlInterrupt15Callback;
     
     void EnableGPIOClock(uint16_t pin)
     {
@@ -111,7 +92,7 @@ namespace Stm32
 		}
     }
 		
-	void EnableInterrupt(uint16_t pin, ICallBack *callBack, bool deleteOnExecution)
+	void attachInterrupt(uint16_t pin, std::function<void()> callBack)
 	{
 		EnableGPIOClock(pin);
 
@@ -127,97 +108,81 @@ namespace Stm32
 		{
 			case GPIO_PIN_0:
 				ExternatlInterrupt0Callback = callBack;
-				ExternatlInterrupt0DeleteOnExecution = deleteOnExecution;
 				HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
 				HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 				break;
 			case GPIO_PIN_1:
 				ExternatlInterrupt1Callback = callBack;
-				ExternatlInterrupt1DeleteOnExecution = deleteOnExecution;
 				HAL_NVIC_SetPriority(EXTI1_IRQn, 0, 0);
 				HAL_NVIC_EnableIRQ(EXTI1_IRQn);
 				break;
 			case GPIO_PIN_2:
 				ExternatlInterrupt2Callback = callBack;
-				ExternatlInterrupt2DeleteOnExecution = deleteOnExecution;
 				HAL_NVIC_SetPriority(EXTI2_IRQn, 0, 0);
 				HAL_NVIC_EnableIRQ(EXTI2_IRQn);
 				break;
 			case GPIO_PIN_3:
 				ExternatlInterrupt3Callback = callBack;
-				ExternatlInterrupt3DeleteOnExecution = deleteOnExecution;
 				HAL_NVIC_SetPriority(EXTI3_IRQn, 0, 0);
 				HAL_NVIC_EnableIRQ(EXTI3_IRQn);
 				break;
 			case GPIO_PIN_4:
 				ExternatlInterrupt4Callback = callBack;
-				ExternatlInterrupt4DeleteOnExecution = deleteOnExecution;
 				HAL_NVIC_SetPriority(EXTI4_IRQn, 0, 0);
 				HAL_NVIC_EnableIRQ(EXTI4_IRQn);
 				break;
 			case GPIO_PIN_5:
 				ExternatlInterrupt5Callback = callBack;
-				ExternatlInterrupt5DeleteOnExecution = deleteOnExecution;
 				HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
 				HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 				break;
 			case GPIO_PIN_6:
 				ExternatlInterrupt6Callback = callBack;
-				ExternatlInterrupt6DeleteOnExecution = deleteOnExecution;
 				HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
 				HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 				break;
 			case GPIO_PIN_7:
 				ExternatlInterrupt7Callback = callBack;
-				ExternatlInterrupt7DeleteOnExecution = deleteOnExecution;
 				HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
 				HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 				break;
 			case GPIO_PIN_8:
 				ExternatlInterrupt8Callback = callBack;
-				ExternatlInterrupt8DeleteOnExecution = deleteOnExecution;
 				HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
 				HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 				break;
 			case GPIO_PIN_9:
 				ExternatlInterrupt9Callback = callBack;
-				ExternatlInterrupt9DeleteOnExecution = deleteOnExecution;
 				HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
 				HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 				break;
 			case GPIO_PIN_10:
 				ExternatlInterrupt10Callback = callBack;
-				ExternatlInterrupt10DeleteOnExecution = deleteOnExecution;
 				HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
 				HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 				break;
 			case GPIO_PIN_11:
 				ExternatlInterrupt11Callback = callBack;
-				ExternatlInterrupt11DeleteOnExecution = deleteOnExecution;
 				HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
 				HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 				break;
 			case GPIO_PIN_12:
 				ExternatlInterrupt12Callback = callBack;
-				ExternatlInterrupt12DeleteOnExecution = deleteOnExecution;
 				HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
 				HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 				break;
 			case GPIO_PIN_13:
 				ExternatlInterrupt13Callback = callBack;
-				ExternatlInterrupt13DeleteOnExecution = deleteOnExecution;
 				HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
 				HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 				break;
 			case GPIO_PIN_14:
 				ExternatlInterrupt14Callback = callBack;
-				ExternatlInterrupt14DeleteOnExecution = deleteOnExecution;
 				HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
 				HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 				break;
 			case GPIO_PIN_15:
 				ExternatlInterrupt15Callback = callBack;
-				ExternatlInterrupt15DeleteOnExecution = deleteOnExecution;
 				HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
 				HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 				break;
@@ -227,7 +192,7 @@ namespace Stm32
 		
 	}
 
-	void DisableInterrupt(uint16_t pin)
+	void detachInterrupt(uint16_t pin)
 	{
 		GPIO_InitTypeDef GPIO_InitStruct;
 
@@ -317,12 +282,7 @@ namespace Stm32
 			{
 				if(ExternatlInterrupt0Callback != 0)
 				{
-					ExternatlInterrupt0Callback->Execute();
-					if(ExternatlInterrupt0DeleteOnExecution)
-					{
-						delete ExternatlInterrupt0Callback;
-						ExternatlInterrupt0Callback = 0;
-					}
+					ExternatlInterrupt0Callback();
 				}
 				__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_0);
 			}
@@ -333,12 +293,7 @@ namespace Stm32
 			{
 				if(ExternatlInterrupt1Callback != 0)
 				{
-					ExternatlInterrupt1Callback->Execute();
-					if(ExternatlInterrupt1DeleteOnExecution)
-					{
-						delete ExternatlInterrupt1Callback;
-						ExternatlInterrupt1Callback = 0;
-					}
+					ExternatlInterrupt1Callback();
 				}
 				__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_1);
 			}
@@ -349,12 +304,7 @@ namespace Stm32
 			{
 				if(ExternatlInterrupt2Callback != 0)
 				{
-					ExternatlInterrupt2Callback->Execute();
-					if(ExternatlInterrupt2DeleteOnExecution)
-					{
-						delete ExternatlInterrupt2Callback;
-						ExternatlInterrupt2Callback = 0;
-					}
+					ExternatlInterrupt2Callback();
 				}
 				__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_2);
 			}
@@ -365,12 +315,7 @@ namespace Stm32
 			{
 				if(ExternatlInterrupt3Callback != 0)
 				{
-					ExternatlInterrupt3Callback->Execute();
-					if(ExternatlInterrupt3DeleteOnExecution)
-					{
-						delete ExternatlInterrupt3Callback;
-						ExternatlInterrupt3Callback = 0;
-					}
+					ExternatlInterrupt3Callback();
 				}
 				__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_3);
 			}
@@ -381,12 +326,7 @@ namespace Stm32
 			{
 				if(ExternatlInterrupt4Callback != 0)
 				{
-					ExternatlInterrupt4Callback->Execute();
-					if(ExternatlInterrupt4DeleteOnExecution)
-					{
-						delete ExternatlInterrupt4Callback;
-						ExternatlInterrupt4Callback = 0;
-					}
+					ExternatlInterrupt4Callback();
 				}
 				__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_4);
 			}
@@ -397,12 +337,7 @@ namespace Stm32
 			{
 				if(ExternatlInterrupt5Callback != 0)
 				{
-					ExternatlInterrupt5Callback->Execute();
-					if(ExternatlInterrupt5DeleteOnExecution)
-					{
-						delete ExternatlInterrupt5Callback;
-						ExternatlInterrupt5Callback = 0;
-					}
+					ExternatlInterrupt5Callback();
 				}
 				__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_5);
 			}
@@ -410,12 +345,7 @@ namespace Stm32
 			{
 				if(ExternatlInterrupt6Callback != 0)
 				{
-					ExternatlInterrupt6Callback->Execute();
-					if(ExternatlInterrupt6DeleteOnExecution)
-					{
-						delete ExternatlInterrupt6Callback;
-						ExternatlInterrupt6Callback = 0;
-					}
+					ExternatlInterrupt6Callback();
 				}
 				__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_6);
 			}
@@ -423,12 +353,7 @@ namespace Stm32
 			{
 				if(ExternatlInterrupt7Callback != 0)
 				{
-					ExternatlInterrupt7Callback->Execute();
-					if(ExternatlInterrupt7DeleteOnExecution)
-					{
-						delete ExternatlInterrupt7Callback;
-						ExternatlInterrupt7Callback = 0;
-					}
+					ExternatlInterrupt7Callback();
 				}
 				__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_7);
 			}
@@ -436,12 +361,7 @@ namespace Stm32
 			{
 				if(ExternatlInterrupt8Callback != 0)
 				{
-					ExternatlInterrupt8Callback->Execute();
-					if(ExternatlInterrupt8DeleteOnExecution)
-					{
-						delete ExternatlInterrupt8Callback;
-						ExternatlInterrupt8Callback = 0;
-					}
+					ExternatlInterrupt8Callback();
 				}
 				__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_8);
 			}
@@ -449,12 +369,7 @@ namespace Stm32
 			{
 				if(ExternatlInterrupt9Callback != 0)
 				{
-					ExternatlInterrupt9Callback->Execute();
-					if(ExternatlInterrupt9DeleteOnExecution)
-					{
-						delete ExternatlInterrupt9Callback;
-						ExternatlInterrupt9Callback = 0;
-					}
+					ExternatlInterrupt9Callback();
 				}
 				__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_9);
 			}
@@ -465,12 +380,7 @@ namespace Stm32
 			{
 				if(ExternatlInterrupt10Callback != 0)
 				{
-					ExternatlInterrupt10Callback->Execute();
-					if(ExternatlInterrupt10DeleteOnExecution)
-					{
-						delete ExternatlInterrupt10Callback;
-						ExternatlInterrupt10Callback = 0;
-					}
+					ExternatlInterrupt10Callback();
 				}
 				__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_10);
 			}
@@ -478,12 +388,7 @@ namespace Stm32
 			{
 				if(ExternatlInterrupt11Callback != 0)
 				{
-					ExternatlInterrupt11Callback->Execute();
-					if(ExternatlInterrupt11DeleteOnExecution)
-					{
-						delete ExternatlInterrupt11Callback;
-						ExternatlInterrupt11Callback = 0;
-					}
+					ExternatlInterrupt11Callback();
 				}
 				__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_11);
 			}
@@ -491,12 +396,7 @@ namespace Stm32
 			{
 				if(ExternatlInterrupt12Callback != 0)
 				{
-					ExternatlInterrupt12Callback->Execute();
-					if(ExternatlInterrupt12DeleteOnExecution)
-					{
-						delete ExternatlInterrupt12Callback;
-						ExternatlInterrupt12Callback = 0;
-					}
+					ExternatlInterrupt12Callback();
 				}
 				__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_12);
 			}
@@ -504,12 +404,7 @@ namespace Stm32
 			{
 				if(ExternatlInterrupt13Callback != 0)
 				{
-					ExternatlInterrupt13Callback->Execute();
-					if(ExternatlInterrupt13DeleteOnExecution)
-					{
-						delete ExternatlInterrupt13Callback;
-						ExternatlInterrupt13Callback = 0;
-					}
+					ExternatlInterrupt13Callback();
 				}
 				__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_13);
 			}
@@ -517,12 +412,7 @@ namespace Stm32
 			{
 				if(ExternatlInterrupt14Callback != 0)
 				{
-					ExternatlInterrupt14Callback->Execute();
-					if(ExternatlInterrupt14DeleteOnExecution)
-					{
-						delete ExternatlInterrupt14Callback;
-						ExternatlInterrupt14Callback = 0;
-					}
+					ExternatlInterrupt14Callback();
 				}
 				__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_14);
 			}
@@ -530,12 +420,7 @@ namespace Stm32
 			{
 				if(ExternatlInterrupt15Callback != 0)
 				{
-					ExternatlInterrupt15Callback->Execute();
-					if(ExternatlInterrupt15DeleteOnExecution)
-					{
-						delete ExternatlInterrupt15Callback;
-						ExternatlInterrupt15Callback = 0;
-					}
+					ExternatlInterrupt15Callback();
 				}
 				__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_15);
 			}

@@ -15,8 +15,8 @@ namespace Stm32
 		void InitPin(uint16_t pin, EmbeddedIOServices::PinDirection direction);
 		bool ReadPin(uint16_t pin);
 		void WritePin(uint16_t pin, bool value);
-		void ScheduleRecurringInterrupt(uint16_t pin, EmbeddedIOServices::ICallBack *);
-		void ScheduleNextInterrupt(uint16_t pin, EmbeddedIOServices::ICallBack *);
+		void AttachInterrupt(uint16_t pin, std::function<void()>);
+		void DetachInterrupt(uint16_t pin);
 	};
 }
 
