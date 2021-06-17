@@ -1,54 +1,42 @@
-#include "ICallBack.h"
 #include "stdint.h"
+#include <functional>
+#include <forward_list>
 
 #ifndef ITIMERSERVICE_H
 #define ITIMERSERVICE_H
 
 namespace EmbeddedIOServices
 {
-	class Task
+	struct Task
 	{
-	public:
-		Task() {}
-		Task(ICallBack *callBack, bool deleteOnExecution)
-		{
-			CallBackInstance = callBack;
-			DeleteOnExecution = deleteOnExecution;
-		}
-
-		void Execute()
-		{
-			CallBackInstance->Execute();
-		}
-
-		ICallBack *CallBackInstance;
-		bool DeleteOnExecution = false;
-		//only let TimerService edit these values
-		bool Scheduled = false;
-		Task *NextTask = 0;
+		public:
+		std::function<void()> CallBack;
 		uint32_t Tick;
+		bool Scheduled : 1;
+		bool DeleteAfterExecution : 1;
+
+		Task(std::function<void()> callBack, bool deleteAfterExecution)
+		{
+			CallBack = callBack;
+			DeleteAfterExecution = deleteAfterExecution;
+		}
 	};
 
 	class ITimerService
 	{
 	private:
-		bool _disableCallBack = false;
-		bool _callBackCalledWhileDisabled = false;
-		uint32_t _maxDelay = 0;
-		int _delayStack = 0;
+		void ScheduleFirstTaskInList();
+		void RemoveExecutedTasksFromList();
 	protected:
+		std::forward_list<Task *> _taskList;
 		virtual void ScheduleCallBack(const uint32_t tick) = 0;
-		uint32_t TimerCallBackAdvance = 0;
 	public:
-	
 		virtual const uint32_t GetTick() = 0;
 		virtual const uint32_t GetTicksPerSecond() = 0;
 
-		Task *FirstTask = 0;
-
 		void ReturnCallBack(void);
-		Task *ScheduleTask(ICallBack *callBack, const uint32_t, const bool);
-		void ScheduleTask(Task *, const uint32_t);
+		Task *ScheduleTask(std::function<void()>, uint32_t, bool);
+		void ScheduleTask(Task *, uint32_t);
 		void UnScheduleTask(Task *);
 		
 		const uint32_t GetElapsedTick(const uint32_t);
