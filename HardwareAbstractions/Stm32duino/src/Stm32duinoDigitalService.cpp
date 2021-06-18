@@ -1,5 +1,5 @@
-#include <stdint.h>
 #include <Arduino.h>
+#include <stdint.h>
 #include "Stm32duinoDigitalService.h"
 
 using namespace EmbeddedIOServices;
@@ -11,7 +11,7 @@ namespace Stm32
 		if (pin == 0xFFFF)
 			return;
 
-		pinMode(pin, direction == In ? INPUT : OUTPUT);
+		pinMode(pin, OUTPUT);
 	}
 	
 	bool Stm32duinoDigitalService::ReadPin(uint16_t pin)
@@ -19,27 +19,30 @@ namespace Stm32
 		if (pin == 0xFFFF)
 			return false;
 		
-		return digitalRead(pin) == HIGH;
+		return digitalRead(pin);
 	}
 	
 	void Stm32duinoDigitalService::WritePin(uint16_t pin, bool value)
 	{
 		if (pin == 0xFFFF)
 			return;
-
-    if(value)
-  	  digitalWrite(pin, HIGH);
-    else
-      digitalWrite(pin, LOW);
+		
+  	digitalWrite(pin, value);
 	}
 
-	void Stm32duinoDigitalService::ScheduleRecurringInterrupt(uint16_t pin, ICallBack *callBack)
+	void Stm32duinoDigitalService::AttachInterrupt(uint16_t pin, std::function<void()> callBack)
 	{
-    attachInterrupt(pin, std::bind([](ICallBack *CallBack) { CallBack->Execute(); }, callBack), CHANGE);
+		if (pin == 0xFFFF)
+			return;
+		
+		attachInterrupt(pin, callBack, CHANGE);
 	}
 
-	void Stm32duinoDigitalService::ScheduleNextInterrupt(uint16_t pin, ICallBack *callBack)
+	void Stm32duinoDigitalService::DetachInterrupt(uint16_t pin)
 	{
-    attachInterrupt(pin, std::bind([](ICallBack *CallBack) { CallBack->Execute(); delete CallBack; }, callBack), CHANGE);
+		if (pin == 0xFFFF)
+			return;
+		
+		detachInterrupt(pin);
 	}
 }

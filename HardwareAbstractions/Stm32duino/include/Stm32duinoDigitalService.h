@@ -3,8 +3,8 @@
 #include "Stm32duinoConf.h"
 #include "stdint.h"
 
-#ifndef STM32DUINDIGITALSERVICE_H
-#define STM32DUINDIGITALSERVICE_H
+#ifndef STM32DUINODIGITALSERVICE_H
+#define STM32DUINODIGITALSERVICE_H
 
 namespace Stm32
 {
@@ -14,8 +14,8 @@ namespace Stm32
 		void InitPin(uint16_t pin, EmbeddedIOServices::PinDirection direction);
 		bool ReadPin(uint16_t pin);
 		void WritePin(uint16_t pin, bool value);
-		void ScheduleRecurringInterrupt(uint16_t pin, std::function<void()> *);
-		void ScheduleNextInterrupt(uint16_t pin, std::function<void()> *);
+		void AttachInterrupt(uint16_t pin, std::function<void()>);
+		void DetachInterrupt(uint16_t pin);
 	};
 }
 

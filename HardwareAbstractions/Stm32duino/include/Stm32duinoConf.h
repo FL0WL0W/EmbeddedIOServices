@@ -4,6 +4,22 @@
 #ifndef STM32DUINOCONF_H
 #define STM32DUINOCONF_H
 
+#define TIM2_CC_IRQn            TIM2_IRQn
+#define TIM3_CC_IRQn            TIM3_IRQn
+#define TIM4_CC_IRQn            TIM4_IRQn
+#define TIM5_CC_IRQn            TIM5_IRQn
+#define TIM9_CC_IRQn            TIM1_BRK_TIM9_IRQn
+#define TIM10_CC_IRQn           TIM1_UP_TIM10_IRQn
+#define TIM11_CC_IRQn           TIM1_TRG_COM_TIM11_IRQn
+
+#define TIM2_CC_IRQHandler      TIM2_IRQHandler
+#define TIM3_CC_IRQHandler      TIM3_IRQHandler
+#define TIM4_CC_IRQHandler      TIM4_IRQHandler
+#define TIM5_CC_IRQHandler      TIM5_IRQHandler
+#define TIM9_CC_IRQHandler      TIM1_BRK_TIM9_IRQHandler
+#define TIM10_CC_IRQHandler     TIM1_UP_TIM10_IRQHandler
+#define TIM11_CC_IRQHandler     TIM1_TRG_COM_TIM11_IRQHandler
+
 #define ADC_VOLTAGE_CONVERSION_CONSTANT 3.3 / 4095
 
 // #define PWM_TIM1_CC1
