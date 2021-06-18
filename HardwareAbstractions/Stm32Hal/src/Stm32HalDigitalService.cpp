@@ -36,13 +36,19 @@ namespace Stm32
   		HAL_GPIO_WritePin(PinToGPIO(pin), PinToGPIO_Pin(pin), value? GPIO_PIN_SET : GPIO_PIN_RESET);
 	}
 
-	void Stm32HalDigitalService::ScheduleRecurringInterrupt(uint16_t pin, ICallBack *callBack)
+	void Stm32HalDigitalService::AttachInterrupt(uint16_t pin, std::function<void()> callBack)
 	{
-		EnableInterrupt(pin, callBack, false);
+		if (pin == 0xFFFF)
+			return;
+		
+		attachInterrupt(pin, callBack);
 	}
 
-	void Stm32HalDigitalService::ScheduleNextInterrupt(uint16_t pin, ICallBack *callBack)
+	void Stm32HalDigitalService::DetachInterrupt(uint16_t pin)
 	{
-		EnableInterrupt(pin, callBack, true);
+		if (pin == 0xFFFF)
+			return;
+		
+		detachInterrupt(pin);
 	}
 }

@@ -1,112 +1,92 @@
 #include "Stm32HalConf.h"
 #include "stdint.h"
+#include <functional>
 
 #ifndef STM32HALTIMER_H
 #define STM32HALTIMER_H
 
 namespace Stm32
-{
-    void EnableTimerClock(uint8_t timNum);
-    void EnableTimerInterrupts(uint8_t timNum);
-#if defined(TIM14)
-	extern "C" uint16_t _prevCC[14][4];
-	extern "C" uint16_t _currCC[14][4];
-#elif defined(TIM13)
-	extern "C" uint16_t _prevCC[13][4];
-	extern "C" uint16_t _currCC[13][4];
-#elif defined(TIM12)
-	extern "C" uint16_t _prevCC[12][4];
-	extern "C" uint16_t _currCC[12][4];
-#elif defined(TIM11)
-	extern "C" uint16_t _prevCC[11][4];
-	extern "C" uint16_t _currCC[11][4];
-#elif defined(TIM10)
-	extern "C" uint16_t _prevCC[10][4];
-	extern "C" uint16_t _currCC[10][4];
-#elif defined(TIM9)
-	extern "C" uint16_t _prevCC[9][4];
-	extern "C" uint16_t _currCC[9][4];
-#elif defined(TIM8)
-	extern "C" uint16_t _prevCC[8][4];
-	extern "C" uint16_t _currCC[8][4];
-#elif defined(TIM7)
-	extern "C" uint16_t _prevCC[7][4];
-	extern "C" uint16_t _currCC[7][4];
-#elif defined(TIM6)
-	extern "C" uint16_t _prevCC[6][4];
-	extern "C" uint16_t _currCC[6][4];
-#elif defined(TIM5)
-	extern "C" uint16_t _prevCC[5][4];
-	extern "C" uint16_t _currCC[5][4];
-#elif defined(TIM4)
-	extern "C" uint16_t _prevCC[4][4];
-	extern "C" uint16_t _currCC[4][4];
-#elif defined(TIM3)
-	extern "C" uint16_t _prevCC[3][4];
-	extern "C" uint16_t _currCC[3][4];
-#elif defined(TIM2)
-	extern "C" uint16_t _prevCC[2][4];
-	extern "C" uint16_t _currCC[2][4];
-#elif defined(TIM1)
-	extern "C" uint16_t _prevCC[1][4];
-	extern "C" uint16_t _currCC[1][4];
+{		
+	enum TimerIndex : uint8_t
+	{
+#ifdef TIM1_BASE	
+		Index1,
 #endif
-#ifdef TIM1
-	extern bool TIM1_Freq_Locked;
-    extern bool TIM1_Input;
+#ifdef TIM2_BASE	
+		Index2,
 #endif
-#ifdef TIM2
-	extern bool TIM2_Freq_Locked;
-    extern bool TIM2_Input;
+#ifdef TIM3_BASE	
+		Index3,
 #endif
-#ifdef TIM3
-	extern bool TIM3_Freq_Locked;
-    extern bool TIM3_Input;
+#ifdef TIM4_BASE	
+		Index4,
 #endif
-#ifdef TIM4
-	extern bool TIM4_Freq_Locked;
-    extern bool TIM4_Input;
+#ifdef TIM5_BASE	
+		Index5,
 #endif
-#ifdef TIM5
-	extern bool TIM5_Freq_Locked;
-    extern bool TIM5_Input;
+#ifdef TIM6_BASE	
+		Index6,
 #endif
-#ifdef TIM6
-	extern bool TIM6_Freq_Locked;
-    extern bool TIM6_Input;
+#ifdef TIM7_BASE	
+		Index7,
 #endif
-#ifdef TIM7
-	extern bool TIM7_Freq_Locked;
-    extern bool TIM7_Input;
+#ifdef TIM8_BASE	
+		Index8,
 #endif
-#ifdef TIM8
-	extern bool TIM8_Freq_Locked;
-    extern bool TIM8_Input;
+#ifdef TIM9_BASE	
+		Index9,
 #endif
-#ifdef TIM9
-	extern bool TIM9_Freq_Locked;
-    extern bool TIM9_Input;
+#ifdef TIM10_BASE	
+		Index10,
 #endif
-#ifdef TIM10
-	extern bool TIM10_Freq_Locked;
-    extern bool TIM10_Input;
+#ifdef TIM11_BASE	
+		Index11,
 #endif
-#ifdef TIM11
-	extern bool TIM11_Freq_Locked;
-    extern bool TIM11_Input;
+#ifdef TIM12_BASE	
+		Index12,
 #endif
-#ifdef TIM12
-	extern bool TIM12_Freq_Locked;
-    extern bool TIM12_Input;
+#ifdef TIM13_BASE	
+		Index13,
 #endif
-#ifdef TIM13
-	extern bool TIM13_Freq_Locked;
-    extern bool TIM13_Input;
+#ifdef TIM14_BASE	
+		Index14,
 #endif
-#ifdef TIM14
-	extern bool TIM14_Freq_Locked;
-    extern bool TIM14_Input;
+#ifdef TIM15_BASE	
+		Index15,
 #endif
+#ifdef TIM16_BASE	
+		Index16,
+#endif
+#ifdef TIM17_BASE	
+		Index17,
+#endif
+#ifdef TIM18_BASE	
+		Index18,
+#endif
+#ifdef TIM19_BASE	
+		Index19,
+#endif
+#ifdef TIM20_BASE	
+		Index20,
+#endif
+#ifdef TIM21_BASE	
+		Index21,
+#endif
+#ifdef TIM22_BASE	
+		Index22,
+#endif
+		Num
+	};
+
+	extern bool _timFrequencyLocked[TimerIndex::Num];
+	extern std::function<void()> _timCallBack[TimerIndex::Num];
+	extern "C" uint16_t _timPreviousCC[TimerIndex::Num][4];
+	extern "C" uint16_t _timCurrentCC[TimerIndex::Num][4];
+
+	TIM_HandleTypeDef TimInit(TIM_TypeDef *TIM, uint32_t prescaler, uint32_t period);
+	TIM_TypeDef* TimIndexToTIM(TimerIndex index);
+	void EnableTimerClock(TimerIndex index);
+	void EnableTimerInterrupts(TimerIndex index);
 }
 
 #endif

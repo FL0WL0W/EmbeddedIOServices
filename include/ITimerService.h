@@ -15,10 +15,10 @@ namespace EmbeddedIOServices
 		bool Scheduled : 1;
 		bool DeleteAfterExecution : 1;
 
-		Task(std::function<void()> callBack, bool deleteAfterExecution)
+		Task(std::function<void()> callBack)
 		{
 			CallBack = callBack;
-			DeleteAfterExecution = deleteAfterExecution;
+			DeleteAfterExecution = false;
 		}
 	};
 
@@ -26,7 +26,6 @@ namespace EmbeddedIOServices
 	{
 	private:
 		void ScheduleFirstTaskInList();
-		void RemoveExecutedTasksFromList();
 	protected:
 		std::forward_list<Task *> _taskList;
 		virtual void ScheduleCallBack(const uint32_t tick) = 0;
@@ -35,7 +34,7 @@ namespace EmbeddedIOServices
 		virtual const uint32_t GetTicksPerSecond() = 0;
 
 		void ReturnCallBack(void);
-		Task *ScheduleTask(std::function<void()>, uint32_t, bool);
+		void ScheduleTask(std::function<void()>, uint32_t);
 		void ScheduleTask(Task *, uint32_t);
 		void UnScheduleTask(Task *);
 		
