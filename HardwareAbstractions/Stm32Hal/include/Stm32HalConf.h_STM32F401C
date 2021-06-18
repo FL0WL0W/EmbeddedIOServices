@@ -4,6 +4,22 @@
 #ifndef STM32HALCONF_H
 #define STM32HALCONF_H
 
+#define TIM2_CC_IRQn            TIM2_IRQn
+#define TIM3_CC_IRQn            TIM3_IRQn
+#define TIM4_CC_IRQn            TIM4_IRQn
+#define TIM5_CC_IRQn            TIM5_IRQn
+#define TIM9_CC_IRQn            TIM1_BRK_TIM9_IRQn
+#define TIM10_CC_IRQn           TIM1_UP_TIM10_IRQn
+#define TIM11_CC_IRQn           TIM1_TRG_COM_TIM11_IRQn
+
+#define TIM2_CC_IRQHandler      TIM2_IRQHandler
+#define TIM3_CC_IRQHandler      TIM3_IRQHandler
+#define TIM4_CC_IRQHandler      TIM4_IRQHandler
+#define TIM5_CC_IRQHandler      TIM5_IRQHandler
+#define TIM9_CC_IRQHandler      TIM1_BRK_TIM9_IRQHandler
+#define TIM10_CC_IRQHandler     TIM1_UP_TIM10_IRQHandler
+#define TIM11_CC_IRQHandler     TIM1_TRG_COM_TIM11_IRQHandler
+
 #define ADC1_VOLTAGE_CONVERSION_CONSTANT 3.3 / 4095
 #define ADC1_IN0_PIN 0
 #define ADC1_IN1_PIN 1
@@ -13,8 +29,8 @@
 #define ADC1_IN5_PIN 5
 #define ADC1_IN6_PIN 6
 #define ADC1_IN7_PIN 7
-#define ADC1_IN8_PIN 15
-#define ADC1_IN9_PIN 16
+#define ADC1_IN8_PIN 16
+#define ADC1_IN9_PIN 17
 //#define ADC1_IN10_PIN 
 //#define ADC1_IN11_PIN 
 //#define ADC1_IN12_PIN 
