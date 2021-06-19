@@ -4,22 +4,6 @@
 #ifndef STM32DUINOCONF_H
 #define STM32DUINOCONF_H
 
-#define TIM2_CC_IRQn            TIM2_IRQn
-#define TIM3_CC_IRQn            TIM3_IRQn
-#define TIM4_CC_IRQn            TIM4_IRQn
-#define TIM5_CC_IRQn            TIM5_IRQn
-#define TIM9_CC_IRQn            TIM1_BRK_TIM9_IRQn
-#define TIM10_CC_IRQn           TIM1_UP_TIM10_IRQn
-#define TIM11_CC_IRQn           TIM1_TRG_COM_TIM11_IRQn
-
-#define TIM2_CC_IRQHandler      TIM2_IRQHandler
-#define TIM3_CC_IRQHandler      TIM3_IRQHandler
-#define TIM4_CC_IRQHandler      TIM4_IRQHandler
-#define TIM5_CC_IRQHandler      TIM5_IRQHandler
-#define TIM9_CC_IRQHandler      TIM1_BRK_TIM9_IRQHandler
-#define TIM10_CC_IRQHandler     TIM1_UP_TIM10_IRQHandler
-#define TIM11_CC_IRQHandler     TIM1_TRG_COM_TIM11_IRQHandler
-
 #define ADC_VOLTAGE_CONVERSION_CONSTANT 3.3 / 4095
 
 // #define PWM_TIM1_CC1
@@ -91,5 +75,45 @@
 //#define PWM_TIM14_CC2 
 //#define PWM_TIM14_CC3 
 //#define PWM_TIM14_CC4 
+
+//#define PWM_TIM15_CC1 
+//#define PWM_TIM15_CC2 
+//#define PWM_TIM15_CC3 
+//#define PWM_TIM15_CC4 
+
+//#define PWM_TIM16_CC1 
+//#define PWM_TIM16_CC2 
+//#define PWM_TIM16_CC3 
+//#define PWM_TIM16_CC4 
+
+//#define PWM_TIM17_CC1 
+//#define PWM_TIM17_CC2 
+//#define PWM_TIM17_CC3 
+//#define PWM_TIM17_CC4 
+
+//#define PWM_TIM18_CC1 
+//#define PWM_TIM18_CC2 
+//#define PWM_TIM18_CC3 
+//#define PWM_TIM18_CC4 
+
+//#define PWM_TIM19_CC1 
+//#define PWM_TIM19_CC2 
+//#define PWM_TIM19_CC3 
+//#define PWM_TIM19_CC4 
+
+//#define PWM_TIM20_CC1 
+//#define PWM_TIM20_CC2 
+//#define PWM_TIM20_CC3 
+//#define PWM_TIM20_CC4 
+
+//#define PWM_TIM21_CC1 
+//#define PWM_TIM21_CC2 
+//#define PWM_TIM21_CC3 
+//#define PWM_TIM21_CC4 
+
+//#define PWM_TIM22_CC1 
+//#define PWM_TIM22_CC2 
+//#define PWM_TIM22_CC3 
+//#define PWM_TIM22_CC4 
 
 #endif
