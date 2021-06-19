@@ -14,6 +14,7 @@ namespace Stm32
 		uint32_t _ticksPerSecond;
 		TIM_TypeDef *TIM;
 		uint32_t _callTick = 0;
+		uint32_t _coarseTimerHalfLength;
 
 		volatile uint16_t _interruptLatency = 0;
 		uint16_t _functionCallCompensation = 0;

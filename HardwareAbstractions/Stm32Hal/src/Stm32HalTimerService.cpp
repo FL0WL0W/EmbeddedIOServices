@@ -58,6 +58,9 @@ namespace Stm32
 		//set _returnCallBackCompensation. ignore warnings, but the compiler is probably going to optimize these out anyway
 		_returnCallBackCompensation = TIM->CNT;
 		if(_callTick != 0) ;
+		const uint32_t t = _callTick - DWT->CYCCNT;
+		if(t < 0x80000000 && t > _coarseTimerHalfLength)
+			asm("nop");
 		const uint32_t lt = _callTick - _whileWaitCompensation;
 		_returnCallBackCompensation = _interruptLatency + TIM->CNT - _returnCallBackCompensation - getTickCompensation;
 		
@@ -65,7 +68,9 @@ namespace Stm32
 
 		_timCallBack[index] = [this]() { this->ReturnCallBack(); };
 		_ticksPerSecond = HAL_RCC_GetSysClockFreq();
-		TimInit(TIM, _ticksPerSecond / (100 * 1000) - 1, 0xFFFF);
+		const uint32_t _prescaler = _ticksPerSecond / (100 * 1000) - 1;
+		_coarseTimerHalfLength = _prescaler * 0x7FFF;
+		TimInit(TIM, _prescaler, 0xFFFF);
 
 		//enable DWT-CYCCNT
 		CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
@@ -113,6 +118,9 @@ namespace Stm32
 	{
 		if(_callTick != 0)
 		{
+			const uint32_t t = _callTick - DWT->CYCCNT;
+			if(t < 0x80000000 && t > _coarseTimerHalfLength)
+				return;
 			const uint32_t lt = _callTick - _whileWaitCompensation;
 			while(TickLessThanTick(DWT->CYCCNT, lt)) ;
 			_callTick = 0;
