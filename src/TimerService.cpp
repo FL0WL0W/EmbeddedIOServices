@@ -41,7 +41,7 @@ namespace EmbeddedIOServices
 		 	ScheduleCallBack((*next)->Tick);
 	}
 
-	void ITimerService::ScheduleTask(std::function<void()> callBack, uint32_t tick)
+	void ITimerService::ScheduleCallBack(std::function<void()> callBack, uint32_t tick)
 	{
 		Task *taskToSchedule = new Task(callBack);
 		taskToSchedule->DeleteAfterExecution = true;
@@ -76,16 +76,6 @@ namespace EmbeddedIOServices
 	{
 		_taskList.remove(task);
 		ScheduleFirstTaskInList();
-	}
-	
-	const uint32_t ITimerService::GetElapsedTick(const uint32_t lastTick)
-	{
-		return GetTick() - lastTick;
-	}
-	
-	const float ITimerService::GetElapsedTime(const uint32_t lastTick)
-	{
-		return (GetElapsedTick(lastTick) / (float)GetTicksPerSecond());
 	}
 }
 #endif

@@ -29,18 +29,15 @@ namespace EmbeddedIOServices
 	protected:
 		std::forward_list<Task *> _taskList;
 		virtual void ScheduleCallBack(const uint32_t tick) = 0;
+		void ReturnCallBack(void);
 	public:
 		virtual const uint32_t GetTick() = 0;
 		virtual const uint32_t GetTicksPerSecond() = 0;
 
-		void ReturnCallBack(void);
-		void ScheduleTask(std::function<void()>, uint32_t);
+		void ScheduleCallBack(std::function<void()>, uint32_t);
 		void ScheduleTask(Task *, uint32_t);
 		void UnScheduleTask(Task *);
 		
-		const uint32_t GetElapsedTick(const uint32_t);
-		const float GetElapsedTime(const uint32_t);
-
 		constexpr static bool TickLessThanTick(const uint32_t i, const uint32_t j)
 		{
 			return i - j > 0x80000000;
