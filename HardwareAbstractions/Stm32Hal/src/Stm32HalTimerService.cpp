@@ -50,7 +50,6 @@ namespace Stm32
 
 	void Stm32HalTimerService::ScheduleCallBack(const uint32_t tick)
 	{
-		if(TickLessThanTick(tick, DWT->CYCCNT))
 		_callTick = tick - _latency;
 		if(TickLessThanTick(_callTick, DWT->CYCCNT))
 		{
