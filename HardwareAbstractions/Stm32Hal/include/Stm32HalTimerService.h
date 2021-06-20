@@ -16,6 +16,7 @@ namespace Stm32
 		uint32_t _callTick = 0;
 		uint32_t _latency = 0;
 		std::function<void()> _interrupt;
+		std::function<void()> *_timCallBackPtr;
 
 		void TimerInterrupt();
 		void ScheduleCallBack(const uint32_t tick) override;
