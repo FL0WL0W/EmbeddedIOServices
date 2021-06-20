@@ -13,82 +13,37 @@ namespace Stm32
 		if(_timFrequencyLocked[index])
 			return;
 		_timFrequencyLocked[index] = true;
+		
+		TIM_HandleTypeDef TIM_Handle = TimInit(index, 0, 0xFFFF);
+		TIM = TIM_Handle.Instance;
 
-		EnableTimerInterrupts(index);
-		EnableTimerClock(index);
-
-		TIM = TimIndexToTIM(index);
-					
-		_timCallBack[index] = [this]() { this->SetInterruptLatency(); };	
-		TIM_HandleTypeDef TIM_Handle = TimInit(TIM, 0, 0xFFFF);
-
+		//Set Output Compare Channel 1 to timing
 		TIM_OC_InitTypeDef TIM_OC_InitStruct = {0};
 		TIM_OC_InitStruct.OCMode = TIM_OCMODE_TIMING;
 		TIM_OC_InitStruct.OCPolarity = TIM_OCPOLARITY_HIGH;
 		TIM_OC_InitStruct.Pulse = 0;
+		HAL_TIM_OC_ConfigChannel(&TIM_Handle, &TIM_OC_InitStruct, TIM_CHANNEL_1);
 		
+		//Enable Compare Channel 1 Intterupt
 		__HAL_TIM_ENABLE_IT(&TIM_Handle, TIM_IT_CC1);
 		
-		HAL_TIM_OC_ConfigChannel(&TIM_Handle, &TIM_OC_InitStruct, TIM_CHANNEL_1);
+		//set timer intterupt callback
+		_timCallBack[index] = [this]() { this->TimerInterrupt(); };
 
-		//calibrate
-		//set _functionCallCompensation
-		uint32_t beforeTick;
-		uint32_t afterTick;
-		beforeTick = TIM->CNT;
-		afterTick = TIM->CNT;
-		uint8_t getTickCompensation = afterTick - beforeTick;
-
-		_functionCallCompensation = TIM->CNT;
-		SetFunctionCallCompensation();
-		_functionCallCompensation -= getTickCompensation;
-		
-		TIM->CCR1 = TIM->CNT + 1000;
-		while(_interruptLatency == 0) ;
-
-		_callTick = afterTick;
-		if(_callTick == 0)
-			_callTick = 1;
-
-		//set _whileWaitCompensation
-		_whileWaitCompensation = TIM->CNT;
-		while(TickLessThanTick(TIM->CNT, _callTick)) ;
-		_whileWaitCompensation = TIM->CNT - _whileWaitCompensation - getTickCompensation;
-
-		//set _returnCallBackCompensation. ignore warnings, but the compiler is probably going to optimize these out anyway
-		_returnCallBackCompensation = TIM->CNT;
-		if(_callTick != 0) ;
-		const uint32_t t = _callTick - DWT->CYCCNT;
-		if(t < 0x80000000 && t > _coarseTimerHalfLength)
-			asm("nop");
-		const uint32_t lt = _callTick - _whileWaitCompensation;
-		_returnCallBackCompensation = _interruptLatency + TIM->CNT - _returnCallBackCompensation - getTickCompensation;
-		
-		_callTick = 0;
-
-		_timCallBack[index] = [this]() { this->ReturnCallBack(); };
+		//set ticks per second
 		_ticksPerSecond = HAL_RCC_GetSysClockFreq();
-		const uint32_t _prescaler = _ticksPerSecond / (100 * 1000) - 1;
-		_coarseTimerHalfLength = _prescaler * 0x7FFF;
-		TimInit(TIM, _prescaler, 0xFFFF);
 
 		//enable DWT-CYCCNT
 		CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
 		DWT->CTRL |= 1; 
-	}
 
-#pragma GCC push_options
-#pragma GCC optimize("O0")
-	void Stm32HalTimerService::SetFunctionCallCompensation() 
-	{
-		uint32_t tick = TIM->CNT;
-		_functionCallCompensation = tick - _functionCallCompensation;
+		const uint32_t latencyTick = GetTick() + 1000;
+		_interrupt = [this, latencyTick]() { this->_latency = DWT->CYCCNT - latencyTick; };
+		ScheduleCallBack(latencyTick);
+
+		//set return callback to interface
+		_interrupt = [this]() { this->ReturnCallBack(); };
 	}
-	void Stm32HalTimerService::SetInterruptLatency() 
-	{
-		_interruptLatency = TIM->CNT - TIM->CCR1;
-	}
-#pragma GCC pop_options
 
 	const uint32_t Stm32HalTimerService::GetTick()
 	{
@@ -97,35 +52,25 @@ namespace Stm32
 
 	void Stm32HalTimerService::ScheduleCallBack(const uint32_t tick)
 	{
-		if(TickLessThanTick(tick, DWT->CYCCNT + _returnCallBackCompensation + TIM->PSC))
-		{
-			_callTick = tick;
-			if(_callTick == 0)
-				_callTick = 1;
-			ReturnCallBack();
-		}
-		else
-		{
-			_callTick = tick;
-			if(_callTick == 0)
-				_callTick = 1;
-			const int ccr = (_callTick - _returnCallBackCompensation - DWT->CYCCNT + 1) / (TIM->PSC + 1) - 1;
-			TIM->CCR1 = TIM->CNT + ccr;
-		}		
+		_callTick = tick - _latency;
+		if(_callTick == 0)
+			_callTick = 1;
+		TIM->CCR1 = TIM->CNT + (_callTick - DWT->CYCCNT);
+		TimerInterrupt();
 	}
 	
-	void Stm32HalTimerService::ReturnCallBack(void)
+	void Stm32HalTimerService::TimerInterrupt(void)
 	{
-		if(_callTick != 0)
+		if(_callTick != 0 && TickLessThanTick(_callTick, DWT->CYCCNT))
 		{
-			const uint32_t t = _callTick - DWT->CYCCNT;
-			if(t < 0x80000000 && t > _coarseTimerHalfLength)
-				return;
-			const uint32_t lt = _callTick - _whileWaitCompensation;
-			while(TickLessThanTick(DWT->CYCCNT, lt)) ;
 			_callTick = 0;
-			ITimerService::ReturnCallBack();
+			_interrupt();
 		}
+	}
+
+	void Stm32HalTimerService::AttachInterrupt(std::function<void()> interrupt)
+	{
+		_interrupt = interrupt;
 	}
 
 	const uint32_t Stm32HalTimerService::GetTicksPerSecond()

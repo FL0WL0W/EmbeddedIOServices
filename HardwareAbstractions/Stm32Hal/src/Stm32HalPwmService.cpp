@@ -397,7 +397,7 @@ namespace Stm32
 			EnableTimerInterrupts(timAndChannel.Index);
 		}
 		
-		TIM_HandleTypeDef TIM_Handle = TimInit(timAndChannel.TIM, prescaler, static_cast<uint16_t>(ceil(minFrequency / (prescaler+1))));
+		TIM_HandleTypeDef TIM_Handle = TimInit(timAndChannel.Index, prescaler, static_cast<uint16_t>(ceil(minFrequency / (prescaler+1))));
 
 		EnableGPIOClock(pin);
 

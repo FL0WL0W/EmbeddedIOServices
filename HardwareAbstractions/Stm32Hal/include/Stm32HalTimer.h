@@ -83,7 +83,7 @@ namespace Stm32
 	extern "C" uint16_t _timPreviousCC[TimerIndex::Num][4];
 	extern "C" uint16_t _timCurrentCC[TimerIndex::Num][4];
 
-	TIM_HandleTypeDef TimInit(TIM_TypeDef *TIM, uint32_t prescaler, uint32_t period);
+	TIM_HandleTypeDef TimInit(TimerIndex index, uint32_t prescaler, uint32_t period);
 	TIM_TypeDef* TimIndexToTIM(TimerIndex index);
 	void EnableTimerClock(TimerIndex index);
 	void EnableTimerInterrupts(TimerIndex index);

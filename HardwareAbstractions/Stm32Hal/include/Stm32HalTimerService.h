@@ -14,19 +14,14 @@ namespace Stm32
 		uint32_t _ticksPerSecond;
 		TIM_TypeDef *TIM;
 		uint32_t _callTick = 0;
-		uint32_t _coarseTimerHalfLength;
+		uint32_t _latency = 0;
+		std::function<void()> _interrupt;
 
-		volatile uint16_t _interruptLatency = 0;
-		uint16_t _functionCallCompensation = 0;
-		uint16_t _whileWaitCompensation = 0;
-		uint16_t _returnCallBackCompensation = 0;
-		void SetFunctionCallCompensation();
-		void SetInterruptLatency();
-
-		void ReturnCallBack();
-		void ScheduleCallBack(const uint32_t tick);
+		void TimerInterrupt();
+		void ScheduleCallBack(const uint32_t tick) override;
 	public:
 		Stm32HalTimerService(TimerIndex timer);
+		void AttachInterrupt(std::function<void()>);
 		const uint32_t GetTick() override;
 		const uint32_t GetTicksPerSecond() override;
 	};

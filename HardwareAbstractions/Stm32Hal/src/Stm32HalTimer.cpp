@@ -5,8 +5,12 @@ namespace Stm32
 	bool _timFrequencyLocked[TimerIndex::Num];
 	std::function<void()> _timCallBack[TimerIndex::Num];
 
-	TIM_HandleTypeDef TimInit(TIM_TypeDef *TIM, uint32_t prescaler, uint32_t period)
+	TIM_HandleTypeDef TimInit(TimerIndex index, uint32_t prescaler, uint32_t period)
 	{
+		EnableTimerInterrupts(index);
+		EnableTimerClock(index);
+		TIM_TypeDef *TIM = TimIndexToTIM(index);
+		
 		TIM_HandleTypeDef TIM_HandleStruct;
 
 		//set mode
