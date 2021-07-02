@@ -1,6 +1,7 @@
 #include "stdint.h"
 #include <functional>
 #include <forward_list>
+#include <list>
 
 #ifndef ITIMERSERVICE_H
 #define ITIMERSERVICE_H
@@ -22,9 +23,25 @@ namespace EmbeddedIOServices
 		}
 	};
 
+#ifdef ALLOW_TASK_TO_SCHEDULE_IN_CALLBACK
+	struct ScheduleRequest
+	{
+		public:
+		Task *TaskToSchedule;
+		uint32_t Tick;
+
+		ScheduleRequest(Task *task, uint32_t tick) : TaskToSchedule(task), Tick(tick) { }
+	};
+#endif
+
 	class ITimerService
 	{
 	private:
+#ifdef ALLOW_TASK_TO_SCHEDULE_IN_CALLBACK
+		std::list<ScheduleRequest> _scheduleRequestList;
+		bool _scheduleLock = false;
+		void FlushScheduleRequests();
+#endif
 		void ScheduleFirstTaskInList();
 	protected:
 		std::forward_list<Task *> _taskList;

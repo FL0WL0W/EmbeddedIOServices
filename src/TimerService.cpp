@@ -51,31 +51,77 @@ namespace EmbeddedIOServices
 
 	void ITimerService::ScheduleTask(Task *task, uint32_t tick)
 	{
-		_taskList.remove(task);
+#ifdef ALLOW_TASK_TO_SCHEDULE_IN_CALLBACK
+		if(tick == 0)
+			tick++;
 
-		//find position to place Task
-		std::forward_list<Task *>::iterator before = _taskList.before_begin();
-		std::forward_list<Task *>::iterator next = before;
-		next++;
-		while(next != _taskList.end())
+		_scheduleRequestList.push_back(ScheduleRequest(task, tick));
+		FlushScheduleRequests();
+	}
+
+	void ITimerService::FlushScheduleRequests()
+	{
+		//only flush schedule request if a flush schedule request is not already running somewhere else. if it is running somewhere else, they will flush it for us
+		if(!_scheduleLock)
 		{
-			if((*next)->Scheduled && TickLessThanTick(tick, (*next)->Tick))
-				break;
+			_scheduleLock = true;
 
-			before = next++;
+			std::list<ScheduleRequest>::iterator scheduleRequest;
+			while((scheduleRequest = _scheduleRequestList.begin()) != _scheduleRequestList.end())
+			{
+				Task * const task = scheduleRequest->TaskToSchedule;
+				const uint32_t tick = scheduleRequest->Tick
+#endif
+				_taskList.remove(task);
+
+#ifdef ALLOW_TASK_TO_SCHEDULE_IN_CALLBACK
+				//if this is to reschedule task, add it back to the list
+				if(tick != 0)
+				{
+#endif
+					//find position to place Task
+					std::forward_list<Task *>::iterator before = _taskList.before_begin();
+					std::forward_list<Task *>::iterator next = before;
+					next++;
+					while(next != _taskList.end())
+					{
+						if((*next)->Scheduled && TickLessThanTick(tick, (*next)->Tick))
+							break;
+
+						before = next++;
+					}
+
+					task->Tick = tick;
+					task->Scheduled = true;
+					_taskList.insert_after(before, task);
+#ifdef ALLOW_TASK_TO_SCHEDULE_IN_CALLBACK
+				}
+
+				_scheduleRequestList.pop_front();
+			}
+#endif
+
+			ScheduleFirstTaskInList();
+
+#ifdef ALLOW_TASK_TO_SCHEDULE_IN_CALLBACK
+			_scheduleLock = false;
+
+			//make sure we scheduled all tasks. if we interrupted after the while loop, there is a possibility a new task was added
+			if(_scheduleRequestList.begin() != _scheduleRequestList.end())
+				FlushScheduleRequests();
 		}
-
-		task->Tick = tick;
-		task->Scheduled = true;
-		_taskList.insert_after(before, task);
-
-		ScheduleFirstTaskInList();
+#endif
 	}
 
 	void ITimerService::UnScheduleTask(Task *task)
 	{
+#ifdef ALLOW_TASK_TO_SCHEDULE_IN_CALLBACK
+		_scheduleRequestList.push_back(ScheduleRequest(task, 0));
+		FlushScheduleRequests();
+#else
 		_taskList.remove(task);
 		ScheduleFirstTaskInList();
+#endif
 	}
 }
 #endif
