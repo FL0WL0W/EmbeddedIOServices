@@ -13,6 +13,8 @@ namespace EmbeddedIOServices
 		MOCK_METHOD0(GetTicksPerSecond, const uint32_t());
 		MOCK_METHOD0(DisableCallBack, void());
 		MOCK_METHOD0(EnableCallBack, void());
+		void ReturnCallBackPrivateFunction() { ReturnCallBack(); }
+		std::forward_list<Task *> GetTaskList() { return _taskList; }
 	};
 }
 #endif
