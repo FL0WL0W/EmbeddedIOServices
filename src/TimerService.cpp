@@ -32,8 +32,8 @@ namespace EmbeddedIOServices
 		//execute all tasks that are ready
 		while (next != _taskList.end() && TickLessThanEqualToTick((*next)->Tick, GetTick()))
 		{
-			(*next)->CallBack();
 			(*next)->Scheduled = false;
+			(*next)->CallBack();
 			next++;
 		}
 
