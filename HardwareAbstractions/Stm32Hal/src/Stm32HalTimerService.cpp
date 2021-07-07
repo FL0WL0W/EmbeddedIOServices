@@ -35,6 +35,15 @@ namespace Stm32
 		CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
 		DWT->CTRL |= 1; 
 
+		Calibrate();
+	}
+
+	void Stm32HalTimerService::Calibrate()
+	{
+		_latency = 0;
+		_minTick = 0;
+		_minTicklatency = 0;
+
 		//factor in latency
 		volatile uint32_t interruptTick;
 		volatile uint32_t latencyTick;
@@ -74,6 +83,8 @@ namespace Stm32
 
 		//set return callback to interface
 		_interrupt = [this]() { this->ReturnCallBack(); };
+
+		ITimerService::Calibrate();
 	}
 
 	const uint32_t Stm32HalTimerService::GetTick()

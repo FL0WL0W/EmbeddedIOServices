@@ -14,7 +14,7 @@ namespace EmbeddedIOServices
 		MOCK_METHOD0(DisableCallBack, void());
 		MOCK_METHOD0(EnableCallBack, void());
 		void ReturnCallBackPrivateFunction() { ReturnCallBack(); }
-		std::forward_list<Task *> GetTaskList() { return _taskList; }
+		std::forward_list<Task *> GetTaskList() { return *_taskList; }
 	};
 }
 #endif

@@ -81,13 +81,15 @@ namespace UnitTests
 		EXPECT_CALL(timerService, GetTick())
 			.WillRepeatedly(Return(3000000000));
 		timerService.ReturnCallBackPrivateFunction();
-		ASSERT_EQ(1, timerTestClassInstance->lastCallBack) << "first callback not called";
+		ASSERT_EQ(0, task2->TickDeviation) << "second callback not called";
+		ASSERT_EQ(1, timerTestClassInstance->lastCallBack) << "tick deviation not set correctly";
 		ASSERT_EQ(false, (*timerService.GetTaskList().begin())->Scheduled) << "Schedule tick not set to second overflow task after first task called";
 
 		EXPECT_CALL(timerService, GetTick())
-			.WillRepeatedly(Return(300));
+			.WillRepeatedly(Return(301));
 		timerService.ReturnCallBackPrivateFunction();
-		ASSERT_EQ(2, timerTestClassInstance->lastCallBack) << "second callback not called";
+		ASSERT_EQ(1, task2->TickDeviation) << "second callback not called";
+		ASSERT_EQ(2, timerTestClassInstance->lastCallBack) << "tick deviation not set correctly";
 		ASSERT_EQ(false, (*++timerService.GetTaskList().begin())->Scheduled) << "Schedule tick not set to second overflow task after second task called";
 
 		//make sure another callback doesnt mess it up

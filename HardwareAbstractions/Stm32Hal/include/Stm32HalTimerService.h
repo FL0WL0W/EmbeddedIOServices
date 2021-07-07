@@ -14,9 +14,9 @@ namespace Stm32
 		uint32_t _ticksPerSecond;
 		TIM_TypeDef *TIM;
 		uint32_t _callTick = 0;
-		uint32_t _latency = 0;
-		uint32_t _minTick = 0;
-		uint32_t _minTicklatency = 0;
+		uint32_t _latency;
+		uint32_t _minTick;
+		uint32_t _minTicklatency;
 		std::function<void()> _interrupt;
 
 		void TimerInterrupt();
@@ -26,6 +26,7 @@ namespace Stm32
 		void AttachInterrupt(std::function<void()>);
 		const uint32_t GetTick() override;
 		const uint32_t GetTicksPerSecond() override;
+		void Calibrate() override;
 	};
 }
 

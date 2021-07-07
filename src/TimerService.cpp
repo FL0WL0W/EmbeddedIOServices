@@ -5,40 +5,72 @@
 #ifdef ITIMERSERVICE_H
 namespace EmbeddedIOServices
 {	
+	ITimerService::ITimerService()
+	{
+		_taskList = new std::forward_list<Task *>();
+	}
+
+	ITimerService::~ITimerService()
+	{
+		delete _taskList;
+	}
+
+	void ITimerService::Calibrate()
+	{
+		//save taskList
+		std::forward_list<Task *> *taskList = _taskList;
+		_taskList = new std::forward_list<Task *>();
+
+		//calibrate best case latency
+		_latency = 0;
+		bool called = false;
+		uint32_t latency = GetTick() + 10000;
+		ScheduleCallBack([this, &called, &latency]() { latency = GetTick() - latency; called = true; }, latency);
+		while(!called);
+		_latency = latency;
+
+		//return taskList;
+		delete _taskList;
+		_taskList = taskList;
+
+		ScheduleFirstTaskInList();
+	}
+
 	void ITimerService::ScheduleFirstTaskInList()
 	{
 		//remove all unscheduled tasks
-		std::forward_list<Task *>::iterator next = _taskList.begin();
-		while(next != _taskList.end() && (*next)->Scheduled == false)
+		std::forward_list<Task *>::iterator next = _taskList->begin();
+		while(next != _taskList->end() && (*next)->Scheduled == false)
 		{
 			if((*next)->DeleteAfterExecution)
 				delete *next;
-			_taskList.pop_front();
-			next = _taskList.begin();
+			_taskList->pop_front();
+			next = _taskList->begin();
 		}
 
 		//schedule first task
-		if(next != _taskList.end())
-			ScheduleCallBack((*next)->Tick);
+		if(next != _taskList->end())
+			ScheduleCallBack((*next)->Tick - _latency);
 	}
 
 	void ITimerService::ReturnCallBack(void)
 	{
 		//skip all unscheduled tasks
-		std::forward_list<Task *>::iterator next = _taskList.begin();;
-		while(next != _taskList.end() && (*next)->Scheduled == false)
+		std::forward_list<Task *>::iterator next = _taskList->begin();;
+		while(next != _taskList->end() && (*next)->Scheduled == false)
 			next++;
 
 		//execute all tasks that are ready
-		while (next != _taskList.end() && TickLessThanEqualToTick((*next)->Tick, GetTick()))
+		while (next != _taskList->end() && TickLessThanEqualToTick((*next)->Tick, GetTick()))
 		{
 			(*next)->Scheduled = false;
+			(*next)->TickDeviation = GetTick()-(*next)->Tick;
 			(*next)->CallBack();
 			next++;
 		}
 
-		if(next != _taskList.end())
-		 	ScheduleCallBack((*next)->Tick);
+		if(next != _taskList->end())
+		 	ScheduleCallBack((*next)->Tick - _latency);
 	}
 
 	void ITimerService::ScheduleCallBack(std::function<void()> callBack, uint32_t tick)
@@ -72,7 +104,7 @@ namespace EmbeddedIOServices
 				Task * const task = scheduleRequest->TaskToSchedule;
 				const uint32_t tick = scheduleRequest->Tick
 #endif
-				_taskList.remove(task);
+				_taskList->remove(task);
 
 #ifdef ALLOW_TASK_TO_SCHEDULE_IN_CALLBACK
 				//if this is to reschedule task, add it back to the list
@@ -80,10 +112,10 @@ namespace EmbeddedIOServices
 				{
 #endif
 					//find position to place Task
-					std::forward_list<Task *>::iterator before = _taskList.before_begin();
+					std::forward_list<Task *>::iterator before = _taskList->before_begin();
 					std::forward_list<Task *>::iterator next = before;
 					next++;
-					while(next != _taskList.end())
+					while(next != _taskList->end())
 					{
 						if((*next)->Scheduled && TickLessThanTick(tick, (*next)->Tick))
 							break;
@@ -93,7 +125,7 @@ namespace EmbeddedIOServices
 
 					task->Tick = tick;
 					task->Scheduled = true;
-					_taskList.insert_after(before, task);
+					_taskList->insert_after(before, task);
 #ifdef ALLOW_TASK_TO_SCHEDULE_IN_CALLBACK
 				}
 
@@ -119,7 +151,7 @@ namespace EmbeddedIOServices
 		_scheduleRequestList.push_back(ScheduleRequest(task, 0));
 		FlushScheduleRequests();
 #else
-		_taskList.remove(task);
+		_taskList->remove(task);
 		ScheduleFirstTaskInList();
 #endif
 	}

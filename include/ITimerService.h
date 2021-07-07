@@ -13,6 +13,7 @@ namespace EmbeddedIOServices
 		public:
 		std::function<void()> CallBack;
 		uint32_t Tick;
+		int16_t TickDeviation;
 		bool Scheduled : 1;
 		bool DeleteAfterExecution : 1;
 
@@ -42,19 +43,25 @@ namespace EmbeddedIOServices
 		bool _scheduleLock = false;
 		void FlushScheduleRequests();
 #endif
+		uint32_t _latency;
 		void ScheduleFirstTaskInList();
 	protected:
-		std::forward_list<Task *> _taskList;
+		std::forward_list<Task *> *_taskList;
 		virtual void ScheduleCallBack(const uint32_t tick) = 0;
 		void ReturnCallBack();
 	public:
 		virtual const uint32_t GetTick() = 0;
 		virtual const uint32_t GetTicksPerSecond() = 0;
 
+		virtual void Calibrate();
+
 		void ScheduleCallBack(std::function<void()>, uint32_t);
 		void ScheduleTask(Task *, uint32_t);
 		void UnScheduleTask(Task *);
-		
+
+		ITimerService();
+		~ITimerService();
+	
 		constexpr static bool TickLessThanTick(const uint32_t i, const uint32_t j)
 		{
 			return i - j > 0x80000000;
