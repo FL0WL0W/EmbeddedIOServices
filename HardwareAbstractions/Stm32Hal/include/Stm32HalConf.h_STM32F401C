@@ -92,6 +92,8 @@
 //#define ADC4_IN14_PIN 
 //#define ADC4_IN15_PIN 
 
+#define  GPIO_MODE_AF_INPUT	MODE_AF
+
 // #define PWM_TIM1_CC1
 // #define PWM_TIM1_CC2
 // #define PWM_TIM1_CC3

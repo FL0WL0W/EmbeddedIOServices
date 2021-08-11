@@ -25,17 +25,20 @@ defined(ADC1_IN15_PIN)
   		__HAL_RCC_ADC1_CLK_ENABLE();
 		hadc1.Instance = ADC1;
 
+#ifdef STM32F4
 		hadc1.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV4;
 		hadc1.Init.Resolution = ADC_RESOLUTION_12B;
+		hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
+		hadc1.Init.DMAContinuousRequests = DISABLE;
+		hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
+#endif
+
 		hadc1.Init.ScanConvMode = DISABLE;
 		hadc1.Init.ContinuousConvMode = DISABLE;
 		hadc1.Init.DiscontinuousConvMode = DISABLE;
-		hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
 		hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
 		hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
 		hadc1.Init.NbrOfConversion = 1;
-		hadc1.Init.DMAContinuousRequests = DISABLE;
-		hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
 		HAL_ADC_Init(&hadc1);
 #endif
 
@@ -58,6 +61,15 @@ defined(ADC2_IN14_PIN) || \
 defined(ADC2_IN15_PIN)
   		__HAL_RCC_ADC2_CLK_ENABLE();
 		hadc2.Instance = ADC2;
+
+#ifdef STM32F4
+		hadc2.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV4;
+		hadc2.Init.Resolution = ADC_RESOLUTION_12B;
+		hadc2.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
+		hadc2.Init.DMAContinuousRequests = DISABLE;
+		hadc2.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
+#endif
+
 		hadc2.Init.ScanConvMode = ADC_SCAN_DISABLE;
 		hadc2.Init.ContinuousConvMode = DISABLE;
 		hadc2.Init.DiscontinuousConvMode = DISABLE;
@@ -86,6 +98,15 @@ defined(ADC3_IN14_PIN) || \
 defined(ADC3_IN15_PIN)
   		__HAL_RCC_ADC3_CLK_ENABLE();
 		hadc3.Instance = ADC3;
+
+#ifdef STM32F4
+		hadc3.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV4;
+		hadc3.Init.Resolution = ADC_RESOLUTION_12B;
+		hadc3.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
+		hadc3.Init.DMAContinuousRequests = DISABLE;
+		hadc3.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
+#endif
+
 		hadc3.Init.ScanConvMode = ADC_SCAN_DISABLE;
 		hadc3.Init.ContinuousConvMode = DISABLE;
 		hadc3.Init.DiscontinuousConvMode = DISABLE;
@@ -114,6 +135,15 @@ defined(ADC4_IN14_PIN) || \
 defined(ADC4_IN15_PIN)
   		__HAL_RCC_ADC4_CLK_ENABLE();
 		hadc4.Instance = ADC4;
+
+#ifdef STM32F4
+		hadc4.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV4;
+		hadc4.Init.Resolution = ADC_RESOLUTION_12B;
+		hadc4.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
+		hadc4.Init.DMAContinuousRequests = DISABLE;
+		hadc4.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
+#endif
+
 		hadc4.Init.ScanConvMode = ADC_SCAN_DISABLE;
 		hadc4.Init.ContinuousConvMode = DISABLE;
 		hadc4.Init.DiscontinuousConvMode = DISABLE;
@@ -596,7 +626,12 @@ defined(ADC4_IN15_PIN)
 		}
 
 		sConfig.Rank = 1;
+#ifdef ADC_SAMPLETIME_71CYCLES_5
+		sConfig.SamplingTime = ADC_SAMPLETIME_71CYCLES_5;
+#endif
+#ifdef ADC_SAMPLETIME_84CYCLES
 		sConfig.SamplingTime = ADC_SAMPLETIME_84CYCLES;
+#endif
 
 		if(hadc != 0)
 		{

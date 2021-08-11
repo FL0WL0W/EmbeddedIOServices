@@ -466,7 +466,7 @@ namespace Stm32
 			
 			GPIO_InitTypeDef GPIO_InitStruct = {0};
 			GPIO_InitStruct.Pin = PinToGPIO_Pin(pin);
-			GPIO_InitStruct.Mode = MODE_AF;
+			GPIO_InitStruct.Mode = GPIO_MODE_AF_INPUT;
 			GPIO_InitStruct.Pull = GPIO_NOPULL;
 			GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
 			HAL_GPIO_Init(PinToGPIO(pin), &GPIO_InitStruct);

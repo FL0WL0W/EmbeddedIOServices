@@ -4,6 +4,10 @@
 #ifndef STM32HALCONF_H
 #define STM32HALCONF_H
 
+#define TIM2_CC_IRQn            TIM2_IRQn
+#define TIM3_CC_IRQn            TIM3_IRQn
+#define TIM4_CC_IRQn            TIM4_IRQn
+
 #define ADC1_VOLTAGE_CONVERSION_CONSTANT 3.3 / 4095
 #define ADC1_IN0_PIN 0
 #define ADC1_IN1_PIN 1
