@@ -1,5 +1,4 @@
 #include "IDigitalService.h"
-#include "ICallBack.h"
 
 #ifndef MOCKDIGITALSERVICE_H
 #define MOCKDIGITALSERVICE_H
@@ -11,8 +10,8 @@ namespace EmbeddedIOServices
 		MOCK_METHOD2(InitPin, void(uint16_t, PinDirection));
 		MOCK_METHOD1(ReadPin, bool(uint16_t));
 		MOCK_METHOD2(WritePin, void(uint16_t, bool));
-		MOCK_METHOD2(ScheduleRecurringInterrupt, void(uint16_t, ICallBack *));
-		MOCK_METHOD2(ScheduleNextInterrupt, void(uint16_t, ICallBack *));
+		MOCK_METHOD2(AttachInterrupt, void(uint16_t, std::function<void()>));
+		MOCK_METHOD1(DetachInterrupt, void(uint16_t));
 	};
 }
 #endif
