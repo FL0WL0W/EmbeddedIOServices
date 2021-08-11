@@ -13,7 +13,6 @@ namespace EmbeddedIOServices
 		public:
 		std::function<void()> CallBack;
 		uint32_t Tick;
-		int16_t TickDeviation;
 		bool Scheduled : 1;
 		bool DeleteAfterExecution : 1;
 

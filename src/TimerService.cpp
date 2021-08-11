@@ -23,8 +23,8 @@ namespace EmbeddedIOServices
 
 		//calibrate best case latency
 		_latency = 0;
-		bool called = false;
-		uint32_t latency = GetTick() + 10000;
+		volatile bool called = false;
+		volatile uint32_t latency = GetTick() + 10000;
 		ScheduleCallBack([this, &called, &latency]() { latency = GetTick() - latency; called = true; }, latency);
 		while(!called);
 		_latency = latency;
@@ -64,7 +64,7 @@ namespace EmbeddedIOServices
 		while (next != _taskList->end() && TickLessThanEqualToTick((*next)->Tick, GetTick()))
 		{
 			(*next)->Scheduled = false;
-			(*next)->TickDeviation = GetTick()-(*next)->Tick;
+			(*next)->Tick = GetTick();
 			(*next)->CallBack();
 			next++;
 		}
