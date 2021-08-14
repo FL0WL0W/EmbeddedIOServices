@@ -102,7 +102,7 @@ namespace EmbeddedIOServices
 			while((scheduleRequest = _scheduleRequestList.begin()) != _scheduleRequestList.end())
 			{
 				Task * const task = scheduleRequest->TaskToSchedule;
-				const uint32_t tick = scheduleRequest->Tick
+				const uint32_t tick = scheduleRequest->Tick;
 #endif
 				_taskList->remove(task);
 
