@@ -16,11 +16,12 @@ namespace EmbeddedIOServices
 		bool Scheduled : 1;
 		bool DeleteAfterExecution : 1;
 
-		Task(std::function<void()> callBack)
-		{
-			CallBack = callBack;
-			DeleteAfterExecution = false;
-		}
+		Task(std::function<void()> callBack) : 
+			CallBack(callBack),
+			Tick(0),
+			Scheduled(false),
+			DeleteAfterExecution(false)
+		{ }
 	};
 
 #ifdef ALLOW_TASK_TO_SCHEDULE_IN_CALLBACK
@@ -43,7 +44,7 @@ namespace EmbeddedIOServices
 		void FlushScheduleRequests();
 #endif
 		uint32_t _latency;
-		void ScheduleFirstTaskInList();
+		std::forward_list<Task *>::iterator RemoveUnscheduledTasksAndReturnBegin();
 	protected:
 		std::forward_list<Task *> *_taskList;
 		virtual void ScheduleCallBack(const uint32_t tick) = 0;

@@ -24,8 +24,7 @@ namespace Stm32
 		TIM_OC_InitStruct.Pulse = 0;
 		HAL_TIM_OC_ConfigChannel(&TIM_Handle, &TIM_OC_InitStruct, TIM_CHANNEL_1);
 		
-		//Enable Compare Channel 1 Intterupt
-		__HAL_TIM_ENABLE_IT(&TIM_Handle, TIM_IT_CC1);
+		//Set Compare Channel 1 Intterupt
 		_timCallBack[index] = [this]() { this->TimerInterrupt(); };
 		
 		//set ticks per second
@@ -94,6 +93,10 @@ namespace Stm32
 
 	void Stm32HalTimerService::ScheduleCallBack(const uint32_t tick)
 	{
+		if(_callTick == tick)
+			return;
+		TIM->DIER &= ~TIM_IT_CC1;
+
 		const uint32_t minTick = tick - _minTick;
 
 		if(TickLessThanTick(minTick, DWT->CYCCNT))
@@ -105,16 +108,17 @@ namespace Stm32
 		else
 		{
 			const uint32_t callTick = tick == _latency? 1 : tick - _latency;
-			TIM->CCR1 = TIM->CNT + (callTick - DWT->CYCCNT);
 			_callTick = callTick;
+			TIM->CCR1 = TIM->CNT + (callTick - DWT->CYCCNT);
+			TIM->DIER |= TIM_IT_CC1;
 		}
 	}
 	
 	void Stm32HalTimerService::TimerInterrupt(void)
 	{
-		if(_callTick != 0 && TickLessThanTick(_callTick, DWT->CYCCNT))
+		if(TickLessThanTick(_callTick, DWT->CYCCNT))
 		{
-			_callTick = 0;
+			TIM->DIER &= ~TIM_IT_CC1;
 			_interrupt();
 		}
 	}
