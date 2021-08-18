@@ -26,7 +26,7 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
   <ul>
     <li>GetTick()</li>
     <li>GetTicksPerSecond()</li>
-    <li>ScheduleCallBack(uint32 tick) <= this is to call ReturnCallBack() at that tick</li>
+    <li>ScheduleCallBack(tick_t tick) <= this is to call ReturnCallBack() at that tick</li>
   </ul>
 </ul>
 

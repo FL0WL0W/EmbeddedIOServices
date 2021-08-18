@@ -2,7 +2,7 @@
 
 namespace Stm32
 {
-	std::function<void()> ExternatlInterruptCallback[16];
+	std::function<void()> ExternalInterruptCallback[16];
     
     void EnableGPIOClock(uint16_t pin)
     {
@@ -81,82 +81,82 @@ namespace Stm32
 		switch (GPIO_InitStruct.Pin)
 		{
 			case GPIO_PIN_0:
-				ExternatlInterruptCallback[0] = callBack;
+				ExternalInterruptCallback[0] = callBack;
 				HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
 				HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 				break;
 			case GPIO_PIN_1:
-				ExternatlInterruptCallback[1] = callBack;
+				ExternalInterruptCallback[1] = callBack;
 				HAL_NVIC_SetPriority(EXTI1_IRQn, 0, 0);
 				HAL_NVIC_EnableIRQ(EXTI1_IRQn);
 				break;
 			case GPIO_PIN_2:
-				ExternatlInterruptCallback[2] = callBack;
+				ExternalInterruptCallback[2] = callBack;
 				HAL_NVIC_SetPriority(EXTI2_IRQn, 0, 0);
 				HAL_NVIC_EnableIRQ(EXTI2_IRQn);
 				break;
 			case GPIO_PIN_3:
-				ExternatlInterruptCallback[3] = callBack;
+				ExternalInterruptCallback[3] = callBack;
 				HAL_NVIC_SetPriority(EXTI3_IRQn, 0, 0);
 				HAL_NVIC_EnableIRQ(EXTI3_IRQn);
 				break;
 			case GPIO_PIN_4:
-				ExternatlInterruptCallback[4] = callBack;
+				ExternalInterruptCallback[4] = callBack;
 				HAL_NVIC_SetPriority(EXTI4_IRQn, 0, 0);
 				HAL_NVIC_EnableIRQ(EXTI4_IRQn);
 				break;
 			case GPIO_PIN_5:
-				ExternatlInterruptCallback[5] = callBack;
+				ExternalInterruptCallback[5] = callBack;
 				HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
 				HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 				break;
 			case GPIO_PIN_6:
-				ExternatlInterruptCallback[6] = callBack;
+				ExternalInterruptCallback[6] = callBack;
 				HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
 				HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 				break;
 			case GPIO_PIN_7:
-				ExternatlInterruptCallback[7] = callBack;
+				ExternalInterruptCallback[7] = callBack;
 				HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
 				HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 				break;
 			case GPIO_PIN_8:
-				ExternatlInterruptCallback[8] = callBack;
+				ExternalInterruptCallback[8] = callBack;
 				HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
 				HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 				break;
 			case GPIO_PIN_9:
-				ExternatlInterruptCallback[9] = callBack;
+				ExternalInterruptCallback[9] = callBack;
 				HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
 				HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 				break;
 			case GPIO_PIN_10:
-				ExternatlInterruptCallback[10] = callBack;
+				ExternalInterruptCallback[10] = callBack;
 				HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
 				HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 				break;
 			case GPIO_PIN_11:
-				ExternatlInterruptCallback[11] = callBack;
+				ExternalInterruptCallback[11] = callBack;
 				HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
 				HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 				break;
 			case GPIO_PIN_12:
-				ExternatlInterruptCallback[12] = callBack;
+				ExternalInterruptCallback[12] = callBack;
 				HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
 				HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 				break;
 			case GPIO_PIN_13:
-				ExternatlInterruptCallback[13] = callBack;
+				ExternalInterruptCallback[13] = callBack;
 				HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
 				HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 				break;
 			case GPIO_PIN_14:
-				ExternatlInterruptCallback[14] = callBack;
+				ExternalInterruptCallback[14] = callBack;
 				HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
 				HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 				break;
 			case GPIO_PIN_15:
-				ExternatlInterruptCallback[15] = callBack;
+				ExternalInterruptCallback[15] = callBack;
 				HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
 				HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 				break;
@@ -180,67 +180,67 @@ namespace Stm32
 		switch (GPIO_Pin)
 		{
 			case GPIO_PIN_0:
-				ExternatlInterruptCallback[0] = 0;
+				ExternalInterruptCallback[0] = 0;
 				HAL_NVIC_DisableIRQ(EXTI0_IRQn);
 				break;
 			case GPIO_PIN_1:
-				ExternatlInterruptCallback[1] = 0;
+				ExternalInterruptCallback[1] = 0;
 				HAL_NVIC_DisableIRQ(EXTI1_IRQn);
 				break;
 			case GPIO_PIN_2:
-				ExternatlInterruptCallback[2] = 0;
+				ExternalInterruptCallback[2] = 0;
 				HAL_NVIC_DisableIRQ(EXTI2_IRQn);
 				break;
 			case GPIO_PIN_3:
-				ExternatlInterruptCallback[3] = 0;
+				ExternalInterruptCallback[3] = 0;
 				HAL_NVIC_DisableIRQ(EXTI3_IRQn);
 				break;
 			case GPIO_PIN_4:
-				ExternatlInterruptCallback[4] = 0;
+				ExternalInterruptCallback[4] = 0;
 				HAL_NVIC_DisableIRQ(EXTI4_IRQn);
 				break;
 			case GPIO_PIN_5:
-				ExternatlInterruptCallback[5] = 0;
+				ExternalInterruptCallback[5] = 0;
 				HAL_NVIC_DisableIRQ(EXTI9_5_IRQn);
 				break;
 			case GPIO_PIN_6:
-				ExternatlInterruptCallback[6] = 0;
+				ExternalInterruptCallback[6] = 0;
 				HAL_NVIC_DisableIRQ(EXTI9_5_IRQn);
 				break;
 			case GPIO_PIN_7:
-				ExternatlInterruptCallback[7] = 0;
+				ExternalInterruptCallback[7] = 0;
 				HAL_NVIC_DisableIRQ(EXTI9_5_IRQn);
 				break;
 			case GPIO_PIN_8:
-				ExternatlInterruptCallback[8] = 0;
+				ExternalInterruptCallback[8] = 0;
 				HAL_NVIC_DisableIRQ(EXTI9_5_IRQn);
 				break;
 			case GPIO_PIN_9:
-				ExternatlInterruptCallback[9] = 0;
+				ExternalInterruptCallback[9] = 0;
 				HAL_NVIC_DisableIRQ(EXTI9_5_IRQn);
 				break;
 			case GPIO_PIN_10:
-				ExternatlInterruptCallback[10] = 0;
+				ExternalInterruptCallback[10] = 0;
 				HAL_NVIC_DisableIRQ(EXTI15_10_IRQn);
 				break;
 			case GPIO_PIN_11:
-				ExternatlInterruptCallback[11] = 0;
+				ExternalInterruptCallback[11] = 0;
 				HAL_NVIC_DisableIRQ(EXTI15_10_IRQn);
 				break;
 			case GPIO_PIN_12:
-				ExternatlInterruptCallback[12] = 0;
+				ExternalInterruptCallback[12] = 0;
 				HAL_NVIC_DisableIRQ(EXTI15_10_IRQn);
 				break;
 			case GPIO_PIN_13:
-				ExternatlInterruptCallback[13] = 0;
+				ExternalInterruptCallback[13] = 0;
 				HAL_NVIC_DisableIRQ(EXTI15_10_IRQn);
 				break;
 			case GPIO_PIN_14:
-				ExternatlInterruptCallback[14] = 0;
+				ExternalInterruptCallback[14] = 0;
 				HAL_NVIC_DisableIRQ(EXTI15_10_IRQn);
 				break;
 			case GPIO_PIN_15:
-				ExternatlInterruptCallback[15] = 0;
+				ExternalInterruptCallback[15] = 0;
 				HAL_NVIC_DisableIRQ(EXTI15_10_IRQn);
 				break;
 			default:
@@ -254,9 +254,9 @@ namespace Stm32
 		{
 			if (__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_0))
 			{
-				if(ExternatlInterruptCallback[0] != 0)
+				if(ExternalInterruptCallback[0] != 0)
 				{
-					ExternatlInterruptCallback[0]();
+					ExternalInterruptCallback[0]();
 				}
 				__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_0);
 			}
@@ -265,9 +265,9 @@ namespace Stm32
 		{
 			if (__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_1))
 			{
-				if(ExternatlInterruptCallback[1] != 0)
+				if(ExternalInterruptCallback[1] != 0)
 				{
-					ExternatlInterruptCallback[1]();
+					ExternalInterruptCallback[1]();
 				}
 				__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_1);
 			}
@@ -276,9 +276,9 @@ namespace Stm32
 		{
 			if (__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_2))
 			{
-				if(ExternatlInterruptCallback[2] != 0)
+				if(ExternalInterruptCallback[2] != 0)
 				{
-					ExternatlInterruptCallback[2]();
+					ExternalInterruptCallback[2]();
 				}
 				__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_2);
 			}
@@ -287,9 +287,9 @@ namespace Stm32
 		{
 			if (__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_3))
 			{
-				if(ExternatlInterruptCallback[3] != 0)
+				if(ExternalInterruptCallback[3] != 0)
 				{
-					ExternatlInterruptCallback[3]();
+					ExternalInterruptCallback[3]();
 				}
 				__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_3);
 			}
@@ -298,9 +298,9 @@ namespace Stm32
 		{
 			if (__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_4))
 			{
-				if(ExternatlInterruptCallback[4] != 0)
+				if(ExternalInterruptCallback[4] != 0)
 				{
-					ExternatlInterruptCallback[4]();
+					ExternalInterruptCallback[4]();
 				}
 				__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_4);
 			}
@@ -309,41 +309,41 @@ namespace Stm32
 		{
 			if (__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_5))
 			{
-				if(ExternatlInterruptCallback[5] != 0)
+				if(ExternalInterruptCallback[5] != 0)
 				{
-					ExternatlInterruptCallback[5]();
+					ExternalInterruptCallback[5]();
 				}
 				__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_5);
 			}
 			else if (__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_6))
 			{
-				if(ExternatlInterruptCallback[6] != 0)
+				if(ExternalInterruptCallback[6] != 0)
 				{
-					ExternatlInterruptCallback[6]();
+					ExternalInterruptCallback[6]();
 				}
 				__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_6);
 			}
 			else if (__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_7))
 			{
-				if(ExternatlInterruptCallback[7] != 0)
+				if(ExternalInterruptCallback[7] != 0)
 				{
-					ExternatlInterruptCallback[7]();
+					ExternalInterruptCallback[7]();
 				}
 				__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_7);
 			}
 			else if (__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_8))
 			{
-				if(ExternatlInterruptCallback[8] != 0)
+				if(ExternalInterruptCallback[8] != 0)
 				{
-					ExternatlInterruptCallback[8]();
+					ExternalInterruptCallback[8]();
 				}
 				__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_8);
 			}
 			else if (__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_9))
 			{
-				if(ExternatlInterruptCallback[9] != 0)
+				if(ExternalInterruptCallback[9] != 0)
 				{
-					ExternatlInterruptCallback[9]();
+					ExternalInterruptCallback[9]();
 				}
 				__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_9);
 			}
@@ -352,49 +352,49 @@ namespace Stm32
 		{
 			if (__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_10))
 			{
-				if(ExternatlInterruptCallback[10] != 0)
+				if(ExternalInterruptCallback[10] != 0)
 				{
-					ExternatlInterruptCallback[10]();
+					ExternalInterruptCallback[10]();
 				}
 				__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_10);
 			}
 			else if (__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_11))
 			{
-				if(ExternatlInterruptCallback[11] != 0)
+				if(ExternalInterruptCallback[11] != 0)
 				{
-					ExternatlInterruptCallback[11]();
+					ExternalInterruptCallback[11]();
 				}
 				__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_11);
 			}
 			else if (__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_12))
 			{
-				if(ExternatlInterruptCallback[12] != 0)
+				if(ExternalInterruptCallback[12] != 0)
 				{
-					ExternatlInterruptCallback[12]();
+					ExternalInterruptCallback[12]();
 				}
 				__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_12);
 			}
 			else if (__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_13))
 			{
-				if(ExternatlInterruptCallback[13] != 0)
+				if(ExternalInterruptCallback[13] != 0)
 				{
-					ExternatlInterruptCallback[13]();
+					ExternalInterruptCallback[13]();
 				}
 				__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_13);
 			}
 			else if (__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_14))
 			{
-				if(ExternatlInterruptCallback[14] != 0)
+				if(ExternalInterruptCallback[14] != 0)
 				{
-					ExternatlInterruptCallback[14]();
+					ExternalInterruptCallback[14]();
 				}
 				__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_14);
 			}
 			else if (__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_15))
 			{
-				if(ExternatlInterruptCallback[15] != 0)
+				if(ExternalInterruptCallback[15] != 0)
 				{
-					ExternatlInterruptCallback[15]();
+					ExternalInterruptCallback[15]();
 				}
 				__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_15);
 			}

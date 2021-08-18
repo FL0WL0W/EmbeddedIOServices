@@ -27,12 +27,21 @@ namespace Stm32
 		//enable DWT-CYCCNT
 		CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
 		DWT->CTRL |= 1; 
+
+		Calibrate();
+	}
+
+	void Stm32HalTimerService::Calibrate()
+	{
+		_latency = 0;
+		_minTicks = 0;
+
 		//factor in latency
-		volatile uint32_t interruptTick;
-		volatile uint32_t latencyTick;
+		volatile tick_t interruptTick;
+		volatile tick_t latencyTick;
 		interruptTick = this->GetTick();
 		latencyTick = this->GetTick();
-		const uint32_t getTickCompensation = latencyTick - interruptTick;
+		const uint16_t getTickCompensation = latencyTick - interruptTick;
 		_interrupt = [this, &interruptTick]() { interruptTick = this->GetTick(); };
 
 		//get overall latency
@@ -48,54 +57,46 @@ namespace Stm32
 		ScheduleCallBack(latencyTick);
 		while(interruptTick == 0) ;
 		_latency += interruptTick - latencyTick - getTickCompensation;
-		
-		//set minimum tick
+				
+		//get minimum number of ticks to trigger an interrupt
 		interruptTick = 0;
-		latencyTick = GetTick() + 10000;
-		interruptTick = this->GetTick();
-		ScheduleCallBack(latencyTick);
-		latencyTick = this->GetTick();
-		_minTick = latencyTick - interruptTick - getTickCompensation + _latency;
-		
-		//set minimum tick latency
-		interruptTick = 0;
-		latencyTick = GetTick() + _minTick;
-		ScheduleCallBack(latencyTick);
-		while(interruptTick == 0) ;
-		_minTicklatency = interruptTick - latencyTick - getTickCompensation;
+		while(true)
+		{
+			_minTicks++;
+			ScheduleCallBack(DWT->CYCCNT);
+			if(interruptTick != 0)
+				break;
+		}
 
 		//set return callback to interface
 		_interrupt = [this]() { this->ReturnCallBack(); };
+
+		ITimerService::Calibrate();
 	}
 
-	const uint32_t Stm32duinoTimerService::GetTick()
+	const tick_t Stm32duinoTimerService::GetTick()
 	{
 		return DWT->CYCCNT;
 	}
 
-	void Stm32duinoTimerService::ScheduleCallBack(const uint32_t tick)
+	void Stm32duinoTimerService::ScheduleCallBack(const tick_t tick)
 	{
-		const uint32_t minTick = tick - _minTick;
-
-		if(TickLessThanTick(minTick, DWT->CYCCNT))
-		{
-			const uint32_t callTick = tick - _minTicklatency;
-			while(TickLessThanTick(DWT->CYCCNT, callTick)) ;
-			_interrupt();
-		}
+		__disable_irq();
+		_callTick = tick - _latency;
+		TIM->DIER |= TIM_IT_CC1;
+		const int ticks = _callTick - DWT->CYCCNT;
+		if(ticks < static_cast<int>(_minTicks))
+			TIM->CCR1 = TIM->CNT + _minTicks;
 		else
-		{
-			const uint32_t callTick = tick == _latency? 1 : tick - _latency;
-			TIM->CCR1 = TIM->CNT + (callTick - DWT->CYCCNT);
-			_callTick = callTick;
-		}
+			TIM->CCR1 = TIM->CNT + ticks;
+		__enable_irq();
 	}
 	
 	void Stm32duinoTimerService::TimerInterrupt(void)
 	{
-		if(_callTick != 0 && TickLessThanTick(_callTick, DWT->CYCCNT))
+		if(TickLessThanTick(_callTick - _latency, DWT->CYCCNT))
 		{
-			_callTick = 0;
+			TIM->DIER &= ~TIM_IT_CC1;
 			_interrupt();
 		}
 	}

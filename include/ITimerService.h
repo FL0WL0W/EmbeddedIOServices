@@ -8,11 +8,13 @@
 
 namespace EmbeddedIOServices
 {
+	typedef uint32_t tick_t;
+
 	struct Task
 	{
 		public:
 		std::function<void()> CallBack;
-		uint32_t Tick;
+		tick_t Tick;
 		bool Scheduled : 1;
 		bool DeleteAfterExecution : 1;
 
@@ -29,45 +31,45 @@ namespace EmbeddedIOServices
 	{
 		public:
 		Task *TaskToSchedule;
-		uint32_t Tick;
+		tick_t Tick;
 
-		ScheduleRequest(Task *task, uint32_t tick) : TaskToSchedule(task), Tick(tick) { }
+		ScheduleRequest(Task *task, tick_t tick) : TaskToSchedule(task), Tick(tick) { }
 	};
 #endif
+
+	typedef std::list<Task *> TaskList;
 
 	class ITimerService
 	{
 	private:
 #ifdef ALLOW_TASK_TO_SCHEDULE_IN_CALLBACK
-		std::list<ScheduleRequest> _scheduleRequestList;
+		std::forward_list<ScheduleRequest> _scheduleRequestList;
+		std::forward_list<Task *> _removeRequestList;
 		bool _scheduleLock = false;
 		void FlushScheduleRequests();
 #endif
-		uint32_t _latency;
-		std::forward_list<Task *>::iterator RemoveUnscheduledTasksAndReturnBegin();
+		uint16_t _latency;
+		TaskList::iterator RemoveUnscheduledTasksAndReturnBegin();
 	protected:
-		std::forward_list<Task *> *_taskList;
-		virtual void ScheduleCallBack(const uint32_t tick) = 0;
+		TaskList _taskList;
+		virtual void ScheduleCallBack(const tick_t tick) = 0;
 		void ReturnCallBack();
 	public:
-		virtual const uint32_t GetTick() = 0;
-		virtual const uint32_t GetTicksPerSecond() = 0;
+		virtual const tick_t GetTick() = 0;
+		virtual const tick_t GetTicksPerSecond() = 0;
 
 		virtual void Calibrate();
 
-		void ScheduleCallBack(std::function<void()>, uint32_t);
-		void ScheduleTask(Task *, uint32_t);
+		void ScheduleCallBack(std::function<void()>, tick_t);
+		void ScheduleTask(Task *, tick_t);
 		void UnScheduleTask(Task *);
-
-		ITimerService();
-		~ITimerService();
 	
-		constexpr static bool TickLessThanTick(const uint32_t i, const uint32_t j)
+		constexpr static bool TickLessThanTick(const tick_t i, const tick_t j)
 		{
 			return i - j > 0x80000000;
 		}
 
-		constexpr static bool TickLessThanEqualToTick(const uint32_t i, const uint32_t j)
+		constexpr static bool TickLessThanEqualToTick(const tick_t i, const tick_t j)
 		{
 			return !TickLessThanTick(j, i);
 		}

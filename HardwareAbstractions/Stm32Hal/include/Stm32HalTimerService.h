@@ -11,21 +11,20 @@ namespace Stm32
 	class Stm32HalTimerService : public EmbeddedIOServices::ITimerService
 	{
 	private:
-		uint32_t _ticksPerSecond;
+		EmbeddedIOServices::tick_t _ticksPerSecond;
 		TIM_TypeDef *TIM;
-		uint32_t _callTick = 0;
-		uint32_t _latency;
-		uint32_t _minTick;
-		uint32_t _minTicklatency;
+		EmbeddedIOServices::tick_t _callTick = 0;
+		uint16_t _latency;
+		uint16_t _minTicks;
 		std::function<void()> _interrupt;
 
 		void TimerInterrupt();
-		void ScheduleCallBack(const uint32_t tick) override;
+		void ScheduleCallBack(const EmbeddedIOServices::tick_t tick) override;
 	public:
 		Stm32HalTimerService(TimerIndex timer);
 		void AttachInterrupt(std::function<void()>);
-		const uint32_t GetTick() override;
-		const uint32_t GetTicksPerSecond() override;
+		const EmbeddedIOServices::tick_t GetTick() override;
+		const EmbeddedIOServices::tick_t GetTicksPerSecond() override;
 		void Calibrate() override;
 	};
 }
