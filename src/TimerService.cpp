@@ -170,9 +170,9 @@ namespace EmbeddedIOServices
 		_removeRequestList.push_front(task);
 		FlushScheduleRequests();
 #else
-		_taskList->remove(task);
+		_taskList.remove(task);
 		const TaskList::iterator begin = RemoveUnscheduledTasksAndReturnBegin();
-		if(begin != _taskList->end())
+		if(begin != _taskList.end())
 			ScheduleCallBack((*begin)->Tick - _latency);
 #endif
 	}
