@@ -10,13 +10,30 @@ namespace EmbeddedIOServices
 		//save taskList
 		TaskList taskList = _taskList;
 
-		//calibrate best case latency
 		_latency = 0;
-		volatile bool called = false;
-		volatile tick_t latency = GetTick() + 10000;
-		ScheduleCallBack([this, &called, &latency]() { latency = GetTick() - latency; called = true; }, latency);
-		while(!called);
-		_latency = latency;
+		//Get Tick Compensation
+		volatile tick_t interruptTick;
+		volatile tick_t latencyTick;
+		interruptTick = this->GetTick();
+		latencyTick = this->GetTick();
+		const uint16_t getTickCompensation = latencyTick - interruptTick;
+		
+		//setup interrupt
+		std::function<void()> callBack = [this, &interruptTick]() { interruptTick = this->GetTick(); };
+
+		//get minimum tick to add that schedules far enough in advance
+		interruptTick = 0;
+		latencyTick = GetTick();
+		ScheduleCallBack(callBack, latencyTick);
+		while(interruptTick == 0) ;
+		const uint16_t minTickAdd = interruptTick - latencyTick - getTickCompensation;
+
+		//get latency
+		interruptTick = 0;
+		latencyTick = GetTick() + minTickAdd;
+		ScheduleCallBack(callBack, latencyTick);
+		while(interruptTick == 0) ;
+		_latency = interruptTick - latencyTick - getTickCompensation;
 
 		//return taskList;
 		_taskList = taskList;
