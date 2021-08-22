@@ -71,13 +71,11 @@ namespace EmbeddedIOServices
 		}
 
 		//execute all tasks that are ready
-		while (TickLessThanEqualToTick((*next)->Tick, GetTick() + _latency))
+		while (TickLessThanEqualToTick((*next)->Tick - _latency, GetTick()))
 		{
 			while(TickLessThanTick(GetTick(), (*next)->Tick)) ;
 			(*next)->Scheduled = false;
-			const tick_t currTick = GetTick();
-
-			(*next)->Tick = currTick;
+			(*next)->Tick = GetTick();
 			(*next)->CallBack();
 
 			if(++next == _taskList.end())
@@ -126,51 +124,42 @@ namespace EmbeddedIOServices
 				const TaskList::iterator begin = RemoveUnscheduledTasksAndReturnBegin();
 				const TaskList::iterator end = _taskList.end();
 
-				//check if the list is empty
-				if(begin == end)
-				{
-					task->Scheduled = true;
-					task->Tick = tick;
-					_taskList.push_front(task);
-					ScheduleCallBack(tick - _latency);
-				}
-				else
-				{
-					//find current location 
-					const TaskList::iterator currentLocation = std::find(begin, end, task);
+				//find current location 
+				const TaskList::iterator currentLocation = std::find(begin, end, task);
 
-					//find new location
-					const TaskList::iterator newLocation = std::find_if(begin, end, [tick](Task *task) {
-						return TickLessThanTick(tick, task->Tick);
-					});
+				//find new location
+				const TaskList::iterator newLocation = std::find_if(begin, end, [tick](Task *task) {
+					return TickLessThanTick(tick, task->Tick);
+				});
 
-					if(currentLocation != end)
+				if(currentLocation != end)
+				{
+					TaskList::iterator afterCurrentLocation = currentLocation;
+					afterCurrentLocation++;
+					if(newLocation != currentLocation && newLocation != afterCurrentLocation)
 					{
 						if(TickLessThanTick(tick, task->Tick))
 							task->Tick = tick;
-						TaskList::iterator afterCurrentLocation = currentLocation;
-						afterCurrentLocation++;
-						if(newLocation != currentLocation && newLocation != afterCurrentLocation)
-						{
-							_taskList.insert(newLocation, task);
-							_taskList.erase(currentLocation);
-						}
-						task->Tick = tick;
-					}
-					else
-					{
-						task->Scheduled = true;
-						task->Tick = tick;
 						_taskList.insert(newLocation, task);
+						_taskList.erase(currentLocation);
 					}
-
-					if(currentLocation == begin || newLocation == begin)
-						ScheduleCallBack((*_taskList.begin())->Tick - _latency);
+					task->Tick = tick;
 				}
+				else
+				{
+					task->Scheduled = true;
+					task->Tick = tick;
+					_taskList.insert(newLocation, task);
+				}
+				
 					
 #ifdef ALLOW_TASK_TO_SCHEDULE_IN_CALLBACK
 				_scheduleRequestList.pop_front();
 			}
+
+#endif
+			ScheduleCallBack((*_taskList.begin())->Tick - _latency);
+#ifdef ALLOW_TASK_TO_SCHEDULE_IN_CALLBACK
 
 			_scheduleLock = false;
 
@@ -188,9 +177,7 @@ namespace EmbeddedIOServices
 		FlushScheduleRequests();
 #else
 		_taskList.remove(task);
-		const TaskList::iterator begin = RemoveUnscheduledTasksAndReturnBegin();
-		if(begin != _taskList.end())
-			ScheduleCallBack((*begin)->Tick - _latency);
+		ScheduleCallBack((*_taskList.begin())->Tick - _latency);
 #endif
 	}
 }

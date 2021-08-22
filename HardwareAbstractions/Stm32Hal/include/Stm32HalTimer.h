@@ -1,6 +1,5 @@
 #include "Stm32HalConf.h"
 #include "stdint.h"
-#include <functional>
 
 #ifndef STM32HALTIMER_H
 #define STM32HALTIMER_H
@@ -79,7 +78,6 @@ namespace Stm32
 	};
 
 	extern bool _timFrequencyLocked[TimerIndex::Num];
-	extern std::function<void()> _timCallBack[TimerIndex::Num];
 	extern "C" uint16_t _timPreviousCC[TimerIndex::Num][4];
 	extern "C" uint16_t _timCurrentCC[TimerIndex::Num][4];
 

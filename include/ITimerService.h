@@ -14,6 +14,7 @@ namespace EmbeddedIOServices
 	{
 		public:
 		std::function<void()> CallBack;
+		//only valid when scheduled or during callback
 		tick_t Tick;
 		bool Scheduled : 1;
 		bool DeleteAfterExecution : 1;

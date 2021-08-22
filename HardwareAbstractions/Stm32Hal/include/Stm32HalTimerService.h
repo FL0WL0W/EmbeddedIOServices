@@ -18,15 +18,16 @@ namespace Stm32
 		uint16_t _minTicks;
 		std::function<void()> _interrupt;
 
-		void TimerInterrupt();
 		void ScheduleCallBack(const EmbeddedIOServices::tick_t tick) override;
 	public:
+		void TimerInterrupt();
 		Stm32HalTimerService(TimerIndex timer);
-		void AttachInterrupt(std::function<void()>);
 		const EmbeddedIOServices::tick_t GetTick() override;
 		const EmbeddedIOServices::tick_t GetTicksPerSecond() override;
 		void Calibrate() override;
 	};
+
+	extern Stm32HalTimerService *_timer[TimerIndex::Num];
 }
 
 #endif
