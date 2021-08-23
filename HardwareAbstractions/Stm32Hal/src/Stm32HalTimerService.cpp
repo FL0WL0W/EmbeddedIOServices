@@ -63,9 +63,9 @@ namespace Stm32
 
 	void Stm32HalTimerService::ScheduleCallBack(const tick_t tick)
 	{
-		__disable_irq();
 		_callTick = tick;
 		TIM->DIER |= TIM_IT_CC1;
+		__disable_irq();
 		const tick_t ticks = _callTick - DWT->CYCCNT;
 		if(ticks - _minTicks > 0x80000000)
 			TIM->CCR1 = TIM->CNT + _minTicks;
