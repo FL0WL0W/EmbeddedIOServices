@@ -34,12 +34,13 @@ namespace UnitTests
 		Task *task2 = new Task([timerTestClassInstance](){ timerTestClassInstance->testCallback2(); });
 
 		timerService.ScheduleTask(task1, 100);
-		ASSERT_EQ(true, task1->Scheduled) << "first callback not set as scheduled";
+		bool scheduled;
+		ASSERT_EQ(true, scheduled = task1->Scheduled) << "first callback not set as scheduled";
 		ASSERT_EQ(task1, *timerService.GetTaskList().begin()) << "ScheduledTask not set to first";
 			
 		timerService.ScheduleTask(task2, 150);
-		ASSERT_EQ(true, task1->Scheduled) << "first callback not still scheduled";
-		ASSERT_EQ(true, task2->Scheduled) << "second callback not set as scheduled";
+		ASSERT_EQ(true, scheduled = task1->Scheduled) << "first callback not still scheduled";
+		ASSERT_EQ(true, scheduled = task2->Scheduled) << "second callback not set as scheduled";
 		ASSERT_EQ(task1, *timerService.GetTaskList().begin()) << "ScheduledTask not set to first after new later task added";
 		ASSERT_EQ(task2, *++timerService.GetTaskList().begin()) << "NextTask not set to second  after new later task added";
 
@@ -47,24 +48,24 @@ namespace UnitTests
 			.WillRepeatedly(Return(100));
 
 		timerService.ReturnCallBackPrivateFunction();
-		ASSERT_EQ(false, task1->Scheduled) << "first callback still set as scheduled";
-		ASSERT_EQ(true, task2->Scheduled) << "second callback not still scheduled";
+		ASSERT_EQ(false, scheduled = task1->Scheduled) << "first callback still set as scheduled";
+		ASSERT_EQ(true, scheduled = task2->Scheduled) << "second callback not still scheduled";
 		ASSERT_EQ(1, timerTestClassInstance->lastCallBack) << "first callback not called";
-		ASSERT_EQ(false, (*timerService.GetTaskList().begin())->Scheduled) << "Schedule not set to second after first task called";
+		ASSERT_EQ(false, scheduled = (*timerService.GetTaskList().begin())->Scheduled) << "Schedule not set to second after first task called";
 
 		EXPECT_CALL(timerService, GetTick())
 			.WillRepeatedly(Return(150));
 
 		timerService.ReturnCallBackPrivateFunction();
-		ASSERT_EQ(false, task1->Scheduled) << "first callback still set as scheduled";
-		ASSERT_EQ(false, task2->Scheduled) << "second callback still set as scheduled";
+		ASSERT_EQ(false, scheduled = task1->Scheduled) << "first callback still set as scheduled";
+		ASSERT_EQ(false, scheduled = task2->Scheduled) << "second callback still set as scheduled";
 		ASSERT_EQ(2, timerTestClassInstance->lastCallBack) << "second callback not called";
 			
 		//make sure another callback doesnt mess it up
 		timerTestClassInstance->lastCallBack = 0;
 		timerService.ReturnCallBackPrivateFunction();
-		ASSERT_EQ(false, task1->Scheduled) << "first callback still set as scheduled";
-		ASSERT_EQ(false, task2->Scheduled) << "second callback still set as scheduled";
+		ASSERT_EQ(false, scheduled = task1->Scheduled) << "first callback still set as scheduled";
+		ASSERT_EQ(false, scheduled = task2->Scheduled) << "second callback still set as scheduled";
 		ASSERT_EQ(0, timerTestClassInstance->lastCallBack) << "callback was called";
 
 		//overflow tasks
@@ -83,14 +84,14 @@ namespace UnitTests
 		timerService.ReturnCallBackPrivateFunction();
 		//ASSERT_EQ(0, task2->TickDeviation) << "second callback not called";
 		ASSERT_EQ(1, timerTestClassInstance->lastCallBack) << "tick deviation not set correctly";
-		ASSERT_EQ(false, (*timerService.GetTaskList().begin())->Scheduled) << "Schedule tick not set to second overflow task after first task called";
+		ASSERT_EQ(false, scheduled = (*timerService.GetTaskList().begin())->Scheduled) << "Schedule tick not set to second overflow task after first task called";
 
 		EXPECT_CALL(timerService, GetTick())
 			.WillRepeatedly(Return(301));
 		timerService.ReturnCallBackPrivateFunction();
 		//ASSERT_EQ(1, task2->TickDeviation) << "second callback not called";
 		ASSERT_EQ(2, timerTestClassInstance->lastCallBack) << "tick deviation not set correctly";
-		ASSERT_EQ(false, (*++timerService.GetTaskList().begin())->Scheduled) << "Schedule tick not set to second overflow task after second task called";
+		ASSERT_EQ(false, scheduled = (*++timerService.GetTaskList().begin())->Scheduled) << "Schedule tick not set to second overflow task after second task called";
 
 		//make sure another callback doesnt mess it up
 		timerTestClassInstance->lastCallBack = 0;
