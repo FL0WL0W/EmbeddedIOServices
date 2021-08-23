@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <stdint.h>
 #include "ITimerService.h"
+#include "EmbeddedIOServiceCollection.h"
 
 #ifdef ITIMERSERVICE_H
 namespace EmbeddedIOServices
@@ -11,36 +12,26 @@ namespace EmbeddedIOServices
 		TaskList taskList = _taskList;
 
 		_latency = 0;
-		//Get Tick Compensation
-		volatile tick_t interruptTick;
-		volatile tick_t latencyTick;
-		interruptTick = this->GetTick();
-		latencyTick = this->GetTick();
-		const uint16_t getTickCompensation = latencyTick - interruptTick;
 		
-		//setup interrupt
-		std::function<void()> callBack = [this, &interruptTick]() { interruptTick = this->GetTick(); };
+		//setup task
+		Task task([]() {});
 
 		//get minimum tick to add that schedules far enough in advance
-		interruptTick = 0;
-		latencyTick = GetTick();
-		ScheduleCallBack(callBack, latencyTick);
-		while(interruptTick == 0) ;
-		const uint16_t minTickAdd = interruptTick - latencyTick - getTickCompensation;
+		ScheduleTask(&task, GetTick());
+		while(task.Scheduled) ;
+		const uint16_t minTickAdd = task.ExecutedTick - task.ScheduledTick;
 
 		//get latency
-		interruptTick = 0;
-		latencyTick = GetTick() + minTickAdd;
-		ScheduleCallBack(callBack, latencyTick);
-		while(interruptTick == 0) ;
-		_latency = interruptTick - latencyTick - getTickCompensation;
+		ScheduleTask(&task, GetTick() + minTickAdd);
+		while(task.Scheduled) ;
+		_latency = task.ExecutedTick - task.ScheduledTick;
 
 		//return taskList;
 		_taskList = taskList;
 
 		const TaskList::iterator begin = RemoveUnscheduledTasksAndReturnBegin();
 		if(begin != _taskList.end())
-			ScheduleCallBack((*begin)->Tick - _latency);
+			ScheduleCallBack((*begin)->ScheduledTick - _latency);
 	}
 
 	TaskList::iterator ITimerService::RemoveUnscheduledTasksAndReturnBegin()
@@ -71,24 +62,21 @@ namespace EmbeddedIOServices
 		}
 
 		//execute all tasks that are ready
-		while (TickLessThanEqualToTick((*next)->Tick - _latency, GetTick()))
+		while (TickLessThanEqualToTick((*next)->ScheduledTick - _latency, GetTick()))
 		{
-			while(TickLessThanTick(GetTick(), (*next)->Tick)) ;
+			while(TickLessThanTick((*next)->ExecutedTick = GetTick(), (*next)->ScheduledTick)) ;
 			(*next)->Scheduled = false;
-			(*next)->Tick = GetTick();
 			(*next)->CallBack();
 
 			if(++next == _taskList.end())
 				return;
 		}
-
-		ScheduleCallBack((*next)->Tick - _latency);
+		ScheduleCallBack((*next)->ScheduledTick - _latency);
 	}
 
 	void ITimerService::ScheduleCallBack(std::function<void()> callBack, tick_t tick)
 	{
-		Task *taskToSchedule = new Task(callBack);
-		taskToSchedule->DeleteAfterExecution = true;
+		Task *taskToSchedule = new Task(callBack, true);
 		
 		ScheduleTask(taskToSchedule, tick);
 	}
@@ -129,26 +117,28 @@ namespace EmbeddedIOServices
 
 				//find new location
 				const TaskList::iterator newLocation = std::find_if(begin, end, [tick](Task *task) {
-					return TickLessThanTick(tick, task->Tick);
+					return TickLessThanTick(tick, task->ScheduledTick);
 				});
 
+				//reschedule
 				if(currentLocation != end)
 				{
 					TaskList::iterator afterCurrentLocation = currentLocation;
 					afterCurrentLocation++;
 					if(newLocation != currentLocation && newLocation != afterCurrentLocation)
 					{
-						if(TickLessThanTick(tick, task->Tick))
-							task->Tick = tick;
+						if(TickLessThanTick(tick, task->ScheduledTick))
+							task->ScheduledTick = tick;
 						_taskList.insert(newLocation, task);
 						_taskList.erase(currentLocation);
 					}
-					task->Tick = tick;
+					task->ScheduledTick = tick;
 				}
+				//schedule
 				else
 				{
+					task->ScheduledTick = tick;
 					task->Scheduled = true;
-					task->Tick = tick;
 					_taskList.insert(newLocation, task);
 				}
 				
@@ -158,7 +148,7 @@ namespace EmbeddedIOServices
 			}
 
 #endif
-			ScheduleCallBack((*_taskList.begin())->Tick - _latency);
+			ScheduleCallBack((*_taskList.begin())->ScheduledTick - _latency);
 #ifdef ALLOW_TASK_TO_SCHEDULE_IN_CALLBACK
 
 			_scheduleLock = false;
@@ -177,7 +167,7 @@ namespace EmbeddedIOServices
 		FlushScheduleRequests();
 #else
 		_taskList.remove(task);
-		ScheduleCallBack((*_taskList.begin())->Tick - _latency);
+		ScheduleCallBack((*_taskList.begin())->ScheduledTick - _latency);
 #endif
 	}
 }

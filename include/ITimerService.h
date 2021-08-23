@@ -15,16 +15,23 @@ namespace EmbeddedIOServices
 		public:
 		std::function<void()> CallBack;
 		//only valid when scheduled or during callback
-		tick_t Tick;
-		bool Scheduled : 1;
-		bool DeleteAfterExecution : 1;
+		tick_t ScheduledTick;
+		volatile tick_t ExecutedTick;
+		volatile bool Scheduled : 1;
+		const bool DeleteAfterExecution : 1;
+
+		Task(std::function<void()> callBack, bool deleteAfterExecution) : 
+			CallBack(callBack),
+			ScheduledTick(0),
+			ExecutedTick(0),
+			Scheduled(false),
+			DeleteAfterExecution(deleteAfterExecution)
+		{ }
 
 		Task(std::function<void()> callBack) : 
-			CallBack(callBack),
-			Tick(0),
-			Scheduled(false),
-			DeleteAfterExecution(false)
+			Task(callBack, false)
 		{ }
+
 	};
 
 #ifdef ALLOW_TASK_TO_SCHEDULE_IN_CALLBACK
