@@ -16,7 +16,7 @@ namespace Stm32
 			return;
 		_timFrequencyLocked[index] = true;
 		
-		TIM_HandleTypeDef TIM_Handle = TimInit(index, 0, 0xFFFF);
+		TIM_HandleTypeDef TIM_Handle = TimInit(index, 0, TIM_ARR_ARR);
 		TIM = TIM_Handle.Instance;
 
 		//Set Output Compare Channel 1 to timing
@@ -38,24 +38,6 @@ namespace Stm32
 		Calibrate();
 		}
 
-	void Stm32HalTimerService::Calibrate()
-	{
-		_minTicks = 0;
-
-		//get minimum number of ticks to trigger an interrupt
-		while(true)
-		{
-			ScheduleCallBack(GetTick() - 1);
-			uint16_t count = 0;
-			while(count++ < _minTicks) ;
-			if(!(TIM->DIER & TIM_IT_CC1))
-				break;
-			_minTicks++;
-		}
-		
-		ITimerService::Calibrate();
-	}
-
 	const tick_t Stm32HalTimerService::GetTick()
 	{
 		return DWT->CYCCNT;
@@ -66,11 +48,9 @@ namespace Stm32
 		_callTick = tick;
 		__disable_irq();
 		TIM->DIER |= TIM_IT_CC1;
-		const tick_t ticks = _callTick - DWT->CYCCNT;
-		if(TickLessThanTick(ticks, _minTicks))
-			TIM->CCR1 = TIM->CNT + _minTicks;
-		else
-			TIM->CCR1 = TIM->CNT + ticks;
+		TIM->CCR1 = TIM->CNT + (_callTick - DWT->CYCCNT);
+		if(TickLessThanTick(_callTick, DWT->CYCCNT))
+			TIM->EGR = TIM_EGR_CC1G;
 		__enable_irq();
 	}
 	
