@@ -45,7 +45,7 @@ namespace Stm32
 		//get minimum number of ticks to trigger an interrupt
 		while(true)
 		{
-			ScheduleCallBack(GetTick());
+			ScheduleCallBack(GetTick() - 1);
 			uint16_t count = 0;
 			while(count++ < _minTicks) ;
 			if(!(TIM->DIER & TIM_IT_CC1))
@@ -64,10 +64,10 @@ namespace Stm32
 	void Stm32HalTimerService::ScheduleCallBack(const tick_t tick)
 	{
 		_callTick = tick;
-		TIM->DIER |= TIM_IT_CC1;
 		__disable_irq();
+		TIM->DIER |= TIM_IT_CC1;
 		const tick_t ticks = _callTick - DWT->CYCCNT;
-		if(ticks - _minTicks > 0x80000000)
+		if(TickLessThanTick(ticks, _minTicks))
 			TIM->CCR1 = TIM->CNT + _minTicks;
 		else
 			TIM->CCR1 = TIM->CNT + ticks;
@@ -76,7 +76,7 @@ namespace Stm32
 	
 	void Stm32HalTimerService::TimerInterrupt(void)
 	{
-		if(TickLessThanTick(_callTick, DWT->CYCCNT))
+		if(TickLessThanEqualToTick(_callTick, DWT->CYCCNT))
 		{
 			TIM->DIER &= ~TIM_IT_CC1;
 			ReturnCallBack();

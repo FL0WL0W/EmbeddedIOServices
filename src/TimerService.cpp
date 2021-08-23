@@ -19,12 +19,12 @@ namespace EmbeddedIOServices
 		//get minimum tick to add that schedules far enough in advance
 		ScheduleTask(&task, GetTick());
 		while(task.Scheduled) ;
-		const uint16_t minTickAdd = task.ExecutedTick - task.ScheduledTick;
+		const uint16_t minTickAdd = task.ExecutedTick - task.ScheduledTick + 1;//add 1 for timers where tickrate != clockrate
 
 		//get latency
 		ScheduleTask(&task, GetTick() + minTickAdd);
 		while(task.Scheduled) ;
-		_latency = task.ExecutedTick - task.ScheduledTick;
+		_latency = task.ExecutedTick - task.ScheduledTick + 1;//add 1 for timers where tickrate != clockrate
 
 		//return taskList;
 		_taskList = taskList;

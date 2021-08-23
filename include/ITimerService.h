@@ -74,7 +74,7 @@ namespace EmbeddedIOServices
 	
 		constexpr static bool TickLessThanTick(const tick_t i, const tick_t j)
 		{
-			return i - j > 0x80000000;
+			return i - j & (1<<(sizeof(tick_t) * 8 - 1));
 		}
 
 		constexpr static bool TickLessThanEqualToTick(const tick_t i, const tick_t j)
