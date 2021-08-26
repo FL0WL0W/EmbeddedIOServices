@@ -54,7 +54,6 @@ namespace EmbeddedIOServices
 		std::forward_list<ScheduleRequest> _scheduleRequestList;
 		std::forward_list<Task *> _removeRequestList;
 		bool _scheduleLock = false;
-		void FlushScheduleRequests();
 #endif
 		uint16_t _latency;
 		TaskList::iterator RemoveUnscheduledTasksAndReturnBegin();
@@ -71,6 +70,9 @@ namespace EmbeddedIOServices
 		void ScheduleCallBack(std::function<void()>, tick_t);
 		void ScheduleTask(Task *, tick_t);
 		void UnScheduleTask(Task *);
+#ifdef ALLOW_TASK_TO_SCHEDULE_IN_CALLBACK
+		void FlushScheduleRequests();
+#endif
 	
 		constexpr static bool TickLessThanTick(const tick_t i, const tick_t j)
 		{

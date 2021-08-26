@@ -85,7 +85,9 @@ namespace EmbeddedIOServices
 	{
 #ifdef ALLOW_TASK_TO_SCHEDULE_IN_CALLBACK
 		_scheduleRequestList.push_front(ScheduleRequest(task, tick));
+#ifndef DO_NOT_FLUSH_ON_SCHEDULE
 		FlushScheduleRequests();
+#endif
 	}
 
 	void ITimerService::FlushScheduleRequests()
@@ -164,7 +166,9 @@ namespace EmbeddedIOServices
 	{
 #ifdef ALLOW_TASK_TO_SCHEDULE_IN_CALLBACK
 		_removeRequestList.push_front(task);
+#ifndef DO_NOT_FLUSH_ON_SCHEDULE
 		FlushScheduleRequests();
+#endif
 #else
 		_taskList.remove(task);
 		ScheduleCallBack((*_taskList.begin())->ScheduledTick - _latency);
