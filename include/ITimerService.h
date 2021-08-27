@@ -1,5 +1,5 @@
+#include "CallBack.h"
 #include "stdint.h"
-#include <functional>
 #include <forward_list>
 #include <list>
 
@@ -8,7 +8,6 @@
 
 namespace EmbeddedIOServices
 {
-	typedef std::function<void()> callback_t;
 	typedef uint32_t tick_t;
 
 	struct Task

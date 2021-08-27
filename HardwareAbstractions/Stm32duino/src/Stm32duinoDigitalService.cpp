@@ -30,7 +30,7 @@ namespace Stm32
   	digitalWrite(pin, value);
 	}
 
-	void Stm32duinoDigitalService::AttachInterrupt(uint16_t pin, std::function<void()> callBack)
+	void Stm32duinoDigitalService::AttachInterrupt(uint16_t pin, callback_t callBack)
 	{
 		if (pin == 0xFFFF)
 			return;

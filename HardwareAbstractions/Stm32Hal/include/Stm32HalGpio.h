@@ -1,16 +1,16 @@
 #include "Stm32HalConf.h"
 #include "stdint.h"
-#include <functional>
+#include "CallBack.h"
 
 #ifndef STM32HALGPIO_H
 #define STM32HALGPIO_H
 
 namespace Stm32
 {
-    extern std::function<void()> ExternalInterruptCallback[16];
+    extern EmbeddedIOServices::callback_t ExternalInterruptCallback[16];
 
     void EnableGPIOClock(uint16_t pin);
-    void attachInterrupt(uint16_t pin, std::function<void()> callBack);
+    void attachInterrupt(uint16_t pin, EmbeddedIOServices::callback_t callBack);
     void detachInterrupt(uint16_t pin);
     
     constexpr uint16_t PinToGPIO_Pin(uint16_t pin)

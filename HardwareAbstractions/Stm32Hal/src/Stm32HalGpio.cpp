@@ -2,7 +2,7 @@
 
 namespace Stm32
 {
-	std::function<void()> ExternalInterruptCallback[16];
+	EmbeddedIOServices::callback_t ExternalInterruptCallback[16];
     
     void EnableGPIOClock(uint16_t pin)
     {
@@ -66,7 +66,7 @@ namespace Stm32
 		}
     }
 		
-	void attachInterrupt(uint16_t pin, std::function<void()> callBack)
+	void attachInterrupt(uint16_t pin, EmbeddedIOServices::callback_t callBack)
 	{
 		EnableGPIOClock(pin);
 

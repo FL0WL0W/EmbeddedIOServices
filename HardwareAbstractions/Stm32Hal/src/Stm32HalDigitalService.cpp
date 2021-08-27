@@ -36,7 +36,7 @@ namespace Stm32
   		HAL_GPIO_WritePin(PinToGPIO(pin), PinToGPIO_Pin(pin), value? GPIO_PIN_SET : GPIO_PIN_RESET);
 	}
 
-	void Stm32HalDigitalService::AttachInterrupt(uint16_t pin, std::function<void()> callBack)
+	void Stm32HalDigitalService::AttachInterrupt(uint16_t pin, callback_t callBack)
 	{
 		if (pin == 0xFFFF)
 			return;

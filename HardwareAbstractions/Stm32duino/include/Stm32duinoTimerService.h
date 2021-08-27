@@ -14,7 +14,7 @@ namespace Stm32
 		TIM_TypeDef *TIM;
 		EmbeddedIOServices::tick_t _ticksPerSecond;
 		EmbeddedIOServices::tick_t _callTick = 0;
-		
+	protected:
 		void ScheduleCallBack(const EmbeddedIOServices::tick_t tick);
 	public:
 		void TimerInterrupt();

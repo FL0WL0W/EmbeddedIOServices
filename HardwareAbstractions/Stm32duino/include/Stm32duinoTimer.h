@@ -81,7 +81,7 @@ namespace Stm32
 
 	extern bool _timFrequencyLocked[TimerIndex::Num];
 	extern HardwareTimer *_hardwareTimer[TimerIndex::Num];
-	extern std::function<void()> _timCallBack[TimerIndex::Num];
+	extern callback_t _timCallBack[TimerIndex::Num];
 	extern uint16_t _timPreviousCC[TimerIndex::Num][4];
 	extern uint16_t _timCurrentCC[TimerIndex::Num][4];
 

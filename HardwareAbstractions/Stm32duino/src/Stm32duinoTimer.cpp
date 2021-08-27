@@ -4,7 +4,7 @@ namespace Stm32
 {
 	bool _timFrequencyLocked[TimerIndex::Num];
 	HardwareTimer *_hardwareTimer[TimerIndex::Num];
-	std::function<void()> _timCallBack[TimerIndex::Num];
+	callback_t _timCallBack[TimerIndex::Num];
 
 	uint16_t _timPreviousCC[TimerIndex::Num][4];
 	uint16_t _timCurrentCC[TimerIndex::Num][4];
