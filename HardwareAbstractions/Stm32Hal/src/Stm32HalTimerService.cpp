@@ -36,7 +36,7 @@ namespace Stm32
 		DWT->CTRL |= 1; 
 
 		Calibrate();
-		}
+	}
 
 	const tick_t Stm32HalTimerService::GetTick()
 	{
