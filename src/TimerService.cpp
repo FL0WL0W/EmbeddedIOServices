@@ -96,14 +96,14 @@ namespace EmbeddedIOServices
 		{
 			_scheduleLock = true;
 
-			std::forward_list<Task *>::iterator removeRequest;
+			RemoveRequestList::iterator removeRequest;
 			while((removeRequest = _removeRequestList.begin()) != _removeRequestList.end())
 			{
 				_taskList.remove(*removeRequest);
 				_removeRequestList.pop_front();
 			}
 
-			std::forward_list<ScheduleRequest>::iterator scheduleRequest;
+			ScheduleRequestList::iterator scheduleRequest;
 			while((scheduleRequest = _scheduleRequestList.begin()) != _scheduleRequestList.end())
 			{
 				Task * const task = scheduleRequest->TaskToSchedule;
