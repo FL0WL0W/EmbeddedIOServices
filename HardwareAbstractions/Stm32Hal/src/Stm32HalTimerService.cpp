@@ -38,7 +38,7 @@ namespace Stm32
 		Calibrate();
 	}
 
-	const tick_t Stm32HalTimerService::GetTick()
+	tick_t Stm32HalTimerService::GetTick()
 	{
 		return DWT->CYCCNT;
 	}
@@ -63,7 +63,7 @@ namespace Stm32
 		}
 	}
 
-	const tick_t Stm32HalTimerService::GetTicksPerSecond()
+	tick_t Stm32HalTimerService::GetTicksPerSecond()
 	{
 		return _ticksPerSecond;
 	}

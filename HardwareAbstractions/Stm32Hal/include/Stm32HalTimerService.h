@@ -19,8 +19,8 @@ namespace Stm32
 	public:
 		void TimerInterrupt();
 		Stm32HalTimerService(TimerIndex timer);
-		const EmbeddedIOServices::tick_t GetTick() override;
-		const EmbeddedIOServices::tick_t GetTicksPerSecond() override;
+		EmbeddedIOServices::tick_t GetTick() override;
+		EmbeddedIOServices::tick_t GetTicksPerSecond() override;
 	};
 
 	extern Stm32HalTimerService *_timer[TimerIndex::Num];

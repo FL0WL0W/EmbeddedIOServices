@@ -31,7 +31,7 @@ namespace Stm32
 		Calibrate();
 	}
 
-	const tick_t Stm32duinoTimerService::GetTick()
+	tick_t Stm32duinoTimerService::GetTick()
 	{
 		return DWT->CYCCNT;
 	}
@@ -56,7 +56,7 @@ namespace Stm32
 		}
 	}
 
-	const uint32_t Stm32duinoTimerService::GetTicksPerSecond()
+	uint32_t Stm32duinoTimerService::GetTicksPerSecond()
 	{
 		return _ticksPerSecond;
 	}
