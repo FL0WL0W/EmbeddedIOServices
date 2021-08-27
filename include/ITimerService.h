@@ -58,7 +58,6 @@ namespace EmbeddedIOServices
 		ScheduleRequestList _scheduleRequestList;
 		RemoveRequestList _removeRequestList;
 		bool _scheduleLock = false;
-		void FlushScheduleRequests();
 #endif
 		uint16_t _latency;
 		TaskList::iterator RemoveUnscheduledTasksAndReturnBegin();
@@ -75,6 +74,9 @@ namespace EmbeddedIOServices
 		void ScheduleCallBack(callback_t, tick_t);
 		void ScheduleTask(Task *, tick_t);
 		void UnScheduleTask(Task *);
+#ifdef ALLOW_TASK_TO_SCHEDULE_IN_CALLBACK
+		void FlushScheduleRequests();
+#endif
 	
 		constexpr static bool TickLessThanTick(const tick_t i, const tick_t j)
 		{

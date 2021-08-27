@@ -36,7 +36,7 @@ namespace Stm32
 		DWT->CTRL |= 1; 
 
 		Calibrate();
-		}
+	}
 
 	const tick_t Stm32HalTimerService::GetTick()
 	{
@@ -45,8 +45,8 @@ namespace Stm32
 
 	void Stm32HalTimerService::ScheduleCallBack(const tick_t tick)
 	{
-		_callTick = tick;
 		__disable_irq();
+		_callTick = tick;
 		TIM->DIER |= TIM_IT_CC1;
 		TIM->CCR1 = TIM->CNT + (_callTick - DWT->CYCCNT);
 		if(TickLessThanTick(_callTick, DWT->CYCCNT))
