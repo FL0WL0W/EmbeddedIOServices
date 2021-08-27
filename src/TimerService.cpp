@@ -1,7 +1,6 @@
 #include <algorithm>
 #include <stdint.h>
 #include "ITimerService.h"
-#include "EmbeddedIOServiceCollection.h"
 
 #ifdef ITIMERSERVICE_H
 namespace EmbeddedIOServices
@@ -74,7 +73,7 @@ namespace EmbeddedIOServices
 		ScheduleCallBack((*next)->ScheduledTick - _latency);
 	}
 
-	void ITimerService::ScheduleCallBack(std::function<void()> callBack, tick_t tick)
+	void ITimerService::ScheduleCallBack(callback_t callBack, tick_t tick)
 	{
 		Task *taskToSchedule = new Task(callBack, true);
 		

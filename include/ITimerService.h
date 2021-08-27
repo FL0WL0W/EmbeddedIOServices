@@ -8,19 +8,20 @@
 
 namespace EmbeddedIOServices
 {
+	typedef std::function<void()> callback_t;
 	typedef uint32_t tick_t;
 
 	struct Task
 	{
 		public:
-		std::function<void()> CallBack;
+		callback_t CallBack;
 		//only valid when scheduled or during callback
 		tick_t ScheduledTick;
 		volatile tick_t ExecutedTick;
 		volatile bool Scheduled : 1;
 		const bool DeleteAfterExecution : 1;
 
-		Task(std::function<void()> callBack, bool deleteAfterExecution) : 
+		Task(callback_t callBack, bool deleteAfterExecution) : 
 			CallBack(callBack),
 			ScheduledTick(0),
 			ExecutedTick(0),
@@ -28,7 +29,7 @@ namespace EmbeddedIOServices
 			DeleteAfterExecution(deleteAfterExecution)
 		{ }
 
-		Task(std::function<void()> callBack) : 
+		Task(callback_t callBack) : 
 			Task(callBack, false)
 		{ }
 
@@ -43,6 +44,9 @@ namespace EmbeddedIOServices
 
 		ScheduleRequest(Task *task, tick_t tick) : TaskToSchedule(task), Tick(tick) { }
 	};
+
+	typedef std::forward_list<ScheduleRequest> ScheduleRequestList;
+	typedef std::forward_list<Task *> RemoveRequestList;
 #endif
 
 	typedef std::list<Task *> TaskList;
@@ -51,8 +55,8 @@ namespace EmbeddedIOServices
 	{
 	private:
 #ifdef ALLOW_TASK_TO_SCHEDULE_IN_CALLBACK
-		std::forward_list<ScheduleRequest> _scheduleRequestList;
-		std::forward_list<Task *> _removeRequestList;
+		ScheduleRequestList _scheduleRequestList;
+		RemoveRequestList _removeRequestList;
 		bool _scheduleLock = false;
 		void FlushScheduleRequests();
 #endif
@@ -63,18 +67,18 @@ namespace EmbeddedIOServices
 		virtual void ScheduleCallBack(const tick_t tick) = 0;
 		void ReturnCallBack();
 	public:
-		virtual const tick_t GetTick() = 0;
-		virtual const tick_t GetTicksPerSecond() = 0;
+		virtual tick_t GetTick() = 0;
+		virtual tick_t GetTicksPerSecond() = 0;
 
 		virtual void Calibrate();
 
-		void ScheduleCallBack(std::function<void()>, tick_t);
+		void ScheduleCallBack(callback_t, tick_t);
 		void ScheduleTask(Task *, tick_t);
 		void UnScheduleTask(Task *);
 	
 		constexpr static bool TickLessThanTick(const tick_t i, const tick_t j)
 		{
-			return i - j & (1<<(sizeof(tick_t) * 8 - 1));
+			return (i - j) & (1<<(sizeof(tick_t) * 8 - 1));
 		}
 
 		constexpr static bool TickLessThanEqualToTick(const tick_t i, const tick_t j)
