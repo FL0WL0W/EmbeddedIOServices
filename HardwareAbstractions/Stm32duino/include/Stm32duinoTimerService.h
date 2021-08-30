@@ -11,8 +11,8 @@ namespace Stm32
 	class Stm32duinoTimerService : public EmbeddedIOServices::ITimerService
 	{
 	private:
-		TIM_TypeDef *TIM;
-		EmbeddedIOServices::tick_t _ticksPerSecond;
+		TIM_TypeDef * const TIM;
+		const EmbeddedIOServices::tick_t _ticksPerSecond;
 		EmbeddedIOServices::tick_t _callTick = 0;
 	protected:
 		void ScheduleCallBack(const EmbeddedIOServices::tick_t tick);

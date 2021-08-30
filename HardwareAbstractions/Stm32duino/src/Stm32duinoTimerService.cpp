@@ -8,7 +8,10 @@ using namespace EmbeddedIOServices;
 
 namespace Stm32
 {	
-	Stm32duinoTimerService::Stm32duinoTimerService(TimerIndex index)
+	Stm32duinoTimerService::Stm32duinoTimerService(TimerIndex index) :
+		TIM(TimIndexToTIM(index)),
+		_ticksPerSecond(HAL_RCC_GetSysClockFreq())
+
 	{	
 		if(_timFrequencyLocked[index])
 			return;
@@ -17,13 +20,9 @@ namespace Stm32
 		EnableTimerInterrupts(index);
 		_hardwareTimer[index]->setMode(1, TIMER_OUTPUT_COMPARE);
 		TimInit(index, 1, TIM_ARR_ARR);
-
-		TIM = TimIndexToTIM(index);
+		
 		_timCallBack[index] = [this]() { this->TimerInterrupt(); };
-		
-		//set ticks per second
-		_ticksPerSecond = HAL_RCC_GetSysClockFreq();
-		
+				
 		//enable DWT-CYCCNT
 		CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
 		DWT->CTRL |= 1; 
@@ -41,8 +40,8 @@ namespace Stm32
 		__disable_irq();
 		_callTick = tick;
 		TIM->DIER |= TIM_IT_CC1;
-		TIM->CCR1 = TIM->CNT + (_callTick - DWT->CYCCNT);
-		if(TickLessThanTick(_callTick, DWT->CYCCNT))
+		TIM->CCR1 = TIM->CNT + (tick - DWT->CYCCNT);
+		if(TickLessThanTick(tick, DWT->CYCCNT))
 			TIM->EGR = TIM_EGR_CC1G;
 		__enable_irq();
 	}

@@ -11,19 +11,29 @@ namespace EmbeddedIOServices
 		TaskList taskList = _taskList;
 
 		_latency = 0;
+		_minTick = 0;
 		
 		//setup task
 		Task task([]() {});
+		Task task2([]() {});
 
 		//get minimum tick to add that schedules far enough in advance
 		ScheduleTask(&task, GetTick());
 		while(task.Scheduled) ;
-		const uint16_t minTickAdd = task.ExecutedTick - task.ScheduledTick + 1;//add 1 for timers where tickrate != clockrate
+		const uint16_t minTickAddTask = task.ExecutedTick - task.ScheduledTick + 1;//add 1 for timers where tickrate != clockrate
 
 		//get latency
-		ScheduleTask(&task, GetTick() + minTickAdd);
+		ScheduleTask(&task, GetTick() + minTickAddTask);
 		while(task.Scheduled) ;
 		_latency = task.ExecutedTick - task.ScheduledTick + 1;//add 1 for timers where tickrate != clockrate
+
+		//get min tick
+		//this includes a single unscheduled task in the front of the list
+		_taskList.push_back(&task2);
+		task2.Scheduled = true;
+		ScheduleCallBack(task2.ScheduledTick = GetTick());
+		while(task2.Scheduled) ;
+		_minTick = task2.ExecutedTick - task2.ScheduledTick + 1;//add 1 for timers where tickrate != clockrate
 
 		//return taskList;
 		_taskList = taskList;
@@ -61,7 +71,7 @@ namespace EmbeddedIOServices
 		}
 
 		//execute all tasks that are ready
-		while (TickLessThanEqualToTick((*next)->ScheduledTick - _latency, GetTick()))
+		while (TickLessThanEqualToTick((*next)->ScheduledTick - _minTick, GetTick()))
 		{
 			while(TickLessThanTick((*next)->ExecutedTick = GetTick(), (*next)->ScheduledTick)) ;
 			(*next)->Scheduled = false;

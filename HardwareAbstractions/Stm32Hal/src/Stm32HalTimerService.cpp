@@ -10,14 +10,15 @@ namespace Stm32
 {	
 	Stm32HalTimerService *_timer[TimerIndex::Num];
 
-	Stm32HalTimerService::Stm32HalTimerService(TimerIndex index)
+	Stm32HalTimerService::Stm32HalTimerService(TimerIndex index) :
+		TIM(TimIndexToTIM(index)),
+		_ticksPerSecond(HAL_RCC_GetSysClockFreq())
 	{	
 		if(_timFrequencyLocked[index])
 			return;
 		_timFrequencyLocked[index] = true;
 		
 		TIM_HandleTypeDef TIM_Handle = TimInit(index, 0, TIM_ARR_ARR);
-		TIM = TIM_Handle.Instance;
 
 		//Set Output Compare Channel 1 to timing
 		TIM_OC_InitTypeDef TIM_OC_InitStruct = {0};
@@ -27,9 +28,6 @@ namespace Stm32
 		HAL_TIM_OC_ConfigChannel(&TIM_Handle, &TIM_OC_InitStruct, TIM_CHANNEL_1);
 				
 		_timer[index] = this;
-
-		//set ticks per second
-		_ticksPerSecond = HAL_RCC_GetSysClockFreq();
 
 		//enable DWT-CYCCNT
 		CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
@@ -48,8 +46,8 @@ namespace Stm32
 		__disable_irq();
 		_callTick = tick;
 		TIM->DIER |= TIM_IT_CC1;
-		TIM->CCR1 = TIM->CNT + (_callTick - DWT->CYCCNT);
-		if(TickLessThanTick(_callTick, DWT->CYCCNT))
+		TIM->CCR1 = TIM->CNT + (tick - DWT->CYCCNT);
+		if(TickLessThanTick(tick, DWT->CYCCNT))
 			TIM->EGR = TIM_EGR_CC1G;
 		__enable_irq();
 	}

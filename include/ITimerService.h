@@ -1,5 +1,5 @@
-#include "CallBack.h"
 #include "stdint.h"
+#include "CallBack.h"
 #include <forward_list>
 #include <list>
 
@@ -59,6 +59,7 @@ namespace EmbeddedIOServices
 		bool _scheduleLock = false;
 #endif
 		uint16_t _latency;
+		uint16_t _minTick;
 		TaskList::iterator RemoveUnscheduledTasksAndReturnBegin();
 	protected:
 		TaskList _taskList;
@@ -79,7 +80,7 @@ namespace EmbeddedIOServices
 	
 		constexpr static bool TickLessThanTick(const tick_t i, const tick_t j)
 		{
-			return (i - j) & (1<<(sizeof(tick_t) * 8 - 1));
+			return (i - j) & (static_cast<tick_t>(1)<<(sizeof(tick_t) * 8 - 1));
 		}
 
 		constexpr static bool TickLessThanEqualToTick(const tick_t i, const tick_t j)
