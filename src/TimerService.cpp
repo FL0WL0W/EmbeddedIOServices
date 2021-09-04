@@ -127,8 +127,8 @@ namespace EmbeddedIOServices
 				const TaskList::iterator currentLocation = std::find(begin, end, task);
 
 				//find new location
-				const TaskList::iterator newLocation = std::find_if(begin, end, [tick](Task *task) {
-					return TickLessThanTick(tick, task->ScheduledTick);
+				const TaskList::iterator newLocation = std::find_if(begin, end, [tick](Task *taskFind) {
+					return TickLessThanTick(tick, taskFind->ScheduledTick);
 				});
 
 				//reschedule
