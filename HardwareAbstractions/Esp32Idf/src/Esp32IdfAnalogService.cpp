@@ -117,11 +117,10 @@ static const adc_atten_t atten = ADC_ATTEN_DB_0;
 		if (channel.adc == 0) {
         	uint32_t adc_reading = 0;
 			adc_reading = adc1_get_raw(static_cast<adc1_channel_t>(channel.channel));
-        	return esp_adc_cal_raw_to_voltage(adc_reading, _adc2_chars) * 0.001f;
+        	return esp_adc_cal_raw_to_voltage(adc_reading, _adc1_chars) * 0.001f;
 		} else {
 			int raw = 0;
 			adc2_get_raw(static_cast<adc2_channel_t>(channel.channel), static_cast<adc_bits_width_t>(ADC_WIDTH_MAX - 1), &raw);
-			adc_reading = raw;
         	return esp_adc_cal_raw_to_voltage(raw, _adc2_chars) * 0.001f;
 		}
 	}
