@@ -1,656 +1,128 @@
-// #include <stdint.h>
-// #include "Esp32IdfAnalogService.h"
+#include <stdint.h>
+#include "Esp32IdfAnalogService.h"
+#include "driver/adc.h"
+#include "soc/adc_channel.h"
 
-// namespace Esp32
-// {
-// 	Esp32IdfAnalogService::Esp32IdfAnalogService()
-// 	{
-// #if \
-// defined(ADC1_IN0_PIN) || \
-// defined(ADC1_IN1_PIN) || \
-// defined(ADC1_IN2_PIN) || \
-// defined(ADC1_IN3_PIN) || \
-// defined(ADC1_IN4_PIN) || \
-// defined(ADC1_IN5_PIN) || \
-// defined(ADC1_IN6_PIN) || \
-// defined(ADC1_IN7_PIN) || \
-// defined(ADC1_IN8_PIN) || \
-// defined(ADC1_IN9_PIN) || \
-// defined(ADC1_IN10_PIN) || \
-// defined(ADC1_IN11_PIN) || \
-// defined(ADC1_IN12_PIN) || \
-// defined(ADC1_IN13_PIN) || \
-// defined(ADC1_IN14_PIN) || \
-// defined(ADC1_IN15_PIN)
-//   		__HAL_RCC_ADC1_CLK_ENABLE();
-// 		hadc1.Instance = ADC1;
+namespace Esp32
+{
+	struct adc_channel_t 
+	{ 
+		uint8_t adc : 1;
+		uint8_t channel : 7;
+	};
 
-// #ifdef STM32F4
-// 		hadc1.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV4;
-// 		hadc1.Init.Resolution = ADC_RESOLUTION_12B;
-// 		hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
-// 		hadc1.Init.DMAContinuousRequests = DISABLE;
-// 		hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
-// #endif
+	adc_channel_t PinToChannel(uint16_t pin)
+	{
+		switch(pin)
+		{
 
-// 		hadc1.Init.ScanConvMode = DISABLE;
-// 		hadc1.Init.ContinuousConvMode = DISABLE;
-// 		hadc1.Init.DiscontinuousConvMode = DISABLE;
-// 		hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
-// 		hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-// 		hadc1.Init.NbrOfConversion = 1;
-// 		HAL_ADC_Init(&hadc1);
-// #endif
+#ifdef ADC1_CHANNEL_0_GPIO_NUM
+			case ADC1_CHANNEL_0_GPIO_NUM: return { 0, ADC1_CHANNEL_0 }; 
+#endif
+#ifdef ADC1_CHANNEL_1_GPIO_NUM
+			case ADC1_CHANNEL_1_GPIO_NUM: return { 0, ADC1_CHANNEL_1 };
+#endif
+#ifdef ADC1_CHANNEL_2_GPIO_NUM
+			case ADC1_CHANNEL_2_GPIO_NUM: return { 0, ADC1_CHANNEL_2 };
+#endif
+#ifdef ADC1_CHANNEL_3_GPIO_NUM
+			case ADC1_CHANNEL_3_GPIO_NUM: return { 0, ADC1_CHANNEL_3 };
+#endif
+#ifdef ADC1_CHANNEL_4_GPIO_NUM
+			case ADC1_CHANNEL_4_GPIO_NUM: return { 0, ADC1_CHANNEL_4 };
+#endif
+#ifdef ADC1_CHANNEL_5_GPIO_NUM
+			case ADC1_CHANNEL_5_GPIO_NUM: return { 0, ADC1_CHANNEL_5 };
+#endif
+#ifdef ADC1_CHANNEL_6_GPIO_NUM
+			case ADC1_CHANNEL_6_GPIO_NUM: return { 0, ADC1_CHANNEL_6 };
+#endif
+#ifdef ADC1_CHANNEL_7_GPIO_NUM
+			case ADC1_CHANNEL_7_GPIO_NUM: return { 0, ADC1_CHANNEL_7 };
+#endif
+#ifdef ADC1_CHANNEL_8_GPIO_NUM
+			case ADC1_CHANNEL_8_GPIO_NUM: return { 0, ADC1_CHANNEL_8 };
+#endif
+#ifdef ADC1_CHANNEL_9_GPIO_NUM
+			case ADC1_CHANNEL_9_GPIO_NUM: return { 0, ADC1_CHANNEL_9 };
+#endif
+#ifdef ADC2_CHANNEL_0_GPIO_NUM
+			case ADC2_CHANNEL_0_GPIO_NUM: return { 1, ADC2_CHANNEL_0 }; 
+#endif
+#ifdef ADC2_CHANNEL_1_GPIO_NUM
+			case ADC2_CHANNEL_1_GPIO_NUM: return { 1, ADC2_CHANNEL_1 };
+#endif
+#ifdef ADC2_CHANNEL_2_GPIO_NUM
+			case ADC2_CHANNEL_2_GPIO_NUM: return { 1, ADC2_CHANNEL_2 };
+#endif
+#ifdef ADC2_CHANNEL_3_GPIO_NUM
+			case ADC2_CHANNEL_3_GPIO_NUM: return { 1, ADC2_CHANNEL_3 };
+#endif
+#ifdef ADC2_CHANNEL_4_GPIO_NUM
+			case ADC2_CHANNEL_4_GPIO_NUM: return { 1, ADC2_CHANNEL_4 };
+#endif
+#ifdef ADC2_CHANNEL_5_GPIO_NUM
+			case ADC2_CHANNEL_5_GPIO_NUM: return { 1, ADC2_CHANNEL_5 };
+#endif
+#ifdef ADC2_CHANNEL_6_GPIO_NUM
+			case ADC2_CHANNEL_6_GPIO_NUM: return { 1, ADC2_CHANNEL_6 };
+#endif
+#ifdef ADC2_CHANNEL_7_GPIO_NUM
+			case ADC2_CHANNEL_7_GPIO_NUM: return { 1, ADC2_CHANNEL_7 };
+#endif
+#ifdef ADC2_CHANNEL_8_GPIO_NUM
+			case ADC2_CHANNEL_8_GPIO_NUM: return { 1, ADC2_CHANNEL_8 };
+#endif
+#ifdef ADC2_CHANNEL_9_GPIO_NUM
+			case ADC2_CHANNEL_9_GPIO_NUM: return { 1, ADC2_CHANNEL_9 };
+#endif
+		}
+		return { 1, 0x7F };
+	}
+static const adc_atten_t atten = ADC_ATTEN_DB_0;
 
-// #if \
-// defined(ADC2_IN0_PIN) || \
-// defined(ADC2_IN1_PIN) || \
-// defined(ADC2_IN2_PIN) || \
-// defined(ADC2_IN3_PIN) || \
-// defined(ADC2_IN4_PIN) || \
-// defined(ADC2_IN5_PIN) || \
-// defined(ADC2_IN6_PIN) || \
-// defined(ADC2_IN7_PIN) || \
-// defined(ADC2_IN8_PIN) || \
-// defined(ADC2_IN9_PIN) || \
-// defined(ADC2_IN10_PIN) || \
-// defined(ADC2_IN11_PIN) || \
-// defined(ADC2_IN12_PIN) || \
-// defined(ADC2_IN13_PIN) || \
-// defined(ADC2_IN14_PIN) || \
-// defined(ADC2_IN15_PIN)
-//   		__HAL_RCC_ADC2_CLK_ENABLE();
-// 		hadc2.Instance = ADC2;
+	Esp32IdfAnalogService::Esp32IdfAnalogService(adc_atten_t atten) :
+		_atten(atten)
+	{
+		//configure adc1 width
+		adc1_config_width(static_cast<adc_bits_width_t>(ADC_WIDTH_MAX - 1));
 
-// #ifdef STM32F4
-// 		hadc2.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV4;
-// 		hadc2.Init.Resolution = ADC_RESOLUTION_12B;
-// 		hadc2.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
-// 		hadc2.Init.DMAContinuousRequests = DISABLE;
-// 		hadc2.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
-// #endif
+		//calibrate adc1
+		_adc1_chars = static_cast<esp_adc_cal_characteristics_t*>(calloc(1, sizeof(esp_adc_cal_characteristics_t)));
+		esp_adc_cal_characterize(ADC_UNIT_1, atten, static_cast<adc_bits_width_t>(ADC_WIDTH_MAX - 1), 1100, _adc1_chars);
+		_adc2_chars = static_cast<esp_adc_cal_characteristics_t*>(calloc(1, sizeof(esp_adc_cal_characteristics_t)));
+		esp_adc_cal_characterize(ADC_UNIT_2, atten, static_cast<adc_bits_width_t>(ADC_WIDTH_MAX - 1), 1100, _adc2_chars);
+	}
 
-// 		hadc2.Init.ScanConvMode = ADC_SCAN_DISABLE;
-// 		hadc2.Init.ContinuousConvMode = DISABLE;
-// 		hadc2.Init.DiscontinuousConvMode = DISABLE;
-// 		hadc2.Init.ExternalTrigConv = ADC_SOFTWARE_START;
-// 		hadc2.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-// 		hadc2.Init.NbrOfConversion = 1;
-// 		HAL_ADC_Init(&hadc2);
-// #endif
+	void Esp32IdfAnalogService::InitPin(uint16_t pin)
+	{
+		adc_channel_t channel = PinToChannel(pin);
+		if (channel.channel == 0x7F)
+			return;
 
-// #if \
-// defined(ADC3_IN0_PIN) || \
-// defined(ADC3_IN1_PIN) || \
-// defined(ADC3_IN2_PIN) || \
-// defined(ADC3_IN3_PIN) || \
-// defined(ADC3_IN4_PIN) || \
-// defined(ADC3_IN5_PIN) || \
-// defined(ADC3_IN6_PIN) || \
-// defined(ADC3_IN7_PIN) || \
-// defined(ADC3_IN8_PIN) || \
-// defined(ADC3_IN9_PIN) || \
-// defined(ADC3_IN10_PIN) || \
-// defined(ADC3_IN11_PIN) || \
-// defined(ADC3_IN12_PIN) || \
-// defined(ADC3_IN13_PIN) || \
-// defined(ADC3_IN14_PIN) || \
-// defined(ADC3_IN15_PIN)
-//   		__HAL_RCC_ADC3_CLK_ENABLE();
-// 		hadc3.Instance = ADC3;
-
-// #ifdef STM32F4
-// 		hadc3.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV4;
-// 		hadc3.Init.Resolution = ADC_RESOLUTION_12B;
-// 		hadc3.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
-// 		hadc3.Init.DMAContinuousRequests = DISABLE;
-// 		hadc3.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
-// #endif
-
-// 		hadc3.Init.ScanConvMode = ADC_SCAN_DISABLE;
-// 		hadc3.Init.ContinuousConvMode = DISABLE;
-// 		hadc3.Init.DiscontinuousConvMode = DISABLE;
-// 		hadc3.Init.ExternalTrigConv = ADC_SOFTWARE_START;
-// 		hadc3.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-// 		hadc3.Init.NbrOfConversion = 1;
-// 		HAL_ADC_Init(&hadc3);
-// #endif
-
-// #if \
-// defined(ADC4_IN0_PIN) || \
-// defined(ADC4_IN1_PIN) || \
-// defined(ADC4_IN2_PIN) || \
-// defined(ADC4_IN3_PIN) || \
-// defined(ADC4_IN4_PIN) || \
-// defined(ADC4_IN5_PIN) || \
-// defined(ADC4_IN6_PIN) || \
-// defined(ADC4_IN7_PIN) || \
-// defined(ADC4_IN8_PIN) || \
-// defined(ADC4_IN9_PIN) || \
-// defined(ADC4_IN10_PIN) || \
-// defined(ADC4_IN11_PIN) || \
-// defined(ADC4_IN12_PIN) || \
-// defined(ADC4_IN13_PIN) || \
-// defined(ADC4_IN14_PIN) || \
-// defined(ADC4_IN15_PIN)
-//   		__HAL_RCC_ADC4_CLK_ENABLE();
-// 		hadc4.Instance = ADC4;
-
-// #ifdef STM32F4
-// 		hadc4.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV4;
-// 		hadc4.Init.Resolution = ADC_RESOLUTION_12B;
-// 		hadc4.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
-// 		hadc4.Init.DMAContinuousRequests = DISABLE;
-// 		hadc4.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
-// #endif
-
-// 		hadc4.Init.ScanConvMode = ADC_SCAN_DISABLE;
-// 		hadc4.Init.ContinuousConvMode = DISABLE;
-// 		hadc4.Init.DiscontinuousConvMode = DISABLE;
-// 		hadc4.Init.ExternalTrigConv = ADC_SOFTWARE_START;
-// 		hadc4.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-// 		hadc4.Init.NbrOfConversion = 1;
-// 		HAL_ADC_Init(&hadc4);
-// #endif
-// 	}
-
-// 	void Esp32IdfAnalogService::InitPin(uint16_t pin)
-// 	{
-// 		if (pin == 0xFFFF)
-// 			return;
-
-// 		GPIO_InitTypeDef GPIO_InitStruct = {0};
-// 		GPIO_InitStruct.Pin = PinToGPIO_Pin(pin);
-// 		GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
-// 		GPIO_InitStruct.Pull = GPIO_NOPULL;
-// 		GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-// 		HAL_GPIO_Init(PinToGPIO(pin), &GPIO_InitStruct);
-// 	}
+		//Configure ADC
+		if (channel.adc == 0) {
+			adc1_config_channel_atten(static_cast<adc1_channel_t>(channel.channel), _atten);
+		} else {
+			adc2_config_channel_atten(static_cast<adc2_channel_t>(channel.channel), _atten);
+		}
+	}
 	
-// 	float Esp32IdfAnalogService::ReadPin(uint16_t pin)
-// 	{
-// 		float adcConversionValue = 1;
-//   		ADC_ChannelConfTypeDef sConfig = {0};
-// 		ADC_HandleTypeDef *hadc = 0;
+	float Esp32IdfAnalogService::ReadPin(uint16_t pin)
+	{
+		adc_channel_t channel = PinToChannel(pin);
+		if (channel.channel == 0x7F)
+			return -1000000;//return bogus value
 
-// 		switch(pin)
-// 		{
-// #ifdef ADC1_IN0_PIN
-// 			case ADC1_IN0_PIN:
-// 				adcConversionValue = ADC1_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_0;
-// 				hadc = &hadc1;
-// 				break;
-// #endif
-// #ifdef ADC1_IN1_PIN
-// 			case ADC1_IN1_PIN:
-// 				adcConversionValue = ADC1_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_1;
-// 				hadc = &hadc1;
-// 				break;
-// #endif
-// #ifdef ADC1_IN2_PIN
-// 			case ADC1_IN2_PIN:
-// 				adcConversionValue = ADC1_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_2;
-// 				hadc = &hadc1;
-// 				break;
-// #endif
-// #ifdef ADC1_IN3_PIN
-// 			case ADC1_IN3_PIN:
-// 				adcConversionValue = ADC1_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_3;
-// 				hadc = &hadc1;
-// 				break;
-// #endif
-// #ifdef ADC1_IN4_PIN
-// 			case ADC1_IN4_PIN:
-// 				adcConversionValue = ADC1_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_4;
-// 				hadc = &hadc1;
-// 				break;
-// #endif
-// #ifdef ADC1_IN5_PIN
-// 			case ADC1_IN5_PIN:
-// 				adcConversionValue = ADC1_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_5;
-// 				hadc = &hadc1;
-// 				break;
-// #endif
-// #ifdef ADC1_IN6_PIN
-// 			case ADC1_IN6_PIN:
-// 				adcConversionValue = ADC1_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_6;
-// 				hadc = &hadc1;
-// 				break;
-// #endif
-// #ifdef ADC1_IN7_PIN
-// 			case ADC1_IN7_PIN:
-// 				adcConversionValue = ADC1_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_7;
-// 				hadc = &hadc1;
-// 				break;
-// #endif
-// #ifdef ADC1_IN8_PIN
-// 			case ADC1_IN8_PIN:
-// 				adcConversionValue = ADC1_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_8;
-// 				hadc = &hadc1;
-// 				break;
-// #endif
-// #ifdef ADC1_IN9_PIN
-// 			case ADC1_IN9_PIN:
-// 				adcConversionValue = ADC1_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_9;
-// 				hadc = &hadc1;
-// 				break;
-// #endif
-// #ifdef ADC1_IN10_PIN
-// 			case ADC1_IN10_PIN:
-// 				adcConversionValue = ADC1_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_10;
-// 				hadc = &hadc1;
-// 				break;
-// #endif
-// #ifdef ADC1_IN11_PIN
-// 			case ADC1_IN11_PIN:
-// 				adcConversionValue = ADC1_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_11;
-// 				hadc = &hadc1;
-// 				break;
-// #endif
-// #ifdef ADC1_IN12_PIN
-// 			case ADC1_IN12_PIN:
-// 				adcConversionValue = ADC1_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_12;
-// 				hadc = &hadc1;
-// 				break;
-// #endif
-// #ifdef ADC1_IN13_PIN
-// 			case ADC1_IN13_PIN:
-// 				adcConversionValue = ADC1_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_13;
-// 				hadc = &hadc1;
-// 				break;
-// #endif
-// #ifdef ADC1_IN14_PIN
-// 			case ADC1_IN14_PIN:
-// 				adcConversionValue = ADC1_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_14;
-// 				hadc = &hadc1;
-// 				break;
-// #endif
-// #ifdef ADC1_IN15_PIN
-// 			case ADC1_IN15_PIN:
-// 				adcConversionValue = ADC1_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_15;
-// 				hadc = &hadc1;
-// 				break;
-// #endif
-// #ifdef ADC2_IN0_PIN
-// 			case ADC2_IN0_PIN:
-// 				adcConversionValue = ADC2_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_0;
-// 				hadc = &hadc2;
-// 				break;
-// #endif
-// #ifdef ADC2_IN1_PIN
-// 			case ADC2_IN1_PIN:
-// 				adcConversionValue = ADC2_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_1;
-// 				hadc = &hadc2;
-// 				break;
-// #endif
-// #ifdef ADC2_IN2_PIN
-// 			case ADC2_IN2_PIN:
-// 				adcConversionValue = ADC2_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_2;
-// 				hadc = &hadc2;
-// 				break;
-// #endif
-// #ifdef ADC2_IN3_PIN
-// 			case ADC2_IN3_PIN:
-// 				adcConversionValue = ADC2_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_3;
-// 				hadc = &hadc2;
-// 				break;
-// #endif
-// #ifdef ADC2_IN4_PIN
-// 			case ADC2_IN4_PIN:
-// 				adcConversionValue = ADC2_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_4;
-// 				hadc = &hadc2;
-// 				break;
-// #endif
-// #ifdef ADC2_IN5_PIN
-// 			case ADC2_IN5_PIN:
-// 				adcConversionValue = ADC2_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_5;
-// 				hadc = &hadc2;
-// 				break;
-// #endif
-// #ifdef ADC2_IN6_PIN
-// 			case ADC2_IN6_PIN:
-// 				adcConversionValue = ADC2_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_6;
-// 				hadc = &hadc2;
-// 				break;
-// #endif
-// #ifdef ADC2_IN7_PIN
-// 			case ADC2_IN7_PIN:
-// 				adcConversionValue = ADC2_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_7;
-// 				hadc = &hadc2;
-// 				break;
-// #endif
-// #ifdef ADC2_IN8_PIN
-// 			case ADC2_IN8_PIN:
-// 				adcConversionValue = ADC2_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_8;
-// 				hadc = &hadc2;
-// 				break;
-// #endif
-// #ifdef ADC2_IN9_PIN
-// 			case ADC2_IN9_PIN:
-// 				adcConversionValue = ADC2_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_9;
-// 				hadc = &hadc2;
-// 				break;
-// #endif
-// #ifdef ADC2_IN10_PIN
-// 			case ADC2_IN10_PIN:
-// 				adcConversionValue = ADC2_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_10;
-// 				hadc = &hadc2;
-// 				break;
-// #endif
-// #ifdef ADC2_IN11_PIN
-// 			case ADC2_IN11_PIN:
-// 				adcConversionValue = ADC2_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_11;
-// 				hadc = &hadc2;
-// 				break;
-// #endif
-// #ifdef ADC2_IN12_PIN
-// 			case ADC2_IN12_PIN:
-// 				adcConversionValue = ADC2_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_12;
-// 				hadc = &hadc2;
-// 				break;
-// #endif
-// #ifdef ADC2_IN13_PIN
-// 			case ADC2_IN13_PIN:
-// 				adcConversionValue = ADC2_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_13;
-// 				hadc = &hadc2;
-// 				break;
-// #endif
-// #ifdef ADC2_IN14_PIN
-// 			case ADC2_IN14_PIN:
-// 				adcConversionValue = ADC2_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_14;
-// 				hadc = &hadc2;
-// 				break;
-// #endif
-// #ifdef ADC2_IN15_PIN
-// 			case ADC2_IN15_PIN:
-// 				adcConversionValue = ADC2_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_15;
-// 				hadc = &hadc2;
-// 				break;
-// #endif
-// #ifdef ADC3_IN0_PIN
-// 			case ADC3_IN0_PIN:
-// 				adcConversionValue = ADC3_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_0;
-// 				hadc = &hadc3;
-// 				break;
-// #endif
-// #ifdef ADC3_IN1_PIN
-// 			case ADC3_IN1_PIN:
-// 				adcConversionValue = ADC3_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_1;
-// 				hadc = &hadc3;
-// 				break;
-// #endif
-// #ifdef ADC3_IN2_PIN
-// 			case ADC3_IN2_PIN:
-// 				adcConversionValue = ADC3_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_2;
-// 				hadc = &hadc3;
-// 				break;
-// #endif
-// #ifdef ADC3_IN3_PIN
-// 			case ADC3_IN3_PIN:
-// 				adcConversionValue = ADC3_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_3;
-// 				hadc = &hadc3;
-// 				break;
-// #endif
-// #ifdef ADC3_IN4_PIN
-// 			case ADC3_IN4_PIN:
-// 				adcConversionValue = ADC3_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_4;
-// 				hadc = &hadc3;
-// 				break;
-// #endif
-// #ifdef ADC3_IN5_PIN
-// 			case ADC3_IN5_PIN:
-// 				adcConversionValue = ADC3_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_5;
-// 				hadc = &hadc3;
-// 				break;
-// #endif
-// #ifdef ADC3_IN6_PIN
-// 			case ADC3_IN6_PIN:
-// 				adcConversionValue = ADC3_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_6;
-// 				hadc = &hadc3;
-// 				break;
-// #endif
-// #ifdef ADC3_IN7_PIN
-// 			case ADC3_IN7_PIN:
-// 				adcConversionValue = ADC3_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_7;
-// 				hadc = &hadc3;
-// 				break;
-// #endif
-// #ifdef ADC3_IN8_PIN
-// 			case ADC3_IN8_PIN:
-// 				adcConversionValue = ADC3_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_8;
-// 				hadc = &hadc3;
-// 				break;
-// #endif
-// #ifdef ADC3_IN9_PIN
-// 			case ADC3_IN9_PIN:
-// 				adcConversionValue = ADC3_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_9;
-// 				hadc = &hadc3;
-// 				break;
-// #endif
-// #ifdef ADC3_IN10_PIN
-// 			case ADC3_IN10_PIN:
-// 				adcConversionValue = ADC3_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_10;
-// 				hadc = &hadc3;
-// 				break;
-// #endif
-// #ifdef ADC3_IN11_PIN
-// 			case ADC3_IN11_PIN:
-// 				adcConversionValue = ADC3_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_11;
-// 				hadc = &hadc3;
-// 				break;
-// #endif
-// #ifdef ADC3_IN12_PIN
-// 			case ADC3_IN12_PIN:
-// 				adcConversionValue = ADC3_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_12;
-// 				hadc = &hadc3;
-// 				break;
-// #endif
-// #ifdef ADC3_IN13_PIN
-// 			case ADC3_IN13_PIN:
-// 				adcConversionValue = ADC3_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_13;
-// 				hadc = &hadc3;
-// 				break;
-// #endif
-// #ifdef ADC3_IN14_PIN
-// 			case ADC3_IN14_PIN:
-// 				adcConversionValue = ADC3_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_14;
-// 				hadc = &hadc3;
-// 				break;
-// #endif
-// #ifdef ADC3_IN15_PIN
-// 			case ADC3_IN15_PIN:
-// 				adcConversionValue = ADC3_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_15;
-// 				hadc = &hadc3;
-// 				break;
-// #endif
-// #ifdef ADC4_IN0_PIN
-// 			case ADC4_IN0_PIN:
-// 				adcConversionValue = ADC4_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_0;
-// 				hadc = &hadc4;
-// 				break;
-// #endif
-// #ifdef ADC4_IN1_PIN
-// 			case ADC4_IN1_PIN:
-// 				adcConversionValue = ADC4_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_1;
-// 				hadc = &hadc4;
-// 				break;
-// #endif
-// #ifdef ADC4_IN2_PIN
-// 			case ADC4_IN2_PIN:
-// 				adcConversionValue = ADC4_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_2;
-// 				hadc = &hadc4;
-// 				break;
-// #endif
-// #ifdef ADC4_IN3_PIN
-// 			case ADC4_IN3_PIN:
-// 				adcConversionValue = ADC4_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_3;
-// 				hadc = &hadc4;
-// 				break;
-// #endif
-// #ifdef ADC4_IN4_PIN
-// 			case ADC4_IN4_PIN:
-// 				adcConversionValue = ADC4_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_4;
-// 				hadc = &hadc4;
-// 				break;
-// #endif
-// #ifdef ADC4_IN5_PIN
-// 			case ADC4_IN5_PIN:
-// 				adcConversionValue = ADC4_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_5;
-// 				hadc = &hadc4;
-// 				break;
-// #endif
-// #ifdef ADC4_IN6_PIN
-// 			case ADC4_IN6_PIN:
-// 				adcConversionValue = ADC4_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_6;
-// 				hadc = &hadc4;
-// 				break;
-// #endif
-// #ifdef ADC4_IN7_PIN
-// 			case ADC4_IN7_PIN:
-// 				adcConversionValue = ADC4_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_7;
-// 				hadc = &hadc4;
-// 				break;
-// #endif
-// #ifdef ADC4_IN8_PIN
-// 			case ADC4_IN8_PIN:
-// 				adcConversionValue = ADC4_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_8;
-// 				hadc = &hadc4;
-// 				break;
-// #endif
-// #ifdef ADC4_IN9_PIN
-// 			case ADC4_IN9_PIN:
-// 				adcConversionValue = ADC4_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_9;
-// 				hadc = &hadc4;
-// 				break;
-// #endif
-// #ifdef ADC4_IN10_PIN
-// 			case ADC4_IN10_PIN:
-// 				adcConversionValue = ADC4_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_10;
-// 				hadc = &hadc4;
-// 				break;
-// #endif
-// #ifdef ADC4_IN11_PIN
-// 			case ADC4_IN11_PIN:
-// 				adcConversionValue = ADC4_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_11;
-// 				hadc = &hadc4;
-// 				break;
-// #endif
-// #ifdef ADC4_IN12_PIN
-// 			case ADC4_IN12_PIN:
-// 				adcConversionValue = ADC4_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_12;
-// 				hadc = &hadc4;
-// 				break;
-// #endif
-// #ifdef ADC4_IN13_PIN
-// 			case ADC4_IN13_PIN:
-// 				adcConversionValue = ADC4_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_13;
-// 				hadc = &hadc4;
-// 				break;
-// #endif
-// #ifdef ADC4_IN14_PIN
-// 			case ADC4_IN14_PIN:
-// 				adcConversionValue = ADC4_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_14;
-// 				hadc = &hadc4;
-// 				break;
-// #endif
-// #ifdef ADC4_IN15_PIN
-// 			case ADC4_IN15_PIN:
-// 				adcConversionValue = ADC4_VOLTAGE_CONVERSION_CONSTANT;
-//   				sConfig.Channel = ADC_CHANNEL_15;
-// 				hadc = &hadc4;
-// 				break;
-// #endif
-// 		}
-
-// 		sConfig.Rank = 1;
-// #ifdef ADC_SAMPLETIME_71CYCLES_5
-// 		sConfig.SamplingTime = ADC_SAMPLETIME_71CYCLES_5;
-// #endif
-// #ifdef ADC_SAMPLETIME_84CYCLES
-// 		sConfig.SamplingTime = ADC_SAMPLETIME_84CYCLES;
-// #endif
-
-// 		if(hadc != 0)
-// 		{
-// 			if (HAL_ADC_ConfigChannel(hadc, &sConfig) == HAL_OK)
-// 			{
-// 				if (HAL_ADC_Start(hadc) == HAL_OK)
-// 				{
-// 					if (HAL_ADC_PollForConversion(hadc, 1) == HAL_OK)
-// 					{
-// 						float value = HAL_ADC_GetValue(hadc) * adcConversionValue;
-// 						if (HAL_ADC_Stop(hadc) == HAL_OK)
-// 						{
-// 							return value;
-// 						}
-// 					}
-// 				}
-// 			}
-// 		}
-
-// 		return -1000000;//return bogus value
-// 	}
-// }
+		if (channel.adc == 0) {
+        	uint32_t adc_reading = 0;
+			adc_reading = adc1_get_raw(static_cast<adc1_channel_t>(channel.channel));
+        	return esp_adc_cal_raw_to_voltage(adc_reading, _adc2_chars) * 0.001f;
+		} else {
+			int raw = 0;
+			adc2_get_raw(static_cast<adc2_channel_t>(channel.channel), static_cast<adc_bits_width_t>(ADC_WIDTH_MAX - 1), &raw);
+			adc_reading = raw;
+        	return esp_adc_cal_raw_to_voltage(raw, _adc2_chars) * 0.001f;
+		}
+	}
+}

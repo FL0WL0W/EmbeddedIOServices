@@ -21,6 +21,9 @@ namespace Esp32
 		config.intr_type = TIMER_INTR_LEVEL;
 		timer_init(group_num, timer_num, &config);
 
+		//set timer to 0. if you got real unlucky and the counter started almost max, then there would be a potential missed interrupt. setting it to 0 means it won't overlap for ~14,500 years
+    	timer_set_counter_value(group_num, timer_num, 0);
+
 		timer_isr_register(group_num, timer_num, [](void *args) { static_cast<Esp32IdfTimerService *>(args)->TimerInterrupt(); }, (void *)this, 0, &timer_isr_handle);
 
 		Calibrate();
@@ -35,15 +38,10 @@ namespace Esp32
 
 	void Esp32IdfTimerService::ScheduleCallBack(const tick_t tick)
 	{
-		printf( "get tick\n\r");
 		uint64_t cnt;
 		timer_ll_get_counter_value(dev, idx, &cnt);
-		printf( "set alarm\n\r");
-		// timer_ll_set_alarm_value(dev, idx, cnt + (tick - static_cast<tick_t>(cnt)));
 		timer_ll_set_alarm_value(dev, idx, (cnt & ((~static_cast<uint64_t>(0)) << (sizeof(tick_t) * 8))) | tick);
-		printf( "enable\n\r");
 		timer_ll_set_alarm_enable(dev, idx, TIMER_ALARM_EN);
-		printf( "after\n\r");
 	}
 	
 	void Esp32IdfTimerService::TimerInterrupt(void)
