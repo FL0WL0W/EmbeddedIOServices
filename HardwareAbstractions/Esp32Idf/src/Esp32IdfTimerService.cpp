@@ -2,12 +2,16 @@
 #include <math.h>
 #include "CallBack.h"
 #include "Esp32IdfTimerService.h"
-#include "Esp32IdfConf.h"
 
 using namespace EmbeddedIOServices;
 
 namespace Esp32
 {	
+	void IRAM_ATTR RAMTimerInterrupt(void *arg) 
+	{
+		static_cast<Esp32IdfTimerService *>(arg)->TimerInterrupt();
+	}
+
 	Esp32IdfTimerService::Esp32IdfTimerService(timer_group_t group_num, timer_idx_t timer_num) :
 		dev(TIMER_LL_GET_HW(group_num)),
 		idx(timer_num)
@@ -24,19 +28,19 @@ namespace Esp32
 		//set timer to 0. if you got real unlucky and the counter started almost max, then there would be a potential missed interrupt. setting it to 0 means it won't overlap for ~14,500 years
     	timer_set_counter_value(group_num, timer_num, 0);
 
-		timer_isr_register(group_num, timer_num, [](void *args) { static_cast<Esp32IdfTimerService *>(args)->TimerInterrupt(); }, (void *)this, 0, &timer_isr_handle);
+		timer_isr_register(group_num, timer_num, RAMTimerInterrupt, (void *)this, ESP_INTR_FLAG_LEVEL2 | ESP_INTR_FLAG_IRAM, &timer_isr_handle);
 
 		Calibrate();
 	}
 
-	tick_t Esp32IdfTimerService::GetTick()
+	tick_t IRAM_ATTR Esp32IdfTimerService::GetTick()
 	{
 		uint64_t ret;
 		timer_ll_get_counter_value(dev, idx, &ret);
 		return static_cast<tick_t>(ret);
 	}
 
-	void Esp32IdfTimerService::ScheduleCallBack(const tick_t tick)
+	void IRAM_ATTR Esp32IdfTimerService::ScheduleCallBack(const tick_t tick)
 	{
 		uint64_t cnt;
 		timer_ll_get_counter_value(dev, idx, &cnt);
@@ -44,13 +48,13 @@ namespace Esp32
 		timer_ll_set_alarm_enable(dev, idx, TIMER_ALARM_EN);
 	}
 	
-	void Esp32IdfTimerService::TimerInterrupt(void)
+	void IRAM_ATTR Esp32IdfTimerService::TimerInterrupt(void)
 	{
 		timer_ll_clear_intr_status(dev, idx);
 		ReturnCallBack();
 	}
 
-	tick_t Esp32IdfTimerService::GetTicksPerSecond()
+	tick_t IRAM_ATTR Esp32IdfTimerService::GetTicksPerSecond()
 	{
 		return _ticksPerSecond;
 	}

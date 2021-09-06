@@ -1,6 +1,5 @@
 #include "PinDirection.h"
 #include "IDigitalService.h"
-#include "Esp32IdfConf.h"
 #include "stdint.h"
 
 #ifndef ESP32IDFDIGITALSERVICE_H
@@ -11,6 +10,7 @@ namespace Esp32
 	class Esp32IdfDigitalService : public EmbeddedIOServices::IDigitalService
 	{
 	public:
+		Esp32IdfDigitalService();
 		void InitPin(uint16_t pin, EmbeddedIOServices::PinDirection direction);
 		bool ReadPin(uint16_t pin);
 		void WritePin(uint16_t pin, bool value);

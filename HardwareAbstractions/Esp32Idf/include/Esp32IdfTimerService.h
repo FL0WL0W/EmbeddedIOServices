@@ -1,5 +1,5 @@
 #include "ITimerService.h"
-#include "hal/timer_hal.h"
+#include "hal/timer_ll.h"
 #include "stdint.h"
 #include "driver/timer.h"
 

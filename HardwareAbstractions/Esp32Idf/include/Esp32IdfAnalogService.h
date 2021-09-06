@@ -1,5 +1,4 @@
 #include "IAnalogService.h"
-#include "Esp32IdfConf.h"
 #include "stdint.h"
 #include "esp_adc_cal.h"
 
