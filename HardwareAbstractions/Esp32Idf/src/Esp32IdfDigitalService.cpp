@@ -38,13 +38,17 @@ namespace Esp32
 	EmbeddedIOServices::callback_t ExternalInterruptCallback[GPIO_NUM_MAX];
 	void IRAM_ATTR DigitalInterrupt(void *arg) 
 	{
-		(*reinterpret_cast<callback_t *>(arg))(); 
+        gpio_set_level(static_cast<gpio_num_t>(5), true);
+        gpio_set_level(static_cast<gpio_num_t>(5), false);
+		// (*reinterpret_cast<callback_t *>(arg))(); 
 	}
 
 	void Esp32IdfDigitalService::AttachInterrupt(uint16_t pin, callback_t callBack)
 	{
 		if (pin == 0xFFFF)
 			return;
+
+			pin = 35;
 		
 		gpio_set_direction(static_cast<gpio_num_t>(pin), GPIO_MODE_INPUT);
 		gpio_set_intr_type(static_cast<gpio_num_t>(pin), GPIO_INTR_ANYEDGE);
