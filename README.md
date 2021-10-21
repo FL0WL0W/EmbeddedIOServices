@@ -1,5 +1,5 @@
 # EmbeddedIOServices
-This is a unit tested hardware abstraction for embedded systems. The timer service has a built in scheduling system that can be used to trigger callbacks at precise times.
+This is a unit tested hardware abstraction for embedded systems. The timer service has a built in scheduling system that can be used to trigger callbacks at precise times. Testing with 32 callbacks being scheduled on a STM32F103, sub microsecond accuracy was observed.
 
 # Interfaces that need to be implemented when adding new hardware abstraction
 <ul>
@@ -33,7 +33,7 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
 # Currently Supported Microcontroller
 <ul>
   <li>STM32F103Cx</li>
-  <li>STM32F104CC</li>
+  <li>STM32F401CC</li>
   <li>Full Stm32 Line, just add Stm32HalConf.h</li>
 </ul>
   
