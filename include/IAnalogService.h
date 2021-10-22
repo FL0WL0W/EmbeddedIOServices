@@ -2,10 +2,10 @@
 
 #ifndef IANALOGSERVICE_H
 #define IANALOGSERVICE_H
-typedef uint16_t analogpin_t;
-
 namespace EmbeddedIOServices
 {
+	typedef uint16_t analogpin_t;
+
 	class IAnalogService
 	{
 	public:

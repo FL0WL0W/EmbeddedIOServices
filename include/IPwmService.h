@@ -2,10 +2,10 @@
 
 #ifndef IPWMSERVICE_H
 #define IPWMSERVICE_H
-typedef uint16_t pwmpin_t;
-
 namespace EmbeddedIOServices
 {
+	typedef uint16_t pwmpin_t;
+
 	struct PwmValue
 	{
 		float Period;

@@ -5,7 +5,6 @@
 
 #ifndef ITIMERSERVICE_H
 #define ITIMERSERVICE_H
-
 namespace EmbeddedIOServices
 {
 	typedef uint32_t tick_t;

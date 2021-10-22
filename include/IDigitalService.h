@@ -4,10 +4,10 @@
 
 #ifndef IDIGITALSERVICE_H
 #define IDIGITALSERVICE_H
-typedef uint16_t digitalpin_t;
-
 namespace EmbeddedIOServices
 {
+	typedef uint16_t digitalpin_t;
+
 	class IDigitalService
 	{
 	public:
