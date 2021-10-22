@@ -2,6 +2,8 @@
 
 #ifndef IPWMSERVICE_H
 #define IPWMSERVICE_H
+typedef uint16_t pwmpin_t;
+
 namespace EmbeddedIOServices
 {
 	struct PwmValue
@@ -19,9 +21,9 @@ namespace EmbeddedIOServices
 	class IPwmService
 	{
 	public:
-		virtual void InitPin(uint16_t pin, PinDirection direction, uint16_t minFreqeuncy) = 0;  //pin 0 should be for "null"
-		virtual PwmValue ReadPin(uint16_t pin) = 0; //pin 0 should be for "null"
-		virtual void WritePin(uint16_t pin, PwmValue value) = 0; //pin 0 should be for "null"
+		virtual void InitPin(pwmpin_t pin, PinDirection direction, uint16_t minFreqeuncy) = 0;  //pin 0 should be for "null"
+		virtual PwmValue ReadPin(pwmpin_t pin) = 0; //pin 0 should be for "null"
+		virtual void WritePin(pwmpin_t pin, PwmValue value) = 0; //pin 0 should be for "null"
 	};
 }
 #endif
