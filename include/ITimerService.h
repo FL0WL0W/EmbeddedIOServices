@@ -57,8 +57,8 @@ namespace EmbeddedIOServices
 		RemoveRequestList _removeRequestList;
 		bool _scheduleLock = false;
 #endif
-		uint16_t _latency;
-		uint16_t _minTick;
+		uint16_t _latency = 0;
+		uint16_t _minTick = 0;
 		TaskList::iterator RemoveUnscheduledTasksAndReturnBegin();
 	protected:
 		TaskList _taskList;
