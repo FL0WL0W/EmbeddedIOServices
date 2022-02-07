@@ -37,7 +37,7 @@ namespace UnitTests
 		handler1count = 0;
 		handler2count = 0;
 
-		ASSERT_EQ(1, _communicationService.Receive(0, 1));
+		ASSERT_EQ(1, _communicationService.Receive(0, 1)) << "Correct Handle Count Not Returned";
 
 		ASSERT_EQ(1, handler1count) << "handler 1 not called";
 		ASSERT_EQ(0, handler2count) << "handler 2 called";
@@ -50,7 +50,7 @@ namespace UnitTests
 		handler1count = 0;
 		handler2count = 0;
 
-		ASSERT_EQ(3, _communicationService.Receive(0, 4));
+		ASSERT_EQ(3, _communicationService.Receive(0, 4)) << "Correct Handle Count Not Returned";
 
 		ASSERT_EQ(1, handler1count) << "handler 1 not called";
 		ASSERT_EQ(1, handler2count) << "handler 2 not called";
