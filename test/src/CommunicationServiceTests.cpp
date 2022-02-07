@@ -11,9 +11,9 @@ namespace UnitTests
 	{
 		protected:
 		MockCommunicationService _communicationService;
-		bool handler1return = false;
+		size_t handler1return = 0;
 		int handler1count = 0;
-		bool handler2return = false;
+		size_t handler2return = 0;
 		int handler2count = 0;
 
 		CommunicationServiceTests()
@@ -31,25 +31,26 @@ namespace UnitTests
 		_communicationService.UnRegisterHandler(&handler);
 	}
 
-	TEST_F(CommunicationServiceTests, WhenFirstHandlerHandlesThenSecondHandleNotCalled)
+	TEST_F(CommunicationServiceTests, WhenFirstHandlerHandlesAllThenSecondHandleNotCalled)
 	{
-		handler1return = true;
+		handler1return = 1;
 		handler1count = 0;
 		handler2count = 0;
 
-		_communicationService.Receive(0, 0);
+		ASSERT_EQ(1, _communicationService.Receive(0, 1));
 
 		ASSERT_EQ(1, handler1count) << "handler 1 not called";
 		ASSERT_EQ(0, handler2count) << "handler 2 called";
 	}
 
-	TEST_F(CommunicationServiceTests, WhenFirstHandlerDoesntHandleThenSecondHandleHandles)
+	TEST_F(CommunicationServiceTests, WhenFirstHandlerDoesNotHandleAllThenSecondHandleCalled)
 	{
-		handler1return = false;
+		handler1return = 1;
+		handler2return = 2;
 		handler1count = 0;
 		handler2count = 0;
 
-		_communicationService.Receive(0, 0);
+		ASSERT_EQ(3, _communicationService.Receive(0, 4));
 
 		ASSERT_EQ(1, handler1count) << "handler 1 not called";
 		ASSERT_EQ(1, handler2count) << "handler 2 not called";

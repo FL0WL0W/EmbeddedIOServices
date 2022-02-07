@@ -7,7 +7,7 @@
 #define ICOMMUNICATIONSERVICE_H
 namespace EmbeddedIOServices
 {
-	typedef std::function<bool(void *data, size_t length)> communication_callback_t;
+	typedef std::function<size_t(void *data, size_t length)> communication_callback_t;
     struct CommunicationHandler 
     {
         communication_callback_t CallBack;
@@ -25,7 +25,7 @@ namespace EmbeddedIOServices
 	public:
 		void RegisterHandler(CommunicationHandler *handler);
 		void UnRegisterHandler(CommunicationHandler *handler);
-        void Receive(void *data, size_t length);
+        size_t Receive(void *data, size_t length);
         virtual void Send(void *data, size_t length) = 0;
 	};
 }
