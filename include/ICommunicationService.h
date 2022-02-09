@@ -8,23 +8,15 @@
 namespace EmbeddedIOServices
 {
 	typedef std::function<size_t(void *data, size_t length)> communication_callback_t;
-    struct CommunicationHandler 
-    {
-        communication_callback_t CallBack;
-        
-		CommunicationHandler(communication_callback_t callBack) : 
-			CallBack(callBack)
-		{ }
-    };
-	typedef std::list<CommunicationHandler *> CommunicationHandlerList;
+	typedef std::list<communication_callback_t *> CommunicationHandlerList;
 
 	class ICommunicationService
 	{
 	protected:
 		CommunicationHandlerList _handlerList;
 	public:
-		void RegisterHandler(CommunicationHandler *handler);
-		void UnRegisterHandler(CommunicationHandler *handler);
+		void RegisterHandler(communication_callback_t *handler);
+		void UnRegisterHandler(communication_callback_t *handler);
         size_t Receive(void *data, size_t length);
         virtual void Send(void *data, size_t length) = 0;
 	};

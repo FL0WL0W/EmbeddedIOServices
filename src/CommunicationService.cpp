@@ -5,12 +5,12 @@
 #ifdef ICOMMUNICATIONSERVICE_H
 namespace EmbeddedIOServices
 {	
-	void ICommunicationService::RegisterHandler(CommunicationHandler *handler)
+	void ICommunicationService::RegisterHandler(communication_callback_t *handler)
 	{
 		_handlerList.push_back(handler);
 	}
 
-	void ICommunicationService::UnRegisterHandler(CommunicationHandler *handler)
+	void ICommunicationService::UnRegisterHandler(communication_callback_t *handler)
 	{
 		_handlerList.remove(handler);
 	}
@@ -22,7 +22,7 @@ namespace EmbeddedIOServices
 		size_t handled = 0;
 		while(next != end && length > handled)
 		{
-			handled += (*next)->CallBack(reinterpret_cast<void *>(reinterpret_cast<uint8_t *>(data) + handled), length - handled);
+			handled += (**next)(reinterpret_cast<void *>(reinterpret_cast<uint8_t *>(data) + handled), length - handled);
 			next++;
 		}
 
