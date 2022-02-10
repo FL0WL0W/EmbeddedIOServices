@@ -15,6 +15,7 @@ namespace Stm32
 
 	STM32HalCommunicationService_CDC::STM32HalCommunicationService_CDC()
 	{
+		STM32HalCommunicationService_CDC_Instance = this;
 		USBD_Interface_fops_FS.Receive = CDCReceive;
 	}
 
