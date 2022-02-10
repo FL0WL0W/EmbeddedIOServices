@@ -4,7 +4,6 @@
 
 #ifndef STM32HALGPIO_H
 #define STM32HALGPIO_H
-
 namespace Stm32
 {
     extern EmbeddedIOServices::callback_t ExternalInterruptCallback[16];
@@ -109,5 +108,4 @@ namespace Stm32
         return 0;
     }
 }
-
 #endif

@@ -3,7 +3,6 @@
 
 #ifndef STM32HALTIMER_H
 #define STM32HALTIMER_H
-
 namespace Stm32
 {		
 	enum TimerIndex : uint8_t
@@ -86,5 +85,4 @@ namespace Stm32
 	void EnableTimerClock(TimerIndex index);
 	void EnableTimerInterrupts(TimerIndex index);
 }
-
 #endif

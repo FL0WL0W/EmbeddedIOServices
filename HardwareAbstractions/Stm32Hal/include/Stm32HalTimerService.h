@@ -5,7 +5,6 @@
 
 #ifndef STM32HALTIMERSERVICE_H
 #define STM32HALTIMERSERVICE_H
-
 namespace Stm32
 {		
 	class Stm32HalTimerService : public EmbeddedIOServices::ITimerService
@@ -25,5 +24,4 @@ namespace Stm32
 
 	extern Stm32HalTimerService *_timer[TimerIndex::Num];
 }
-
 #endif

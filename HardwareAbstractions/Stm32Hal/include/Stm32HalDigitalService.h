@@ -6,7 +6,6 @@
 
 #ifndef STM32HALDIGITALSERVICE_H
 #define STM32HALDIGITALSERVICE_H
-
 namespace Stm32
 {
 	class Stm32HalDigitalService : public EmbeddedIOServices::IDigitalService
@@ -19,5 +18,4 @@ namespace Stm32
 		void DetachInterrupt(uint16_t pin);
 	};
 }
-
 #endif

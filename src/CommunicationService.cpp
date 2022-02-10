@@ -23,7 +23,7 @@ namespace EmbeddedIOServices
 		size_t handled = 0;
 		while(next != end && length > handled)
 		{
-			const size_t handledThisTime = (**next)(reinterpret_cast<void *>(reinterpret_cast<uint8_t *>(data) + handled), length - handled);
+			const size_t handledThisTime = (**next)(reinterpret_cast<uint8_t *>(data) + handled, length - handled);
 			handled += handledThisTime;
 			if(handledThisTime > 0)
 				next = begin;

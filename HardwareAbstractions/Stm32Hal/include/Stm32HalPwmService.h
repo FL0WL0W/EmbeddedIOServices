@@ -5,7 +5,6 @@
 
 #ifndef STM32HALPWMSERVICE_H
 #define STM32HALPWMSERVICE_H
-
 namespace Stm32
 {
 	class Stm32HalPwmService : public EmbeddedIOServices::IPwmService

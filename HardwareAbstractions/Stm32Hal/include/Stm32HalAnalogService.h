@@ -5,7 +5,6 @@
 
 #ifndef STM32HALANALOGSERVICE_H
 #define STM32HALANALOGSERVICE_H
-
 namespace Stm32
 {
 	class Stm32HalAnalogService : public EmbeddedIOServices::IAnalogService
@@ -97,5 +96,4 @@ defined(ADC4_IN15_PIN)
 		float ReadPin(uint16_t pin);
 	};
 }
-
 #endif
