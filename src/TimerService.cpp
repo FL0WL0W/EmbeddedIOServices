@@ -57,7 +57,7 @@ namespace EmbeddedIOServices
 		return begin;
 	}
 
-	void ITimerService::ReturnCallBack(void)
+	void ITimerService::ReturnCallBack()
 	{
 		//skip all unscheduled tasks
 		TaskList::iterator next = _taskList.begin();
@@ -153,7 +153,6 @@ namespace EmbeddedIOServices
 					_taskList.insert(newLocation, task);
 				}
 				
-					
 #ifdef ALLOW_TASK_TO_SCHEDULE_IN_CALLBACK
 				_scheduleRequestList.pop_front();
 			}

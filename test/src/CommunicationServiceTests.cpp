@@ -11,8 +11,8 @@ namespace UnitTests
 	{
 		protected:
 		MockCommunicationService _communicationService;
-		communication_callback_t handler1;
-		communication_callback_t handler2;
+		communication_receive_callback_t handler1;
+		communication_receive_callback_t handler2;
 		size_t handler1return = 0;
 		int handler1count = 0;
 		size_t handler2return = 0;
@@ -22,17 +22,17 @@ namespace UnitTests
 		{
 			handler1 = [this](void *data, size_t len) { this->handler1count++; return this->handler1return--; };
 			handler2 = [this](void *data, size_t len) { this->handler2count++; return this->handler2return--; };
-			_communicationService.RegisterHandler(&handler1);
-			_communicationService.RegisterHandler(&handler2);
+			_communicationService.RegisterReceiveCallBack(&handler1);
+			_communicationService.RegisterReceiveCallBack(&handler2);
 		}
 	};
 
-	TEST_F(CommunicationServiceTests, CanRegisterAndUnRegisterHandler)
+	TEST_F(CommunicationServiceTests, CanRegisterAndUnRegisterReceiveCallBack)
 	{
-		communication_callback_t handler = [](void *data, size_t len) { return 1; };
+		communication_receive_callback_t handler = [](void *data, size_t len) { return 1; };
 
-		_communicationService.RegisterHandler(&handler);
-		_communicationService.UnRegisterHandler(&handler);
+		_communicationService.RegisterReceiveCallBack(&handler);
+		_communicationService.UnRegisterReceiveCallBack(&handler);
 	}
 
 	TEST_F(CommunicationServiceTests, WhenFirstHandlerHandlesAllThenSecondHandleNotCalled)

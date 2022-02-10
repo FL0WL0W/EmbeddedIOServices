@@ -3,6 +3,9 @@
 
 namespace Stm32
 {
+	/**
+	 * @brief This constructor sets up the needed ADCs for the pins specified in the Stm32HalConf.h
+	 */
 	Stm32HalAnalogService::Stm32HalAnalogService()
 	{
 #if \
