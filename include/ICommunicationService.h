@@ -15,6 +15,15 @@ namespace EmbeddedIOServices
 	protected:
 		//// list of receive callback
 		communication_receive_callback_list_t _receiveCallBackList;
+
+		/**
+		 * @brief Called when the service receives data. This will loop through all of the register callbacks 
+		 * until there is either no data left to be processed, or there are no callbacks that can handle the data
+		 * @param data A pointer to the data that was received
+		 * @param length Length of that data that was received
+		 * @return size_t Number of bytes parsed from data.
+		 */
+        size_t Receive(void *data, size_t length);
 	public:
 		/**
 		 * @brief Register a callback with the service that will be called when the service receives data.
@@ -27,15 +36,6 @@ namespace EmbeddedIOServices
 		 * @param receiveCallBack A pointer to the callback function
 		 */
 		void UnRegisterReceiveCallBack(communication_receive_callback_t *receiveCallBack);
-
-		/**
-		 * @brief Called when the service receives data. This will loop through all of the register callbacks 
-		 * until there is either no data left to be processed, or there are no callbacks that can handle the data
-		 * @param data A pointer to the data that was received
-		 * @param length Length of that data that was received
-		 * @return size_t Number of bytes parsed from data.
-		 */
-        size_t Receive(void *data, size_t length);
 
 		/**
 		 * @brief Sends data on the communication bus.
