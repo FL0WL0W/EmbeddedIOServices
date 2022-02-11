@@ -28,7 +28,7 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
     <li>GetTicksPerSecond()</li>
     <li>ScheduleCallBack(tick_t tick) <= this is to call ReturnCallBack() at that tick</li>
   </ul>
-  <li>ICommunicationService</li> (UART, CAN, etc.)
+  <li>ICommunicationService (UART, CAN, etc.)</li>
   <ul>
     <li>Call Receive(void* data, size_t length) when data received</li>
     <li>Send(void* data, size_t length)</li>
