@@ -7,6 +7,9 @@ namespace Stm32
 {
 	class STM32HalCommunicationService_CDC : public EmbeddedIOServices::ICommunicationService
 	{
+	private: 
+		static STM32HalCommunicationService_CDC *Instance;
+		static int8_t CDCReceive(uint8_t* data, uint32_t *length);
 	public:
 		STM32HalCommunicationService_CDC();
 		~STM32HalCommunicationService_CDC();

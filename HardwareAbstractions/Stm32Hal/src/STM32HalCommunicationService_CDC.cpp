@@ -4,18 +4,18 @@
 extern USBD_HandleTypeDef hUsbDeviceFS;
 namespace Stm32
 {
-	STM32HalCommunicationService_CDC *STM32HalCommunicationService_CDC_Instance;
-	int8_t CDCReceive(uint8_t* data, uint32_t *length)
+	STM32HalCommunicationService_CDC *STM32HalCommunicationService_CDC::Instance;
+	int8_t STM32HalCommunicationService_CDC::CDCReceive(uint8_t* data, uint32_t *length)
 	{
 		USBD_CDC_SetRxBuffer(&hUsbDeviceFS, &data[0]);
 		USBD_CDC_ReceivePacket(&hUsbDeviceFS);
-		STM32HalCommunicationService_CDC_Instance->Receive(data, *length);
+		Instance->Receive(data, *length);
 		return (USBD_OK);
 	}
 
 	STM32HalCommunicationService_CDC::STM32HalCommunicationService_CDC()
 	{
-		STM32HalCommunicationService_CDC_Instance = this;
+		Instance = this;
 		USBD_Interface_fops_FS.Receive = CDCReceive;
 	}
 
