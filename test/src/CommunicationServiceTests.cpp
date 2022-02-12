@@ -20,8 +20,8 @@ namespace UnitTests
 
 		CommunicationServiceTests()
 		{
-			handler1 = [this](void *data, size_t len) { this->handler1count++; return this->handler1return--; };
-			handler2 = [this](void *data, size_t len) { this->handler2count++; return this->handler2return--; };
+			handler1 = [this](void *data, size_t len) { this->handler1count++; return this->handler1return != 0? this->handler1return-- : 0; };
+			handler2 = [this](void *data, size_t len) { this->handler2count++; return this->handler2return != 0? this->handler2return-- : 0; };
 			_communicationService.RegisterReceiveCallBack(&handler1);
 			_communicationService.RegisterReceiveCallBack(&handler2);
 		}
@@ -56,7 +56,7 @@ namespace UnitTests
 
 		ASSERT_EQ(4, _communicationService.Receive(0, 4)) << "Correct Handle Count Not Returned";
 
-		ASSERT_EQ(1, handler1count) << "handler 1 not called";
+		ASSERT_EQ(3, handler1count) << "handler 1 not called";
 		ASSERT_EQ(2, handler2count) << "handler 2 not called twice";
 	}
 }

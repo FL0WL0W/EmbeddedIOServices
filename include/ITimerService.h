@@ -75,8 +75,6 @@ namespace EmbeddedIOServices
 		//// if reading the list then the schedule is locked
 		bool _scheduleLock = false;
 #endif
-		//// Stores all of the scheduled tasks in order of execution
-		TaskList _taskList;
 		//// the latency it takes between when a task is scheduled and what is sent to the timer
 		uint16_t _latency = 0;
 		//// the minimum time it takes to execute a task after scheduling
@@ -89,6 +87,9 @@ namespace EmbeddedIOServices
 		TaskList::iterator RemoveUnscheduledTasksAndReturnBegin();
 
 	protected:
+		//// Stores all of the scheduled tasks in order of execution
+		TaskList _taskList;
+		
 		/**
 		 * @brief Used to calibrate the latency and the minimum number of ticks that a task can be scheduled in advance.
 		 * This should be called at the end of the child abstraction's constructor after all timer setup is complete.
