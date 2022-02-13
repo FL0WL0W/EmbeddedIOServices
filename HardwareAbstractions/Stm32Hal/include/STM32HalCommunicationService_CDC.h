@@ -14,6 +14,7 @@ namespace Stm32
 		STM32HalCommunicationService_CDC();
 		~STM32HalCommunicationService_CDC();
 		void Send(void *data, size_t length) override;
+		void Flush();
 	};
 }
 #endif
