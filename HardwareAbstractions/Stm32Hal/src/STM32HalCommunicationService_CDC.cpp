@@ -1,5 +1,4 @@
 #include "STM32HalCommunicationService_CDC.h"
-#include "usbd_cdc_if.h"
 #include <cstring>
 
 #ifdef STM32HALCOMMUNICATIONSERVICE_CDC_H
