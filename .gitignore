@@ -38,4 +38,5 @@
 
 build/*
 .vscode/*
+!.vscode/extensions.json
 .vs/*
