@@ -15,11 +15,12 @@ namespace Stm32
 	STM32HalCommunicationService_CDC *STM32HalCommunicationService_CDC::Instance;
 	int8_t STM32HalCommunicationService_CDC::CDCReceive(uint8_t* data, uint32_t *length)
 	{
-		if(UserRxBufferEnd + CDC_DATA_FS_OUT_PACKET_SIZE > APP_RX_DATA_SIZE) {
-			UserRXBufferEndSkipped = APP_RX_DATA_SIZE - UserRxBufferEnd;
-			UserRxBufferEnd = 0;
-		}
 		UserRxBufferEnd += *length;
+		const size_t userRXBufferEndSkipped = APP_RX_DATA_SIZE - UserRxBufferEnd;
+		if(userRXBufferEndSkipped < CDC_DATA_FS_OUT_PACKET_SIZE) {
+			UserRXBufferEndSkipped = userRXBufferEndSkipped;
+			UserRxBufferEnd = CDC_DATA_FS_OUT_PACKET_SIZE;
+		}
 		USBD_CDC_SetRxBuffer(&hUsbDeviceFS, &UserRxBufferFS[UserRxBufferEnd]);
 		USBD_CDC_ReceivePacket(&hUsbDeviceFS);
 		return (USBD_OK);
@@ -38,10 +39,11 @@ namespace Stm32
 		//if buffer wrapped around, we need to call the 
 		if(rxBufferEnd < UserRxBufferStart)
 		{
-			const size_t len = APP_RX_DATA_SIZE - rxBufferEndSkipped - UserRxBufferStart;
+			size_t len = APP_RX_DATA_SIZE - rxBufferEndSkipped - UserRxBufferStart;
 			if(len > 0)
-				Receive(&UserRxBufferFS[UserRxBufferStart], len);
-			UserRxBufferStart = 0;
+				len = len - Receive(&UserRxBufferFS[UserRxBufferStart], len);
+			UserRxBufferStart = CDC_DATA_FS_OUT_PACKET_SIZE - len;
+			std::memcpy(&UserRxBufferFS[UserRxBufferStart], &UserRxBufferFS[APP_RX_DATA_SIZE - rxBufferEndSkipped - len], len);
 		}
 
 		const size_t len = rxBufferEnd - UserRxBufferStart;
