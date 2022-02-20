@@ -44,7 +44,7 @@ namespace EmbeddedIOServices
 		 * after the method has returned
 		 * @param length Length of that data to be transmitted
 		 */
-        virtual void Send(void *data, size_t length) = 0;
+        virtual void Send(const void *data, size_t length) = 0;
 	};
 }
 #endif

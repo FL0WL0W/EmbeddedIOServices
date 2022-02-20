@@ -65,7 +65,7 @@ namespace Stm32
 		USBD_Interface_fops_FS.Receive = 0;
 	}
 
-	void STM32HalCommunicationService_CDC::Send(void *data, size_t length)
+	void STM32HalCommunicationService_CDC::Send(const void *data, size_t length)
 	{
 		std::memcpy(&UserTxBufferFS[UserTXBufferLength], data, length);
 		UserTXBufferLength += length;
