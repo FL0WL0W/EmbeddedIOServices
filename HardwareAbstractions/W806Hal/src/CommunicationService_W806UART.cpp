@@ -12,6 +12,7 @@ namespace EmbeddedIOServices
 
 	CommunicationService_W806UART *CommunicationService_W806UART::Create(
 		USART_TypeDef *uart, 
+		size_t fifoSize=1024,
 		uint32_t baud=115200, 
 		uint32_t wordLength=UART_WORDLENGTH_8B, 
 		uint32_t stopBits=UART_STOPBITS_1, 
@@ -24,32 +25,32 @@ namespace EmbeddedIOServices
 		case UART0_BASE:
 			if(CommunicationService_W806UART0 != 0)
 				return ret;
-			CommunicationService_W806UART0 = ret = new CommunicationService_W806UART();
+			CommunicationService_W806UART0 = ret = new CommunicationService_W806UART(fifoSize);
 			break;
 		case UART1_BASE:
 			if(CommunicationService_W806UART1 != 0)
 				return ret;
-			CommunicationService_W806UART1 = ret = new CommunicationService_W806UART();
+			CommunicationService_W806UART1 = ret = new CommunicationService_W806UART(fifoSize);
 			break;
 		case UART2_BASE:
 			if(CommunicationService_W806UART2 != 0)
 				return ret;
-			CommunicationService_W806UART2 = ret = new CommunicationService_W806UART();
+			CommunicationService_W806UART2 = ret = new CommunicationService_W806UART(fifoSize);
 			break;
 		case UART3_BASE:
 			if(CommunicationService_W806UART3 != 0)
 				return ret;
-			CommunicationService_W806UART3 = ret = new CommunicationService_W806UART();
+			CommunicationService_W806UART3 = ret = new CommunicationService_W806UART(fifoSize);
 			break;
 		case UART4_BASE:
 			if(CommunicationService_W806UART4 != 0)
 				return ret;
-			CommunicationService_W806UART4 = ret = new CommunicationService_W806UART();
+			CommunicationService_W806UART4 = ret = new CommunicationService_W806UART(fifoSize);
 			break;
 		case UART5_BASE:
 			if(CommunicationService_W806UART5 != 0)
 				return ret;
-			CommunicationService_W806UART5 = ret = new CommunicationService_W806UART();
+			CommunicationService_W806UART5 = ret = new CommunicationService_W806UART(fifoSize);
 			break;
 		
 		default:
@@ -88,9 +89,9 @@ namespace EmbeddedIOServices
 
 		return ret;
 	}
-	CommunicationService_W806UART::CommunicationService_W806UART()
+	CommunicationService_W806UART::CommunicationService_W806UART(size_t fifoSize) : _fifo(fifoSize)
 	{
-		HAL_UART_Receive_IT(&_huart, buf, 0);
+		HAL_UART_Receive_IT(&_huart, _buf, 0);
 	}
 	void CommunicationService_W806UART::Send(const void *data, size_t length)
 	{
@@ -113,7 +114,16 @@ namespace EmbeddedIOServices
 	}
 	void CommunicationService_W806UART::RxCpltCallback() 
 	{
+		_fifo.Write(_huart.pRxBuffPtr, _huart.RxXferCount)
+	}
+	void CommunicationService_W806UART::Flush()
+	{
+		const size_t len = _fifo.Length();
+		void *buf = new void[len];
+		_fifo.Peak(buf, len);
+		_fifo.Pop(Receive(buf, len));
 
+		delete buf;
 	}
 }
 extern "C" void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
