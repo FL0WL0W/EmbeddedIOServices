@@ -31,7 +31,7 @@ namespace EmbeddedIOServices
 
     size_t Fifo::Read(void *buf, size_t len)
     {
-        size_t len = Peak(buf, len);
+        len = Peak(buf, len);
         Pop(len);
         return len;
     }

@@ -1,4 +1,5 @@
 #include "ICommunicationService.h"
+#include "Fifo.h"
 #include "wm_uart.h"
 
 #ifndef COMMUNICATIONSERVICE_W806UART_H

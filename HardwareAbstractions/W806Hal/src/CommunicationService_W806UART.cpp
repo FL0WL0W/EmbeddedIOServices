@@ -93,6 +93,10 @@ namespace EmbeddedIOServices
 	{
 		HAL_UART_Receive_IT(&_huart, _buf, 0);
 	}
+	CommunicationService_W806UART::~CommunicationService_W806UART() 
+	{ 
+
+	}
 	void CommunicationService_W806UART::Send(const void *data, size_t length)
 	{
 		HAL_UART_Transmit(&_huart, (uint8_t *)data, length, 1000);
@@ -114,12 +118,12 @@ namespace EmbeddedIOServices
 	}
 	void CommunicationService_W806UART::RxCpltCallback() 
 	{
-		_fifo.Write(_huart.pRxBuffPtr, _huart.RxXferCount)
+		_fifo.Write(_huart.pRxBuffPtr, _huart.RxXferCount);
 	}
 	void CommunicationService_W806UART::Flush()
 	{
 		const size_t len = _fifo.Length();
-		void *buf = new void[len];
+		void *buf = new uint8_t[len];
 		_fifo.Peak(buf, len);
 		_fifo.Pop(Receive(buf, len));
 

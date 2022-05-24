@@ -1,14 +1,18 @@
+#include "stdint.h"
+#include <list>
+
 #ifndef FIFO_H
 #define FIFO_H
 namespace EmbeddedIOServices
 {
 	class Fifo
     {
-        protected:
+    protected:
         void *_buf;
         size_t _in;
         size_t _out;
-        public:
+
+    public:
         const size_t Size;
         Fifo(size_t size);
         ~Fifo();
@@ -20,6 +24,6 @@ namespace EmbeddedIOServices
         size_t Peak(void *buf, size_t len);
         void Pop(size_t len);
         void Clear();
-    }
+    };
 }
 #endif
