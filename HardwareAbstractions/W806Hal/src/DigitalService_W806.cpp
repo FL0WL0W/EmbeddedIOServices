@@ -54,8 +54,8 @@ namespace EmbeddedIOServices
     	((RCC_TypeDef *)RCC_BASE)->CLK_EN |= RCC_CLK_EN_GPIO;
 
 		//Enable GPIO Interrupts with Highest Priority
-		NVIC_SetPriority(pin > 31? GPIOB_IRQn : GPIOA_IRQn, 0);
-		NVIC_EnableIRQ(pin > 31? GPIOB_IRQn : GPIOA_IRQn);
+		csi_vic_set_prio(pin > 31? GPIOB_IRQn : GPIOA_IRQn, 0);
+		csi_vic_enable_irq(pin > 31? GPIOB_IRQn : GPIOA_IRQn);
 
 		GPIO_TypeDef *GPIOx = pin > 31? GPIOB : GPIOA;
 		uint32_t GPIOPin = PinToGPIOPin(pin);
