@@ -1,4 +1,5 @@
 #include "IAnalogService.h"
+#include "wm_adc.h"
 
 #ifndef ANALOGSERVICE_W806_H
 #define ANALOGSERVICE_W806_H

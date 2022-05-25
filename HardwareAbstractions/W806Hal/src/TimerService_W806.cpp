@@ -3,47 +3,68 @@
 #ifdef TIMERSERVICE_W806_H
 namespace EmbeddedIOServices
 {	
-	TimerService_W806::TimerService_W806(uint8_t tickTimer, uint8_t interruptTimer)
+	TimerInterruptList TimerService_W806::InterruptList;
+
+	TimerService_W806::TimerService_W806(uint8_t tickTimer, uint8_t interruptTimer) : _tick(&TIM->TIM0_CNT + tickTimer), _interruptTimer(interruptTimer)
 	{
-		_tickTimerH.Instance = tickTimer;
-		_tickTimerH.Init.Unit = TIM_UNIT_US;
-		_tickTimerH.Init.Period = UINT32_MAX;
-		_tickTimerH.Init.AutoReload = TIM_AUTORELOAD_PRELOAD_ENABLE;
-		HAL_TIM_Base_Init(&_tickTimerH);
-    	HAL_TIM_Base_Start(&_tickTimerH);
-		switch(tickTimer)
-		{
-			case TIM0:
-				_tick = &TIM->TIM0_CNT;
-				break;
-			case TIM1:
-				_tick = &TIM->TIM1_CNT;
-				break;
-			case TIM2:
-				_tick = &TIM->TIM2_CNT;
-				break;
-			case TIM3:
-				_tick = &TIM->TIM3_CNT;
-				break;
-			case TIM4:
-				_tick = &TIM->TIM4_CNT;
-				break;
-			case TIM5:
-				_tick = &TIM->TIM5_CNT;
-				break;
-		}
+		//set timing divider value to apb clock - 1. 
+		//this gives us microsecond resolution which is the expected standard.
+		//for more resolution we could probably just set this value to 0
+		const uint8_t apbclk = (0xFF & ((RCC_TypeDef *)RCC_BASE)->CLK_DIV) / (0xFF & (((RCC_TypeDef *)RCC_BASE)->CLK_DIV >> 16));
+		TIM->TMR_CONFIG = apbclk-1;
+
+		//Enable Timer Clock
+    	((RCC_TypeDef *)RCC_BASE)->CLK_EN |= RCC_CLK_EN_TIMER;
+
+		//reload at max uint32
+		*(&TIM->TIM0_PRD + tickTimer) = UINT32_MAX;
+		//set timer to microsecond resolution
+		TIM->CR &= ~(1 << (tickTimer * 5));
+		//set timer to autoreload
+		TIM->CR &= ~(1 << (tickTimer * 5 + 1));
+		//disable interrupt
+		TIM->CR &= ~(1 << (tickTimer * 5 + 3));
+		//enable timer
+		TIM->CR |= (1 << (tickTimer * 5 + 2));
 		
-		_interruptTimerH.Instance = tickTimer;
-		_interruptTimerH.Init.Unit = TIM_UNIT_US;
-		_interruptTimerH.Init.Period = 1000000;
-		_interruptTimerH.Init.AutoReload = TIM_AUTORELOAD_PRELOAD_Disable;
-		HAL_TIM_Base_Init(&_interruptTimerH);
+		NVIC_SetPriority(TIM_IRQn, 0);
+		NVIC_EnableIRQ(TIM_IRQn);
+
+		//period at max uint32
+		*(&TIM->TIM0_PRD + interruptTimer) = UINT32_MAX;
+		//set timer to microsecond resolution
+		TIM->CR &= ~(1 << (interruptTimer * 5));
+		//set timer to not autoreload
+		TIM->CR |= (1 << (interruptTimer * 5 + 1));
+		//disable interrupt
+		TIM->CR &= ~(1 << (interruptTimer * 5 + 3));
+		//disable timer
+		TIM->CR &= ~(1 << (interruptTimer * 5 + 2));
+		InterruptList.push_front(TimerInterrupt(interruptTimer, [this](){TimerInterruptCallback();}));
 		
 		Calibrate();
 	}
+	TimerService_W806::~TimerService_W806()
+	{
+		InterruptList.remove_if([this](const TimerInterrupt& interrupt) { return interrupt.Timer == _interruptTimer; });
+	}
 	void TimerService_W806::ScheduleCallBack(const tick_t tick)
 	{
-
+		//disable timer and interrupt
+		TIM->CR &= ~(3 << (_interruptTimer * 5 + 2));
+		*(&TIM->TIM0_PRD + _interruptTimer) = GetTick() - tick;
+		if(*(&TIM->TIM0_PRD + _interruptTimer) & 0x80000000)
+			*(&TIM->TIM0_PRD + _interruptTimer) = 1;
+		//enable timer and interrupt
+		TIM->CR |= (3 << (_interruptTimer * 5 + 2));
+	}
+	void TimerService_W806::TimerInterruptCallback()
+	{
+		//disable timer and interrupt
+		TIM->CR &= ~(3 << (_interruptTimer * 5 + 2));
+		//clear interrupt
+		TIM->CR |= (1 << (_interruptTimer * 5 + 4));
+		ReturnCallBack();
 	}
 	tick_t TimerService_W806::GetTick()
 	{
@@ -53,5 +74,19 @@ namespace EmbeddedIOServices
 	{
 		return 1000000;
 	}
+}
+
+using namespace EmbeddedIOServices;
+
+extern "C" __attribute__((isr)) void TIM0_5_IRQHandler(void)
+{
+	for (TimerInterruptList::iterator interrupt = TimerService_W806::InterruptList.begin(); interrupt != TimerService_W806::InterruptList.end(); ++interrupt)
+	{
+		if((1 << (interrupt->Timer * 5 + 4)) & TIM->CR)
+		{
+			interrupt->CallBack();
+		}
+	}
+	TIM->CR |= 0x10842108;
 }
 #endif

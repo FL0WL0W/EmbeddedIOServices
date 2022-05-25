@@ -93,10 +93,6 @@ namespace EmbeddedIOServices
 	{
 		HAL_UART_Receive_IT(&_huart, _buf, 0);
 	}
-	CommunicationService_W806UART::~CommunicationService_W806UART() 
-	{ 
-
-	}
 	void CommunicationService_W806UART::Send(const void *data, size_t length)
 	{
 		HAL_UART_Transmit(&_huart, (uint8_t *)data, length, 1000);
