@@ -1,8 +1,6 @@
 #include "ITimerService.h"
 #include "wm_regs.h"
 
-#define TIM                ((TIM_TypeDef *)TIM_BASE)
-
 #ifndef TIMERSERVICE_W806_H
 #define TIMERSERVICE_W806_H
 namespace EmbeddedIOServices
