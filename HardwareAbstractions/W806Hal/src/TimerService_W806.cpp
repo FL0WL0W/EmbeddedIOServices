@@ -12,7 +12,7 @@ namespace EmbeddedIOServices
 		//set timing divider value to apb clock - 1. 
 		//this gives us microsecond resolution which is the expected standard.
 		//for more resolution we could probably just set this value to 0
-		const uint8_t apbclk = (0xFF & ((RCC_TypeDef *)RCC_BASE)->CLK_DIV) / (0xFF & (((RCC_TypeDef *)RCC_BASE)->CLK_DIV >> 16));
+		const uint8_t apbclk = (480 / (0xFF & ((RCC_TypeDef *)RCC_BASE)->CLK_DIV)) / (0xFF & (((RCC_TypeDef *)RCC_BASE)->CLK_DIV >> 16));
 		TIM->TMR_CONFIG = apbclk-1;
 
 		//Enable Timer Clock
@@ -54,7 +54,7 @@ namespace EmbeddedIOServices
 	{
 		//disable timer and interrupt
 		TIM->CR &= ~(3 << (_interruptTimer * 5 + 2));
-		*(&TIM->TIM0_PRD + _interruptTimer) = GetTick() - tick;
+		*(&TIM->TIM0_PRD + _interruptTimer) = tick - GetTick();
 		if(*(&TIM->TIM0_PRD + _interruptTimer) & 0x80000000)
 			*(&TIM->TIM0_PRD + _interruptTimer) = 0;
 		//enable timer and interrupt
@@ -81,7 +81,7 @@ using namespace EmbeddedIOServices;
 extern "C" __attribute__((isr)) void TIM0_5_IRQHandler(void)
 {
 	const uint32_t CRCache = TIM->CR;
-	TIM->CR |= 0x10842108;
+	// TIM->CR |= 0x10842108;
 	for (TimerInterruptList::iterator interrupt = TimerService_W806::InterruptList.begin(); interrupt != TimerService_W806::InterruptList.end(); ++interrupt)
 	{
 		if((1 << (interrupt->Timer * 5 + 4)) & CRCache)

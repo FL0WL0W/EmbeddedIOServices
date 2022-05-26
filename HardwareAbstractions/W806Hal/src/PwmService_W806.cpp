@@ -1,4 +1,5 @@
 #include "PwmService_W806.h"
+#include "DigitalService_W806.h"
 #include "wm_regs.h"
 #include <cmath>
 
@@ -10,17 +11,86 @@ namespace EmbeddedIOServices
 	//still need to work on input
 	void PwmService_W806::InitPin(pwmpin_t pin, PinDirection direction, uint16_t minFreqeuncy)
 	{
+		//Enable GPIO Clock
+    	((RCC_TypeDef *)RCC_BASE)->CLK_EN |= RCC_CLK_EN_GPIO;
+		//Enable PWM Clock
+    	((RCC_TypeDef *)RCC_BASE)->CLK_EN |= RCC_CLK_EN_PWM;
+
+		GPIO_TypeDef *GPIOx = pin > 31? GPIOB : GPIOA;
+		const uint32_t GPIOPin = DigitalService_W806::PinToGPIOPin(pin);
 		const uint8_t channel = PinToChannel(pin);
 
+		//alternate function
+		GPIOx->AF_SEL |= GPIOPin;
+		switch(pin)
+		{
+			case 7:
+			case 32:
+			case 33:
+			case 34:
+			case 35:
+				GPIOx->AF_S0 &= ~GPIOPin;
+				GPIOx->AF_S1 &= ~GPIOPin;
+				break;
+			case 44:
+			case 45:
+			case 46:
+			case 47:
+			case 48:
+			case 54:
+			case 55:
+			case 56:
+			case 57:
+			case 58:
+				GPIOx->AF_S0 |= GPIOPin;
+				GPIOx->AF_S1 &= ~GPIOPin;
+				break;
+			case 0:
+			case 1:
+			case 2:
+			case 3:
+			case 4:
+			case 10:
+			case 11:
+			case 12:
+			case 13:
+			case 14:
+				GPIOx->AF_S0 &= ~GPIOPin;
+				GPIOx->AF_S1 |= GPIOPin;
+				break;
+		}
+
+		//output independent
+        PWM->BKCR &= ~(0x1F << PWM_BKCR_EN_Pos);
+        PWM->CR &= ~PWM_CR_ALLSYNCEN;
+        if (channel != 4)
+        {
+            PWM->CR&= ~(1 << (PWM_CR_TWOSYNCEN_Pos + channel / 2)) & ~(1 << (PWM_CR_2COMPLEMENTARY_Pos + channel / 2));
+        }
+
+		//count type
+		if(channel == 4)
+        	PWM->CH4CR2 = (PWM->CH4CR2 & ~PWM_CH4CR2_CNTTYPE)  | ((direction == Out? 1 : 0) << PWM_CH4CR2_CNTTYPE_Pos);
+		else
+			PWM->CR = (PWM->CR & ~(0x3 << (PWM_CR_CNTTYPE0_Pos + channel * 2))) | ((direction == Out? 1 : 0) << (PWM_CR_CNTTYPE0_Pos + channel * 2));
+
+		//count mode
 		if(channel == 4)
 			PWM->CH4CR2 |= 1 << PWM_CH4CR2_CNTMODE_Pos;
 		else
 			PWM->CR |= 1 << (PWM_CR_CNTMODE_Pos + channel);
 			
-		if(channel == 4)
-        	PWM->CH4CR2 = (PWM->CH4CR2 & ~PWM_CH4CR2_CNTTYPE)  | ((direction == Out? 1 : 0) << PWM_CH4CR2_CNTTYPE_Pos);
+		//output inverse
+		if (channel == 4)
+			PWM->CH4CR2 |= PWM_CH4CR2_PINV;
 		else
-			PWM->CR = (PWM->CR & ~(0x3 << (PWM_CR_CNTTYPE0_Pos + channel * 2))) | ((direction == Out? 1 : 0) << (PWM_CR_CNTTYPE0_Pos + channel * 2));
+			PWM->CR |= (0x01 << (PWM_CR_PINV_Pos + channel));
+
+		//output enable
+		if (channel == 0)
+			PWM->CR &= ~PWM_CR_POEN;
+		if (channel == 4)
+			PWM->CH4CR3 &= ~PWM_CH4CR3_POEN;
 	}
 	PwmValue PwmService_W806::ReadPin(pwmpin_t pin)
 	{
@@ -28,7 +98,7 @@ namespace EmbeddedIOServices
 	}
 	void PwmService_W806::WritePin(pwmpin_t pin, PwmValue value)
 	{
-		const uint8_t apbclk = (0xFF & ((RCC_TypeDef *)RCC_BASE)->CLK_DIV) / (0xFF & (((RCC_TypeDef *)RCC_BASE)->CLK_DIV >> 16));
+		const uint8_t apbclk = (480 / (0xFF & ((RCC_TypeDef *)RCC_BASE)->CLK_DIV)) / (0xFF & (((RCC_TypeDef *)RCC_BASE)->CLK_DIV >> 16));
 		const uint8_t channel = PinToChannel(pin);
 		uint16_t prescaler = std::ceil(value.Period * apbclk * (1000000.0f / 256));
 		if(prescaler == 0)
@@ -64,6 +134,9 @@ namespace EmbeddedIOServices
         		PWM->CH4CR2 = (PWM->CH4CR2 & ~PWM_CH4CR2_CMP_Msk) | (pulse << PWM_CH4CR2_CMP_Pos);
 				break;
 		}
+
+		//enable
+    	PWM->CR |= (0x01 << (PWM_CR_CNTEN_Pos + channel));
 	}
 	uint8_t PwmService_W806::PinToChannel(pwmpin_t pin)
 	{

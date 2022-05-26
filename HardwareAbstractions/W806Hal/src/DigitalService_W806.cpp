@@ -9,7 +9,7 @@ namespace EmbeddedIOServices
     	((RCC_TypeDef *)RCC_BASE)->CLK_EN |= RCC_CLK_EN_GPIO;
 
 		GPIO_TypeDef *GPIOx = pin > 31? GPIOB : GPIOA;
-		uint32_t GPIOPin = PinToGPIOPin(pin);
+		const uint32_t GPIOPin = PinToGPIOPin(pin);
 
 		//GPIO
 		GPIOx->AF_SEL &= ~GPIOPin;
@@ -27,16 +27,16 @@ namespace EmbeddedIOServices
 	bool DigitalService_W806::ReadPin(digitalpin_t pin)
 	{
 		GPIO_TypeDef *GPIOx = pin > 31? GPIOB : GPIOA;
-		uint32_t GPIOPin = PinToGPIOPin(pin);
+		const uint32_t GPIOPin = PinToGPIOPin(pin);
 		
 		return (GPIOx->DATA & GPIOPin) != 0;
 	}
 	void DigitalService_W806::WritePin(digitalpin_t pin, bool value)
 	{
 		GPIO_TypeDef *GPIOx = pin > 31? GPIOB : GPIOA;
-		uint32_t GPIOPin = PinToGPIOPin(pin);
+		const uint32_t GPIOPin = PinToGPIOPin(pin);
 
-		uint32_t GPIODataEn = GPIOx->DATA_B_EN;
+		const uint32_t GPIODataEn = GPIOx->DATA_B_EN;
 		GPIOx->DATA_B_EN |= GPIOPin;
 		if (value)
 		{
@@ -58,7 +58,7 @@ namespace EmbeddedIOServices
 		csi_vic_enable_irq(pin > 31? GPIOB_IRQn : GPIOA_IRQn);
 
 		GPIO_TypeDef *GPIOx = pin > 31? GPIOB : GPIOA;
-		uint32_t GPIOPin = PinToGPIOPin(pin);
+		const uint32_t GPIOPin = PinToGPIOPin(pin);
 
 		//GPIO
 		GPIOx->AF_SEL &= ~GPIOPin;
@@ -84,7 +84,7 @@ namespace EmbeddedIOServices
 	void DigitalService_W806::DetachInterrupt(digitalpin_t pin)
 	{
 		GPIO_TypeDef *GPIOx = pin > 31? GPIOB : GPIOA;
-		uint32_t GPIOPin = PinToGPIOPin(pin);
+		const uint32_t GPIOPin = PinToGPIOPin(pin);
 
 		//Interrupt None
 		GPIOx->IS &= ~GPIOPin;
