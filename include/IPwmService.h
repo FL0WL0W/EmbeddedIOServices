@@ -1,4 +1,5 @@
 #include "stdint.h"
+#include "PinDirection.h"
 
 #ifndef IPWMSERVICE_H
 #define IPWMSERVICE_H
