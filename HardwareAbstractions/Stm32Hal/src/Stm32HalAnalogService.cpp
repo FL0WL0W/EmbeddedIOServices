@@ -180,112 +180,112 @@ defined(ADC4_IN15_PIN)
 		{
 #ifdef ADC1_IN0_PIN
 			case ADC1_IN0_PIN:
-				adcConversionValue = ADC1_VOLTAGE_CONVERSION_CONSTANT;
+				adcConversionValue = ADC1_IN0_VOLTAGE_CONVERSION_CONSTANT;
   				sConfig.Channel = ADC_CHANNEL_0;
 				hadc = &hadc1;
 				break;
 #endif
 #ifdef ADC1_IN1_PIN
 			case ADC1_IN1_PIN:
-				adcConversionValue = ADC1_VOLTAGE_CONVERSION_CONSTANT;
+				adcConversionValue = ADC1_IN1_VOLTAGE_CONVERSION_CONSTANT;
   				sConfig.Channel = ADC_CHANNEL_1;
 				hadc = &hadc1;
 				break;
 #endif
 #ifdef ADC1_IN2_PIN
 			case ADC1_IN2_PIN:
-				adcConversionValue = ADC1_VOLTAGE_CONVERSION_CONSTANT;
+				adcConversionValue = ADC1_IN2_VOLTAGE_CONVERSION_CONSTANT;
   				sConfig.Channel = ADC_CHANNEL_2;
 				hadc = &hadc1;
 				break;
 #endif
 #ifdef ADC1_IN3_PIN
 			case ADC1_IN3_PIN:
-				adcConversionValue = ADC1_VOLTAGE_CONVERSION_CONSTANT;
+				adcConversionValue = ADC1_IN3_VOLTAGE_CONVERSION_CONSTANT;
   				sConfig.Channel = ADC_CHANNEL_3;
 				hadc = &hadc1;
 				break;
 #endif
 #ifdef ADC1_IN4_PIN
 			case ADC1_IN4_PIN:
-				adcConversionValue = ADC1_VOLTAGE_CONVERSION_CONSTANT;
+				adcConversionValue = ADC1_IN4_VOLTAGE_CONVERSION_CONSTANT;
   				sConfig.Channel = ADC_CHANNEL_4;
 				hadc = &hadc1;
 				break;
 #endif
 #ifdef ADC1_IN5_PIN
 			case ADC1_IN5_PIN:
-				adcConversionValue = ADC1_VOLTAGE_CONVERSION_CONSTANT;
+				adcConversionValue = ADC1_IN5_VOLTAGE_CONVERSION_CONSTANT;
   				sConfig.Channel = ADC_CHANNEL_5;
 				hadc = &hadc1;
 				break;
 #endif
 #ifdef ADC1_IN6_PIN
 			case ADC1_IN6_PIN:
-				adcConversionValue = ADC1_VOLTAGE_CONVERSION_CONSTANT;
+				adcConversionValue = ADC1_IN6_VOLTAGE_CONVERSION_CONSTANT;
   				sConfig.Channel = ADC_CHANNEL_6;
 				hadc = &hadc1;
 				break;
 #endif
 #ifdef ADC1_IN7_PIN
 			case ADC1_IN7_PIN:
-				adcConversionValue = ADC1_VOLTAGE_CONVERSION_CONSTANT;
+				adcConversionValue = ADC1_IN7_VOLTAGE_CONVERSION_CONSTANT;
   				sConfig.Channel = ADC_CHANNEL_7;
 				hadc = &hadc1;
 				break;
 #endif
 #ifdef ADC1_IN8_PIN
 			case ADC1_IN8_PIN:
-				adcConversionValue = ADC1_VOLTAGE_CONVERSION_CONSTANT;
+				adcConversionValue = ADC1_IN8_VOLTAGE_CONVERSION_CONSTANT;
   				sConfig.Channel = ADC_CHANNEL_8;
 				hadc = &hadc1;
 				break;
 #endif
 #ifdef ADC1_IN9_PIN
 			case ADC1_IN9_PIN:
-				adcConversionValue = ADC1_VOLTAGE_CONVERSION_CONSTANT;
+				adcConversionValue = ADC1_IN9_VOLTAGE_CONVERSION_CONSTANT;
   				sConfig.Channel = ADC_CHANNEL_9;
 				hadc = &hadc1;
 				break;
 #endif
 #ifdef ADC1_IN10_PIN
 			case ADC1_IN10_PIN:
-				adcConversionValue = ADC1_VOLTAGE_CONVERSION_CONSTANT;
+				adcConversionValue = ADC1_IN10_VOLTAGE_CONVERSION_CONSTANT;
   				sConfig.Channel = ADC_CHANNEL_10;
 				hadc = &hadc1;
 				break;
 #endif
 #ifdef ADC1_IN11_PIN
 			case ADC1_IN11_PIN:
-				adcConversionValue = ADC1_VOLTAGE_CONVERSION_CONSTANT;
+				adcConversionValue = ADC1_IN11_VOLTAGE_CONVERSION_CONSTANT;
   				sConfig.Channel = ADC_CHANNEL_11;
 				hadc = &hadc1;
 				break;
 #endif
 #ifdef ADC1_IN12_PIN
 			case ADC1_IN12_PIN:
-				adcConversionValue = ADC1_VOLTAGE_CONVERSION_CONSTANT;
+				adcConversionValue = ADC1_IN12_VOLTAGE_CONVERSION_CONSTANT;
   				sConfig.Channel = ADC_CHANNEL_12;
 				hadc = &hadc1;
 				break;
 #endif
 #ifdef ADC1_IN13_PIN
 			case ADC1_IN13_PIN:
-				adcConversionValue = ADC1_VOLTAGE_CONVERSION_CONSTANT;
+				adcConversionValue = ADC1_IN13_VOLTAGE_CONVERSION_CONSTANT;
   				sConfig.Channel = ADC_CHANNEL_13;
 				hadc = &hadc1;
 				break;
 #endif
 #ifdef ADC1_IN14_PIN
 			case ADC1_IN14_PIN:
-				adcConversionValue = ADC1_VOLTAGE_CONVERSION_CONSTANT;
+				adcConversionValue = ADC1_IN14_VOLTAGE_CONVERSION_CONSTANT;
   				sConfig.Channel = ADC_CHANNEL_14;
 				hadc = &hadc1;
 				break;
 #endif
 #ifdef ADC1_IN15_PIN
 			case ADC1_IN15_PIN:
-				adcConversionValue = ADC1_VOLTAGE_CONVERSION_CONSTANT;
+				adcConversionValue = ADC1_IN15_VOLTAGE_CONVERSION_CONSTANT;
   				sConfig.Channel = ADC_CHANNEL_15;
 				hadc = &hadc1;
 				break;
