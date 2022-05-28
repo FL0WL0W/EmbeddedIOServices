@@ -1,5 +1,7 @@
 #include "stdint.h"
 #include <list>
+#include <cstring>
+#include <algorithm>
 
 #ifndef FIFO_H
 #define FIFO_H
