@@ -1,12 +1,14 @@
 #include "DigitalService_W806.h"
 
+#define RCC ((RCC_TypeDef *)RCC_BASE)
+
 #ifdef DIGITALSERVICE_W806_H
 namespace EmbeddedIOServices
 {
 	void DigitalService_W806::InitPin(digitalpin_t pin, PinDirection direction)
 	{
 		//Enable GPIO Clock
-    	((RCC_TypeDef *)RCC_BASE)->CLK_EN |= RCC_CLK_EN_GPIO;
+    	RCC->CLK_EN |= RCC_CLK_EN_GPIO;
 
 		GPIO_TypeDef *GPIOx = pin > 31? GPIOB : GPIOA;
 		const uint32_t GPIOPin = PinToGPIOPin(pin);
@@ -51,7 +53,7 @@ namespace EmbeddedIOServices
 	void DigitalService_W806::AttachInterrupt(digitalpin_t pin, callback_t callBack)
 	{
 		//Enable GPIO Clock
-    	((RCC_TypeDef *)RCC_BASE)->CLK_EN |= RCC_CLK_EN_GPIO;
+    	RCC->CLK_EN |= RCC_CLK_EN_GPIO;
 
 		//Enable GPIO Interrupts with Highest Priority
 		csi_vic_set_prio(pin > 31? GPIOB_IRQn : GPIOA_IRQn, 0);

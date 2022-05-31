@@ -1,6 +1,7 @@
 #include "TimerService_W806.h"
 
-#define TIM                ((TIM_TypeDef *)TIM_BASE)
+#define RCC ((RCC_TypeDef *)RCC_BASE)
+#define TIM ((TIM_TypeDef *)TIM_BASE)
 
 #ifdef TIMERSERVICE_W806_H
 namespace EmbeddedIOServices
@@ -12,11 +13,11 @@ namespace EmbeddedIOServices
 		//set timing divider value to apb clock - 1. 
 		//this gives us microsecond resolution which is the expected standard.
 		//for more resolution we could probably just set this value to 0
-		const uint8_t apbclk = (480 / (0xFF & ((RCC_TypeDef *)RCC_BASE)->CLK_DIV)) / (0xFF & (((RCC_TypeDef *)RCC_BASE)->CLK_DIV >> 16));
+		const uint8_t apbclk = (480 / (0xFF & RCC->CLK_DIV)) / (0xFF & (RCC->CLK_DIV >> 16));
 		TIM->TMR_CONFIG = apbclk-1;
 
 		//Enable Timer Clock
-    	((RCC_TypeDef *)RCC_BASE)->CLK_EN |= RCC_CLK_EN_TIMER;
+    	RCC->CLK_EN |= RCC_CLK_EN_TIMER;
 
 		//reload at max uint32
 		*(&TIM->TIM0_PRD + tickTimer) = UINT32_MAX;

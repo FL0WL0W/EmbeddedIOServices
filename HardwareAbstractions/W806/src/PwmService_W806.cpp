@@ -3,7 +3,8 @@
 #include "wm_regs.h"
 #include <cmath>
 
-#define PWM        ((PWM_TypeDef *)PWM_BASE)
+#define RCC ((RCC_TypeDef *)RCC_BASE)
+#define PWM ((PWM_TypeDef *)PWM_BASE)
 
 #ifdef PWMSERVICE_W806_H
 namespace EmbeddedIOServices
@@ -12,9 +13,9 @@ namespace EmbeddedIOServices
 	void PwmService_W806::InitPin(pwmpin_t pin, PinDirection direction, uint16_t minFreqeuncy)
 	{
 		//Enable GPIO Clock
-    	((RCC_TypeDef *)RCC_BASE)->CLK_EN |= RCC_CLK_EN_GPIO;
+    	RCC->CLK_EN |= RCC_CLK_EN_GPIO;
 		//Enable PWM Clock
-    	((RCC_TypeDef *)RCC_BASE)->CLK_EN |= RCC_CLK_EN_PWM;
+    	RCC->CLK_EN |= RCC_CLK_EN_PWM;
 
 		GPIO_TypeDef *GPIOx = pin > 31? GPIOB : GPIOA;
 		const uint32_t GPIOPin = DigitalService_W806::PinToGPIOPin(pin);
@@ -98,7 +99,7 @@ namespace EmbeddedIOServices
 	}
 	void PwmService_W806::WritePin(pwmpin_t pin, PwmValue value)
 	{
-		const uint8_t apbclk = (480 / (0xFF & ((RCC_TypeDef *)RCC_BASE)->CLK_DIV)) / (0xFF & (((RCC_TypeDef *)RCC_BASE)->CLK_DIV >> 16));
+		const uint8_t apbclk = (480 / (0xFF & RCC->CLK_DIV)) / (0xFF & (RCC->CLK_DIV >> 16));
 		const uint8_t channel = PinToChannel(pin);
 		uint16_t prescaler = std::ceil(value.Period * apbclk * (1000000.0f / 256));
 		if(prescaler == 0)
