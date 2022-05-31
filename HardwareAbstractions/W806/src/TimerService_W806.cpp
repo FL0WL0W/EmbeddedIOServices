@@ -14,7 +14,9 @@ namespace EmbeddedIOServices
 		//this gives us microsecond resolution which is the expected standard.
 		//for more resolution we could probably just set this value to 0
 		const uint8_t apbclk = (480 / (0xFF & RCC->CLK_DIV)) / (0xFF & (RCC->CLK_DIV >> 16));
-		TIM->TMR_CONFIG = apbclk-1;
+		TIM->TMR_CONFIG = apbclk-1;//this sets the tickrate to 1mhz
+		//TIM->TMR_CONFIG = 0;//this sets the tickrate to 40mhz. However this does it for all timers
+		_ticksPerSecond = (apbclk / (TIM->TMR_CONFIG+1)) * 1000000;
 
 		//Enable Timer Clock
     	RCC->CLK_EN |= RCC_CLK_EN_TIMER;
@@ -30,7 +32,7 @@ namespace EmbeddedIOServices
 		//enable timer
 		TIM->CR |= (1 << (tickTimer * 5 + 2));
 		
-		csi_vic_set_prio(TIM_IRQn, 0);
+		csi_vic_set_prio(TIM_IRQn, 1);
 		csi_vic_enable_irq(TIM_IRQn);
 
 		//period at max uint32
@@ -73,7 +75,7 @@ namespace EmbeddedIOServices
 	}
 	tick_t TimerService_W806::GetTicksPerSecond()
 	{
-		return 1000000;
+		return _ticksPerSecond;
 	}
 }
 

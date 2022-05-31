@@ -20,6 +20,7 @@ namespace EmbeddedIOServices
 		const uint8_t _interruptTimer;
 		const volatile uint32_t *_tick;
 		volatile bool _waitForInterrupt;
+		tick_t _ticksPerSecond;
 		void ScheduleCallBack(const tick_t tick);
 	public:
 		/**

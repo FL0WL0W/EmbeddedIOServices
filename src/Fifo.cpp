@@ -3,7 +3,10 @@
 #ifdef FIFO_H
 namespace EmbeddedIOServices
 {	
-	Fifo::Fifo(size_t size) : Size(size), _buf(std::malloc(Size)), _in(0), _out(0) {}
+	Fifo::Fifo(size_t size) : Size(size), _in(0), _out(0) 
+    {
+        _buf = std::malloc(Size);
+    }
     Fifo::~Fifo() {  std::free(_buf); }
 
     size_t Fifo::Length() 

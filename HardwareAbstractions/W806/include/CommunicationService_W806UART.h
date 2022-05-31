@@ -23,7 +23,7 @@ namespace EmbeddedIOServices
 		static void UART2_5_IRQHandler();
 
 		static CommunicationService_W806UART *Create(
-			USART_TypeDef *uart, 
+			uint8_t uart, 
 			size_t fifoSize,
 			uint32_t baud, 
 			uint32_t wordLength, 

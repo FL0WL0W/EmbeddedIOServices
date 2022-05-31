@@ -1,4 +1,5 @@
 #include "CommunicationService_W806UART.h"
+#include <cstring>
 
 #ifdef COMMUNICATIONSERVICE_W806UART_H
 namespace EmbeddedIOServices
@@ -11,7 +12,7 @@ namespace EmbeddedIOServices
 	CommunicationService_W806UART *CommunicationService_W806UART::CommunicationService_W806UART5 = 0;
 
 	CommunicationService_W806UART *CommunicationService_W806UART::Create(
-		USART_TypeDef *uart, 
+		uint8_t uart, 
 		size_t fifoSize=1024,
 		uint32_t baud=115200, 
 		uint32_t wordLength=UART_WORDLENGTH_8B, 
@@ -20,44 +21,86 @@ namespace EmbeddedIOServices
 	)
 	{
 		CommunicationService_W806UART *ret;
-		switch (*(size_t*)uart)
+		switch (uart)
 		{
-		case UART0_BASE:
+		case 0:
 			if(CommunicationService_W806UART0 != 0)
 				return ret;
 			CommunicationService_W806UART0 = ret = new CommunicationService_W806UART(fifoSize);
+    		RCC->CLK_EN |= RCC_CLK_EN_UART0;
+			ret->_huart.Instance = UART0;
+			GPIOB->AF_SEL |= ((1<<19) | (1<<20));
+			GPIOB->AF_S0 &= ~((1<<19) | (1<<20));
+			GPIOB->AF_S1 &= ~((1<<19) | (1<<20));
+			csi_vic_set_prio(UART0_IRQn, 7);
+			csi_vic_enable_irq(UART0_IRQn);
 			break;
-		case UART1_BASE:
+		case 1:
 			if(CommunicationService_W806UART1 != 0)
 				return ret;
 			CommunicationService_W806UART1 = ret = new CommunicationService_W806UART(fifoSize);
+    		RCC->CLK_EN |= RCC_CLK_EN_UART1;
+			ret->_huart.Instance = UART1;
+			GPIOB->AF_SEL |= ((1<<6) | (1<<7));
+			GPIOB->AF_S0 &= ~((1<<6) | (1<<7));
+			GPIOB->AF_S1 &= ~((1<<6) | (1<<7));
+			csi_vic_set_prio(UART1_IRQn, 7);
+			csi_vic_enable_irq(UART1_IRQn);
 			break;
-		case UART2_BASE:
+		case 2:
 			if(CommunicationService_W806UART2 != 0)
 				return ret;
 			CommunicationService_W806UART2 = ret = new CommunicationService_W806UART(fifoSize);
+    		RCC->CLK_EN |= RCC_CLK_EN_UART2;
+			ret->_huart.Instance = UART2;
+			csi_vic_set_prio(UART2_5_IRQn, 7);
+			csi_vic_enable_irq(UART2_5_IRQn);
+			GPIOB->AF_SEL |= ((1<<2) | (1<<3));
+			GPIOB->AF_S0 &= ~((1<<2) | (1<<3));
+			GPIOB->AF_S1 |= ((1<<2) | (1<<3));
 			break;
-		case UART3_BASE:
+		case 3:
 			if(CommunicationService_W806UART3 != 0)
 				return ret;
 			CommunicationService_W806UART3 = ret = new CommunicationService_W806UART(fifoSize);
+    		RCC->CLK_EN |= RCC_CLK_EN_UART3;
+			ret->_huart.Instance = UART3;
+			csi_vic_set_prio(UART2_5_IRQn, 7);
+			csi_vic_enable_irq(UART2_5_IRQn);
+			GPIOB->AF_SEL |= ((1<<0) | (1<<1));
+			GPIOB->AF_S0 &= ~((1<<0) | (1<<1));
+			GPIOB->AF_S1 |= ((1<<0) | (1<<1));
 			break;
-		case UART4_BASE:
+		case 4:
 			if(CommunicationService_W806UART4 != 0)
 				return ret;
 			CommunicationService_W806UART4 = ret = new CommunicationService_W806UART(fifoSize);
+    		RCC->CLK_EN |= RCC_CLK_EN_UART4;
+			ret->_huart.Instance = UART4;
+			csi_vic_set_prio(UART2_5_IRQn, 7);
+			csi_vic_enable_irq(UART2_5_IRQn);
+			GPIOB->AF_SEL |= ((1<<4) | (1<<5));
+			GPIOB->AF_S0 &= ~((1<<4) | (1<<5));
+			GPIOB->AF_S1 |= ((1<<4) | (1<<5));
 			break;
-		case UART5_BASE:
+		case 5:
 			if(CommunicationService_W806UART5 != 0)
 				return ret;
 			CommunicationService_W806UART5 = ret = new CommunicationService_W806UART(fifoSize);
+    		RCC->CLK_EN |= RCC_CLK_EN_UART5;
+			ret->_huart.Instance = UART5;
+			csi_vic_set_prio(UART2_5_IRQn, 7);
+			csi_vic_enable_irq(UART2_5_IRQn);
+			GPIOA->AF_SEL |= ((1<<12) | (1<<13));
+			GPIOA->AF_S0 |= ((1<<12) | (1<<13));
+			GPIOA->AF_S1 &= ~((1<<12) | (1<<13));
 			break;
 		
 		default:
 			return ret;
 		}
+		RCC->CLK_EN |= RCC_CLK_EN_GPIO;
 
-		ret->_huart.Instance = uart;
 		ret->_huart.Init.BaudRate = baud;
 		ret->_huart.Init.WordLength = wordLength;
 		ret->_huart.Init.StopBits = stopBits;
@@ -68,30 +111,32 @@ namespace EmbeddedIOServices
 		if (HAL_UART_Init(&ret->_huart) != HAL_OK)
 		{
 			delete ret;
-			switch (*(size_t*)uart)
+			switch (uart)
 			{
-			case UART0_BASE:
+			case 0:
 				return CommunicationService_W806UART0 = ret = 0;
-			case UART1_BASE:
+			case 1:
 				return CommunicationService_W806UART1 = ret = 0;
-			case UART2_BASE:
+			case 2:
 				return CommunicationService_W806UART2 = ret = 0;
-			case UART3_BASE:
+			case 3:
 				return CommunicationService_W806UART3 = ret = 0;
-			case UART4_BASE:
+			case 4:
 				return CommunicationService_W806UART4 = ret = 0;
-			case UART5_BASE:
+			case 5:
 				return CommunicationService_W806UART5 = ret = 0;
 			default:
 				return ret;
 			}
 		}
 
+		HAL_UART_Init(&ret->_huart);
+		HAL_UART_Receive_IT(&ret->_huart, ret->_buf, 0);
+
 		return ret;
 	}
 	CommunicationService_W806UART::CommunicationService_W806UART(size_t fifoSize) : _fifo(fifoSize)
 	{
-		HAL_UART_Receive_IT(&_huart, _buf, 0);
 	}
 	void CommunicationService_W806UART::Send(const void *data, size_t length)
 	{
@@ -128,7 +173,7 @@ namespace EmbeddedIOServices
 }
 extern "C" void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-	switch (*(size_t*)huart->Instance)
+	switch ((size_t)huart->Instance)
 	{
 	case UART0_BASE:
 		return EmbeddedIOServices::CommunicationService_W806UART::CommunicationService_W806UART0->RxCpltCallback();
