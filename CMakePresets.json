@@ -10,7 +10,8 @@
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
                 "CMAKE_C_COMPILER": "/bin/gcc-9",
-                "CMAKE_CXX_COMPILER": "/bin/g++-9"
+                "CMAKE_CXX_COMPILER": "/bin/g++-9",
+                "EmbeddedIOServices_build_tests": true
             }
         }
     ]
