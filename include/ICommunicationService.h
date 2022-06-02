@@ -7,7 +7,8 @@
 namespace EmbeddedIOServices
 {
 	class ICommunicationHandler;
-	typedef std::function<size_t(void *data, size_t length)> communication_receive_callback_t;
+	typedef std::function<void(const void *data, size_t length)> communication_send_callback_t;
+	typedef std::function<size_t(communication_send_callback_t, void *data, size_t length)> communication_receive_callback_t;
 	typedef std::map<void *, communication_receive_callback_t *> communication_receive_callback_map_t;
 
 	class ICommunicationService
@@ -68,7 +69,7 @@ namespace EmbeddedIOServices
 		 * @param length Length of that data that was received
 		 * @return size_t Number of bytes parsed from data.
 		 */
-        virtual size_t Receive(ICommunicationService* responseService, void *data, size_t length) = 0;
+        virtual size_t Receive(communication_send_callback_t sendCallBack, void *data, size_t length) = 0;
 	};
 }
 #endif

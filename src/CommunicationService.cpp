@@ -11,7 +11,7 @@ namespace EmbeddedIOServices
 
 		_receiveCallBackMap.insert(std::pair<void *, communication_receive_callback_t *>(
 			handler, 
-			new communication_receive_callback_t([this, handler](void *data, size_t length) { return handler->Receive(this, data, length); }))
+			new communication_receive_callback_t([handler](communication_send_callback_t sendCallBack, void *data, size_t length) { return handler->Receive(sendCallBack, data, length); }))
 		);
 	}
 
@@ -55,7 +55,11 @@ namespace EmbeddedIOServices
 		while(length > handled && next != end)
 		{
 			//call the callback
-			const size_t handledThisTime = (*next->second)(reinterpret_cast<uint8_t *>(data) + handled, length - handled);
+			const size_t handledThisTime = (*next->second)(
+				[this](const void *data, size_t length) { Send(data, length); },
+				reinterpret_cast<uint8_t *>(data) + handled, 
+				length - handled
+			);
 			//add to the amount of data handled
 			handled += handledThisTime;
 			//if data was handled, go back to the beginning of the callback list
