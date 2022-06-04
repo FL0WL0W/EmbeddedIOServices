@@ -19,13 +19,13 @@ namespace EmbeddedIOServices
 	    return Size - (_in - _out);
     }
 
-    size_t Fifo::Write(void *buf, size_t len)
+    size_t Fifo::Write(const void *buf, size_t len)
     {
         size_t j = _in % Size;
         len = std::min(len, Size - _in + _out);
         size_t i = std::min(len, Size - j);
         std::memcpy(reinterpret_cast<uint8_t *>(_buf) + j, buf, i);
-        std::memcpy(_buf, reinterpret_cast<uint8_t *>(buf) + i, len - i);
+        std::memcpy(_buf, reinterpret_cast<const uint8_t *>(buf) + i, len - i);
         _in += len;
         return len;
     }

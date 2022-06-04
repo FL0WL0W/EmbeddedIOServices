@@ -3,8 +3,10 @@
 #include "wm_regs.h"
 #include <cmath>
 
-#define RCC ((RCC_TypeDef *)RCC_BASE)
-#define PWM ((PWM_TypeDef *)PWM_BASE)
+#define RCC 	((RCC_TypeDef *)RCC_BASE)
+#define PWM 	((PWM_TypeDef *)PWM_BASE)
+#define GPIOA   ((GPIO_TypeDef *)GPIOA_BASE)
+#define GPIOB   ((GPIO_TypeDef *)GPIOB_BASE)
 
 #ifdef PWMSERVICE_W806_H
 namespace EmbeddedIOServices

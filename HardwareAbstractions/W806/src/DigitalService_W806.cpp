@@ -1,6 +1,8 @@
 #include "DigitalService_W806.h"
 
-#define RCC ((RCC_TypeDef *)RCC_BASE)
+#define RCC 	((RCC_TypeDef *)RCC_BASE)
+#define GPIOA   ((GPIO_TypeDef *)GPIOA_BASE)
+#define GPIOB   ((GPIO_TypeDef *)GPIOB_BASE)
 
 #ifdef DIGITALSERVICE_W806_H
 namespace EmbeddedIOServices

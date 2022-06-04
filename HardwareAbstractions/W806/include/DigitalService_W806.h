@@ -2,9 +2,6 @@
 #include "wm_regs.h"
 #include <forward_list>
 
-#define GPIOA    ((GPIO_TypeDef *)GPIOA_BASE)
-#define GPIOB    ((GPIO_TypeDef *)GPIOB_BASE)
-
 #ifndef DIGITALSERVICE_W806_H
 #define DIGITALSERVICE_W806_H
 namespace EmbeddedIOServices
