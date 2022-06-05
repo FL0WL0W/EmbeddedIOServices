@@ -20,8 +20,8 @@ namespace UnitTests
 
 		CommunicationServiceTests()
 		{
-			handler1 = [this](void *data, size_t len) { this->handler1count++; return this->handler1return != 0? this->handler1return-- : 0; };
-			handler2 = [this](void *data, size_t len) { this->handler2count++; return this->handler2return != 0? this->handler2return-- : 0; };
+			handler1 = [this](communication_send_callback_t send, void *data, size_t len) { this->handler1count++; return this->handler1return != 0? this->handler1return-- : 0; };
+			handler2 = [this](communication_send_callback_t send, void *data, size_t len) { this->handler2count++; return this->handler2return != 0? this->handler2return-- : 0; };
 			_communicationService.RegisterReceiveCallBack(&handler1);
 			_communicationService.RegisterReceiveCallBack(&handler2);
 		}
@@ -29,7 +29,7 @@ namespace UnitTests
 
 	TEST_F(CommunicationServiceTests, CanRegisterAndUnRegisterReceiveCallBack)
 	{
-		communication_receive_callback_t handler = [](void *data, size_t len) { return 1; };
+		communication_receive_callback_t handler = [](communication_send_callback_t send, void *data, size_t len) { return 1; };
 
 		_communicationService.RegisterReceiveCallBack(&handler);
 		_communicationService.UnRegisterReceiveCallBack(&handler);
