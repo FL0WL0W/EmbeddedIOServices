@@ -6,6 +6,8 @@ namespace EmbeddedIOServices
 	//modify registers directly instead of using HAL
 	void AnalogService_W806::InitPin(analogpin_t pin)
 	{
+        __HAL_RCC_ADC_CLK_ENABLE();
+        __HAL_RCC_GPIO_CLK_ENABLE();
 		_hadc.Instance = ADC;
 		_hadc.Init.channel = PinToChannel(pin);
 		_hadc.Init.freq = ADC_FREQ_MAX;
@@ -16,7 +18,7 @@ namespace EmbeddedIOServices
 	float AnalogService_W806::ReadPin(analogpin_t pin)
 	{
 		_hadc.Init.channel = PinToChannel(pin);
-		return 0.001 * HAL_ADC_GET_INPUT_VOLTAGE(&_hadc);
+		return 0.001f * HAL_ADC_GET_INPUT_VOLTAGE(&_hadc);
 	}
 
 	uint32_t AnalogService_W806::PinToChannel(analogpin_t pin)
