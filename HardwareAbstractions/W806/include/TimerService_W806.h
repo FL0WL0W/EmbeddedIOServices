@@ -18,6 +18,8 @@ namespace EmbeddedIOServices
 	{
 	protected:
 		const uint8_t _interruptTimer;
+		const uint32_t _interruptEn;
+		volatile uint32_t * const _interruptPrd;
 		const volatile uint32_t *_tick;
 		volatile bool _waitForInterrupt;
 		tick_t _ticksPerSecond;

@@ -8,18 +8,18 @@ namespace EmbeddedIOServices
 {	
 	TimerInterruptList TimerService_W806::InterruptList;
 
-	TimerService_W806::TimerService_W806(uint8_t tickTimer, uint8_t interruptTimer) : _tick(&TIM->TIM0_CNT + tickTimer), _interruptTimer(interruptTimer)
+	TimerService_W806::TimerService_W806(uint8_t tickTimer, uint8_t interruptTimer) : _tick(&TIM->TIM0_CNT + tickTimer), _interruptTimer(interruptTimer), _interruptEn(3 << (interruptTimer * 5 + 2)), _interruptPrd(&TIM->TIM0_PRD + interruptTimer)
 	{
+		//Enable Timer Clock
+    	RCC->CLK_EN |= RCC_CLK_EN_TIMER;
+
 		//set timing divider value to apb clock - 1. 
 		//this gives us microsecond resolution which is the expected standard.
 		//for more resolution we could probably just set this value to 0
 		const uint8_t apbclk = (480 / (0xFF & RCC->CLK_DIV)) / (0xFF & (RCC->CLK_DIV >> 16));
 		TIM->TMR_CONFIG = apbclk-1;//this sets the tickrate to 1mhz
-		//TIM->TMR_CONFIG = 0;//this sets the tickrate to 40mhz. However this does it for all timers
-		_ticksPerSecond = (apbclk / (TIM->TMR_CONFIG+1)) * 1000000;
-
-		//Enable Timer Clock
-    	RCC->CLK_EN |= RCC_CLK_EN_TIMER;
+		// TIM->TMR_CONFIG = 0;//this sets the tickrate to 40mhz. However this does it for all timers
+		_ticksPerSecond = (apbclk * 1000000) / (TIM->TMR_CONFIG+1);
 
 		//reload at max uint32
 		*(&TIM->TIM0_PRD + tickTimer) = UINT32_MAX;
@@ -56,17 +56,19 @@ namespace EmbeddedIOServices
 	void TimerService_W806::ScheduleCallBack(const tick_t tick)
 	{
 		//disable timer and interrupt
-		TIM->CR &= ~(3 << (_interruptTimer * 5 + 2));
-		*(&TIM->TIM0_PRD + _interruptTimer) = tick - GetTick();
-		if(*(&TIM->TIM0_PRD + _interruptTimer) & 0x80000000)
-			*(&TIM->TIM0_PRD + _interruptTimer) = 0;
+		TIM->CR &= ~_interruptEn;
+    	__disable_irq();
+		const uint32_t res = *_interruptPrd = tick - *_tick;
+		if(res & 0x80000000)
+			*_interruptPrd = 0;
 		//enable timer and interrupt
-		TIM->CR |= (3 << (_interruptTimer * 5 + 2));
+		TIM->CR |= _interruptEn;
+    	__enable_irq();
 	}
 	void TimerService_W806::TimerInterruptCallback()
 	{
 		//disable timer and interrupt
-		TIM->CR &= ~(3 << (_interruptTimer * 5 + 2));
+		TIM->CR &= ~_interruptEn;
 		ReturnCallBack();
 	}
 	tick_t TimerService_W806::GetTick()
