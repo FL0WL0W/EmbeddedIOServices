@@ -32,8 +32,8 @@ namespace EmbeddedIOServices
 		//enable timer
 		TIM->CR |= (1 << (tickTimer * 5 + 2));
 		
-		csi_vic_set_prio(TIM_IRQn, 1);
 		csi_vic_enable_irq(TIM_IRQn);
+		csi_vic_set_prio(TIM_IRQn, 1);
 
 		//period at max uint32
 		*(&TIM->TIM0_PRD + interruptTimer) = UINT32_MAX;
@@ -57,13 +57,13 @@ namespace EmbeddedIOServices
 	{
 		//disable timer and interrupt
 		TIM->CR &= ~_interruptEn;
-    	__disable_irq();
+    	const uint32_t flags = csi_irq_save();
 		const uint32_t res = *_interruptPrd = tick - *_tick;
 		if(res & 0x80000000)
 			*_interruptPrd = 0;
 		//enable timer and interrupt
 		TIM->CR |= _interruptEn;
-    	__enable_irq();
+    	csi_irq_restore(flags);
 	}
 	void TimerService_W806::TimerInterruptCallback()
 	{
@@ -83,10 +83,10 @@ namespace EmbeddedIOServices
 
 using namespace EmbeddedIOServices;
 
-extern "C" __attribute__((isr)) void TIM0_5_IRQHandler(void)
+extern "C" __attribute__((section(".interrupt"))) __attribute__((isr)) void TIM0_5_IRQHandler(void)
 {
 	const uint32_t CRCache = TIM->CR;
-	// TIM->CR |= 0x10842108;
+	TIM->CR = CRCache | (0x10842108 & CRCache);
 	for (TimerInterruptList::iterator interrupt = TimerService_W806::InterruptList.begin(); interrupt != TimerService_W806::InterruptList.end(); ++interrupt)
 	{
 		if((1 << (interrupt->Timer * 5 + 4)) & CRCache)

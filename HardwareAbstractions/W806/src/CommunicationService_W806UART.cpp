@@ -44,8 +44,8 @@ namespace EmbeddedIOServices
 			GPIOB->AF_SEL |= ((1<<19) | (1<<20));
 			GPIOB->AF_S0 &= ~((1<<19) | (1<<20));
 			GPIOB->AF_S1 &= ~((1<<19) | (1<<20));
-			csi_vic_set_prio(UART0_IRQn, 7);
 			csi_vic_enable_irq(UART0_IRQn);
+			csi_vic_set_prio(UART0_IRQn, 3);
 			break;
 		case 1:
 			if(CommunicationService_W806UART1 != 0)
@@ -56,7 +56,7 @@ namespace EmbeddedIOServices
 			GPIOB->AF_SEL |= ((1<<6) | (1<<7));
 			GPIOB->AF_S0 &= ~((1<<6) | (1<<7));
 			GPIOB->AF_S1 &= ~((1<<6) | (1<<7));
-			csi_vic_set_prio(UART1_IRQn, 7);
+			csi_vic_set_prio(UART1_IRQn, 3);
 			csi_vic_enable_irq(UART1_IRQn);
 			break;
 		case 2:
@@ -68,7 +68,7 @@ namespace EmbeddedIOServices
 			GPIOB->AF_SEL |= ((1<<2) | (1<<3));
 			GPIOB->AF_S0 &= ~((1<<2) | (1<<3));
 			GPIOB->AF_S1 |= ((1<<2) | (1<<3));
-			csi_vic_set_prio(UART2_5_IRQn, 7);
+			csi_vic_set_prio(UART2_5_IRQn, 3);
 			csi_vic_enable_irq(UART2_5_IRQn);
 			break;
 		case 3:
@@ -80,7 +80,7 @@ namespace EmbeddedIOServices
 			GPIOB->AF_SEL |= ((1<<0) | (1<<1));
 			GPIOB->AF_S0 &= ~((1<<0) | (1<<1));
 			GPIOB->AF_S1 |= ((1<<0) | (1<<1));
-			csi_vic_set_prio(UART2_5_IRQn, 7);
+			csi_vic_set_prio(UART2_5_IRQn, 3);
 			csi_vic_enable_irq(UART2_5_IRQn);
 			break;
 		case 4:
@@ -92,7 +92,7 @@ namespace EmbeddedIOServices
 			GPIOB->AF_SEL |= ((1<<4) | (1<<5));
 			GPIOB->AF_S0 &= ~((1<<4) | (1<<5));
 			GPIOB->AF_S1 |= ((1<<4) | (1<<5));
-			csi_vic_set_prio(UART2_5_IRQn, 7);
+			csi_vic_set_prio(UART2_5_IRQn, 3);
 			csi_vic_enable_irq(UART2_5_IRQn);
 			break;
 		case 5:
@@ -104,7 +104,7 @@ namespace EmbeddedIOServices
 			GPIOA->AF_SEL |= ((1<<12) | (1<<13));
 			GPIOA->AF_S0 |= ((1<<12) | (1<<13));
 			GPIOA->AF_S1 &= ~((1<<12) | (1<<13));
-			csi_vic_set_prio(UART2_5_IRQn, 7);
+			csi_vic_set_prio(UART2_5_IRQn, 3);
 			csi_vic_enable_irq(UART2_5_IRQn);
 			break;
 		default:
@@ -214,15 +214,15 @@ namespace EmbeddedIOServices
 
 using namespace EmbeddedIOServices;
 
-extern "C" __attribute__((isr)) void UART0_IRQHandler(void)
+extern "C" __attribute__((section(".interrupt")))  __attribute__((isr)) void UART0_IRQHandler(void)
 {
     CommunicationService_W806UART::UART0_IRQHandler();
 }
-extern "C" __attribute__((isr)) void UART1_IRQHandler(void)
+extern "C" __attribute__((section(".interrupt")))  __attribute__((isr)) void UART1_IRQHandler(void)
 {
     CommunicationService_W806UART::UART1_IRQHandler();
 }
-extern "C" __attribute__((isr)) void UART2_5_IRQHandler(void)
+extern "C" __attribute__((section(".interrupt")))  __attribute__((isr)) void UART2_5_IRQHandler(void)
 {
     CommunicationService_W806UART::UART2_5_IRQHandler();
 }

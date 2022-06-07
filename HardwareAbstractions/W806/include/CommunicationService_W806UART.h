@@ -32,15 +32,14 @@ namespace EmbeddedIOServices
 		USART_TypeDef *_uart;
 		CommunicationService_W806UART(size_t rxFifoSize, size_t txFifoSize);
 	public:
-		void ReceiveInt();
+		__attribute__((section(".interrupt"))) void ReceiveInt();
         void Send(const void *data, size_t length);
-		void RxCpltCallback();
-		void FlushTransmit();
+		__attribute__((section(".interrupt"))) void FlushTransmit();
 		void FlushReceive();
 
-		static void UART0_IRQHandler();
-		static void UART1_IRQHandler();
-		static void UART2_5_IRQHandler();
+		__attribute__((section(".interrupt"))) static void UART0_IRQHandler();
+		__attribute__((section(".interrupt"))) static void UART1_IRQHandler();
+		__attribute__((section(".interrupt"))) static void UART2_5_IRQHandler();
 
 		static CommunicationService_W806UART *Create(
 			uint8_t uart, 

@@ -33,9 +33,9 @@ namespace EmbeddedIOServices
 		 */
 		TimerService_W806(uint8_t tickTimer, uint8_t interruptTimer);
 		~TimerService_W806();
-		tick_t GetTick();
-		tick_t GetTicksPerSecond();
-		void TimerInterruptCallback();
+		__attribute__((section(".interrupt"))) tick_t GetTick();
+		__attribute__((section(".interrupt"))) tick_t GetTicksPerSecond();
+		__attribute__((section(".interrupt"))) void TimerInterruptCallback();
 
 		static TimerInterruptList InterruptList;
 	};

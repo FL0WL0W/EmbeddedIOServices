@@ -54,12 +54,11 @@ namespace EmbeddedIOServices
 	}
 	void DigitalService_W806::AttachInterrupt(digitalpin_t pin, callback_t callBack)
 	{
-		//Enable GPIO Clock
-    	RCC->CLK_EN |= RCC_CLK_EN_GPIO;
+		DetachInterrupt(pin);
 
 		//Enable GPIO Interrupts with Highest Priority
-		csi_vic_set_prio(pin > 31? GPIOB_IRQn : GPIOA_IRQn, 0);
 		csi_vic_enable_irq(pin > 31? GPIOB_IRQn : GPIOA_IRQn);
+		csi_vic_set_prio(pin > 31? GPIOB_IRQn : GPIOA_IRQn, 0);
 
 		GPIO_TypeDef *GPIOx = pin > 31? GPIOB : GPIOA;
 		const uint32_t GPIOPin = PinToGPIOPin(pin);
@@ -87,6 +86,9 @@ namespace EmbeddedIOServices
 	}
 	void DigitalService_W806::DetachInterrupt(digitalpin_t pin)
 	{
+		//Enable GPIO Clock
+    	RCC->CLK_EN |= RCC_CLK_EN_GPIO;
+
 		GPIO_TypeDef *GPIOx = pin > 31? GPIOB : GPIOA;
 		const uint32_t GPIOPin = PinToGPIOPin(pin);
 
@@ -112,27 +114,29 @@ namespace EmbeddedIOServices
 
 using namespace EmbeddedIOServices;
 
-extern "C" __attribute__((isr)) void GPIOA_IRQHandler(void)
+extern "C" __attribute__((section(".interrupt")))  __attribute__((isr)) void GPIOA_IRQHandler(void)
 {
+	GPIOB->DATA |= 1 << 4;
+	GPIOB->DATA &= ~(1 << 4);
 	for (DigitalInterruptList::iterator interrupt = DigitalService_W806::GPIOAInterruptList.begin(); interrupt != DigitalService_W806::GPIOAInterruptList.end(); ++interrupt)
 	{
 		if(interrupt->GPIOPin & GPIOA->MIS)
 		{
+			GPIOA->IC = interrupt->GPIOPin;
 			interrupt->CallBack();
 		}
 	}
-	GPIOA->IC |= 0xFFFFFFFF;
 }
 
-extern "C" __attribute__((isr)) void GPIOB_IRQHandler(void)
+extern "C" __attribute__((section(".interrupt")))  __attribute__((isr)) void GPIOB_IRQHandler(void)
 {
 	for (DigitalInterruptList::iterator interrupt = DigitalService_W806::GPIOBInterruptList.begin(); interrupt != DigitalService_W806::GPIOBInterruptList.end(); ++interrupt)
 	{
 		if(interrupt->GPIOPin & GPIOB->MIS)
 		{
+			GPIOB->IC = interrupt->GPIOPin;
 			interrupt->CallBack();
 		}
 	}
-	GPIOB->IC |= 0xFFFFFFFF;
 }
 #endif
