@@ -28,27 +28,23 @@ namespace EmbeddedIOServices
 		//set timer to autoreload
 		TIM->CR &= ~(1 << (tickTimer * 5 + 1));
 		//disable interrupt
-		TIM->CR &= ~(1 << (tickTimer * 5 + 3));
+		TIM->CR |= (1 << (tickTimer * 5 + 3));
 		//enable timer
 		TIM->CR |= (1 << (tickTimer * 5 + 2));
 		
-		//enable timer interrupt
-		TIM->CR |= _timerEn << 1;
-		csi_vic_enable_irq(TIM_IRQn);
-		csi_vic_set_prio(TIM_IRQn, 1);
-
 		//period at max uint32
 		*(&TIM->TIM0_PRD + interruptTimer) = UINT32_MAX;
 		//set timer to microsecond resolution
 		TIM->CR &= ~(1 << (interruptTimer * 5));
 		//set timer to not autoreload
 		TIM->CR |= (1 << (interruptTimer * 5 + 1));
-		//disable interrupt
-		TIM->CR &= ~(1 << (interruptTimer * 5 + 3));
 		//disable timer
 		TIM->CR &= ~(1 << (interruptTimer * 5 + 2));
 		InterruptList.push_front(TimerInterrupt(interruptTimer, [this](){TimerInterruptCallback();}));
-		
+		//enable interrupt
+		TIM->CR |= (1 << (interruptTimer * 5 + 3));
+		csi_vic_enable_irq(TIM_IRQn);
+		csi_vic_set_prio(TIM_IRQn, 1);
 
 		Calibrate();
 	}
