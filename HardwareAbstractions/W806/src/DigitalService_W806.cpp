@@ -82,7 +82,7 @@ namespace EmbeddedIOServices
 		(pin > 31? GPIOBInterruptList : GPIOAInterruptList).push_front(DigitalInterrupt(GPIOPin, callBack));
 
 		//Interrupt Enable
-		SET_BIT(GPIOx->IE, GPIOPin);
+		GPIOx->IE |= GPIOPin;
 	}
 	void DigitalService_W806::DetachInterrupt(digitalpin_t pin)
 	{
@@ -98,7 +98,7 @@ namespace EmbeddedIOServices
 		GPIOx->IEV &= ~GPIOPin;
 
 		//Interrupt Disable
-		(pin > 31? GPIOB : GPIOA)->IE &= ~GPIOPin;
+		GPIOx->IE &= ~GPIOPin;
 
 		//Remove Interrupt from list
 		(pin > 31? GPIOBInterruptList : GPIOAInterruptList).remove_if([GPIOPin](const DigitalInterrupt& interrupt) { return interrupt.GPIOPin == GPIOPin; });
