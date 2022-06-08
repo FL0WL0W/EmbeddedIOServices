@@ -8,7 +8,7 @@ namespace EmbeddedIOServices
 {	
 	TimerInterruptList TimerService_W806::InterruptList;
 
-	TimerService_W806::TimerService_W806(uint8_t tickTimer, uint8_t interruptTimer) : _tick(&TIM->TIM0_CNT + tickTimer), _interruptTimer(interruptTimer), _interruptEn(1 << (interruptTimer * 5 + 2)), _interruptPrd(&TIM->TIM0_PRD + interruptTimer)
+	TimerService_W806::TimerService_W806(uint8_t tickTimer, uint8_t interruptTimer) : _tick(&TIM->TIM0_CNT + tickTimer), _interruptTimer(interruptTimer), _timerEn(1 << (interruptTimer * 5 + 2)), _interruptPrd(&TIM->TIM0_PRD + interruptTimer)
 	{
 		//Enable Timer Clock
     	RCC->CLK_EN |= RCC_CLK_EN_TIMER;
@@ -32,6 +32,8 @@ namespace EmbeddedIOServices
 		//enable timer
 		TIM->CR |= (1 << (tickTimer * 5 + 2));
 		
+		//enable timer interrupt
+		TIM->CR |= _timerEn << 1;
 		csi_vic_enable_irq(TIM_IRQn);
 		csi_vic_set_prio(TIM_IRQn, 1);
 
@@ -47,7 +49,6 @@ namespace EmbeddedIOServices
 		TIM->CR &= ~(1 << (interruptTimer * 5 + 2));
 		InterruptList.push_front(TimerInterrupt(interruptTimer, [this](){TimerInterruptCallback();}));
 		
-		TIM->CR |= _interruptEn << 1;
 
 		Calibrate();
 	}
@@ -57,19 +58,19 @@ namespace EmbeddedIOServices
 	}
 	void TimerService_W806::ScheduleCallBack(const tick_t tick)
 	{
-		//disable interrupt
-		TIM->CR &= ~_interruptEn;
+		//disable timer
+		TIM->CR &= ~_timerEn;
 		uint32_t res = tick - *_tick;
 		if(res & 0x80000000)
 			res = 0;
 		*_interruptPrd = res;
-		//enable interrupt
-		TIM->CR |= _interruptEn;
+		//enable timer
+		TIM->CR |= _timerEn;
 	}
 	void TimerService_W806::TimerInterruptCallback()
 	{
-		//disable timer and interrupt
-		TIM->CR &= ~_interruptEn;
+		//disable timer
+		TIM->CR &= ~_timerEn;
 		ReturnCallBack();
 	}
 	tick_t TimerService_W806::GetTick()

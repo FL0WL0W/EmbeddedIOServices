@@ -18,9 +18,9 @@ namespace EmbeddedIOServices
 	{
 	protected:
 		const uint8_t _interruptTimer;
-		const uint32_t _interruptEn;
+		const uint32_t _timerEn;
 		volatile uint32_t * const _interruptPrd;
-		const volatile uint32_t *_tick;
+		const volatile uint32_t * const _tick;
 		volatile bool _waitForInterrupt;
 		tick_t _ticksPerSecond;
 		void ScheduleCallBack(const tick_t tick);
