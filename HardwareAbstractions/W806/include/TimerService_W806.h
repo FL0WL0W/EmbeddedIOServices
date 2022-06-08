@@ -5,15 +5,6 @@
 #define TIMERSERVICE_W806_H
 namespace EmbeddedIOServices
 {
-	struct TimerInterrupt 
-	{
-		callback_t CallBack;
-		uint8_t Timer;
-
-		TimerInterrupt(uint8_t timer, callback_t callBack) : Timer(timer), CallBack(callBack) { }
-	};
-	typedef std::forward_list<TimerInterrupt> TimerInterruptList;
-
 	class TimerService_W806 : public ITimerService
 	{
 	protected:
@@ -35,9 +26,13 @@ namespace EmbeddedIOServices
 		~TimerService_W806();
 		__attribute__((section(".interrupt"))) tick_t GetTick();
 		__attribute__((section(".interrupt"))) tick_t GetTicksPerSecond();
-		__attribute__((section(".interrupt"))) void TimerInterruptCallback();
 
-		static TimerInterruptList InterruptList;
+		static callback_t Timer0CallBack;
+		static callback_t Timer1CallBack;
+		static callback_t Timer2CallBack;
+		static callback_t Timer3CallBack;
+		static callback_t Timer4CallBack;
+		static callback_t Timer5CallBack;
 	};
 }
 #endif

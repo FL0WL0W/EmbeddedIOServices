@@ -6,7 +6,12 @@
 #ifdef TIMERSERVICE_W806_H
 namespace EmbeddedIOServices
 {	
-	TimerInterruptList TimerService_W806::InterruptList;
+	callback_t TimerService_W806::Timer0CallBack = 0;
+	callback_t TimerService_W806::Timer1CallBack = 0;
+	callback_t TimerService_W806::Timer2CallBack = 0;
+	callback_t TimerService_W806::Timer3CallBack = 0;
+	callback_t TimerService_W806::Timer4CallBack = 0;
+	callback_t TimerService_W806::Timer5CallBack = 0;
 
 	TimerService_W806::TimerService_W806(uint8_t tickTimer, uint8_t interruptTimer) : _tick(&TIM->TIM0_CNT + tickTimer), _interruptTimer(interruptTimer), _timerEn(1 << (interruptTimer * 5 + 2)), _interruptPrd(&TIM->TIM0_PRD + interruptTimer)
 	{
@@ -40,7 +45,28 @@ namespace EmbeddedIOServices
 		TIM->CR |= (1 << (interruptTimer * 5 + 1));
 		//disable timer
 		TIM->CR &= ~(1 << (interruptTimer * 5 + 2));
-		InterruptList.push_front(TimerInterrupt(interruptTimer, [this](){TimerInterruptCallback();}));
+		callback_t callback = [this](){ReturnCallBack();};
+		switch(interruptTimer)
+		{
+			case 0:
+				Timer0CallBack = callback;
+				break;
+			case 1:
+				Timer1CallBack = callback;
+				break;
+			case 2:
+				Timer2CallBack = callback;
+				break;
+			case 3:
+				Timer3CallBack = callback;
+				break;
+			case 4:
+				Timer4CallBack = callback;
+				break;
+			case 5:
+				Timer5CallBack = callback;
+				break;
+		}
 		//enable interrupt
 		TIM->CR |= (1 << (interruptTimer * 5 + 3));
 		csi_vic_enable_irq(TIM_IRQn);
@@ -50,7 +76,31 @@ namespace EmbeddedIOServices
 	}
 	TimerService_W806::~TimerService_W806()
 	{
-		InterruptList.remove_if([this](const TimerInterrupt& interrupt) { return interrupt.Timer == _interruptTimer; });
+		//disable timer
+		TIM->CR &= ~(1 << (_interruptTimer * 5 + 2));
+		//disable interrupt
+		TIM->CR &= ~(1 << (_interruptTimer * 5 + 3));
+		switch(_interruptTimer)
+		{
+			case 0:
+				Timer0CallBack = 0;
+				break;
+			case 1:
+				Timer1CallBack = 0;
+				break;
+			case 2:
+				Timer2CallBack = 0;
+				break;
+			case 3:
+				Timer3CallBack = 0;
+				break;
+			case 4:
+				Timer4CallBack = 0;
+				break;
+			case 5:
+				Timer5CallBack = 0;
+				break;
+		}
 	}
 	void TimerService_W806::ScheduleCallBack(const tick_t tick)
 	{
@@ -62,12 +112,6 @@ namespace EmbeddedIOServices
 		*_interruptPrd = res;
 		//enable timer
 		TIM->CR |= _timerEn;
-	}
-	void TimerService_W806::TimerInterruptCallback()
-	{
-		//disable timer
-		TIM->CR &= ~_timerEn;
-		ReturnCallBack();
 	}
 	tick_t TimerService_W806::GetTick()
 	{
@@ -85,12 +129,17 @@ extern "C" __attribute__((section(".interrupt"))) __attribute__((isr)) void TIM0
 {
 	const uint32_t CRCache = TIM->CR;
 	TIM->CR = CRCache | (0x10842108 & CRCache);
-	for (TimerInterruptList::iterator interrupt = TimerService_W806::InterruptList.begin(); interrupt != TimerService_W806::InterruptList.end(); ++interrupt)
-	{
-		if((1 << (interrupt->Timer * 5 + 4)) & CRCache)
-		{
-			interrupt->CallBack();
-		}
-	}
+	if(CRCache & (1 << (0 * 5 + 4)) && TimerService_W806::Timer0CallBack != 0)
+		TimerService_W806::Timer0CallBack();
+	if(CRCache & (1 << (1 * 5 + 4)) && TimerService_W806::Timer1CallBack != 0)
+		TimerService_W806::Timer1CallBack();
+	if(CRCache & (1 << (2 * 5 + 4)) && TimerService_W806::Timer2CallBack != 0)
+		TimerService_W806::Timer2CallBack();
+	if(CRCache & (1 << (3 * 5 + 4)) && TimerService_W806::Timer3CallBack != 0)
+		TimerService_W806::Timer3CallBack();
+	if(CRCache & (1 << (4 * 5 + 4)) && TimerService_W806::Timer4CallBack != 0)
+		TimerService_W806::Timer4CallBack();
+	if(CRCache & (1 << (5 * 5 + 4)) && TimerService_W806::Timer5CallBack != 0)
+		TimerService_W806::Timer5CallBack();
 }
 #endif
