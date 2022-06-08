@@ -1,11 +1,11 @@
 #include "IAnalogService.h"
 #include "wm_adc.h"
 
-#ifndef ANALOGSERVICE_W806_H
-#define ANALOGSERVICE_W806_H
+#ifndef ANALOGSERVICE_W80X_H
+#define ANALOGSERVICE_W80X_H
 namespace EmbeddedIOServices
 {
-	class AnalogService_W806 : public IAnalogService
+	class AnalogService_W80x : public IAnalogService
 	{
 	protected: 
 		ADC_HandleTypeDef _hadc;

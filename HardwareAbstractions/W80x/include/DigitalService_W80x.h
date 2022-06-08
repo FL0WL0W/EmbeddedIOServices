@@ -2,8 +2,8 @@
 #include "wm_regs.h"
 #include <forward_list>
 
-#ifndef DIGITALSERVICE_W806_H
-#define DIGITALSERVICE_W806_H
+#ifndef DIGITALSERVICE_W80X_H
+#define DIGITALSERVICE_W80X_H
 namespace EmbeddedIOServices
 {
 	struct DigitalInterrupt 
@@ -16,7 +16,7 @@ namespace EmbeddedIOServices
 
 	typedef std::forward_list<DigitalInterrupt> DigitalInterruptList;
 
-	class DigitalService_W806 : public IDigitalService
+	class DigitalService_W80x : public IDigitalService
 	{
 	public:
 		void InitPin(digitalpin_t pin, PinDirection direction);

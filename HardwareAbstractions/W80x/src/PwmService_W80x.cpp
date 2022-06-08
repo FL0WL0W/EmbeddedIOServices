@@ -1,5 +1,5 @@
-#include "PwmService_W806.h"
-#include "DigitalService_W806.h"
+#include "PwmService_W80x.h"
+#include "DigitalService_W80x.h"
 #include "wm_regs.h"
 #include <cmath>
 
@@ -8,11 +8,11 @@
 #define GPIOA   ((GPIO_TypeDef *)GPIOA_BASE)
 #define GPIOB   ((GPIO_TypeDef *)GPIOB_BASE)
 
-#ifdef PWMSERVICE_W806_H
+#ifdef PWMSERVICE_W80X_H
 namespace EmbeddedIOServices
 {
 	//still need to work on input
-	void PwmService_W806::InitPin(pwmpin_t pin, PinDirection direction, uint16_t minFreqeuncy)
+	void PwmService_W80x::InitPin(pwmpin_t pin, PinDirection direction, uint16_t minFreqeuncy)
 	{
 		//Enable GPIO Clock
     	RCC->CLK_EN |= RCC_CLK_EN_GPIO;
@@ -20,7 +20,7 @@ namespace EmbeddedIOServices
     	RCC->CLK_EN |= RCC_CLK_EN_PWM;
 
 		GPIO_TypeDef *GPIOx = pin > 31? GPIOB : GPIOA;
-		const uint32_t GPIOPin = DigitalService_W806::PinToGPIOPin(pin);
+		const uint32_t GPIOPin = DigitalService_W80x::PinToGPIOPin(pin);
 		const uint8_t channel = PinToChannel(pin);
 
 		//alternate function
@@ -95,11 +95,11 @@ namespace EmbeddedIOServices
 		if (channel == 4)
 			PWM->CH4CR3 &= ~PWM_CH4CR3_POEN;
 	}
-	PwmValue PwmService_W806::ReadPin(pwmpin_t pin)
+	PwmValue PwmService_W80x::ReadPin(pwmpin_t pin)
 	{
 		
 	}
-	void PwmService_W806::WritePin(pwmpin_t pin, PwmValue value)
+	void PwmService_W80x::WritePin(pwmpin_t pin, PwmValue value)
 	{
 		const uint8_t apbclk = (480 / (0xFF & RCC->CLK_DIV)) / (0xFF & (RCC->CLK_DIV >> 16));
 		const uint8_t channel = PinToChannel(pin);
@@ -141,7 +141,7 @@ namespace EmbeddedIOServices
 		//enable
     	PWM->CR |= (0x01 << (PWM_CR_CNTEN_Pos + channel));
 	}
-	uint8_t PwmService_W806::PinToChannel(pwmpin_t pin)
+	uint8_t PwmService_W80x::PinToChannel(pwmpin_t pin)
 	{
 		switch(pin)
 		{

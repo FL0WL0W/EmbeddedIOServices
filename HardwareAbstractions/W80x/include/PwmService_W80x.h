@@ -1,10 +1,10 @@
 #include "IPwmService.h"
 
-#ifndef PWMSERVICE_W806_H
-#define PWMSERVICE_W806_H
+#ifndef PWMSERVICE_W80X_H
+#define PWMSERVICE_W80X_H
 namespace EmbeddedIOServices
 {
-	class PwmService_W806 : public IPwmService
+	class PwmService_W80x : public IPwmService
 	{
 	public:
 		void InitPin(pwmpin_t pin, PinDirection direction, uint16_t minFreqeuncy);

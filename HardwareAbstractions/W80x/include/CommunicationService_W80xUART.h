@@ -20,17 +20,17 @@
 #define UART_MODE_TX_RX         ((uint32_t)(UART_LC_RE | UART_LC_TE))
 #define UART_FIFO_FULL 			32
 
-#ifndef COMMUNICATIONSERVICE_W806UART_H
-#define COMMUNICATIONSERVICE_W806UART_H
+#ifndef COMMUNICATIONSERVICE_W80XUART_H
+#define COMMUNICATIONSERVICE_W80XUART_H
 namespace EmbeddedIOServices
 {
-	class CommunicationService_W806UART : public ICommunicationService
+	class CommunicationService_W80xUART : public ICommunicationService
 	{
 	protected:
 		Fifo _rxFifo;
 		Fifo _txFifo;
 		USART_TypeDef *_uart;
-		CommunicationService_W806UART(size_t rxFifoSize, size_t txFifoSize);
+		CommunicationService_W80xUART(size_t rxFifoSize, size_t txFifoSize);
 	public:
 		__attribute__((section(".interrupt"))) void ReceiveInt();
         void Send(const void *data, size_t length);
@@ -41,7 +41,7 @@ namespace EmbeddedIOServices
 		__attribute__((section(".interrupt"))) static void UART1_IRQHandler();
 		__attribute__((section(".interrupt"))) static void UART2_5_IRQHandler();
 
-		static CommunicationService_W806UART *Create(
+		static CommunicationService_W80xUART *Create(
 			uint8_t uart, 
 			size_t rxFifoSize,
 			size_t txFifoSize,
@@ -50,12 +50,12 @@ namespace EmbeddedIOServices
 			uint32_t stopBits, 
 			uint32_t parity
 		);
-		static CommunicationService_W806UART *CommunicationService_W806UART0;
-		static CommunicationService_W806UART *CommunicationService_W806UART1;
-		static CommunicationService_W806UART *CommunicationService_W806UART2;
-		static CommunicationService_W806UART *CommunicationService_W806UART3;
-		static CommunicationService_W806UART *CommunicationService_W806UART4;
-		static CommunicationService_W806UART *CommunicationService_W806UART5;
+		static CommunicationService_W80xUART *CommunicationService_W80xUART0;
+		static CommunicationService_W80xUART *CommunicationService_W80xUART1;
+		static CommunicationService_W80xUART *CommunicationService_W80xUART2;
+		static CommunicationService_W80xUART *CommunicationService_W80xUART3;
+		static CommunicationService_W80xUART *CommunicationService_W80xUART4;
+		static CommunicationService_W80xUART *CommunicationService_W80xUART5;
 	};
 }
 #endif

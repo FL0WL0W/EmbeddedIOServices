@@ -1,4 +1,4 @@
-#include "CommunicationService_W806UART.h"
+#include "CommunicationService_W80xUART.h"
 #include <cstring>
 
 #define RCC   	((RCC_TypeDef *)RCC_BASE)
@@ -6,21 +6,21 @@
 #define GPIOB   ((GPIO_TypeDef *)GPIOB_BASE)
 #define DMA		((DMA_TypeDef *)DMA_BASE)
 
-#ifdef COMMUNICATIONSERVICE_W806UART_H
+#ifdef COMMUNICATIONSERVICE_W80XUART_H
 namespace EmbeddedIOServices
 {
-	CommunicationService_W806UART *CommunicationService_W806UART::CommunicationService_W806UART0 = 0;
-	CommunicationService_W806UART *CommunicationService_W806UART::CommunicationService_W806UART1 = 0;
-	CommunicationService_W806UART *CommunicationService_W806UART::CommunicationService_W806UART2 = 0;
-	CommunicationService_W806UART *CommunicationService_W806UART::CommunicationService_W806UART3 = 0;
-	CommunicationService_W806UART *CommunicationService_W806UART::CommunicationService_W806UART4 = 0;
-	CommunicationService_W806UART *CommunicationService_W806UART::CommunicationService_W806UART5 = 0;
+	CommunicationService_W80xUART *CommunicationService_W80xUART::CommunicationService_W80xUART0 = 0;
+	CommunicationService_W80xUART *CommunicationService_W80xUART::CommunicationService_W80xUART1 = 0;
+	CommunicationService_W80xUART *CommunicationService_W80xUART::CommunicationService_W80xUART2 = 0;
+	CommunicationService_W80xUART *CommunicationService_W80xUART::CommunicationService_W80xUART3 = 0;
+	CommunicationService_W80xUART *CommunicationService_W80xUART::CommunicationService_W80xUART4 = 0;
+	CommunicationService_W80xUART *CommunicationService_W80xUART::CommunicationService_W80xUART5 = 0;
 
-	CommunicationService_W806UART::CommunicationService_W806UART(size_t rxFifoSize, size_t txFifoSize) :
+	CommunicationService_W80xUART::CommunicationService_W80xUART(size_t rxFifoSize, size_t txFifoSize) :
 		_rxFifo(rxFifoSize),
 		_txFifo(txFifoSize)
 	{}
-	CommunicationService_W806UART *CommunicationService_W806UART::Create(
+	CommunicationService_W80xUART *CommunicationService_W80xUART::Create(
 		uint8_t uart,
 		size_t rxFifoSize=1024,
 		size_t txFifoSize=1024,
@@ -30,15 +30,15 @@ namespace EmbeddedIOServices
 		uint32_t parity=UART_PARITY_NONE
 	)
 	{
-		CommunicationService_W806UART *ret = 0;
+		CommunicationService_W80xUART *ret = 0;
 
 		switch (uart)
 		{
 		case 0:
-			if(CommunicationService_W806UART0 != 0)
-				ret = CommunicationService_W806UART0;
+			if(CommunicationService_W80xUART0 != 0)
+				ret = CommunicationService_W80xUART0;
 			else
-				CommunicationService_W806UART0 = ret = new CommunicationService_W806UART(rxFifoSize, txFifoSize);
+				CommunicationService_W80xUART0 = ret = new CommunicationService_W80xUART(rxFifoSize, txFifoSize);
 
     		RCC->CLK_EN |= RCC_CLK_EN_UART0 | RCC_CLK_EN_GPIO;
 			GPIOB->AF_SEL |= ((1<<19) | (1<<20));
@@ -48,10 +48,10 @@ namespace EmbeddedIOServices
 			csi_vic_set_prio(UART0_IRQn, 3);
 			break;
 		case 1:
-			if(CommunicationService_W806UART1 != 0)
-				ret = CommunicationService_W806UART1;
+			if(CommunicationService_W80xUART1 != 0)
+				ret = CommunicationService_W80xUART1;
 			else
-				CommunicationService_W806UART1 = ret = new CommunicationService_W806UART(rxFifoSize, txFifoSize);
+				CommunicationService_W80xUART1 = ret = new CommunicationService_W80xUART(rxFifoSize, txFifoSize);
     		RCC->CLK_EN |= RCC_CLK_EN_UART1 | RCC_CLK_EN_GPIO;
 			GPIOB->AF_SEL |= ((1<<6) | (1<<7));
 			GPIOB->AF_S0 &= ~((1<<6) | (1<<7));
@@ -60,10 +60,10 @@ namespace EmbeddedIOServices
 			csi_vic_enable_irq(UART1_IRQn);
 			break;
 		case 2:
-			if(CommunicationService_W806UART2 != 0)
-				ret = CommunicationService_W806UART2;
+			if(CommunicationService_W80xUART2 != 0)
+				ret = CommunicationService_W80xUART2;
 			else
-				CommunicationService_W806UART2 = ret = new CommunicationService_W806UART(rxFifoSize, txFifoSize);
+				CommunicationService_W80xUART2 = ret = new CommunicationService_W80xUART(rxFifoSize, txFifoSize);
     		RCC->CLK_EN |= RCC_CLK_EN_UART2 | RCC_CLK_EN_GPIO;
 			GPIOB->AF_SEL |= ((1<<2) | (1<<3));
 			GPIOB->AF_S0 &= ~((1<<2) | (1<<3));
@@ -72,10 +72,10 @@ namespace EmbeddedIOServices
 			csi_vic_enable_irq(UART2_5_IRQn);
 			break;
 		case 3:
-			if(CommunicationService_W806UART3 != 0)
-				ret = CommunicationService_W806UART3;
+			if(CommunicationService_W80xUART3 != 0)
+				ret = CommunicationService_W80xUART3;
 			else
-				CommunicationService_W806UART3 = ret = new CommunicationService_W806UART(rxFifoSize, txFifoSize);
+				CommunicationService_W80xUART3 = ret = new CommunicationService_W80xUART(rxFifoSize, txFifoSize);
     		RCC->CLK_EN |= RCC_CLK_EN_UART3 | RCC_CLK_EN_GPIO;
 			GPIOB->AF_SEL |= ((1<<0) | (1<<1));
 			GPIOB->AF_S0 &= ~((1<<0) | (1<<1));
@@ -84,10 +84,10 @@ namespace EmbeddedIOServices
 			csi_vic_enable_irq(UART2_5_IRQn);
 			break;
 		case 4:
-			if(CommunicationService_W806UART4 != 0)
-				ret = CommunicationService_W806UART4;
+			if(CommunicationService_W80xUART4 != 0)
+				ret = CommunicationService_W80xUART4;
 			else
-				CommunicationService_W806UART4 = ret = new CommunicationService_W806UART(rxFifoSize, txFifoSize);
+				CommunicationService_W80xUART4 = ret = new CommunicationService_W80xUART(rxFifoSize, txFifoSize);
     		RCC->CLK_EN |= RCC_CLK_EN_UART4 | RCC_CLK_EN_GPIO;
 			GPIOB->AF_SEL |= ((1<<4) | (1<<5));
 			GPIOB->AF_S0 &= ~((1<<4) | (1<<5));
@@ -96,10 +96,10 @@ namespace EmbeddedIOServices
 			csi_vic_enable_irq(UART2_5_IRQn);
 			break;
 		case 5:
-			if(CommunicationService_W806UART5 != 0)
-				ret = CommunicationService_W806UART5;
+			if(CommunicationService_W80xUART5 != 0)
+				ret = CommunicationService_W80xUART5;
 			else
-				CommunicationService_W806UART5 = ret = new CommunicationService_W806UART(rxFifoSize, txFifoSize);
+				CommunicationService_W80xUART5 = ret = new CommunicationService_W80xUART(rxFifoSize, txFifoSize);
     		RCC->CLK_EN |= RCC_CLK_EN_UART5 | RCC_CLK_EN_GPIO;
 			GPIOA->AF_SEL |= ((1<<12) | (1<<13));
 			GPIOA->AF_S0 |= ((1<<12) | (1<<13));
@@ -126,20 +126,20 @@ namespace EmbeddedIOServices
 
 		return ret;
 	}
-	void CommunicationService_W806UART::ReceiveInt()
+	void CommunicationService_W80xUART::ReceiveInt()
 	{
-		while((CommunicationService_W806UART0->_uart->FIFOS & UART_FIFOS_RFC) > 0)
+		while((CommunicationService_W80xUART0->_uart->FIFOS & UART_FIFOS_RFC) > 0)
 		{
 			const uint8_t b = _uart->RDW;
 			_rxFifo.Write(&b, 1);
 		}
 	}
-	void CommunicationService_W806UART::Send(const void *data, size_t length)
+	void CommunicationService_W80xUART::Send(const void *data, size_t length)
 	{
 		_txFifo.Write(data, length);
 		FlushTransmit();
 	}
-	void CommunicationService_W806UART::FlushReceive()
+	void CommunicationService_W80xUART::FlushReceive()
 	{
 		const size_t len = _rxFifo.Length();
 		uint8_t buf[len];
@@ -148,7 +148,7 @@ namespace EmbeddedIOServices
 		if(handled > 0)
 			_rxFifo.Pop(handled);
 	}
-	void CommunicationService_W806UART::FlushTransmit()
+	void CommunicationService_W80xUART::FlushTransmit()
 	{
 		_uart->INTM |= (UART_INTM_TL | UART_INTM_TEMPT);
 		while(_txFifo.Length() > 0)
@@ -163,52 +163,52 @@ namespace EmbeddedIOServices
 			_uart->TDW = b;
 		}
 	}
-	void CommunicationService_W806UART::UART0_IRQHandler()
+	void CommunicationService_W80xUART::UART0_IRQHandler()
 	{
-		const uint32_t flags = CommunicationService_W806UART0->_uart->INTS;
-		CommunicationService_W806UART0->_uart->INTS = 0xFFFFFFFF;
+		const uint32_t flags = CommunicationService_W80xUART0->_uart->INTS;
+		CommunicationService_W80xUART0->_uart->INTS = 0xFFFFFFFF;
 		if((flags & (UART_INTS_RL | UART_INTS_RTO)) != 0)
-			CommunicationService_W806UART0->ReceiveInt();
+			CommunicationService_W80xUART0->ReceiveInt();
 		if((flags & (UART_INTS_TL | UART_INTS_TEMPT)) != 0)
-			CommunicationService_W806UART0->FlushTransmit();
+			CommunicationService_W80xUART0->FlushTransmit();
 	}
-	void CommunicationService_W806UART::UART1_IRQHandler()
+	void CommunicationService_W80xUART::UART1_IRQHandler()
 	{
-		const uint32_t flags = CommunicationService_W806UART1->_uart->INTS;
-		CommunicationService_W806UART1->_uart->INTS = 0xFFFFFFFF;
+		const uint32_t flags = CommunicationService_W80xUART1->_uart->INTS;
+		CommunicationService_W80xUART1->_uart->INTS = 0xFFFFFFFF;
 		if((flags & (UART_INTS_RL | UART_INTS_RTO)) != 0)
-			CommunicationService_W806UART1->ReceiveInt();
+			CommunicationService_W80xUART1->ReceiveInt();
 		if((flags & (UART_INTS_TL | UART_INTS_TEMPT)) != 0)
-			CommunicationService_W806UART1->FlushTransmit();
+			CommunicationService_W80xUART1->FlushTransmit();
 	}
-	void CommunicationService_W806UART::UART2_5_IRQHandler()
+	void CommunicationService_W80xUART::UART2_5_IRQHandler()
 	{
-		const uint32_t flags2 = CommunicationService_W806UART2->_uart->INTS;
-		CommunicationService_W806UART2->_uart->INTS = 0xFFFFFFFF;
-		const uint32_t flags3 = CommunicationService_W806UART3->_uart->INTS;
-		CommunicationService_W806UART3->_uart->INTS = 0xFFFFFFFF;
-		const uint32_t flags4 = CommunicationService_W806UART4->_uart->INTS;
-		CommunicationService_W806UART4->_uart->INTS = 0xFFFFFFFF;
-		const uint32_t flags5 = CommunicationService_W806UART5->_uart->INTS;
-		CommunicationService_W806UART5->_uart->INTS = 0xFFFFFFFF;
+		const uint32_t flags2 = CommunicationService_W80xUART2->_uart->INTS;
+		CommunicationService_W80xUART2->_uart->INTS = 0xFFFFFFFF;
+		const uint32_t flags3 = CommunicationService_W80xUART3->_uart->INTS;
+		CommunicationService_W80xUART3->_uart->INTS = 0xFFFFFFFF;
+		const uint32_t flags4 = CommunicationService_W80xUART4->_uart->INTS;
+		CommunicationService_W80xUART4->_uart->INTS = 0xFFFFFFFF;
+		const uint32_t flags5 = CommunicationService_W80xUART5->_uart->INTS;
+		CommunicationService_W80xUART5->_uart->INTS = 0xFFFFFFFF;
 
 		if((flags2 & (UART_INTS_RL | UART_INTS_RTO)) != 0)
-			CommunicationService_W806UART2->ReceiveInt();
+			CommunicationService_W80xUART2->ReceiveInt();
 		if((flags3 & (UART_INTS_RL | UART_INTS_RTO)) != 0)
-			CommunicationService_W806UART3->ReceiveInt();
+			CommunicationService_W80xUART3->ReceiveInt();
 		if((flags4 & (UART_INTS_RL | UART_INTS_RTO)) != 0)
-			CommunicationService_W806UART4->ReceiveInt();
+			CommunicationService_W80xUART4->ReceiveInt();
 		if((flags5 & (UART_INTS_RL | UART_INTS_RTO)) != 0)
-			CommunicationService_W806UART5->ReceiveInt();
+			CommunicationService_W80xUART5->ReceiveInt();
 
 		if((flags2 & (UART_INTS_TL | UART_INTS_TEMPT)) != 0)
-			CommunicationService_W806UART2->FlushTransmit();
+			CommunicationService_W80xUART2->FlushTransmit();
 		if((flags3 & (UART_INTS_TL | UART_INTS_TEMPT)) != 0)
-			CommunicationService_W806UART3->FlushTransmit();
+			CommunicationService_W80xUART3->FlushTransmit();
 		if((flags4 & (UART_INTS_TL | UART_INTS_TEMPT)) != 0)
-			CommunicationService_W806UART4->FlushTransmit();
+			CommunicationService_W80xUART4->FlushTransmit();
 		if((flags5 & (UART_INTS_TL | UART_INTS_TEMPT)) != 0)
-			CommunicationService_W806UART5->FlushTransmit();
+			CommunicationService_W80xUART5->FlushTransmit();
 	}
 }
 
@@ -216,14 +216,14 @@ using namespace EmbeddedIOServices;
 
 extern "C" __attribute__((section(".interrupt")))  __attribute__((isr)) void UART0_IRQHandler(void)
 {
-    CommunicationService_W806UART::UART0_IRQHandler();
+    CommunicationService_W80xUART::UART0_IRQHandler();
 }
 extern "C" __attribute__((section(".interrupt")))  __attribute__((isr)) void UART1_IRQHandler(void)
 {
-    CommunicationService_W806UART::UART1_IRQHandler();
+    CommunicationService_W80xUART::UART1_IRQHandler();
 }
 extern "C" __attribute__((section(".interrupt")))  __attribute__((isr)) void UART2_5_IRQHandler(void)
 {
-    CommunicationService_W806UART::UART2_5_IRQHandler();
+    CommunicationService_W80xUART::UART2_5_IRQHandler();
 }
 #endif

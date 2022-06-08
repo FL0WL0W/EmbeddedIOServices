@@ -1,11 +1,11 @@
 #include "ITimerService.h"
 #include "wm_regs.h"
 
-#ifndef TIMERSERVICE_W806_H
-#define TIMERSERVICE_W806_H
+#ifndef TIMERSERVICE_W80X_H
+#define TIMERSERVICE_W80X_H
 namespace EmbeddedIOServices
 {
-	class TimerService_W806 : public ITimerService
+	class TimerService_W80x : public ITimerService
 	{
 	protected:
 		const uint8_t _interruptTimer;
@@ -22,8 +22,8 @@ namespace EmbeddedIOServices
 		 * @param tickTimer tick reference timer index
 		 * @param interruptTimer interrupt timer index
 		 */
-		TimerService_W806(uint8_t tickTimer, uint8_t interruptTimer);
-		~TimerService_W806();
+		TimerService_W80x(uint8_t tickTimer, uint8_t interruptTimer);
+		~TimerService_W80x();
 		__attribute__((section(".interrupt"))) tick_t GetTick();
 		__attribute__((section(".interrupt"))) tick_t GetTicksPerSecond();
 

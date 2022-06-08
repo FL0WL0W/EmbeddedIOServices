@@ -1,19 +1,19 @@
-#include "TimerService_W806.h"
+#include "TimerService_W80x.h"
 
 #define RCC ((RCC_TypeDef *)RCC_BASE)
 #define TIM ((TIM_TypeDef *)TIM_BASE)
 
-#ifdef TIMERSERVICE_W806_H
+#ifdef TIMERSERVICE_W80X_H
 namespace EmbeddedIOServices
 {	
-	callback_t TimerService_W806::Timer0CallBack = 0;
-	callback_t TimerService_W806::Timer1CallBack = 0;
-	callback_t TimerService_W806::Timer2CallBack = 0;
-	callback_t TimerService_W806::Timer3CallBack = 0;
-	callback_t TimerService_W806::Timer4CallBack = 0;
-	callback_t TimerService_W806::Timer5CallBack = 0;
+	callback_t TimerService_W80x::Timer0CallBack = 0;
+	callback_t TimerService_W80x::Timer1CallBack = 0;
+	callback_t TimerService_W80x::Timer2CallBack = 0;
+	callback_t TimerService_W80x::Timer3CallBack = 0;
+	callback_t TimerService_W80x::Timer4CallBack = 0;
+	callback_t TimerService_W80x::Timer5CallBack = 0;
 
-	TimerService_W806::TimerService_W806(uint8_t tickTimer, uint8_t interruptTimer) : _tick(&TIM->TIM0_CNT + tickTimer), _interruptTimer(interruptTimer), _timerEn(1 << (interruptTimer * 5 + 2)), _interruptPrd(&TIM->TIM0_PRD + interruptTimer)
+	TimerService_W80x::TimerService_W80x(uint8_t tickTimer, uint8_t interruptTimer) : _tick(&TIM->TIM0_CNT + tickTimer), _interruptTimer(interruptTimer), _timerEn(1 << (interruptTimer * 5 + 2)), _interruptPrd(&TIM->TIM0_PRD + interruptTimer)
 	{
 		//Enable Timer Clock
     	RCC->CLK_EN |= RCC_CLK_EN_TIMER;
@@ -74,7 +74,7 @@ namespace EmbeddedIOServices
 
 		Calibrate();
 	}
-	TimerService_W806::~TimerService_W806()
+	TimerService_W80x::~TimerService_W80x()
 	{
 		//disable timer
 		TIM->CR &= ~(1 << (_interruptTimer * 5 + 2));
@@ -102,7 +102,7 @@ namespace EmbeddedIOServices
 				break;
 		}
 	}
-	void TimerService_W806::ScheduleCallBack(const tick_t tick)
+	void TimerService_W80x::ScheduleCallBack(const tick_t tick)
 	{
 		//disable timer
 		TIM->CR &= ~_timerEn;
@@ -113,11 +113,11 @@ namespace EmbeddedIOServices
 		//enable timer
 		TIM->CR |= _timerEn;
 	}
-	tick_t TimerService_W806::GetTick()
+	tick_t TimerService_W80x::GetTick()
 	{
 		return *_tick;
 	}
-	tick_t TimerService_W806::GetTicksPerSecond()
+	tick_t TimerService_W80x::GetTicksPerSecond()
 	{
 		return _ticksPerSecond;
 	}
@@ -129,17 +129,17 @@ extern "C" __attribute__((section(".interrupt"))) __attribute__((isr)) void TIM0
 {
 	const uint32_t CRCache = TIM->CR;
 	TIM->CR = CRCache | (0x10842108 & CRCache);
-	if(CRCache & (1 << (0 * 5 + 4)) && TimerService_W806::Timer0CallBack != 0)
-		TimerService_W806::Timer0CallBack();
-	if(CRCache & (1 << (1 * 5 + 4)) && TimerService_W806::Timer1CallBack != 0)
-		TimerService_W806::Timer1CallBack();
-	if(CRCache & (1 << (2 * 5 + 4)) && TimerService_W806::Timer2CallBack != 0)
-		TimerService_W806::Timer2CallBack();
-	if(CRCache & (1 << (3 * 5 + 4)) && TimerService_W806::Timer3CallBack != 0)
-		TimerService_W806::Timer3CallBack();
-	if(CRCache & (1 << (4 * 5 + 4)) && TimerService_W806::Timer4CallBack != 0)
-		TimerService_W806::Timer4CallBack();
-	if(CRCache & (1 << (5 * 5 + 4)) && TimerService_W806::Timer5CallBack != 0)
-		TimerService_W806::Timer5CallBack();
+	if(CRCache & (1 << (0 * 5 + 4)) && TimerService_W80x::Timer0CallBack != 0)
+		TimerService_W80x::Timer0CallBack();
+	if(CRCache & (1 << (1 * 5 + 4)) && TimerService_W80x::Timer1CallBack != 0)
+		TimerService_W80x::Timer1CallBack();
+	if(CRCache & (1 << (2 * 5 + 4)) && TimerService_W80x::Timer2CallBack != 0)
+		TimerService_W80x::Timer2CallBack();
+	if(CRCache & (1 << (3 * 5 + 4)) && TimerService_W80x::Timer3CallBack != 0)
+		TimerService_W80x::Timer3CallBack();
+	if(CRCache & (1 << (4 * 5 + 4)) && TimerService_W80x::Timer4CallBack != 0)
+		TimerService_W80x::Timer4CallBack();
+	if(CRCache & (1 << (5 * 5 + 4)) && TimerService_W80x::Timer5CallBack != 0)
+		TimerService_W80x::Timer5CallBack();
 }
 #endif

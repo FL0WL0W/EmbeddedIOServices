@@ -1,10 +1,10 @@
-#include "AnalogService_W806.h"
+#include "AnalogService_W80x.h"
 
-#ifdef ANALOGSERVICE_W806_H
+#ifdef ANALOGSERVICE_W80X_H
 namespace EmbeddedIOServices
 {
 	//modify registers directly instead of using HAL
-	void AnalogService_W806::InitPin(analogpin_t pin)
+	void AnalogService_W80x::InitPin(analogpin_t pin)
 	{
         __HAL_RCC_ADC_CLK_ENABLE();
         __HAL_RCC_GPIO_CLK_ENABLE();
@@ -15,13 +15,13 @@ namespace EmbeddedIOServices
 		HAL_ADC_Init(&_hadc);
 	}
 	
-	float AnalogService_W806::ReadPin(analogpin_t pin)
+	float AnalogService_W80x::ReadPin(analogpin_t pin)
 	{
 		_hadc.Init.channel = PinToChannel(pin);
 		return 0.001f * HAL_ADC_GET_INPUT_VOLTAGE(&_hadc);
 	}
 
-	uint32_t AnalogService_W806::PinToChannel(analogpin_t pin)
+	uint32_t AnalogService_W80x::PinToChannel(analogpin_t pin)
 	{
 		switch(pin)
 		{
