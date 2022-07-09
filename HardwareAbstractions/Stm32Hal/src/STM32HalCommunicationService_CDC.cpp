@@ -25,6 +25,16 @@ namespace Stm32
 		USBD_CDC_ReceivePacket(&hUsbDeviceFS);
 		return (USBD_OK);
 	}
+	
+	int8_t STM32HalCommunicationService_CDC::CDCTransmitCplt(uint8_t *Buf, uint32_t *Len, uint8_t epnum)
+	{
+		uint16_t sendAmount = UserTXBufferLength;
+		if(sendAmount > 64)
+			sendAmount = 64;
+		if(sendAmount > 0 && USBD_OK == CDC_Transmit_FS(UserTxBufferFS, sendAmount))
+			UserTXBufferLength -= sendAmount;
+		return USBD_OK;
+	}
 
 	void STM32HalCommunicationService_CDC::Flush()
 	{
@@ -50,14 +60,18 @@ namespace Stm32
 		if(len > 0)
 			UserRxBufferStart = rxBufferEnd - (len - Receive(&UserRxBufferFS[UserRxBufferStart], len));
 
-		CDC_Transmit_FS(UserTxBufferFS, UserTXBufferLength);
-		UserTXBufferLength = 0;
+		uint16_t sendAmount = UserTXBufferLength;
+		if(sendAmount > 64)
+			sendAmount = 64;
+		if(sendAmount > 0 && USBD_OK == CDC_Transmit_FS(UserTxBufferFS, sendAmount))
+			UserTXBufferLength -= sendAmount;
 	}
 
 	STM32HalCommunicationService_CDC::STM32HalCommunicationService_CDC()
 	{
 		Instance = this;
 		USBD_Interface_fops_FS.Receive = CDCReceive;
+		USBD_Interface_fops_FS.TransmitCplt = CDCTransmitCplt;
 	}
 
 	STM32HalCommunicationService_CDC::~STM32HalCommunicationService_CDC()

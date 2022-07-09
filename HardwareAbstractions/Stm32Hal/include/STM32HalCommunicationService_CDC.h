@@ -10,6 +10,7 @@ namespace Stm32
 	private: 
 		static STM32HalCommunicationService_CDC *Instance;
 		static int8_t CDCReceive(uint8_t* data, uint32_t *length);
+		static int8_t CDCTransmitCplt(uint8_t *Buf, uint32_t *Len, uint8_t epnum);
 	public:
 		STM32HalCommunicationService_CDC();
 		~STM32HalCommunicationService_CDC();
