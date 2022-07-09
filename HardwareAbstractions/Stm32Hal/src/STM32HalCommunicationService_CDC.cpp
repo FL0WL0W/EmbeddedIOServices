@@ -10,7 +10,8 @@ namespace Stm32
 	size_t UserRxBufferStart = 0;
 	volatile size_t UserRxBufferEnd = 0;
 	volatile size_t UserRXBufferEndSkipped = 0;
-	size_t UserTXBufferLength = 0;
+	volatile size_t UserTxBufferStart = 0;
+	volatile size_t UserTxBufferEnd = 0;
 
 	STM32HalCommunicationService_CDC *STM32HalCommunicationService_CDC::Instance;
 	int8_t STM32HalCommunicationService_CDC::CDCReceive(uint8_t* data, uint32_t *length)
@@ -28,11 +29,20 @@ namespace Stm32
 	
 	int8_t STM32HalCommunicationService_CDC::CDCTransmitCplt(uint8_t *Buf, uint32_t *Len, uint8_t epnum)
 	{
-		uint16_t sendAmount = UserTXBufferLength;
-		if(sendAmount > 64)
-			sendAmount = 64;
-		if(sendAmount > 0 && USBD_OK == CDC_Transmit_FS(UserTxBufferFS, sendAmount))
-			UserTXBufferLength -= sendAmount;
+		uint16_t sendAmount = UserTxBufferEnd - UserTxBufferStart;
+		if(sendAmount > CDC_DATA_FS_IN_PACKET_SIZE)
+			sendAmount = CDC_DATA_FS_IN_PACKET_SIZE;
+		if(sendAmount + UserTxBufferStart > APP_TX_DATA_SIZE)
+			sendAmount = APP_TX_DATA_SIZE - UserTxBufferStart;
+		if(sendAmount > 0)
+		{
+			size_t oldTxBufferStart = UserTxBufferStart;
+			UserTxBufferStart += sendAmount;
+			if(UserTxBufferStart >= APP_TX_DATA_SIZE)
+				UserTxBufferStart = 0;
+			if(USBD_OK != CDC_Transmit_FS(&UserTxBufferFS[oldTxBufferStart], sendAmount))
+				UserTxBufferStart = oldTxBufferStart;
+		}
 		return USBD_OK;
 	}
 
@@ -60,11 +70,7 @@ namespace Stm32
 		if(len > 0)
 			UserRxBufferStart = rxBufferEnd - (len - Receive(&UserRxBufferFS[UserRxBufferStart], len));
 
-		uint16_t sendAmount = UserTXBufferLength;
-		if(sendAmount > 64)
-			sendAmount = 64;
-		if(sendAmount > 0 && USBD_OK == CDC_Transmit_FS(UserTxBufferFS, sendAmount))
-			UserTXBufferLength -= sendAmount;
+		CDCTransmitCplt(0,0,0);
 	}
 
 	STM32HalCommunicationService_CDC::STM32HalCommunicationService_CDC()
@@ -81,8 +87,18 @@ namespace Stm32
 
 	void STM32HalCommunicationService_CDC::Send(const void *data, size_t length)
 	{
-		std::memcpy(&UserTxBufferFS[UserTXBufferLength], data, length);
-		UserTXBufferLength += length;
+		uint16_t sendAmount = length;
+		if(UserTxBufferEnd + sendAmount > APP_TX_DATA_SIZE)
+			sendAmount = APP_TX_DATA_SIZE - UserTxBufferEnd;
+
+		std::memcpy(&UserTxBufferFS[UserTxBufferEnd], data, sendAmount);
+		UserTxBufferEnd = (UserTxBufferEnd + sendAmount) % APP_TX_DATA_SIZE;
+		length -= sendAmount;
+		if(length > 0)
+		{
+			std::memcpy(&UserTxBufferFS[0], &reinterpret_cast<const uint8_t *>(data)[sendAmount], length);
+			UserTxBufferEnd = length;
+		}
 	}
 }
 #endif
