@@ -181,7 +181,8 @@ namespace EmbeddedIOServices
 #else
 		_taskList.remove(task);
 		task->Scheduled = false;
-		ScheduleCallBack((*_taskList.begin())->ScheduledTick - _latency);
+		if(_taskList.size() > 0)
+			ScheduleCallBack((*_taskList.begin())->ScheduledTick - _latency);
 #endif
 	}
 }
