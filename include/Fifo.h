@@ -9,13 +9,14 @@ namespace EmbeddedIOServices
 {
 	class Fifo
     {
+    public:
+        const size_t Size;
     protected:
         void *_buf;
         size_t _in;
         size_t _out;
 
     public:
-        const size_t Size;
         Fifo(size_t size);
         ~Fifo();
 
