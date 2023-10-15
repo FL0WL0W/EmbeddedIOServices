@@ -90,16 +90,14 @@ namespace Esp32
 		gpio_hal_get_intr_status(&hal, DIGITALINTERRUPTCORE, &gpio_intr_status);
 
 		if (gpio_intr_status) {
-			DigitalInterruptLoop(gpio_intr_status, 0);
-			gpio_hal_clear_intr_status(&hal, gpio_intr_status);
+			DigitalInterruptLoop(&hal, gpio_intr_status, 0);
 		}
 
 		uint32_t gpio_intr_status_h;
 		gpio_hal_get_intr_status_high(&hal, DIGITALINTERRUPTCORE, &gpio_intr_status_h);
 
 		if (gpio_intr_status_h) {
-			DigitalInterruptLoop(gpio_intr_status_h, 32);
-			gpio_hal_clear_intr_status_high(&hal, gpio_intr_status_h);
+			DigitalInterruptLoop(&hal, gpio_intr_status_h, 32);
 		}
 	}
 }

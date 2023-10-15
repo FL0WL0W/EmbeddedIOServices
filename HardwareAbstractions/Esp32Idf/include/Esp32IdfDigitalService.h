@@ -23,7 +23,7 @@ namespace Esp32
 		void DetachInterrupt(uint16_t pin);
 
 		static void DigitalInterrupt(void *arg);
-		static inline void DigitalInterruptLoop(uint32_t status, const uint32_t gpio_num_start)
+		static inline void DigitalInterruptLoop(const gpio_hal_context_t *hal, uint32_t status, const uint32_t gpio_num_start)
 		{
 			while (status) 
 			{
@@ -35,6 +35,8 @@ namespace Esp32
 				{
 					ExternalInterruptCallback[gpio_num]();
 				}
+
+				gpio_hal_clear_intr_status_bit(hal, gpio_num);
 			}
 		}
 	};
