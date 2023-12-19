@@ -13,9 +13,7 @@ namespace Esp32
 	protected: 
 		static EmbeddedIOServices::callback_t ExternalInterruptCallback[GPIO_NUM_MAX];
 		static gpio_hal_context_t hal;
-		static intr_handle_t gpio_isr_handle;
 	public:
-		Esp32IdfDigitalService();
 		void InitPin(uint16_t pin, EmbeddedIOServices::PinDirection direction);
 		bool ReadPin(uint16_t pin);
 		void WritePin(uint16_t pin, bool value);
@@ -23,22 +21,6 @@ namespace Esp32
 		void DetachInterrupt(uint16_t pin);
 
 		static void DigitalInterrupt(void *arg);
-		static inline void DigitalInterruptLoop(const gpio_hal_context_t *hal, uint32_t status, const uint32_t gpio_num_start)
-		{
-			while (status) 
-			{
-				const int nbit = __builtin_ffs(status) - 1;
-				status &= ~(1 << nbit);
-				const uint32_t gpio_num = gpio_num_start + nbit;
-
-				if (ExternalInterruptCallback[gpio_num] != NULL) 
-				{
-					ExternalInterruptCallback[gpio_num]();
-				}
-
-				gpio_hal_clear_intr_status_bit(hal, gpio_num);
-			}
-		}
 	};
 }
 
