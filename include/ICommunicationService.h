@@ -6,10 +6,9 @@
 #define ICOMMUNICATIONSERVICE_H
 namespace EmbeddedIOServices
 {
-	class ICommunicationHandler;
 	typedef std::function<void(const void *data, size_t length)> communication_send_callback_t;
 	typedef std::function<size_t(communication_send_callback_t, void *data, size_t length)> communication_receive_callback_t;
-	typedef std::list<communication_receive_callback_t *> communication_receive_callback_list_t;
+	typedef std::list<communication_receive_callback_t> communication_receive_callback_list_t;
 
 	class ICommunicationService
 	{
@@ -29,15 +28,16 @@ namespace EmbeddedIOServices
 
 		/**
 		 * @brief Register a callback with the service that will be called when the service receives data.
-		 * @param receiveCallBack A pointer to the callback function
+		 * @param receiveCallBack A to the callback function
+		 * @return Iterator to the list where receiveCallBack has been registered
 		 */
-		void RegisterReceiveCallBack(communication_receive_callback_t *receiveCallBack);
+		communication_receive_callback_list_t::iterator RegisterReceiveCallBack(communication_receive_callback_t receiveCallBackIterator);
 
 		/**
 		 * @brief Unregister a callback with the service.
-		 * @param receiveCallBack A pointer to the callback function
+		 * @param receiveCallBack An iterator to the list where receiveCallBack has been registered
 		 */
-		void UnRegisterReceiveCallBack(communication_receive_callback_t *receiveCallBack);
+		void UnRegisterReceiveCallBack(communication_receive_callback_list_t::iterator receiveCallBack);
 
 		/**
 		 * @brief Sends data on the communication bus.
@@ -46,18 +46,6 @@ namespace EmbeddedIOServices
 		 * @param length Length of that data to be transmitted
 		 */
         virtual void Send(const void *data, size_t length) = 0;
-	};
-
-	class ICommunicationHandler 
-	{
-	public:
-		/**
-		 * @brief Called by the communication service when data is received
-		 * @param data A pointer to the data that was received
-		 * @param length Length of that data that was received
-		 * @return size_t Number of bytes parsed from data.
-		 */
-        virtual size_t Receive(communication_send_callback_t sendCallBack, void *data, size_t length) = 0;
 	};
 }
 #endif

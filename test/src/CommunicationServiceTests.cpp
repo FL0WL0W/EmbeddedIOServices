@@ -11,8 +11,6 @@ namespace UnitTests
 	{
 		protected:
 		MockCommunicationService _communicationService;
-		communication_receive_callback_t handler1;
-		communication_receive_callback_t handler2;
 		size_t handler1return = 0;
 		int handler1count = 0;
 		size_t handler2return = 0;
@@ -20,19 +18,15 @@ namespace UnitTests
 
 		CommunicationServiceTests()
 		{
-			handler1 = [this](communication_send_callback_t send, void *data, size_t len) { this->handler1count++; return this->handler1return != 0? this->handler1return-- : 0; };
-			handler2 = [this](communication_send_callback_t send, void *data, size_t len) { this->handler2count++; return this->handler2return != 0? this->handler2return-- : 0; };
-			_communicationService.RegisterReceiveCallBack(&handler1);
-			_communicationService.RegisterReceiveCallBack(&handler2);
+			_communicationService.RegisterReceiveCallBack([this](communication_send_callback_t send, void *data, size_t len) { this->handler1count++; return this->handler1return != 0? this->handler1return-- : 0; });
+			_communicationService.RegisterReceiveCallBack([this](communication_send_callback_t send, void *data, size_t len) { this->handler2count++; return this->handler2return != 0? this->handler2return-- : 0; });
 		}
 	};
 
 	TEST_F(CommunicationServiceTests, CanRegisterAndUnRegisterReceiveCallBack)
 	{
-		communication_receive_callback_t handler = [](communication_send_callback_t send, void *data, size_t len) { return 1; };
-
-		_communicationService.RegisterReceiveCallBack(&handler);
-		_communicationService.UnRegisterReceiveCallBack(&handler);
+		communication_receive_callback_list_t::iterator iterator = _communicationService.RegisterReceiveCallBack([](communication_send_callback_t send, void *data, size_t len) { return 1; });
+		_communicationService.UnRegisterReceiveCallBack(iterator);
 	}
 
 	TEST_F(CommunicationServiceTests, WhenFirstHandlerHandlesAllThenSecondHandleNotCalled)

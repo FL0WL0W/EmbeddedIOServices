@@ -4,17 +4,14 @@
 #ifdef ICOMMUNICATIONSERVICE_H
 namespace EmbeddedIOServices
 {	
-	void ICommunicationService::RegisterReceiveCallBack(communication_receive_callback_t *receiveCallBack)
+	communication_receive_callback_list_t::iterator ICommunicationService::RegisterReceiveCallBack(communication_receive_callback_t receiveCallBack)
 	{
-		if(std::find(_receiveCallBackList.begin(), _receiveCallBackList.end(), receiveCallBack) != _receiveCallBackList.end())
-			return;
-
-		_receiveCallBackList.push_back(receiveCallBack);
+		return _receiveCallBackList.insert(_receiveCallBackList.end(), receiveCallBack);
 	}
 
-	void ICommunicationService::UnRegisterReceiveCallBack(communication_receive_callback_t *receiveCallBack)
+	void ICommunicationService::UnRegisterReceiveCallBack(communication_receive_callback_list_t::iterator receiveCallBackIterator)
 	{
-		_receiveCallBackList.push_back(receiveCallBack);
+		_receiveCallBackList.erase(receiveCallBackIterator);
 	}
 
 	size_t ICommunicationService::Receive(void *data, size_t length)
@@ -31,7 +28,7 @@ namespace EmbeddedIOServices
 		while(length > handled && next != end)
 		{
 			//call the callback
-			const size_t handledThisTime = (**next)(
+			const size_t handledThisTime = (*next)(
 				[this](const void *data, size_t length) { Send(data, length); },
 				reinterpret_cast<uint8_t *>(data) + handled, 
 				length - handled

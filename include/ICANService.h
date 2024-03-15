@@ -1,0 +1,56 @@
+#include "stdint.h"
+#include <functional>
+#include <map>
+
+#ifndef ICANSERVICE_H
+#define ICANSERVICE_H
+namespace EmbeddedIOServices
+{
+	typedef std::function<void(const uint32_t identifier, const uint8_t data[8])> can_send_callback_t;
+	typedef std::function<void(can_send_callback_t, const uint8_t data[8])> can_receive_callback_t;
+	typedef std::multimap<const uint32_t, can_receive_callback_t> can_receive_callback_map_t;
+
+	class ICANService
+	{
+	protected:
+		//// map of receive callback
+		can_receive_callback_map_t _receiveCallBackMap;
+		
+	public:
+		/**
+		 * @brief Called when the service receives data. This will loop through all of the register callbacks 
+		 * until there is either no data left to be processed
+		 * @param identifier the identifier the data is received on
+		 * @param data A 8 byte array of the data that was received
+		 */
+        void Receive(const uint32_t identifier, const uint8_t data[8]);
+
+		/**
+		 * @brief Register a callback with the service that will be called when the service receives data.
+		 * @param identifier the identifier to filter for the callback function
+		 * @param receiveCallBack A pointer to the callback function
+		 * @return Iterator to the map where receiveCallBack has been registered
+		 */
+		can_receive_callback_map_t::iterator RegisterReceiveCallBack(const uint32_t identifier, can_receive_callback_t receiveCallBack);
+
+		/**
+		 * @brief Unregister all callbacks with the service matching the pointer to the callback function.
+		 * @param receiveCallBack An iterator to the map where receiveCallBack has been registered
+		 */
+		void UnRegisterReceiveCallBack(can_receive_callback_map_t::iterator receiveCallBackIterator);
+
+		/**
+		 * @brief Unregister all callbacks with the service matching the identifier
+		 * @param identifier the identifier to filter for the callback function
+		 */
+		void UnRegisterReceiveCallBack(const uint32_t identifier);
+
+		/**
+		 * @brief Sends data on the can bus.
+		 * @param identifier the identifier to send the CAN data on
+		 * @param data A 8 byte array of the data to be sent
+		 */
+        virtual void Send(const uint32_t identifier, const uint8_t data[8]) = 0;
+	};
+}
+#endif
