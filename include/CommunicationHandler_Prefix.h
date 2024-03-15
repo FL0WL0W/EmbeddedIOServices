@@ -1,4 +1,5 @@
 #include "ICommunicationService.h"
+#include <map>
 
 #ifndef COMMUNICATIONHANDLER_PREFIX_H
 #define COMMUNICATIONHANDLER_PREFIX_H
@@ -7,21 +8,19 @@ namespace EmbeddedIOServices
     struct communication_prefix_receive_callback_t
     {
     public:
-        communication_prefix_receive_callback_t(const communication_receive_callback_t *callBack, const void *prefix, const size_t prefixLength, const bool handlesData) :
-            CallBack(callBack),
+        communication_prefix_receive_callback_t(const void *prefix, const size_t prefixLength, const bool handlesData) :
             Prefix(prefix),
             PrefixLength(prefixLength),
 			HandlesData(handlesData)
         {}
-
-        const communication_receive_callback_t *CallBack;
+		
         const void *Prefix;
         const size_t PrefixLength;
 		const bool HandlesData;
     };
-	typedef std::map<void *, communication_prefix_receive_callback_t> communication_prefix_receive_callback_map_t;
+	typedef std::map<communication_receive_callback_t *, communication_prefix_receive_callback_t> communication_prefix_receive_callback_map_t;
 
-	class CommunicationHandler_Prefix : public ICommunicationHandler
+	class CommunicationHandler_Prefix
 	{
 	protected:
 		//// list of receive callback
@@ -47,18 +46,6 @@ namespace EmbeddedIOServices
 		 * @param receiveCallBack A pointer to the callback function
 		 */
 		void UnRegisterReceiveCallBack(communication_receive_callback_t *receiveCallBack);
-
-		/**
-		 * @brief Register a handler with the service that will be called when the service receives data.
-		 * @param receiveCallBack A pointer to the callback function
-		 */
-		void RegisterHandler(ICommunicationHandler *handler, const void *prefix, const size_t prefixLength, const bool handlesData = true);
-
-		/**
-		 * @brief Unregister a callback with the service.
-		 * @param receiveCallBack A pointer to the callback function
-		 */
-		void UnRegisterHandler(ICommunicationHandler *handler);
 	};
 }
 #endif

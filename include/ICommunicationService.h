@@ -1,6 +1,6 @@
 #include "stdint.h"
 #include <functional>
-#include <map>
+#include <list>
 
 #ifndef ICOMMUNICATIONSERVICE_H
 #define ICOMMUNICATIONSERVICE_H
@@ -9,13 +9,13 @@ namespace EmbeddedIOServices
 	class ICommunicationHandler;
 	typedef std::function<void(const void *data, size_t length)> communication_send_callback_t;
 	typedef std::function<size_t(communication_send_callback_t, void *data, size_t length)> communication_receive_callback_t;
-	typedef std::map<void *, communication_receive_callback_t *> communication_receive_callback_map_t;
+	typedef std::list<communication_receive_callback_t *> communication_receive_callback_list_t;
 
 	class ICommunicationService
 	{
 	protected:
 		//// list of receive callback
-		communication_receive_callback_map_t _receiveCallBackMap;
+		communication_receive_callback_list_t _receiveCallBackList;
 		
 	public:
 		/**
@@ -38,18 +38,6 @@ namespace EmbeddedIOServices
 		 * @param receiveCallBack A pointer to the callback function
 		 */
 		void UnRegisterReceiveCallBack(communication_receive_callback_t *receiveCallBack);
-
-		/**
-		 * @brief Register a handler with the service that will be called when the service receives data.
-		 * @param receiveCallBack A pointer to the callback function
-		 */
-		void RegisterHandler(ICommunicationHandler *handler);
-
-		/**
-		 * @brief Unregister a callback with the service.
-		 * @param receiveCallBack A pointer to the callback function
-		 */
-		void UnRegisterHandler(ICommunicationHandler *handler);
 
 		/**
 		 * @brief Sends data on the communication bus.
