@@ -31,13 +31,13 @@ namespace EmbeddedIOServices
 		 * @param receiveCallBack A to the callback function
 		 * @return Iterator to the list where receiveCallBack has been registered
 		 */
-		communication_receive_callback_list_t::iterator RegisterReceiveCallBack(communication_receive_callback_t receiveCallBackIterator);
+		communication_receive_callback_list_t::iterator RegisterReceiveCallBack(communication_receive_callback_t receiveCallBack);
 
 		/**
 		 * @brief Unregister a callback with the service.
-		 * @param receiveCallBack An iterator to the list where receiveCallBack has been registered
+		 * @param receiveCallBackIterator An iterator to the list where receiveCallBack has been registered
 		 */
-		void UnRegisterReceiveCallBack(communication_receive_callback_list_t::iterator receiveCallBack);
+		void UnRegisterReceiveCallBack(communication_receive_callback_list_t::iterator receiveCallBackIterator);
 
 		/**
 		 * @brief Sends data on the communication bus.
