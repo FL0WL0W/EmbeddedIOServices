@@ -35,7 +35,7 @@ namespace EmbeddedIOServices
 
 		/**
 		 * @brief Unregister all callbacks with the service matching the pointer to the callback function.
-		 * @param receiveCallBack An iterator to the map where receiveCallBack has been registered
+		 * @param receiveCallBackIterator An iterator to the map where receiveCallBack has been registered
 		 */
 		void UnRegisterReceiveCallBack(can_receive_callback_map_t::iterator receiveCallBackIterator);
 
