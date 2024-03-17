@@ -7,7 +7,7 @@ namespace EmbeddedIOServices
 {	
 	communication_prefix_receive_callback_list_t::iterator CommunicationHandler_Prefix::RegisterReceiveCallBack(communication_receive_callback_t receiveCallBack, const void *prefix, const size_t prefixLength, const bool handlesData)
 	{
-		return _receiveCallBackList.insert(_receiveCallBackList.begin(), communication_prefix_receive_callback_t(
+		return _receiveCallBackList.insert(_receiveCallBackList.end(), communication_prefix_receive_callback_t(
 				receiveCallBack,
 				prefix,
 				prefixLength,
@@ -42,7 +42,7 @@ namespace EmbeddedIOServices
 		}
 	}
 
-	size_t CommunicationHandler_Prefix::Receive(communication_send_callback_t sendCallBack, void *data, size_t length)
+	size_t CommunicationHandler_Prefix::Receive(communication_send_callback_t sendCallBack, const void *data, size_t length)
 	{
 		//grab const iterators of the beginning and ending of the callback list
 		const communication_prefix_receive_callback_list_t::iterator begin = _receiveCallBackList.begin();
@@ -55,12 +55,12 @@ namespace EmbeddedIOServices
 		//while there is still data and not at the end of the callback list
 		while(length > handled && next != end)
 		{
-			if(next->PrefixLength <= length && std::strncmp(reinterpret_cast<const char *>(data), reinterpret_cast<const char *>(next->Prefix), next->PrefixLength) == 0)
+			if(next->PrefixLength <= length && std::strncmp(reinterpret_cast<const char *>(data) + handled, reinterpret_cast<const char *>(next->Prefix), next->PrefixLength) == 0)
 			{
 				//call the callback
 				const size_t handledThisTime = next->CallBack(
 					[sendCallBack](const void *data, size_t length) { sendCallBack(data, length); },
-					reinterpret_cast<uint8_t *>(data) + handled + next->PrefixLength, 
+					reinterpret_cast<const uint8_t *>(data) + handled + next->PrefixLength, 
 					length - handled - next->PrefixLength
 				);
 				//if data was handled, go back to the beginning of the callback list

@@ -1,6 +1,5 @@
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
-#include "ICommunicationService.h"
 #include "MockCommunicationService.h"
 using namespace testing;
 using namespace EmbeddedIOServices;
@@ -18,14 +17,14 @@ namespace UnitTests
 
 		CommunicationServiceTests()
 		{
-			_communicationService.RegisterReceiveCallBack([this](communication_send_callback_t send, void *data, size_t len) { this->handler1count++; return this->handler1return != 0? this->handler1return-- : 0; });
-			_communicationService.RegisterReceiveCallBack([this](communication_send_callback_t send, void *data, size_t len) { this->handler2count++; return this->handler2return != 0? this->handler2return-- : 0; });
+			_communicationService.RegisterReceiveCallBack([this](communication_send_callback_t send, const void *data, size_t len) { this->handler1count++; return this->handler1return != 0? this->handler1return-- : 0; });
+			_communicationService.RegisterReceiveCallBack([this](communication_send_callback_t send, const void *data, size_t len) { this->handler2count++; return this->handler2return != 0? this->handler2return-- : 0; });
 		}
 	};
 
 	TEST_F(CommunicationServiceTests, CanRegisterAndUnRegisterReceiveCallBack)
 	{
-		communication_receive_callback_list_t::iterator iterator = _communicationService.RegisterReceiveCallBack([](communication_send_callback_t send, void *data, size_t len) { return 1; });
+		communication_receive_callback_list_t::iterator iterator = _communicationService.RegisterReceiveCallBack([](communication_send_callback_t send, const void *data, size_t len) { return 1; });
 		_communicationService.UnRegisterReceiveCallBack(iterator);
 	}
 

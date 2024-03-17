@@ -1,7 +1,7 @@
 #include "ICommunicationService.h"
 
-#ifndef MOCKTIMERSERVICE_H
-#define MOCKTIMERSERVICE_H
+#ifndef MOCKCOMMUNICATIONSERVICE_H
+#define MOCKCOMMUNICATIONSERVICE_H
 namespace EmbeddedIOServices
 {
 	class MockCommunicationService : public ICommunicationService

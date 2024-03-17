@@ -14,7 +14,7 @@ namespace EmbeddedIOServices
 		_receiveCallBackList.erase(receiveCallBackIterator);
 	}
 
-	size_t ICommunicationService::Receive(void *data, size_t length)
+	size_t ICommunicationService::Receive(const void *data, size_t length)
 	{
 		//grab const iterators of the beginning and ending of the callback list
 		const communication_receive_callback_list_t::iterator begin = _receiveCallBackList.begin();
@@ -30,7 +30,7 @@ namespace EmbeddedIOServices
 			//call the callback
 			const size_t handledThisTime = (*next)(
 				[this](const void *data, size_t length) { Send(data, length); },
-				reinterpret_cast<uint8_t *>(data) + handled, 
+				reinterpret_cast<const uint8_t *>(data) + handled, 
 				length - handled
 			);
 			//if data was handled, go back to the beginning of the callback list
