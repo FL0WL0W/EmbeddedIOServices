@@ -9,7 +9,7 @@ project(${TARGET} CXX)
 
 # headers are always in include/
 set(HDR_DIR		include)
-file(GLOB_RECURSE HDRS ${HDR_DIR}/*.h)
+file(GLOB_RECURSE HDRS CONFIGURE_DEPENDS ${HDR_DIR}/*.h)
 include_directories(${HDR_DIR})
 
 # create library
