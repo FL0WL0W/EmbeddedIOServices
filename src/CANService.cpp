@@ -4,7 +4,7 @@
 #ifdef ICANSERVICE_H
 namespace EmbeddedIOServices
 {	
-	can_receive_callback_map_t::iterator ICANService::RegisterReceiveCallBack(const uint32_t identifier, can_receive_callback_t receiveCallBack)
+	can_receive_callback_map_t::iterator ICANService::RegisterReceiveCallBack(const CANIdentifier_t identifier, can_receive_callback_t receiveCallBack)
 	{
 		//add too callback map
 		return _receiveCallBackMap.insert(can_receive_callback_map_t::value_type(
@@ -18,7 +18,7 @@ namespace EmbeddedIOServices
 		_receiveCallBackMap.erase(receiveCallBack);
 	}
 
-	void ICANService::UnRegisterReceiveCallBack(const uint32_t identifier)
+	void ICANService::UnRegisterReceiveCallBack(const CANIdentifier_t identifier)
 	{
 		//grab const iterators of the ending of the callback map
 		const can_receive_callback_map_t::iterator end = _receiveCallBackMap.end();
@@ -34,7 +34,7 @@ namespace EmbeddedIOServices
 		}
 	}
 
-	void ICANService::Receive(const uint32_t identifier, const CANData_t data)
+	void ICANService::Receive(const CANIdentifier_t identifier, const CANData_t data)
 	{
 		//grab const iterators of the ending of the callback map
 		const can_receive_callback_map_t::iterator end = _receiveCallBackMap.end();
@@ -46,7 +46,7 @@ namespace EmbeddedIOServices
 		while(next != end && next->first == identifier)
 		{
 			//call the callback
-			next->second( [this](const uint32_t identifier, const CANData_t data) { Send(identifier, data); }, data );
+			next->second( [this](const CANIdentifier_t identifier, const CANData_t data) { Send(identifier, data); }, data );
 
 			//increment the looping iterator
 			next++;
