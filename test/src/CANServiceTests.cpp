@@ -16,15 +16,15 @@ namespace UnitTests
 
 		CANServiceTests()
 		{
-			_canService.RegisterReceiveCallBack(0x1, [this](can_send_callback_t send, const uint8_t data[8]) { this->handler1count++; });
-			_canService.RegisterReceiveCallBack(0x2, [this](can_send_callback_t send, const uint8_t data[8]) { this->handler2count++; });
-			_canService.RegisterReceiveCallBack(0x2, [this](can_send_callback_t send, const uint8_t data[8]) { this->handler3count++; });
+			_canService.RegisterReceiveCallBack(0x1, [this](can_send_callback_t send, const CANData_t data) { this->handler1count++; });
+			_canService.RegisterReceiveCallBack(0x2, [this](can_send_callback_t send, const CANData_t data) { this->handler2count++; });
+			_canService.RegisterReceiveCallBack(0x2, [this](can_send_callback_t send, const CANData_t data) { this->handler3count++; });
 		}
 	};
 
 	TEST_F(CANServiceTests, CanRegisterAndUnRegisterReceiveCallBack)
 	{
-		can_receive_callback_map_t::iterator iterator = _canService.RegisterReceiveCallBack(0x1, [](can_send_callback_t send, const uint8_t data[8]) {  });
+		can_receive_callback_map_t::iterator iterator = _canService.RegisterReceiveCallBack(0x1, [](can_send_callback_t send, const CANData_t data) {  });
 		_canService.UnRegisterReceiveCallBack(iterator);
 	}
 
@@ -34,7 +34,7 @@ namespace UnitTests
 		handler2count = 0;
 		handler3count = 0;
 
-		const uint8_t data[] = { 0, 1, 2, 3, 4, 5, 6, 7 };
+		const CANData_t data = { 0, 1, 2, 3, 4, 5, 6, 7 };
 		_canService.Receive(0x1, data);
 
 		ASSERT_EQ(1, handler1count) << "handler 1 not called";
@@ -47,7 +47,7 @@ namespace UnitTests
 		handler2count = 0;
 		handler3count = 0;
 
-		const uint8_t data[] = { 0, 1, 2, 3, 4, 5, 6, 7 };
+		const CANData_t data = { 0, 1, 2, 3, 4, 5, 6, 7 };
 		_canService.Receive(0x2, data);
 
 		ASSERT_EQ(0, handler1count) << "handler 1 called";

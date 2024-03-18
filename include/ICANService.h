@@ -6,9 +6,14 @@
 #define ICANSERVICE_H
 namespace EmbeddedIOServices
 {
-	typedef std::function<void(const uint32_t identifier, const uint8_t data[8])> can_send_callback_t;
-	typedef std::function<void(can_send_callback_t, const uint8_t data[8])> can_receive_callback_t;
+	struct CANData_t {
+	public:
+		uint8_t data[8];
+	};
+	typedef std::function<void(const uint32_t identifier, const CANData_t data)> can_send_callback_t;
+	typedef std::function<void(can_send_callback_t, const CANData_t data)> can_receive_callback_t;
 	typedef std::multimap<const uint32_t, can_receive_callback_t> can_receive_callback_map_t;
+
 
 	class ICANService
 	{
@@ -23,7 +28,7 @@ namespace EmbeddedIOServices
 		 * @param identifier the identifier the data is received on
 		 * @param data A 8 byte array of the data that was received
 		 */
-        void Receive(const uint32_t identifier, const uint8_t data[8]);
+        void Receive(const uint32_t identifier, const CANData_t data);
 
 		/**
 		 * @brief Register a callback with the service that will be called when the service receives data.
@@ -50,7 +55,7 @@ namespace EmbeddedIOServices
 		 * @param identifier the identifier to send the CAN data on
 		 * @param data A 8 byte array of the data to be sent
 		 */
-        virtual void Send(const uint32_t identifier, const uint8_t data[8]) = 0;
+        virtual void Send(const uint32_t identifier, const CANData_t data) = 0;
 	};
 }
 #endif

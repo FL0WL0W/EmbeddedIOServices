@@ -7,7 +7,7 @@ namespace EmbeddedIOServices
 	class MockCANService : public ICANService
 	{
 	public:
-		MOCK_METHOD2(Send, void(const uint32_t identifier, const uint8_t data[8]));
+		MOCK_METHOD2(Send, void(const uint32_t identifier, const CANData_t data));
 	};
 }
 #endif

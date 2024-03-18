@@ -34,7 +34,7 @@ namespace EmbeddedIOServices
 		}
 	}
 
-	void ICANService::Receive(const uint32_t identifier, const uint8_t data[8])
+	void ICANService::Receive(const uint32_t identifier, const CANData_t data)
 	{
 		//grab const iterators of the ending of the callback map
 		const can_receive_callback_map_t::iterator end = _receiveCallBackMap.end();
@@ -46,7 +46,7 @@ namespace EmbeddedIOServices
 		while(next != end && next->first == identifier)
 		{
 			//call the callback
-			next->second( [this](const uint32_t identifier, const uint8_t data[8]) { Send(identifier, data); }, data );
+			next->second( [this](const uint32_t identifier, const CANData_t data) { Send(identifier, data); }, data );
 
 			//increment the looping iterator
 			next++;
