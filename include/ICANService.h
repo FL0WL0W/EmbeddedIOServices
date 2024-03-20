@@ -9,7 +9,7 @@ namespace EmbeddedIOServices
 	struct CANData_t 
 	{
 	public:
-		uint8_t data[8];
+		uint8_t Data[8];
 	};
 	struct CANIdentifier_t 
 	{
