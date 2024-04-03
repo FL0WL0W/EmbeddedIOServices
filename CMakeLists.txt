@@ -22,12 +22,12 @@ target_include_directories(${TARGET} PUBLIC ${HDR_DIR})
 
 
 if(EmbeddedIOServices_build_tests)
-    #include google test
-    if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/libs/googletest/CMakeLists.txt)
-        add_subdirectory (libs/googletest)
-    endif()
     #include mock
     add_subdirectory (mock)
     #include test
     add_subdirectory(test)
 endif()
+
+# install library
+install(TARGETS ${TARGET} LIBRARY DESTINATION lib)
+install(DIRECTORY "${HDR_DIR}/" DESTINATION include)

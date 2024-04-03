@@ -21,6 +21,14 @@ add_executable(${TARGET} ${SRCS})
 # link static libraries
 target_link_libraries(${TARGET} EmbeddedIOServices)
 target_link_libraries(${TARGET} EmbeddedIOServicesMockedObjects)
+include(FetchContent)
+FetchContent_Declare(
+    gtest
+    GIT_REPOSITORY    https://github.com/google/googletest
+    GIT_TAG           main
+    GIT_PROGRESS TRUE
+)
+FetchContent_MakeAvailable(gtest)
 target_link_libraries(${TARGET} gtest gtest_main gmock)
 
 add_test(ALLTESTS ${TARGET})
