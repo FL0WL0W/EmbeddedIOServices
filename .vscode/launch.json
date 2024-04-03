@@ -8,7 +8,7 @@
             "name": "EmbeddedIOServices Tests",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/GCC11.3.0/test/EmbeddedIOServicesUnitTests",
+            "program": "${workspaceFolder}/build/GCC 11.3.0/test/EmbeddedIOServicesUnitTests",
             "cwd": "${workspaceFolder}"
         }
     ]

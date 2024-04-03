@@ -20,7 +20,6 @@ file(GLOB_RECURSE SRCS CONFIGURE_DEPENDS ${SRCS_DIR}/*.cpp)
 add_library(${TARGET} STATIC ${HDRS} ${SRCS})
 target_include_directories(${TARGET} PUBLIC ${HDR_DIR})
 
-
 if(EmbeddedIOServices_build_tests)
     #include mock
     add_subdirectory (mock)
