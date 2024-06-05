@@ -6,15 +6,17 @@
 #define DIGITALSERVICE_W80X_H
 namespace EmbeddedIOServices
 {
-	struct DigitalInterrupt 
+	typedef uint32_t GPIOPin_W80x;
+	
+	struct DigitalInterrupt_W80x
 	{
-		uint32_t GPIOPin;
+		GPIOPin_W80x GPIOPin;
 		callback_t CallBack;
 
-		DigitalInterrupt(uint32_t gpioPin, callback_t callBack) : GPIOPin(gpioPin), CallBack(callBack) { }
+		DigitalInterrupt_W80x(GPIOPin_W80x gpioPin, callback_t callBack) : GPIOPin(gpioPin), CallBack(callBack) { }
 	};
 
-	typedef std::forward_list<DigitalInterrupt> DigitalInterruptList;
+	typedef std::forward_list<DigitalInterrupt_W80x> DigitalInterruptList_W80x;
 
 	class DigitalService_W80x : public IDigitalService
 	{
@@ -25,9 +27,9 @@ namespace EmbeddedIOServices
 		void AttachInterrupt(digitalpin_t pin, callback_t callBack);
 		void DetachInterrupt(digitalpin_t pin);
 
-		static DigitalInterruptList GPIOAInterruptList;
-		static DigitalInterruptList GPIOBInterruptList;
-		__attribute__((section(".interrupt"))) static uint32_t PinToGPIOPin(digitalpin_t pin);
+		static DigitalInterruptList_W80x GPIOAInterruptList;
+		static DigitalInterruptList_W80x GPIOBInterruptList;
+		__attribute__((section(".interrupt"))) static GPIOPin_W80x PinToGPIOPin(digitalpin_t pin);
 	};
 }
 #endif

@@ -13,7 +13,7 @@ namespace EmbeddedIOServices
     	RCC->CLK_EN |= RCC_CLK_EN_GPIO;
 
 		GPIO_TypeDef *GPIOx = pin > 31? GPIOB : GPIOA;
-		const uint32_t GPIOPin = PinToGPIOPin(pin);
+		const GPIOPin_W80x GPIOPin = PinToGPIOPin(pin);
 
 		//GPIO
 		GPIOx->AF_SEL &= ~GPIOPin;
@@ -31,14 +31,14 @@ namespace EmbeddedIOServices
 	bool DigitalService_W80x::ReadPin(digitalpin_t pin)
 	{
 		GPIO_TypeDef *GPIOx = pin > 31? GPIOB : GPIOA;
-		const uint32_t GPIOPin = PinToGPIOPin(pin);
+		const GPIOPin_W80x GPIOPin = PinToGPIOPin(pin);
 		
 		return (GPIOx->DATA & GPIOPin) != 0;
 	}
 	void DigitalService_W80x::WritePin(digitalpin_t pin, bool value)
 	{
 		GPIO_TypeDef *GPIOx = pin > 31? GPIOB : GPIOA;
-		const uint32_t GPIOPin = PinToGPIOPin(pin);
+		const GPIOPin_W80x GPIOPin = PinToGPIOPin(pin);
 
 		const uint32_t GPIODataEn = GPIOx->DATA_B_EN;
 		GPIOx->DATA_B_EN |= GPIOPin;
@@ -61,7 +61,7 @@ namespace EmbeddedIOServices
 		csi_vic_set_prio(pin > 31? GPIOB_IRQn : GPIOA_IRQn, 0);
 
 		GPIO_TypeDef *GPIOx = pin > 31? GPIOB : GPIOA;
-		const uint32_t GPIOPin = PinToGPIOPin(pin);
+		const GPIOPin_W80x GPIOPin = PinToGPIOPin(pin);
 
 		//GPIO
 		GPIOx->AF_SEL &= ~GPIOPin;
@@ -79,7 +79,7 @@ namespace EmbeddedIOServices
 		GPIOx->IEV &= ~GPIOPin;
 
 		//Add Interrupt to list
-		(pin > 31? GPIOBInterruptList : GPIOAInterruptList).push_front(DigitalInterrupt(GPIOPin, callBack));
+		(pin > 31? GPIOBInterruptList : GPIOAInterruptList).push_front(DigitalInterrupt_W80x(GPIOPin, callBack));
 
 		//Interrupt Enable
 		GPIOx->IE |= GPIOPin;
@@ -90,7 +90,7 @@ namespace EmbeddedIOServices
     	RCC->CLK_EN |= RCC_CLK_EN_GPIO;
 
 		GPIO_TypeDef *GPIOx = pin > 31? GPIOB : GPIOA;
-		const uint32_t GPIOPin = PinToGPIOPin(pin);
+		const GPIOPin_W80x GPIOPin = PinToGPIOPin(pin);
 
 		//Interrupt None
 		GPIOx->IS &= ~GPIOPin;
@@ -101,12 +101,12 @@ namespace EmbeddedIOServices
 		GPIOx->IE &= ~GPIOPin;
 
 		//Remove Interrupt from list
-		(pin > 31? GPIOBInterruptList : GPIOAInterruptList).remove_if([GPIOPin](const DigitalInterrupt& interrupt) { return interrupt.GPIOPin == GPIOPin; });
+		(pin > 31? GPIOBInterruptList : GPIOAInterruptList).remove_if([GPIOPin](const DigitalInterrupt_W80x& interrupt) { return interrupt.GPIOPin == GPIOPin; });
 	}
 	
-	DigitalInterruptList DigitalService_W80x::GPIOAInterruptList;
-	DigitalInterruptList DigitalService_W80x::GPIOBInterruptList;
-	uint32_t DigitalService_W80x::PinToGPIOPin(digitalpin_t pin)
+	DigitalInterruptList_W80x DigitalService_W80x::GPIOAInterruptList;
+	DigitalInterruptList_W80x DigitalService_W80x::GPIOBInterruptList;
+	GPIOPin_W80x DigitalService_W80x::PinToGPIOPin(digitalpin_t pin)
 	{
 		return 1 << (pin % 32);
 	}
@@ -118,7 +118,7 @@ extern "C" __attribute__((section(".interrupt")))  __attribute__((isr)) void GPI
 {
 	GPIOB->DATA |= 1 << 4;
 	GPIOB->DATA &= ~(1 << 4);
-	for (DigitalInterruptList::iterator interrupt = DigitalService_W80x::GPIOAInterruptList.begin(); interrupt != DigitalService_W80x::GPIOAInterruptList.end(); ++interrupt)
+	for (DigitalInterruptList_W80x::iterator interrupt = DigitalService_W80x::GPIOAInterruptList.begin(); interrupt != DigitalService_W80x::GPIOAInterruptList.end(); ++interrupt)
 	{
 		if(interrupt->GPIOPin & GPIOA->MIS)
 		{
@@ -130,7 +130,7 @@ extern "C" __attribute__((section(".interrupt")))  __attribute__((isr)) void GPI
 
 extern "C" __attribute__((section(".interrupt")))  __attribute__((isr)) void GPIOB_IRQHandler(void)
 {
-	for (DigitalInterruptList::iterator interrupt = DigitalService_W80x::GPIOBInterruptList.begin(); interrupt != DigitalService_W80x::GPIOBInterruptList.end(); ++interrupt)
+	for (DigitalInterruptList_W80x::iterator interrupt = DigitalService_W80x::GPIOBInterruptList.begin(); interrupt != DigitalService_W80x::GPIOBInterruptList.end(); ++interrupt)
 	{
 		if(interrupt->GPIOPin & GPIOB->MIS)
 		{
