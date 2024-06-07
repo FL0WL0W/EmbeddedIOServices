@@ -29,7 +29,10 @@ namespace EmbeddedIOServices
 
 		static DigitalInterruptList_W80x GPIOAInterruptList;
 		static DigitalInterruptList_W80x GPIOBInterruptList;
-		__attribute__((section(".interrupt"))) static GPIOPin_W80x PinToGPIOPin(digitalpin_t pin);
+		static inline GPIOPin_W80x PinToGPIOPin(digitalpin_t pin)
+		{
+			return 1 << (pin % 32);
+		}
 	};
 }
 #endif

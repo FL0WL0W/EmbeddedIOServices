@@ -106,10 +106,6 @@ namespace EmbeddedIOServices
 	
 	DigitalInterruptList_W80x DigitalService_W80x::GPIOAInterruptList;
 	DigitalInterruptList_W80x DigitalService_W80x::GPIOBInterruptList;
-	GPIOPin_W80x DigitalService_W80x::PinToGPIOPin(digitalpin_t pin)
-	{
-		return 1 << (pin % 32);
-	}
 }
 
 using namespace EmbeddedIOServices;
