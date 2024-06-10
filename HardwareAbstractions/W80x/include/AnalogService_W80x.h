@@ -13,7 +13,20 @@ namespace EmbeddedIOServices
 		void InitPin(analogpin_t pin);
 		float ReadPin(analogpin_t pin);
 
-		static uint32_t PinToChannel(analogpin_t pin);
+		static inline uint32_t PinToChannel(analogpin_t pin)
+		{
+			switch(pin)
+			{
+				default:
+					return ADC_CHANNEL_0;
+				case 2:
+					return ADC_CHANNEL_1;
+				case 3:
+					return ADC_CHANNEL_2;
+				case 4:
+					return ADC_CHANNEL_3;
+			}
+		}
 	};
 }
 #endif

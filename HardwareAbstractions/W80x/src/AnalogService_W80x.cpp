@@ -20,21 +20,6 @@ namespace EmbeddedIOServices
 		_hadc.Init.channel = PinToChannel(pin);
 		return 0.001f * HAL_ADC_GET_INPUT_VOLTAGE(&_hadc);
 	}
-
-	uint32_t AnalogService_W80x::PinToChannel(analogpin_t pin)
-	{
-		switch(pin)
-		{
-			default:
-				return ADC_CHANNEL_0;
-			case 2:
-				return ADC_CHANNEL_1;
-			case 3:
-				return ADC_CHANNEL_2;
-			case 4:
-				return ADC_CHANNEL_3;
-		}
-	}
 }
 
 extern "C" void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc)
