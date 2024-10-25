@@ -20,17 +20,15 @@ namespace Esp32
 
 	Esp32IdfTimerService::Esp32IdfTimerService()
 	{
-    	uint32_t apb_clk_freq = 0;
-    	uint32_t cpu_clk_freq = 0;
-		esp_clk_tree_src_get_freq_hz(SOC_MOD_CLK_APB, ESP_CLK_TREE_SRC_FREQ_PRECISION_EXACT, &apb_clk_freq);
-		esp_clk_tree_src_get_freq_hz(SOC_MOD_CLK_CPU, ESP_CLK_TREE_SRC_FREQ_PRECISION_EXACT, &cpu_clk_freq);
+    	uint32_t gptimer_clk_freq = 0;
+		esp_clk_tree_src_get_freq_hz((soc_module_clk_t)GPTIMER_CLK_SRC_DEFAULT, ESP_CLK_TREE_SRC_FREQ_PRECISION_EXACT, &gptimer_clk_freq);
 
-		_ticksPerSecond = apb_clk_freq / 2;
+		_ticksPerSecond = gptimer_clk_freq / 2;
 
 		gptimer_config_t timer_config = {
 			.clk_src = GPTIMER_CLK_SRC_DEFAULT,
 			.direction = GPTIMER_COUNT_UP,
-			.resolution_hz = apb_clk_freq / 2, // 40MHz, 1 tick=25ns
+			.resolution_hz = gptimer_clk_freq / 2, // 40MHz, 1 tick=25ns
 			.intr_priority = 2
 		};
 		gptimer_new_timer(&timer_config, &gptimer);

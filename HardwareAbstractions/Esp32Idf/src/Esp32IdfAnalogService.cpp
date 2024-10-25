@@ -13,5 +13,6 @@ namespace Esp32
 	
 	float Esp32IdfAnalogService::ReadPin(uint16_t pin)
 	{
+		return 0;
 	}
 }
