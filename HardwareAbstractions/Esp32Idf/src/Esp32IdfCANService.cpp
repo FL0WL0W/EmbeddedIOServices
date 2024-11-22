@@ -1,9 +1,4 @@
-#include <stdint.h>
 #include "Esp32IdfCANService.h"
-#include "hal/cpu_hal.h"
-#include "driver/gpio.h"
-#include "esp_attr.h"
-#include "esp_rom_gpio.h"
 
 using namespace EmbeddedIOServices;
 
