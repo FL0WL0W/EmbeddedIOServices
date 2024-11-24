@@ -38,7 +38,7 @@ namespace Esp32
 			close(_listen_sock);
 			return;
 		}
-
+		// TODO probably need to stop these tasks when service is deleted
 		xTaskCreate([] (void *arg)
 		{
 			Esp32IdfCommunicationService_Socket *commService = reinterpret_cast<Esp32IdfCommunicationService_Socket *>(arg);
