@@ -25,7 +25,7 @@ namespace Esp32
 						receiveTaskArg->canService->Receive({rx_msg.identifier, receiveTaskArg->i}, *reinterpret_cast<CANData_t *>(&rx_msg.data));
 					}
 				}
-			}, "Esp32IdfCANService", 4096, this, 10, NULL);
+			}, "Esp32IdfCANService", 4096, &_receiveTaskArgs[i], 10, NULL);
 		}
 	}
 	
