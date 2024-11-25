@@ -1,5 +1,6 @@
 #include "ICommunicationService.h"
 #include "esp_http_server.h"
+#include <list>
 
 #ifndef ESP32IDFCOMMUNICATIONSERVICE_WEBSOCKET_H
 #define ESP32IDFCOMMUNICATIONSERVICE_WEBSOCKET_H

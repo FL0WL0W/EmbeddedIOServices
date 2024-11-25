@@ -22,20 +22,20 @@ namespace Esp32
 					twai_message_t rx_msg;
 					if(twai_receive_v2(receiveTaskArg->canService->_twai_handles[receiveTaskArg->i], &rx_msg, portMAX_DELAY) == ESP_OK)
 					{
-						receiveTaskArg->canService->Receive({rx_msg.identifier, receiveTaskArg->i}, *reinterpret_cast<CANData_t *>(&rx_msg.data));
+						receiveTaskArg->canService->Receive({rx_msg.identifier, receiveTaskArg->i}, *reinterpret_cast<CANData_t *>(&rx_msg.data), rx_msg.data_length_code);
 					}
 				}
 			}, "Esp32IdfCANService", 4096, &_receiveTaskArgs[i], 10, NULL);
 		}
 	}
 	
-	void Esp32IdfCANService::Send(const CANIdentifier_t identifier, const CANData_t data)
+	void Esp32IdfCANService::Send(const CANIdentifier_t identifier, const CANData_t data, const uint8_t dataLength)
 	{
 		const twai_message_t message = 
 		{
 			.extd = identifier.CANIdentifier > (1 < 11),
 			.identifier = identifier.CANIdentifier,
-			.data_length_code = 8, //TODO add length to API
+			.data_length_code = dataLength,
 			.data = 
 			{ 
 				data.Data[0],

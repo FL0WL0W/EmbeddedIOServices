@@ -52,10 +52,7 @@ namespace Esp32
 		ws_pkt.len = length;
 		ws_pkt.type = HTTPD_WS_TYPE_BINARY;
 
-		const std::list<int>::iterator begin = _fds.begin();
-		const std::list<int>::iterator end = _fds.end();
-		std::list<int>::iterator next = begin;
-		while(next != end)
+		for(auto next = _fds.begin(); next != _fds.end(); ++next)
 		{
 			ws_async_arg *arg = reinterpret_cast<ws_async_arg*>(malloc(sizeof(ws_async_arg)));
 			ws_pkt.payload = arg->buf = reinterpret_cast<uint8_t*>(malloc(length));

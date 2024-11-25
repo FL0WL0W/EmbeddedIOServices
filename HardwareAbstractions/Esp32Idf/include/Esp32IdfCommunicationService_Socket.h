@@ -1,4 +1,5 @@
 #include "ICommunicationService.h"
+#include <list>
 
 #ifndef ESP32IDFCOMMUNICATIONSERVICE_SOCKET_H
 #define ESP32IDFCOMMUNICATIONSERVICE_SOCKET_H

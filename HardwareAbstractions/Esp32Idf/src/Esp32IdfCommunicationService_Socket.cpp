@@ -119,10 +119,7 @@ sock_read_cleanup:
 	
 	void Esp32IdfCommunicationService_Socket::Send(const void *data, size_t length)
 	{
-		const std::list<int>::iterator begin = _socks.begin();
-		const std::list<int>::iterator end = _socks.end();
-		std::list<int>::iterator next = begin;
-		while(next != end)
+		for(auto next = _socks.begin(); next != _socks.end(); ++next)
 		{
 			send(*next, data, length, 0);
 			next++;

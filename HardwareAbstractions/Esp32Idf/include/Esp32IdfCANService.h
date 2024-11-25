@@ -27,7 +27,7 @@ namespace Esp32
 		twai_handle_t _twai_handles[SOC_TWAI_CONTROLLER_NUM];
 	public:
 		Esp32IdfCANService(const Esp32IdfCANServiceChannelConfig configs[SOC_TWAI_CONTROLLER_NUM]);
-        void Send(const EmbeddedIOServices::CANIdentifier_t identifier, const EmbeddedIOServices::CANData_t data);
+        void Send(const EmbeddedIOServices::CANIdentifier_t identifier, const EmbeddedIOServices::CANData_t data, const uint8_t dataLength);
 	};
 }
 
