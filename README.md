@@ -40,6 +40,7 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
   <li>STM32F103Cx</li>
   <li>STM32F401CC</li>
   <li>Full Stm32 Line, just add Stm32HalConf.h</li>
-  <li>W806 and W801</lis>
+  <li>W806 and W801</li>
+  <li>ESP32</li>
 </ul>
   
