@@ -1,6 +1,6 @@
 #include "stdint.h"
 #include <functional>
-#include <list>
+#include <map>
 
 #ifndef ICOMMUNICATIONSERVICE_H
 #define ICOMMUNICATIONSERVICE_H
@@ -8,13 +8,15 @@ namespace EmbeddedIOServices
 {
 	typedef std::function<void(const void *data, size_t length)> communication_send_callback_t;
 	typedef std::function<size_t(communication_send_callback_t, const void *data, size_t length)> communication_receive_callback_t;
-	typedef std::list<communication_receive_callback_t> communication_receive_callback_list_t;
+	typedef uint32_t communication_receive_callback_id_t;
 
 	class ICommunicationService
 	{
 	protected:
-		//// list of receive callback
-		communication_receive_callback_list_t _receiveCallBackList;
+		// map of receive callback
+		std::map<const communication_receive_callback_id_t, communication_receive_callback_t> _receiveCallBackMap;
+		// id iterator
+		communication_receive_callback_id_t _nextId = 0;
 		
 	public:
 		/**
@@ -29,15 +31,15 @@ namespace EmbeddedIOServices
 		/**
 		 * @brief Register a callback with the service that will be called when the service receives data.
 		 * @param receiveCallBack A to the callback function
-		 * @return Iterator to the list where receiveCallBack has been registered
+		 * @return Id which the receiveCallBack has been registered to
 		 */
-		communication_receive_callback_list_t::iterator RegisterReceiveCallBack(communication_receive_callback_t receiveCallBack);
+		communication_receive_callback_id_t RegisterReceiveCallBack(communication_receive_callback_t receiveCallBack);
 
 		/**
 		 * @brief Unregister a callback with the service.
-		 * @param receiveCallBackIterator An iterator to the list where receiveCallBack has been registered
+		 * @param receiveCallBackId Id which the receiveCallBack has been registered to
 		 */
-		void UnRegisterReceiveCallBack(communication_receive_callback_list_t::iterator receiveCallBackIterator);
+		void UnRegisterReceiveCallBack(communication_receive_callback_id_t receiveCallBackId);
 
 		/**
 		 * @brief Sends data on the communication bus.

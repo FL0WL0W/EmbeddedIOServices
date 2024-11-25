@@ -5,74 +5,64 @@
 #ifdef COMMUNICATIONHANDLER_PREFIX_H
 namespace EmbeddedIOServices
 {	
-	communication_prefix_receive_callback_list_t::iterator CommunicationHandler_Prefix::RegisterReceiveCallBack(communication_receive_callback_t receiveCallBack, const void *prefix, const size_t prefixLength, const bool handlesData)
+	communication_prefix_receive_callback_id_t CommunicationHandler_Prefix::RegisterReceiveCallBack(communication_receive_callback_t receiveCallBack, const void *prefix, const size_t prefixLength, const bool handlesData)
 	{
-		return _receiveCallBackList.insert(_receiveCallBackList.end(), communication_prefix_receive_callback_t(
+		_receiveCallBackMap.insert({_nextId, communication_prefix_receive_callback_t(
 				receiveCallBack,
 				prefix,
 				prefixLength,
 				handlesData
 			)
-		);
+		});
+		return _nextId++;
 	}
 
-	void CommunicationHandler_Prefix::UnRegisterReceiveCallBack(communication_prefix_receive_callback_list_t::iterator receiveCallBackIterator)
+	void CommunicationHandler_Prefix::UnRegisterReceiveCallBack(communication_prefix_receive_callback_id_t receiveCallBackId)
 	{
-		_receiveCallBackList.erase(receiveCallBackIterator);
+		_receiveCallBackMap.erase(receiveCallBackId);
 	}
 
 	void CommunicationHandler_Prefix::UnRegisterReceiveCallBack(const void *prefix, const size_t prefixLength)
 	{
 		//grab const iterators of the beginning and ending of the callback list
-		const communication_prefix_receive_callback_list_t::iterator begin = _receiveCallBackList.begin();
-		const communication_prefix_receive_callback_list_t::iterator end = _receiveCallBackList.end();
+		auto begin = _receiveCallBackMap.begin();
+		auto end = _receiveCallBackMap.end();
 
-		//find all callbacks matching identifier
-		communication_prefix_receive_callback_list_t::iterator next;
 		while(true)
 		{
-			communication_prefix_receive_callback_list_t::iterator next = std::find_if(begin, end, [&](communication_prefix_receive_callback_t receivePrefixCallBack) {
-				return prefixLength == receivePrefixCallBack.PrefixLength && std::memcmp(prefix, receivePrefixCallBack.Prefix, prefixLength) == 0;
+			auto find = std::find_if(begin, end, [&](std::pair<communication_prefix_receive_callback_id_t, communication_prefix_receive_callback_t> next) {
+				return prefixLength == next.second.PrefixLength && std::memcmp(prefix, next.second.Prefix, prefixLength) == 0;
 			});
 
-			if(next == end)
+			if(find == end)
 				return;
 
-			_receiveCallBackList.erase(next);
+			_receiveCallBackMap.erase(find);
 		}
 	}
 
 	size_t CommunicationHandler_Prefix::Receive(communication_send_callback_t sendCallBack, const void *data, size_t length)
 	{
-		//grab const iterators of the beginning and ending of the callback list
-		const communication_prefix_receive_callback_list_t::iterator begin = _receiveCallBackList.begin();
-		const communication_prefix_receive_callback_list_t::iterator end = _receiveCallBackList.end();
-
-		//declare the iterator that will loop through the list
-		communication_prefix_receive_callback_list_t::iterator next = begin;
-		//declare the variable for the amount of data handled
 		size_t handled = 0;
-		//while there is still data and not at the end of the callback list
-		while(length > handled && next != end)
+		for (auto next = _receiveCallBackMap.begin(); next != _receiveCallBackMap.end() && length > handled; ++next) 
 		{
-			if(next->PrefixLength <= length && std::strncmp(reinterpret_cast<const char *>(data) + handled, reinterpret_cast<const char *>(next->Prefix), next->PrefixLength) == 0)
+			if(next->second.PrefixLength <= length && std::strncmp(reinterpret_cast<const char *>(data) + handled, reinterpret_cast<const char *>(next->second.Prefix), next->second.PrefixLength) == 0)
 			{
 				//call the callback
-				const size_t handledThisTime = next->CallBack(
+				const size_t handledThisTime = next->second.CallBack(
 					[sendCallBack](const void *data, size_t length) { sendCallBack(data, length); },
-					reinterpret_cast<const uint8_t *>(data) + handled + next->PrefixLength, 
-					length - handled - next->PrefixLength
+					reinterpret_cast<const uint8_t *>(data) + handled + next->second.PrefixLength, 
+					length - handled - next->second.PrefixLength
 				);
 				//if data was handled, go back to the beginning of the callback list
-				if(!next->HandlesData || handledThisTime > 0)
+				if(!next->second.HandlesData || handledThisTime > 0)
 				{
 					//add to the amount of data handled
-					handled += handledThisTime + next->PrefixLength;
-					next = begin;
+					handled += handledThisTime + next->second.PrefixLength;
+					next = _receiveCallBackMap.begin();
 					continue;
 				}
 			}
-			next++;
 		}
 
 		//return the amount of data handled

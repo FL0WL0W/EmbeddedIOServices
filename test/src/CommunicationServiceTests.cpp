@@ -24,8 +24,8 @@ namespace UnitTests
 
 	TEST_F(CommunicationServiceTests, CanRegisterAndUnRegisterReceiveCallBack)
 	{
-		communication_receive_callback_list_t::iterator iterator = _communicationService.RegisterReceiveCallBack([](communication_send_callback_t send, const void *data, size_t len) { return 1; });
-		_communicationService.UnRegisterReceiveCallBack(iterator);
+		auto id = _communicationService.RegisterReceiveCallBack([](communication_send_callback_t send, const void *data, size_t len) { return 1; });
+		_communicationService.UnRegisterReceiveCallBack(id);
 	}
 
 	TEST_F(CommunicationServiceTests, WhenFirstHandlerHandlesAllThenSecondHandleNotCalled)

@@ -30,8 +30,11 @@ namespace UnitTests
 
 	TEST_F(CommunicationHandler_PrefixTest, CanRegisterAndUnRegisterReceiveCallBack)
 	{
-		communication_prefix_receive_callback_list_t::iterator iterator = _communicationHandler_Prefix.RegisterReceiveCallBack([](communication_send_callback_t send, const void *data, size_t len) { return 1; }, "c", 1);
-		_communicationHandler_Prefix.UnRegisterReceiveCallBack(iterator);
+		auto id1 = _communicationHandler_Prefix.RegisterReceiveCallBack([](communication_send_callback_t send, const void *data, size_t len) { return 1; }, "c", 1);
+		auto id2 = _communicationHandler_Prefix.RegisterReceiveCallBack([](communication_send_callback_t send, const void *data, size_t len) { return 1; }, "d", 1);
+		
+		_communicationHandler_Prefix.UnRegisterReceiveCallBack(id1);
+		_communicationHandler_Prefix.UnRegisterReceiveCallBack("d", 1);
 	}
 
 	TEST_F(CommunicationHandler_PrefixTest, WhenSecondCommandHandlesAllThenFirstandThirdCommandNotCalled)

@@ -20,13 +20,14 @@ namespace EmbeddedIOServices
         const size_t PrefixLength;
 		const bool HandlesData;
     };
-	typedef std::list<communication_prefix_receive_callback_t> communication_prefix_receive_callback_list_t;
+	typedef uint32_t communication_prefix_receive_callback_id_t;
 
 	class CommunicationHandler_Prefix
 	{
 	protected:
 		// list of receive callback
-		communication_prefix_receive_callback_list_t _receiveCallBackList;
+		std::map<communication_prefix_receive_callback_id_t, communication_prefix_receive_callback_t> _receiveCallBackMap;
+		communication_prefix_receive_callback_id_t _nextId = 0;
 		
 	public:
 		/**
@@ -42,15 +43,15 @@ namespace EmbeddedIOServices
 		 * @param prefix Prefix to look for before calling callback
 		 * @param prefixLength Prefix length
 		 * @param receiveCallBack A pointer to the callback function
-		 * @return Iterator to the list where receiveCallBack has been registered
+		 * @return Id which the receiveCallBack has been registered to
 		 */
-		communication_prefix_receive_callback_list_t::iterator RegisterReceiveCallBack(communication_receive_callback_t receiveCallBack, const void *prefix, const size_t prefixLength, const bool handlesData = true);
+		communication_prefix_receive_callback_id_t RegisterReceiveCallBack(communication_receive_callback_t receiveCallBack, const void *prefix, const size_t prefixLength, const bool handlesData = true);
 
 		/**
 		 * @brief Unregister a callback with the service.
-		 * @param receiveCallBackIterator An iterator to the list where receiveCallBack has been registered
+		 * @param receiveCallBackIterator Id which the receiveCallBack has been registered to
 		 */
-		void UnRegisterReceiveCallBack(communication_prefix_receive_callback_list_t::iterator receiveCallBackIterator);
+		void UnRegisterReceiveCallBack(communication_prefix_receive_callback_id_t receiveCallBackId);
 
 		/**
 		 * @brief Unregister a callback with the service.

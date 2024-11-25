@@ -4,52 +4,80 @@
 #ifdef ICANSERVICE_H
 namespace EmbeddedIOServices
 {	
-	can_receive_callback_map_t::iterator ICANService::RegisterReceiveCallBack(const CANIdentifier_t identifier, can_receive_callback_t receiveCallBack)
+	can_receive_callback_id_t ICANService::RegisterReceiveCallBack(const CANIdentifier_t identifier, const CANIdentifier_t mask, can_receive_mask_callback_t receiveCallBack)
 	{
-		//add too callback map
-		return _receiveCallBackMap.insert(can_receive_callback_map_t::value_type(
-			identifier,
-			receiveCallBack
-		));
+		const can_receive_callback_mask_t can_receive_callback_mask = { identifier, mask, receiveCallBack };
+		_receiveCallBackMaskMap.insert({ _nextId, can_receive_callback_mask });
+		return _nextId++;
 	}
 
-	void ICANService::UnRegisterReceiveCallBack(can_receive_callback_map_t::iterator receiveCallBack)
+	can_receive_callback_id_t ICANService::RegisterReceiveCallBack(const CANIdentifier_t identifier, can_receive_callback_t receiveCallBack)
 	{
-		_receiveCallBackMap.erase(receiveCallBack);
+		std::shared_ptr<can_receive_callback_t> receiveCallBackShared = std::make_shared<can_receive_callback_t>(receiveCallBack);
+		_receiveCallBackIdentifierIndex.insert({ identifier, receiveCallBackShared });
+		_receiveCallBackMap.insert({ _nextId, receiveCallBackShared });
+		return _nextId++;
+	}
+
+	void ICANService::UnRegisterReceiveCallBack(can_receive_callback_id_t receiveCallBackId)
+	{
+		_receiveCallBackMaskMap.erase(receiveCallBackId);
+
+		auto find = _receiveCallBackMap.find(receiveCallBackId);
+		if (find != _receiveCallBackMap.end()) 
+		{
+			for (auto next = _receiveCallBackIdentifierIndex.begin(); next != _receiveCallBackIdentifierIndex.end(); ++next) 
+			{
+				if (next->second == find->second) 
+				{
+					next = _receiveCallBackIdentifierIndex.erase(next);
+				}
+			}
+			_receiveCallBackMap.erase(find);
+		}
+	}
+
+	void ICANService::UnRegisterReceiveCallBack(const CANIdentifier_t identifier, const CANIdentifier_t mask)
+	{
+		for (auto next = _receiveCallBackMaskMap.begin(); next != _receiveCallBackMaskMap.end(); ++next) 
+		{
+			if (next->second.Identifier == identifier && next->second.Mask == mask) 
+			{
+				next = _receiveCallBackMaskMap.erase(next);
+			}
+		}
 	}
 
 	void ICANService::UnRegisterReceiveCallBack(const CANIdentifier_t identifier)
 	{
-		//grab const iterators of the ending of the callback map
-		const can_receive_callback_map_t::iterator end = _receiveCallBackMap.end();
-
-		//find all callbacks matching identifier
-		can_receive_callback_map_t::iterator next = _receiveCallBackMap.find(identifier);
-
-		//loop through matching callbacks
-		while(next != end && next->first == identifier)
+		for (auto find = _receiveCallBackIdentifierIndex.find(identifier); find != _receiveCallBackIdentifierIndex.end() && find->first == identifier; ++find) 
 		{
-			//erase from map
-			_receiveCallBackMap.erase(next++);
+			for (auto next = _receiveCallBackMap.begin(); next != _receiveCallBackMap.end(); ++next) 
+			{
+				if (next->second == find->second) 
+				{
+					next = _receiveCallBackMap.erase(next);
+				}
+			}
+			find = _receiveCallBackIdentifierIndex.erase(find);
 		}
 	}
 
-	void ICANService::Receive(const CANIdentifier_t identifier, const CANData_t data)
+	void ICANService::Receive(const CANIdentifier_t identifier, const CANData_t data, const uint8_t dataLength)
 	{
-		//grab const iterators of the ending of the callback map
-		const can_receive_callback_map_t::iterator end = _receiveCallBackMap.end();
-
-		//find all callbacks matching identifier
-		can_receive_callback_map_t::iterator next = _receiveCallBackMap.find(identifier);
-
-		//loop through matching callbacks
-		while(next != end && next->first == identifier)
+		const can_send_callback_t send = [this](const CANIdentifier_t identifier, const CANData_t data, const uint8_t dataLength) { Send(identifier, data, dataLength); };
+		
+		for (auto find = _receiveCallBackIdentifierIndex.find(identifier); find != _receiveCallBackIdentifierIndex.end() && find->first == identifier; ++find) 
 		{
-			//call the callback
-			next->second( [this](const CANIdentifier_t identifier, const CANData_t data) { Send(identifier, data); }, data );
+			(*find->second)(send, data, dataLength );
+		}
 
-			//increment the looping iterator
-			next++;
+		for (auto next = _receiveCallBackMaskMap.begin(); next != _receiveCallBackMaskMap.end(); ++next) 
+		{
+			if ((next->second.Identifier & next->second.Mask) == (identifier & next->second.Mask))
+			{
+				next->second.CallBack(send, identifier, data, dataLength);
+			}
 		}
 	}
 }
