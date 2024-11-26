@@ -43,12 +43,12 @@ namespace Esp32
 	{
 		for(auto next = _fds.begin(); next != _fds.end(); ++next)
 		{
-			httpd_ws_frame_t *ws_pkt = calloc(sizeof(httpd_ws_frame_t))
+			httpd_ws_frame_t *ws_pkt = reinterpret_cast<httpd_ws_frame_t *>(calloc(1, sizeof(httpd_ws_frame_t)));
 			ws_pkt->len = length;
 			ws_pkt->type = HTTPD_WS_TYPE_BINARY;
 			ws_pkt->payload = reinterpret_cast<uint8_t*>(malloc(length));
 			memcpy(ws_pkt->payload, data, length);
-    		httpd_ws_send_data_async(_server, (*next), &ws_pkt, [](esp_err_t err, int socket, void *arg) 
+    		httpd_ws_send_data_async(_server, (*next), ws_pkt, [](esp_err_t err, int socket, void *arg) 
 			{ 
 				httpd_ws_frame_t *ws_pkt = reinterpret_cast<httpd_ws_frame_t *>(arg);
 				free(ws_pkt->payload);
