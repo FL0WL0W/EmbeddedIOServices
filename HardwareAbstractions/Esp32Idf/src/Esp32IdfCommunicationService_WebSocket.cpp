@@ -41,32 +41,19 @@ namespace Esp32
 	
 	void Esp32IdfCommunicationService_WebSocket::Send(const void *data, size_t length)
 	{
-		struct ws_async_arg 
-		{
-			uint8_t *buf;
-			Esp32IdfCommunicationService_WebSocket *commService;
-		};
-
-		httpd_ws_frame_t ws_pkt;
-		memset(&ws_pkt, 0, sizeof(httpd_ws_frame_t));
-		ws_pkt.len = length;
-		ws_pkt.type = HTTPD_WS_TYPE_BINARY;
-
 		for(auto next = _fds.begin(); next != _fds.end(); ++next)
 		{
-			ws_async_arg *arg = reinterpret_cast<ws_async_arg*>(malloc(sizeof(ws_async_arg)));
-			ws_pkt.payload = arg->buf = reinterpret_cast<uint8_t*>(malloc(length));
-			memcpy(ws_pkt.payload, data, length);
-    		httpd_ws_send_data_async(_server, (*next), &ws_pkt, [](esp_err_t err, int socket, void *argVoid) 
+			httpd_ws_frame_t *ws_pkt = calloc(sizeof(httpd_ws_frame_t))
+			ws_pkt->len = length;
+			ws_pkt->type = HTTPD_WS_TYPE_BINARY;
+			ws_pkt->payload = reinterpret_cast<uint8_t*>(malloc(length));
+			memcpy(ws_pkt->payload, data, length);
+    		httpd_ws_send_data_async(_server, (*next), &ws_pkt, [](esp_err_t err, int socket, void *arg) 
 			{ 
-				ws_async_arg *arg = reinterpret_cast<ws_async_arg *>(argVoid);
-				free(arg->buf);
-				if(err != ESP_OK)
-				{
-					arg->commService->_fds.remove(socket);
-				}
-				free(argVoid);
-			}, arg);
+				httpd_ws_frame_t *ws_pkt = reinterpret_cast<httpd_ws_frame_t *>(arg);
+				free(ws_pkt->payload);
+				free(ws_pkt);
+			}, ws_pkt);
 		}
 	}
 }
