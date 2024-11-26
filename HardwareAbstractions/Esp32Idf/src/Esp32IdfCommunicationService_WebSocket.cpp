@@ -67,7 +67,6 @@ namespace Esp32
 				}
 				free(argVoid);
 			}, arg);
-			next++;
 		}
 	}
 }
