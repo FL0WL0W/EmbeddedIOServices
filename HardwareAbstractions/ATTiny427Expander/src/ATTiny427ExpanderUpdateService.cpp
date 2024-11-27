@@ -54,7 +54,7 @@ namespace EmbeddedIOServices
                             {
                                 if(_receiveIndex % 2 == 0)
                                 {
-                                    _receiveAnalogValueHighByte = data[dataIndex++];
+                                    _receiveAnalogValueLowByte = data[dataIndex++];
                                     _receiveIndex++;
                                     while(!(_receiveAnalogEnable & 0x1) && _receiveIndex < 36)
                                     {
@@ -64,7 +64,7 @@ namespace EmbeddedIOServices
                                 }
                                 else
                                 {
-                                    _registers->AnalogValues[(_receiveIndex - 6)/2] = (_receiveAnalogValueHighByte << 8) | data[dataIndex++];
+                                    _registers->AnalogValues[(_receiveIndex - 6)/2] = _receiveAnalogValueLowByte | (data[dataIndex++] << 8);
                                     _receiveAnalogEnable >>= 1;
                                     _receiveIndex++;
                                     if(_receiveAnalogEnable == 0)

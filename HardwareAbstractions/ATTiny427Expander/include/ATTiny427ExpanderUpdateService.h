@@ -171,7 +171,7 @@ namespace EmbeddedIOServices
 			struct
 			{
 				uint8_t _receiveAnalogCounter;
-				uint8_t _receiveAnalogValueHighByte;
+				uint8_t _receiveAnalogValueLowByte;
 				uint16_t _receiveAnalogEnable;
 			};
 			struct
