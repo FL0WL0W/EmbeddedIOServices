@@ -28,6 +28,7 @@ FetchContent_Declare(
     GIT_REPOSITORY    https://github.com/google/googletest
     GIT_TAG           main
     GIT_PROGRESS TRUE
+    GIT_SHALLOW TRUE
 )
 FetchContent_MakeAvailable(gtest)
 target_link_libraries(${TARGET} gtest gtest_main gmock)
