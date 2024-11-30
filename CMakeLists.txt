@@ -1,7 +1,7 @@
 ﻿# CMakeList.txt : CMake project for EmbeddedIOServices, include source and define
 # project specific logic here.
 #
-cmake_minimum_required (VERSION 3.8)
+cmake_minimum_required (VERSION 3.30)
 option(EmbeddedIOServices_build_tests "Build all of EmbeddedIOServices tests" OFF)
 
 set(TARGET		EmbeddedIOServices)
