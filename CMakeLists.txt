@@ -1,7 +1,7 @@
 ﻿# CMakeList.txt : CMake project for EmbeddedIOServices, include source and define
 # project specific logic here.
 #
-cmake_minimum_required (VERSION 3.30)
+cmake_minimum_required (VERSION 3.30[3.30])
 option(EmbeddedIOServices_build_tests "Build all of EmbeddedIOServices tests" OFF)
 
 set(TARGET		EmbeddedIOServices)
@@ -26,7 +26,3 @@ if(EmbeddedIOServices_build_tests)
     #include test
     add_subdirectory(test)
 endif()
-
-# install library
-install(TARGETS ${TARGET} LIBRARY DESTINATION lib)
-install(DIRECTORY "${HDR_DIR}/" DESTINATION include)
