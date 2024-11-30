@@ -94,7 +94,7 @@ namespace EmbeddedIOServices
 		 * @brief Used to calibrate the latency and the minimum number of ticks that a task can be scheduled in advance.
 		 * This should be called at the end of the child abstraction's constructor after all timer setup is complete.
 		 */
-		virtual void Calibrate();
+		virtual void Calibrate() = 0;
 
 		/**
 		 * @brief This should be implemented by the child abstraction to set the timer execution tick.
