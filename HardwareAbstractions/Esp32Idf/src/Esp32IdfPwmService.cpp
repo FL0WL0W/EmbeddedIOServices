@@ -1,8 +1,6 @@
-// #include "Esp32IdfConf.h"
 // #include "Esp32IdfPwmService.h"
 // #include <algorithm>
 // #include <math.h>
-// #include "Esp32IdfTimer.h"
 
 // using namespace EmbeddedIOServices;
 
@@ -379,7 +377,7 @@
 		
 // 	void Esp32IdfPwmService::InitPin(uint16_t pin, PinDirection direction, uint16_t minFrequency)
 // 	{
-// 		if (pin == 0)
+// 		if (pin == 0xFFFF)
 // 			return;
 					
 // 		TimAndChannel timAndChannel = Esp32IdfPwmPinToTimAndChannel(pin);
@@ -475,8 +473,8 @@
 		
 // 	PwmValue Esp32IdfPwmService::ReadPin(uint16_t pin)
 // 	{
-// 		PwmValue value = PwmValue();
-// 		if (pin == 0)
+// 		PwmValue value;
+// 		if (pin == 0xFFFF)
 // 			return value;
 		
 // 		TimAndChannel timAndChannel = Esp32IdfPwmPinToTimAndChannel(pin);
@@ -521,7 +519,7 @@
 	
 // 	void Esp32IdfPwmService::WritePin(uint16_t pin, PwmValue value)
 // 	{
-// 		if (pin == 0)
+// 		if (pin == 0xFFFF)
 // 			return;
 		
 // 		TimAndChannel timAndChannel = Esp32IdfPwmPinToTimAndChannel(pin);

@@ -1,6 +1,5 @@
 #include "ATTiny427ExpanderUpdateService.h"
 #include <cstring>
-#include "esp_log.h"
 
 #ifdef ATTINY427EXPANDERUPDATESERVICE_H
 namespace EmbeddedIOServices
@@ -274,6 +273,14 @@ namespace EmbeddedIOServices
                                         transmitRegisters.CCL_LUT3CTRLC != _previousRegisters.CCL_LUT3CTRLC ||
                                         transmitRegisters.CCL_LUT3TRUTH != _previousRegisters.CCL_LUT3TRUTH ||
                                         _first;
+        const bool TCA_CTRLA_changed = transmitRegisters.TCA_CTRLA != _previousRegisters.TCA_CTRLA || _first;
+        const bool TCA_CTRLB_changed = transmitRegisters.TCA_CTRLB != _previousRegisters.TCA_CTRLB || _first;
+        const bool TCA_CTRLC_changed = transmitRegisters.TCA_CTRLC != _previousRegisters.TCA_CTRLC || _first;
+        const bool TCA_CTRLD_changed = transmitRegisters.TCA_CTRLD != _previousRegisters.TCA_CTRLD || _first;
+        const bool TCA_PERBUF_changed = transmitRegisters.TCA_PERBUF != _previousRegisters.TCA_PERBUF || _first;
+        const bool TCA_CMP0BUF_changed = transmitRegisters.TCA_CMP0BUF != _previousRegisters.TCA_CMP0BUF || _first;
+        const bool TCA_CMP1BUF_changed = transmitRegisters.TCA_CMP1BUF != _previousRegisters.TCA_CMP1BUF || _first;
+        const bool TCA_CMP2BUF_changed = transmitRegisters.TCA_CMP2BUF != _previousRegisters.TCA_CMP2BUF || _first;
 
         uint16_t dataIndex = 0;
         uint16_t currentReadFinishedIndex = 0;
@@ -697,6 +704,131 @@ namespace EmbeddedIOServices
                     }
                     state++;
                     break;
+                case 18:
+                    if(TCA_PERBUF_changed)
+                    {
+                        data[dataIndex++] = 0x82 + 
+                            ((TCA_CMP2BUF_changed && (TCA_CMP1BUF_changed || TCA_CMP0BUF_changed))? 6 : 
+                            (TCA_CMP1BUF_changed? 4 : (TCA_CMP0BUF_changed? 2 : 0)));
+                        data[dataIndex++] = 0x0A; //address high
+                        data[dataIndex++] = 0x36;
+                        data[dataIndex++] = transmitRegisters.TCA_PERBUF & 0xFF;
+                        data[dataIndex++] = (transmitRegisters.TCA_PERBUF >> 8) & 0xFF;
+                        if(TCA_CMP2BUF_changed && (TCA_CMP1BUF_changed || TCA_CMP0BUF_changed))
+                        {
+                            data[dataIndex++] = transmitRegisters.TCA_CMP0BUF & 0xFF;
+                            data[dataIndex++] = (transmitRegisters.TCA_CMP0BUF >> 8) & 0xFF;
+                            data[dataIndex++] = transmitRegisters.TCA_CMP1BUF & 0xFF;
+                            data[dataIndex++] = (transmitRegisters.TCA_CMP1BUF >> 8) & 0xFF;
+                            data[dataIndex++] = transmitRegisters.TCA_CMP2BUF & 0xFF;
+                            data[dataIndex++] = (transmitRegisters.TCA_CMP2BUF >> 8) & 0xFF;
+                        }
+                        else if(TCA_CMP1BUF_changed)
+                        {
+                            data[dataIndex++] = transmitRegisters.TCA_CMP0BUF & 0xFF;
+                            data[dataIndex++] = (transmitRegisters.TCA_CMP0BUF >> 8) & 0xFF;
+                            data[dataIndex++] = transmitRegisters.TCA_CMP1BUF & 0xFF;
+                            data[dataIndex++] = (transmitRegisters.TCA_CMP1BUF >> 8) & 0xFF;
+                        }
+                        else if(TCA_CMP0BUF_changed)
+                        {
+                            data[dataIndex++] = transmitRegisters.TCA_CMP0BUF & 0xFF;
+                            data[dataIndex++] = (transmitRegisters.TCA_CMP0BUF >> 8) & 0xFF;
+                        }
+                        else
+                        {
+                            data[dataIndex++] = 0xC2;
+                            data[dataIndex++] = 0x3C;
+                            data[dataIndex++] = transmitRegisters.TCA_CMP2BUF & 0xFF;
+                            data[dataIndex++] = (transmitRegisters.TCA_CMP2BUF >> 8) & 0xFF;
+                        }
+                    }
+                    else if(TCA_CMP0BUF_changed)
+                    {
+                        data[dataIndex++] = 0x82 + (TCA_CMP2BUF_changed? 4 : (TCA_CMP1BUF_changed? 2 : 0));
+                        data[dataIndex++] = 0x0A; //address high
+                        data[dataIndex++] = 0x38;
+                        data[dataIndex++] = transmitRegisters.TCA_CMP0BUF & 0xFF;
+                        data[dataIndex++] = (transmitRegisters.TCA_CMP0BUF >> 8) & 0xFF;
+                        if(TCA_CMP2BUF_changed)
+                        {
+                            data[dataIndex++] = transmitRegisters.TCA_CMP1BUF & 0xFF;
+                            data[dataIndex++] = (transmitRegisters.TCA_CMP1BUF >> 8) & 0xFF;
+                            data[dataIndex++] = transmitRegisters.TCA_CMP2BUF & 0xFF;
+                            data[dataIndex++] = (transmitRegisters.TCA_CMP2BUF >> 8) & 0xFF;
+                        }
+                        else if(TCA_CMP1BUF_changed)
+                        {
+                            data[dataIndex++] = transmitRegisters.TCA_CMP1BUF & 0xFF;
+                            data[dataIndex++] = (transmitRegisters.TCA_CMP1BUF >> 8) & 0xFF;
+                        }
+                    }
+                    else if(TCA_CMP1BUF_changed)
+                    {
+                        data[dataIndex++] = 0x82 + (TCA_CMP2BUF_changed? 2 : 0);
+                        data[dataIndex++] = 0x0A; //address high
+                        data[dataIndex++] = 0x3A;
+                        data[dataIndex++] = transmitRegisters.TCA_CMP1BUF & 0xFF;
+                        data[dataIndex++] = (transmitRegisters.TCA_CMP1BUF >> 8) & 0xFF;
+                        if(TCA_CMP2BUF_changed)
+                        {
+                            data[dataIndex++] = transmitRegisters.TCA_CMP2BUF & 0xFF;
+                            data[dataIndex++] = (transmitRegisters.TCA_CMP2BUF >> 8) & 0xFF;
+                        }
+                    }
+                    else if(TCA_CMP2BUF_changed)
+                    {
+                        data[dataIndex++] = 0x82;
+                        data[dataIndex++] = 0x0A; //address high
+                        data[dataIndex++] = 0x3C;
+                        data[dataIndex++] = transmitRegisters.TCA_CMP2BUF & 0xFF;
+                        data[dataIndex++] = (transmitRegisters.TCA_CMP2BUF >> 8) & 0xFF;
+                    }
+                    state++;
+                    break;
+                case 19:
+                {
+                    bool highset = false;
+                    if(TCA_CTRLC_changed)
+                    {
+                        data[dataIndex++] = 0x81 | (highset? 0x40 : 0); //write 16/8bit address
+                        if(!highset)
+                        {
+                            data[dataIndex++] = 0x0A; //address high
+                            highset = true;
+                        }
+                        data[dataIndex++] = 0x02;
+                        data[dataIndex++] = transmitRegisters.TCA_CTRLC; //CTRLC
+                    }
+                    if(TCA_CTRLA_changed)
+                    {
+                        data[dataIndex++] = (0x81 + (TCA_CTRLB_changed? 1 : 0)) | (highset? 0x40 : 0); //write 16/8bit address
+                        if(!highset)
+                        {
+                            data[dataIndex++] = 0x0A; //address high
+                            highset = true;
+                        }
+                        data[dataIndex++] = 0x00; //address low
+                        data[dataIndex++] = transmitRegisters.TCA_CTRLA; //CTRLA
+                        if(TCA_CTRLB_changed)
+                        {
+                            data[dataIndex++] = transmitRegisters.TCA_CTRLB; //CTRLB
+                        }
+                    }
+                    else if(TCA_CTRLB_changed)
+                    {
+                        data[dataIndex++] = 0x81 | (highset? 0x40 : 0); //write 16/8bit address
+                        if(!highset)
+                        {
+                            data[dataIndex++] = 0x0A; //address high
+                            highset = true;
+                        }
+                        data[dataIndex++] = 0x01; //address low
+                        data[dataIndex++] = transmitRegisters.TCA_CTRLB; //CTRLB
+                    }
+                    state++;
+                    break;
+                }
 
 
                 default: 

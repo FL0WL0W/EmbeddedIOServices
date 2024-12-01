@@ -1,3 +1,5 @@
+#include "stddef.h"
+#include "stdint.h"
 #include "IDigitalService.h"
 #include <forward_list>
 
@@ -89,6 +91,15 @@ namespace EmbeddedIOServices
 		uint8_t CCL_LUT3CTRLB = 0;
 		uint8_t CCL_LUT3CTRLC = 0;
 		uint8_t CCL_LUT3TRUTH = 0;
+
+		uint8_t TCA_CTRLA = 0;
+		uint8_t TCA_CTRLB = 0;
+		uint8_t TCA_CTRLC = 0;
+		uint8_t TCA_CTRLD = 0;
+		uint16_t TCA_PERBUF = 0xFFFF;
+		uint16_t TCA_CMP0BUF = 0;
+		uint16_t TCA_CMP1BUF = 0;
+		uint16_t TCA_CMP2BUF = 0;
 
 		//SRAM
 		uint8_t AnalogCounter = 0;
