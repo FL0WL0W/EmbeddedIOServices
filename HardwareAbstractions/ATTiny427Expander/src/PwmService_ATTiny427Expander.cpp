@@ -1,4 +1,5 @@
 #include "PwmService_ATTiny427Expander.h"
+#include "esp_log.h"
 
 namespace EmbeddedIOServices
 {
@@ -13,7 +14,7 @@ namespace EmbeddedIOServices
 
 		if(direction == Out)
 		{
-			const uint16_t divExact = (20000000 / (minFrequency * (1 < 16 - 1)));
+			const uint16_t divExact = (20000000 / (minFrequency * ((1 << 16) - 1)));
 			uint8_t clksel = 0;
 			uint16_t div = 1;
 			if(divExact > 255)
@@ -76,7 +77,7 @@ namespace EmbeddedIOServices
 					divCurrent = 1024;
 					break;
 			}
-			_registers->TCA_CTRLA = (_registers->TCA_CTRLA & 0xF1) | (div << 1);
+			_registers->TCA_CTRLA = (_registers->TCA_CTRLA & 0xF1) | (clksel << 1);
 			_registers->TCA_PERBUF = static_cast<uint32_t>(_registers->TCA_PERBUF) * divCurrent / div;
 			_registers->TCA_CMP0BUF = static_cast<uint32_t>(_registers->TCA_CMP0BUF) * divCurrent / div;
 			_registers->TCA_CMP1BUF = static_cast<uint32_t>(_registers->TCA_CMP1BUF) * divCurrent / div;
