@@ -1,11 +1,11 @@
-// #include "Esp32IdfPwmService.h"
-// #include <algorithm>
-// #include <math.h>
+#include "Esp32IdfPwmService.h"
+#include <algorithm>
+#include <math.h>
 
-// using namespace EmbeddedIOServices;
+using namespace EmbeddedIOServices;
 
-// namespace Esp32
-// {
+namespace Esp32
+{
 //     struct TimAndChannel
 //     {
 //         TimerIndex Index;
@@ -375,8 +375,8 @@
 //         return TimAndChannel();
 // 	}
 		
-// 	void Esp32IdfPwmService::InitPin(uint16_t pin, PinDirection direction, uint16_t minFrequency)
-// 	{
+	void Esp32IdfPwmService::InitPin(pwmpin_t pin, PinDirection direction, uint16_t minFrequency)
+	{
 // 		if (pin == 0xFFFF)
 // 			return;
 					
@@ -469,11 +469,11 @@
 // 			GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
 // 			HAL_GPIO_Init(PinToGPIO(pin), &GPIO_InitStruct);
 // 		}
-// 	}
+	}
 		
-// 	PwmValue Esp32IdfPwmService::ReadPin(uint16_t pin)
-// 	{
-// 		PwmValue value;
+	PwmValue Esp32IdfPwmService::ReadPin(pwmpin_t pin)
+	{
+		PwmValue value = PwmValue();
 // 		if (pin == 0xFFFF)
 // 			return value;
 		
@@ -514,11 +514,11 @@
 // 		value.PulseWidth = pulseTick * clockFactor;
 // 		value.Period = periodTick * clockFactor;
 		
-// 		return value;
-// 	}
+		return value;
+	}
 	
-// 	void Esp32IdfPwmService::WritePin(uint16_t pin, PwmValue value)
-// 	{
+	void Esp32IdfPwmService::WritePin(pwmpin_t pin, PwmValue value)
+	{
 // 		if (pin == 0xFFFF)
 // 			return;
 		
@@ -547,5 +547,5 @@
 // 		case TIM_CHANNEL_4:
 // 			timAndChannel.TIM->CCR4 = timAndChannel.TIM->ARR * (value.PulseWidth / value.Period);
 // 		}
-// 	}
-// }
+	}
+}

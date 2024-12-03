@@ -13,9 +13,9 @@ namespace EmbeddedIOServices
 		ATTiny427Expander_Registers *_registers;
 	public:
 		PwmService_ATTiny427Expander(ATTiny427Expander_Registers *registers);
-		void InitPin(uint16_t pin, EmbeddedIOServices::PinDirection direction, uint16_t minFrequency);
-		EmbeddedIOServices::PwmValue ReadPin(uint16_t pin);
-		void WritePin(uint16_t pin, EmbeddedIOServices::PwmValue value);
+		void InitPin(pwmpin_t pin, EmbeddedIOServices::PinDirection direction, uint16_t minFrequency);
+		EmbeddedIOServices::PwmValue ReadPin(pwmpin_t pin);
+		void WritePin(pwmpin_t pin, EmbeddedIOServices::PwmValue value);
 	};
 }
 #endif

@@ -10,9 +10,9 @@ namespace Esp32
 	class Esp32IdfPwmService : public EmbeddedIOServices::IPwmService
 	{
 	public:
-		void InitPin(uint16_t pin, EmbeddedIOServices::PinDirection direction, uint16_t minFrequency);
-		EmbeddedIOServices::PwmValue ReadPin(uint16_t pin);
-		void WritePin(uint16_t pin, EmbeddedIOServices::PwmValue value);
+		void InitPin(EmbeddedIOServices::pwmpin_t pin, EmbeddedIOServices::PinDirection direction, uint16_t minFrequency);
+		EmbeddedIOServices::PwmValue ReadPin(EmbeddedIOServices::pwmpin_t pin);
+		void WritePin(EmbeddedIOServices::pwmpin_t pin, EmbeddedIOServices::PwmValue value);
 	};
 }
 #endif

@@ -7,7 +7,7 @@ namespace EmbeddedIOServices
     {
     }
 
-	void PwmService_ATTiny427Expander::InitPin(uint16_t pin, PinDirection direction, uint16_t minFrequency)
+	void PwmService_ATTiny427Expander::InitPin(pwmpin_t pin, PinDirection direction, uint16_t minFrequency)
 	{
 		if (pin == 0xFFFF)
 			return;
@@ -126,7 +126,7 @@ namespace EmbeddedIOServices
 		}
 	}
 		
-	PwmValue PwmService_ATTiny427Expander::ReadPin(uint16_t pin)
+	PwmValue PwmService_ATTiny427Expander::ReadPin(pwmpin_t pin)
 	{
 		PwmValue value = PwmValue();
 		if (pin == 0xFFFF)
@@ -136,7 +136,7 @@ namespace EmbeddedIOServices
 		return value;
 	}
 	
-	void PwmService_ATTiny427Expander::WritePin(uint16_t pin, PwmValue value)
+	void PwmService_ATTiny427Expander::WritePin(pwmpin_t pin, PwmValue value)
 	{
 		if (pin == 0xFFFF)
 			return;
