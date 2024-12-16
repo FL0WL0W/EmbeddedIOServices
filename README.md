@@ -28,10 +28,15 @@ This is a unit tested hardware abstraction for embedded systems. The timer servi
     <li>GetTicksPerSecond()</li>
     <li>ScheduleCallBack(tick_t tick) <= this is to call ReturnCallBack() at that tick</li>
   </ul>
-  <li>ICommunicationService (UART, CAN, TCP, etc.)</li>
+  <li>ICommunicationService (UART, TCP Socket, WebSocket, etc.)</li>
   <ul>
     <li>Call Receive(void* data, size_t length) when data received</li>
     <li>Send(void* data, size_t length)</li>
+  </ul>
+  <li>ICANService (UART, TCP Socket, WebSocket, etc.)</li>
+  <ul>
+    <li>Receive(CANIdentifier_t identifier, CANData_t data, uint8_t dataLength) when data received</li>
+    <li>Send(CANIdentifier_t identifier, CANData_t data, uint8_t dataLength)</li>
   </ul>
 </ul>
 
