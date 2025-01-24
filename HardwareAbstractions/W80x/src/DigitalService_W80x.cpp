@@ -110,7 +110,7 @@ namespace EmbeddedIOServices
 
 using namespace EmbeddedIOServices;
 
-extern "C" __attribute__((section(".interrupt")))  __attribute__((isr)) void GPIOA_IRQHandler(void)
+extern "C" __attribute__((isr)) void GPIOA_IRQHandler(void)
 {
 	GPIOB->DATA |= 1 << 4;
 	GPIOB->DATA &= ~(1 << 4);
@@ -124,7 +124,7 @@ extern "C" __attribute__((section(".interrupt")))  __attribute__((isr)) void GPI
 	}
 }
 
-extern "C" __attribute__((section(".interrupt")))  __attribute__((isr)) void GPIOB_IRQHandler(void)
+extern "C" __attribute__((isr)) void GPIOB_IRQHandler(void)
 {
 	for (DigitalInterruptList_W80x::iterator interrupt = DigitalService_W80x::GPIOBInterruptList.begin(); interrupt != DigitalService_W80x::GPIOBInterruptList.end(); ++interrupt)
 	{

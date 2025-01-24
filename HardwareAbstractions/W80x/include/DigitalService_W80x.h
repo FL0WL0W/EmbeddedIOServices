@@ -22,8 +22,8 @@ namespace EmbeddedIOServices
 	{
 	public:
 		void InitPin(digitalpin_t pin, PinDirection direction);
-		__attribute__((section(".interrupt"))) bool ReadPin(digitalpin_t pin);
-		__attribute__((section(".interrupt"))) void WritePin(digitalpin_t pin, bool value);
+		bool ReadPin(digitalpin_t pin);
+		void WritePin(digitalpin_t pin, bool value);
 		void AttachInterrupt(digitalpin_t pin, callback_t callBack);
 		void DetachInterrupt(digitalpin_t pin);
 

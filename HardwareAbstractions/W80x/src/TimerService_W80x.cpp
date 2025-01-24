@@ -125,7 +125,7 @@ namespace EmbeddedIOServices
 
 using namespace EmbeddedIOServices;
 
-extern "C" __attribute__((section(".interrupt"))) __attribute__((isr)) void TIM0_5_IRQHandler(void)
+extern "C" __attribute__((isr)) void TIM0_5_IRQHandler(void)
 {
 	const uint32_t CRCache = TIM->CR;
 	TIM->CR = CRCache | (0x10842108 & CRCache);

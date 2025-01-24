@@ -214,15 +214,15 @@ namespace EmbeddedIOServices
 
 using namespace EmbeddedIOServices;
 
-extern "C" __attribute__((section(".interrupt")))  __attribute__((isr)) void UART0_IRQHandler(void)
+extern "C" __attribute__((isr)) void UART0_IRQHandler(void)
 {
     CommunicationService_W80xUART::UART0_IRQHandler();
 }
-extern "C" __attribute__((section(".interrupt")))  __attribute__((isr)) void UART1_IRQHandler(void)
+extern "C" __attribute__((isr)) void UART1_IRQHandler(void)
 {
     CommunicationService_W80xUART::UART1_IRQHandler();
 }
-extern "C" __attribute__((section(".interrupt")))  __attribute__((isr)) void UART2_5_IRQHandler(void)
+extern "C" __attribute__((isr)) void UART2_5_IRQHandler(void)
 {
     CommunicationService_W80xUART::UART2_5_IRQHandler();
 }

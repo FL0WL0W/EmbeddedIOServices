@@ -24,8 +24,8 @@ namespace EmbeddedIOServices
 		 */
 		TimerService_W80x(uint8_t tickTimer, uint8_t interruptTimer);
 		~TimerService_W80x();
-		__attribute__((section(".interrupt"))) tick_t GetTick();
-		__attribute__((section(".interrupt"))) tick_t GetTicksPerSecond();
+		tick_t GetTick();
+		tick_t GetTicksPerSecond();
 
 		static callback_t Timer0CallBack;
 		static callback_t Timer1CallBack;
