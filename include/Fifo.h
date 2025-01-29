@@ -25,7 +25,7 @@ namespace EmbeddedIOServices
         size_t Write(const void *buf, size_t len);
         size_t Read(void *buf, size_t len);
         size_t Peak(void *buf, size_t len);
-        void Pop(size_t len);
+        size_t Pop(size_t len);
         void Clear();
     };
 }

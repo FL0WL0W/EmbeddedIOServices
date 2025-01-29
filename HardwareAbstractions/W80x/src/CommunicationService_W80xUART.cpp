@@ -155,7 +155,7 @@ namespace EmbeddedIOServices
 		{
 			if((_uart->FIFOS & UART_FIFOS_TFC) >= UART_FIFO_FULL)
 			{
-				_uart->INTM &= ~(UART_INTM_TL | UART_INTM_TEMPT);
+				// _uart->INTM &= ~(UART_INTM_TL | UART_INTM_TEMPT);
 				return;
 			}
 			uint8_t b;
@@ -169,8 +169,8 @@ namespace EmbeddedIOServices
 		CommunicationService_W80xUART0->_uart->INTS = 0xFFFFFFFF;
 		if((flags & (UART_INTS_RL | UART_INTS_RTO)) != 0)
 			CommunicationService_W80xUART0->ReceiveInt();
-		if((flags & (UART_INTS_TL | UART_INTS_TEMPT)) != 0)
-			CommunicationService_W80xUART0->FlushTransmit();
+		// if((flags & (UART_INTS_TL | UART_INTS_TEMPT)) != 0)
+		// 	CommunicationService_W80xUART0->FlushTransmit();
 	}
 	void CommunicationService_W80xUART::UART1_IRQHandler()
 	{
@@ -178,8 +178,8 @@ namespace EmbeddedIOServices
 		CommunicationService_W80xUART1->_uart->INTS = 0xFFFFFFFF;
 		if((flags & (UART_INTS_RL | UART_INTS_RTO)) != 0)
 			CommunicationService_W80xUART1->ReceiveInt();
-		if((flags & (UART_INTS_TL | UART_INTS_TEMPT)) != 0)
-			CommunicationService_W80xUART1->FlushTransmit();
+		// if((flags & (UART_INTS_TL | UART_INTS_TEMPT)) != 0)
+		// 	CommunicationService_W80xUART1->FlushTransmit();
 	}
 	void CommunicationService_W80xUART::UART2_5_IRQHandler()
 	{
@@ -201,14 +201,14 @@ namespace EmbeddedIOServices
 		if((flags5 & (UART_INTS_RL | UART_INTS_RTO)) != 0)
 			CommunicationService_W80xUART5->ReceiveInt();
 
-		if((flags2 & (UART_INTS_TL | UART_INTS_TEMPT)) != 0)
-			CommunicationService_W80xUART2->FlushTransmit();
-		if((flags3 & (UART_INTS_TL | UART_INTS_TEMPT)) != 0)
-			CommunicationService_W80xUART3->FlushTransmit();
-		if((flags4 & (UART_INTS_TL | UART_INTS_TEMPT)) != 0)
-			CommunicationService_W80xUART4->FlushTransmit();
-		if((flags5 & (UART_INTS_TL | UART_INTS_TEMPT)) != 0)
-			CommunicationService_W80xUART5->FlushTransmit();
+		// if((flags2 & (UART_INTS_TL | UART_INTS_TEMPT)) != 0)
+		// 	CommunicationService_W80xUART2->FlushTransmit();
+		// if((flags3 & (UART_INTS_TL | UART_INTS_TEMPT)) != 0)
+		// 	CommunicationService_W80xUART3->FlushTransmit();
+		// if((flags4 & (UART_INTS_TL | UART_INTS_TEMPT)) != 0)
+		// 	CommunicationService_W80xUART4->FlushTransmit();
+		// if((flags5 & (UART_INTS_TL | UART_INTS_TEMPT)) != 0)
+		// 	CommunicationService_W80xUART5->FlushTransmit();
 	}
 }
 
