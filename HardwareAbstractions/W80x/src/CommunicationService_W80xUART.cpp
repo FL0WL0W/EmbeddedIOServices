@@ -126,12 +126,31 @@ namespace EmbeddedIOServices
 
 		return ret;
 	}
-	void CommunicationService_W80xUART::ReceiveInt()
+	void CommunicationService_W80xUART::Interrupt()
 	{
-		while((CommunicationService_W80xUART0->_uart->FIFOS & UART_FIFOS_RFC) > 0)
+		//clear all flags that we don't care about
+		_uart->INTS = ~(UART_INTS_RL | UART_INTS_RTO | UART_INTS_TL | UART_INTS_TEMPT);
+		const bool receiveFlagsSet = (_uart->INTS & (UART_INTS_RL | UART_INTS_RTO)) != 0;
+		const bool transmitFlagsSet = (_uart->INTS & (UART_INTS_TL | UART_INTS_TEMPT)) != 0;
+		const bool transmitInterruptEnabled = !((_uart->INTM & UART_INTM_TL) || (_uart->INTM & UART_INTM_TEMPT));
+		//receive interrupt
+		if(receiveFlagsSet)
 		{
-			const uint8_t b = _uart->RDW;
-			_rxFifo.Write(&b, 1);
+			//clear receive flags
+			_uart->INTS = (UART_INTS_RL | UART_INTS_RTO);
+			//receive all bytes from hardware fifo and put them in software fifo
+			while((_uart->FIFOS & UART_FIFOS_RFC) > 0)
+			{
+				const uint8_t b = _uart->RDW;
+				_rxFifo.Write(&b, 1);
+			}
+		}
+		//transmit interrupt
+		if(transmitFlagsSet && transmitInterruptEnabled)
+		{
+			//clear transmit flags
+			_uart->INTS = (UART_INTS_TL | UART_INTS_TEMPT);
+			FlushTransmit();
 		}
 	}
 	void CommunicationService_W80xUART::Send(const void *data, size_t length)
@@ -150,12 +169,15 @@ namespace EmbeddedIOServices
 	}
 	void CommunicationService_W80xUART::FlushTransmit()
 	{
+		//disable interrupt
 		_uart->INTM |= (UART_INTM_TL | UART_INTM_TEMPT);
+		//put all bytes from software fifo into hardware fifo
 		while(_txFifo.Length() > 0)
 		{
+			//if the transmit fifo is full, let the interrupt pick this back up when it is empty or below the limit
 			if((_uart->FIFOS & UART_FIFOS_TFC) >= UART_FIFO_FULL)
 			{
-				// _uart->INTM &= ~(UART_INTM_TL | UART_INTM_TEMPT);
+				_uart->INTM &= ~(UART_INTM_TL | UART_INTM_TEMPT);
 				return;
 			}
 			uint8_t b;
@@ -165,64 +187,36 @@ namespace EmbeddedIOServices
 	}
 	void CommunicationService_W80xUART::UART0_IRQHandler()
 	{
-		const uint32_t flags = CommunicationService_W80xUART0->_uart->INTS;
-		CommunicationService_W80xUART0->_uart->INTS = 0xFFFFFFFF;
-		if((flags & (UART_INTS_RL | UART_INTS_RTO)) != 0)
-			CommunicationService_W80xUART0->ReceiveInt();
-		// if((flags & (UART_INTS_TL | UART_INTS_TEMPT)) != 0)
-		// 	CommunicationService_W80xUART0->FlushTransmit();
+		CommunicationService_W80xUART0->Interrupt();
 	}
 	void CommunicationService_W80xUART::UART1_IRQHandler()
 	{
-		const uint32_t flags = CommunicationService_W80xUART1->_uart->INTS;
-		CommunicationService_W80xUART1->_uart->INTS = 0xFFFFFFFF;
-		if((flags & (UART_INTS_RL | UART_INTS_RTO)) != 0)
-			CommunicationService_W80xUART1->ReceiveInt();
-		// if((flags & (UART_INTS_TL | UART_INTS_TEMPT)) != 0)
-		// 	CommunicationService_W80xUART1->FlushTransmit();
+		CommunicationService_W80xUART1->Interrupt();
 	}
 	void CommunicationService_W80xUART::UART2_5_IRQHandler()
 	{
-		const uint32_t flags2 = CommunicationService_W80xUART2->_uart->INTS;
-		CommunicationService_W80xUART2->_uart->INTS = 0xFFFFFFFF;
-		const uint32_t flags3 = CommunicationService_W80xUART3->_uart->INTS;
-		CommunicationService_W80xUART3->_uart->INTS = 0xFFFFFFFF;
-		const uint32_t flags4 = CommunicationService_W80xUART4->_uart->INTS;
-		CommunicationService_W80xUART4->_uart->INTS = 0xFFFFFFFF;
-		const uint32_t flags5 = CommunicationService_W80xUART5->_uart->INTS;
-		CommunicationService_W80xUART5->_uart->INTS = 0xFFFFFFFF;
-
-		if((flags2 & (UART_INTS_RL | UART_INTS_RTO)) != 0)
-			CommunicationService_W80xUART2->ReceiveInt();
-		if((flags3 & (UART_INTS_RL | UART_INTS_RTO)) != 0)
-			CommunicationService_W80xUART3->ReceiveInt();
-		if((flags4 & (UART_INTS_RL | UART_INTS_RTO)) != 0)
-			CommunicationService_W80xUART4->ReceiveInt();
-		if((flags5 & (UART_INTS_RL | UART_INTS_RTO)) != 0)
-			CommunicationService_W80xUART5->ReceiveInt();
-
-		// if((flags2 & (UART_INTS_TL | UART_INTS_TEMPT)) != 0)
-		// 	CommunicationService_W80xUART2->FlushTransmit();
-		// if((flags3 & (UART_INTS_TL | UART_INTS_TEMPT)) != 0)
-		// 	CommunicationService_W80xUART3->FlushTransmit();
-		// if((flags4 & (UART_INTS_TL | UART_INTS_TEMPT)) != 0)
-		// 	CommunicationService_W80xUART4->FlushTransmit();
-		// if((flags5 & (UART_INTS_TL | UART_INTS_TEMPT)) != 0)
-		// 	CommunicationService_W80xUART5->FlushTransmit();
+		if(CommunicationService_W80xUART2->_uart->INTS != 0)
+			CommunicationService_W80xUART2->Interrupt();
+		if(CommunicationService_W80xUART3->_uart->INTS != 0)
+			CommunicationService_W80xUART3->Interrupt();
+		if(CommunicationService_W80xUART4->_uart->INTS != 0)
+			CommunicationService_W80xUART4->Interrupt();
+		if(CommunicationService_W80xUART5->_uart->INTS != 0)
+			CommunicationService_W80xUART5->Interrupt();
 	}
 }
 
 using namespace EmbeddedIOServices;
 
-extern "C" __attribute__((isr)) void UART0_IRQHandler(void)
+extern "C" __attribute__((section(".interrupt")))  __attribute__((isr)) void UART0_IRQHandler(void)
 {
     CommunicationService_W80xUART::UART0_IRQHandler();
 }
-extern "C" __attribute__((isr)) void UART1_IRQHandler(void)
+extern "C" __attribute__((section(".interrupt")))  __attribute__((isr)) void UART1_IRQHandler(void)
 {
     CommunicationService_W80xUART::UART1_IRQHandler();
 }
-extern "C" __attribute__((isr)) void UART2_5_IRQHandler(void)
+extern "C" __attribute__((section(".interrupt")))  __attribute__((isr)) void UART2_5_IRQHandler(void)
 {
     CommunicationService_W80xUART::UART2_5_IRQHandler();
 }

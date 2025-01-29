@@ -26,13 +26,20 @@ namespace EmbeddedIOServices
 {
 	class CommunicationService_W80xUART : public ICommunicationService
 	{
+	private:
+		static CommunicationService_W80xUART *CommunicationService_W80xUART0;
+		static CommunicationService_W80xUART *CommunicationService_W80xUART1;
+		static CommunicationService_W80xUART *CommunicationService_W80xUART2;
+		static CommunicationService_W80xUART *CommunicationService_W80xUART3;
+		static CommunicationService_W80xUART *CommunicationService_W80xUART4;
+		static CommunicationService_W80xUART *CommunicationService_W80xUART5;
 	protected:
 		Fifo _rxFifo;
 		Fifo _txFifo;
 		USART_TypeDef *_uart;
 		CommunicationService_W80xUART(size_t rxFifoSize, size_t txFifoSize);
+		void Interrupt();
 	public:
-		void ReceiveInt();
         void Send(const void *data, size_t length);
 		void FlushTransmit();
 		void FlushReceive();
@@ -50,12 +57,6 @@ namespace EmbeddedIOServices
 			uint32_t stopBits, 
 			uint32_t parity
 		);
-		static CommunicationService_W80xUART *CommunicationService_W80xUART0;
-		static CommunicationService_W80xUART *CommunicationService_W80xUART1;
-		static CommunicationService_W80xUART *CommunicationService_W80xUART2;
-		static CommunicationService_W80xUART *CommunicationService_W80xUART3;
-		static CommunicationService_W80xUART *CommunicationService_W80xUART4;
-		static CommunicationService_W80xUART *CommunicationService_W80xUART5;
 	};
 }
 #endif
