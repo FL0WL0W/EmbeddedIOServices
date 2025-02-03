@@ -13,7 +13,7 @@ namespace EmbeddedIOServices
 	callback_t TimerService_W80x::Timer4CallBack = 0;
 	callback_t TimerService_W80x::Timer5CallBack = 0;
 
-	TimerService_W80x::TimerService_W80x(uint8_t tickTimer, uint8_t interruptTimer) : _tick(&TIM->TIM0_CNT + tickTimer), _interruptTimer(interruptTimer), _timerEn(1 << (interruptTimer * 5 + 2)), _interruptPrd(&TIM->TIM0_PRD + interruptTimer)
+	TimerService_W80x::TimerService_W80x(uint8_t tickTimer, uint8_t interruptTimer, tick_t ticksPerSecond) : _interruptTimer(interruptTimer), _tick(&TIM->TIM0_CNT + tickTimer), _interruptPrd(&TIM->TIM0_PRD + interruptTimer), _timerEn(1 << (interruptTimer * 5 + 2))
 	{
 		//Enable Timer Clock
     	RCC->CLK_EN |= RCC_CLK_EN_TIMER;
@@ -22,8 +22,7 @@ namespace EmbeddedIOServices
 		//this gives us microsecond resolution which is the expected standard.
 		//for more resolution we could probably just set this value to 0
 		const uint8_t apbclk = (480 / (0xFF & RCC->CLK_DIV)) / (0xFF & (RCC->CLK_DIV >> 16));
-		TIM->TMR_CONFIG = apbclk-1;//this sets the tickrate to 1mhz
-		// TIM->TMR_CONFIG = 0;//this sets the tickrate to 40mhz. However this does it for all timers
+		TIM->TMR_CONFIG = (((apbclk * 1000000) + (ticksPerSecond / 2)) / ticksPerSecond) - 1;
 		_ticksPerSecond = (apbclk * 1000000) / (TIM->TMR_CONFIG+1);
 
 		//reload at max uint32
@@ -106,10 +105,11 @@ namespace EmbeddedIOServices
 	{
 		//disable timer
 		TIM->CR &= ~_timerEn;
-		uint32_t res = tick - *_tick;
+		const uint32_t res = tick - *_tick;
 		if(res & 0x80000000)
-			res = 0;
-		*_interruptPrd = res;
+			*_interruptPrd = 0;
+		else
+			*_interruptPrd = res;
 		//enable timer
 		TIM->CR |= _timerEn;
 	}

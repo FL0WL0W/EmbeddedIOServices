@@ -9,10 +9,9 @@ namespace EmbeddedIOServices
 	{
 	protected:
 		const uint8_t _interruptTimer;
-		const uint32_t _timerEn;
-		volatile uint32_t * const _interruptPrd;
 		const volatile uint32_t * const _tick;
-		volatile bool _waitForInterrupt;
+		volatile uint32_t * const _interruptPrd;
+		const uint32_t _timerEn;
 		tick_t _ticksPerSecond;
 		void ScheduleCallBack(const tick_t tick);
 	public:
@@ -21,8 +20,9 @@ namespace EmbeddedIOServices
 		 * The other will be used to actually schedule the interrupt.
 		 * @param tickTimer tick reference timer index
 		 * @param interruptTimer interrupt timer index
+		 * @param ticksPerSecond target TicksPerSecond
 		 */
-		TimerService_W80x(uint8_t tickTimer, uint8_t interruptTimer);
+		TimerService_W80x(uint8_t tickTimer, uint8_t interruptTimer, tick_t ticksPerSecond);
 		~TimerService_W80x();
 		tick_t GetTick();
 		tick_t GetTicksPerSecond();
