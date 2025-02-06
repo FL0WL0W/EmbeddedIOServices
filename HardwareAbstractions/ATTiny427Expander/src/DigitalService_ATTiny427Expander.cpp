@@ -104,6 +104,10 @@ namespace EmbeddedIOServices
 					return false;
 				_registers->EVSYS_CHANNEL[channel & 0x7] = 0x4 | (channel >> 3);
 				_registers->PORTMUX_EVSYSROUTEA &= ~0x1;
+				if(inverted)
+					_registers->PORTA_PINCTRL[2] |= 0x80;
+				else 
+					_registers->PORTA_PINCTRL[2] &= ~0x80;
 				_registers->EVSYS_EVOUTA = (channel & 0x7) + 1;
 				return true;
 			}
@@ -113,7 +117,7 @@ namespace EmbeddedIOServices
 					return false;
 				DeinitPassthrough(12);
 				_registers->PORTMUX_CCLROUTEA &= ~0x1;
-				_registers->CCL_LUT0TRUTH = 0xFE;
+				_registers->CCL_LUT0TRUTH = inverted? 0x1 : 0xFE;
 				switch(pinIn)
 				{
 					case 0: 
@@ -170,7 +174,7 @@ namespace EmbeddedIOServices
 
 				DeinitPassthrough(20);
 				_registers->PORTMUX_CCLROUTEA |= 0x8;
-				_registers->CCL_LUT3TRUTH = 0xFE;
+				_registers->CCL_LUT3TRUTH = inverted? 0x1 : 0xFE;
 				switch(pinIn)
 				{
 					case 16: 
@@ -208,7 +212,7 @@ namespace EmbeddedIOServices
 					if(_registers->PORTMUX_CCLROUTEA & 0x2 && _registers->CCL_LUT1CTRLA != 0)
 						DeinitPassthrough(17);
 					_registers->PORTMUX_CCLROUTEA |= 0x2;
-					_registers->CCL_LUT1TRUTH = 0xFE;
+					_registers->CCL_LUT1TRUTH = inverted? 0x1 : 0xFE;
 					switch(pinIn)
 					{
 						case 19: 
@@ -245,6 +249,10 @@ namespace EmbeddedIOServices
 					return false;
 				_registers->EVSYS_CHANNEL[channel & 0x7] = 0x4 | (channel >> 3);
 				_registers->PORTMUX_EVSYSROUTEA |= 0x1;
+				if(inverted)
+					_registers->PORTA_PINCTRL[7] |= 0x80;
+				else 
+					_registers->PORTA_PINCTRL[7] &= ~0x80;
 				_registers->EVSYS_EVOUTA = (channel & 0x7) + 1;
 				return true;
 			}
@@ -257,6 +265,10 @@ namespace EmbeddedIOServices
 					return false;
 				_registers->EVSYS_CHANNEL[channel & 0x7] = 0x4 | (channel >> 3);
 				_registers->PORTMUX_EVSYSROUTEA &= ~0x2;
+				if(inverted)
+					_registers->PORTB_PINCTRL[2] |= 0x80;
+				else 
+					_registers->PORTB_PINCTRL[2] &= ~0x80;
 				_registers->EVSYS_EVOUTB = (channel & 0x7) + 1;
 				return true;
 			}
@@ -264,7 +276,7 @@ namespace EmbeddedIOServices
 				//LUT2
 				DeinitPassthrough(14);
 				_registers->PORTMUX_CCLROUTEA &= ~0x4;
-				_registers->CCL_LUT2TRUTH = 0xFE;
+				_registers->CCL_LUT2TRUTH = inverted? 0x1 : 0xFE;
 				switch(pinIn)
 				{
 					case 8: 
@@ -297,7 +309,7 @@ namespace EmbeddedIOServices
 				//LUT0'
 				DeinitPassthrough(4);
 				_registers->PORTMUX_CCLROUTEA |= 0x1;
-				_registers->CCL_LUT0TRUTH = 0xFE;
+				_registers->CCL_LUT0TRUTH = inverted? 0x1 : 0xFE;
 				switch(pinIn)
 				{
 					case 0: 
@@ -330,7 +342,7 @@ namespace EmbeddedIOServices
 				//LUT2'
 				DeinitPassthrough(11);
 				_registers->PORTMUX_CCLROUTEA |= 0x4;
-				_registers->CCL_LUT2TRUTH = 0xFE;
+				_registers->CCL_LUT2TRUTH = inverted? 0x1 : 0xFE;
 				switch(pinIn)
 				{
 					case 8: 
@@ -368,6 +380,10 @@ namespace EmbeddedIOServices
 					return false;
 				_registers->EVSYS_CHANNEL[channel & 0x7] = 0x4 | (channel >> 3);
 				_registers->PORTMUX_EVSYSROUTEA |= 0x2;
+				if(inverted)
+					_registers->PORTB_PINCTRL[7] |= 0x80;
+				else 
+					_registers->PORTB_PINCTRL[7] &= ~0x80;
 				_registers->EVSYS_EVOUTB = (channel & 0x7) + 1;
 				return true;
 			}
@@ -376,7 +392,7 @@ namespace EmbeddedIOServices
 				if(_registers->Comm == SPIAlternate || _registers->Comm == UART1Alternate)
 					return false;
 				_registers->PORTMUX_CCLROUTEA |= 0x2;
-				_registers->CCL_LUT1TRUTH = 0xFE;
+				_registers->CCL_LUT1TRUTH = inverted? 0x1 : 0xFE;
 				switch(pinIn)
 				{
 					case 19: 
@@ -414,6 +430,10 @@ namespace EmbeddedIOServices
 				if(channel == -1)
 					return false;
 				_registers->EVSYS_CHANNEL[channel & 0x7] = 0x4 | (channel >> 3);
+				if(inverted)
+					_registers->PORTC_PINCTRL[2] |= 0x80;
+				else 
+					_registers->PORTC_PINCTRL[2] &= ~0x80;
 				_registers->EVSYS_EVOUTC = (channel & 0x7) + 1;
 				return true;
 			}
@@ -422,7 +442,7 @@ namespace EmbeddedIOServices
 				if(_registers->PORTMUX_CCLROUTEA & 0x8 && _registers->CCL_LUT3CTRLA != 0)
 					DeinitPassthrough(5);
 				_registers->PORTMUX_CCLROUTEA &= ~0x8;
-				_registers->CCL_LUT3TRUTH = 0xFE;
+				_registers->CCL_LUT3TRUTH = inverted? 0x1 : 0xFE;
 				switch(pinIn)
 				{
 					case 16: 
@@ -467,6 +487,7 @@ namespace EmbeddedIOServices
 				if(_registers->EVSYS_EVOUTA > 0)
 				{
 					_registers->EVSYS_CHANNEL[_registers->EVSYS_EVOUTA - 1] = 0;
+					_registers->PORTA_PINCTRL[2] &= ~0x80;
 					_registers->EVSYS_EVOUTA = 0;
 				}
 				return;
@@ -514,6 +535,7 @@ namespace EmbeddedIOServices
 				{
 					_registers->EVSYS_CHANNEL[_registers->EVSYS_EVOUTA - 1] = 0;
 					_registers->EVSYS_EVOUTA = 0;
+					_registers->PORTA_PINCTRL[7] &= ~0x80;
 				}
 				return;
 			case 10:
@@ -524,6 +546,7 @@ namespace EmbeddedIOServices
 				{
 					_registers->EVSYS_CHANNEL[_registers->EVSYS_EVOUTB - 1] = 0;
 					_registers->EVSYS_EVOUTB = 0;
+					_registers->PORTB_PINCTRL[2] &= ~0x80;
 				}
 				return;
 			case 11:
@@ -567,6 +590,7 @@ namespace EmbeddedIOServices
 				{
 					_registers->EVSYS_CHANNEL[_registers->EVSYS_EVOUTB - 1] = 0;
 					_registers->EVSYS_EVOUTB = 0;
+					_registers->PORTB_PINCTRL[7] &= ~0x80;
 				}
 				return;
 			case 17:
@@ -588,6 +612,7 @@ namespace EmbeddedIOServices
 				{
 					_registers->EVSYS_CHANNEL[_registers->EVSYS_EVOUTC - 1] = 0;
 					_registers->EVSYS_EVOUTC = 0;
+					_registers->PORTC_PINCTRL[2] &= ~0x80;
 				}
 				return;
 			case 20:

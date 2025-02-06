@@ -22,15 +22,19 @@ namespace EmbeddedIOServices
 		ATTiny427Expander_Comm Comm;
 
 		//registers
-		uint8_t PORTA_DIR = 0b00000100;
-		uint8_t PORTA_OUT = 0b00000000;
-		uint8_t PORTA_IN = 0b00000000;
-		uint8_t PORTB_DIR = 0b00000000;
-		uint8_t PORTB_OUT = 0b00000000;
-		uint8_t PORTB_IN = 0b00000000;
-		uint8_t PORTC_DIR = 0b00000000;
-		uint8_t PORTC_OUT = 0b00000000;
-		uint8_t PORTC_IN = 0b00000000;
+		uint8_t PORTA_DIR = 0;
+		uint8_t PORTA_OUT = 0;
+		uint8_t PORTA_IN = 0;
+		uint8_t PORTB_DIR = 0;
+		uint8_t PORTB_OUT = 0;
+		uint8_t PORTB_IN = 0;
+		uint8_t PORTC_DIR = 0;
+		uint8_t PORTC_OUT = 0;
+		uint8_t PORTC_IN = 0;
+
+		uint8_t PORTA_PINCTRL[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+		uint8_t PORTB_PINCTRL[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+		uint8_t PORTC_PINCTRL[6] = { 0, 0, 0, 0, 0, 0 };
 		union
 		{
 			uint16_t AnalogEnable = 0;

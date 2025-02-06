@@ -219,6 +219,31 @@ namespace EmbeddedIOServices
         const bool GPIOR0_changed = transmitRegisters.GPIOR0 != _previousRegisters.GPIOR0 || _first;
         const bool GPIOR1_changed = transmitRegisters.GPIOR1 != _previousRegisters.GPIOR1 || _first;
         const bool GPIOR2_changed = transmitRegisters.GPIOR2 != _previousRegisters.GPIOR2 || _first;
+        const bool PORTA_PINCTRL_changed =  transmitRegisters.PORTA_PINCTRL[0] != _previousRegisters.PORTA_PINCTRL[0] ||
+                                            transmitRegisters.PORTA_PINCTRL[1] != _previousRegisters.PORTA_PINCTRL[1] ||
+                                            transmitRegisters.PORTA_PINCTRL[2] != _previousRegisters.PORTA_PINCTRL[2] ||
+                                            transmitRegisters.PORTA_PINCTRL[3] != _previousRegisters.PORTA_PINCTRL[3] ||
+                                            transmitRegisters.PORTA_PINCTRL[4] != _previousRegisters.PORTA_PINCTRL[4] ||
+                                            transmitRegisters.PORTA_PINCTRL[5] != _previousRegisters.PORTA_PINCTRL[5] ||
+                                            transmitRegisters.PORTA_PINCTRL[6] != _previousRegisters.PORTA_PINCTRL[6] ||
+                                            transmitRegisters.PORTA_PINCTRL[7] != _previousRegisters.PORTA_PINCTRL[7] ||
+                                            _first;
+        const bool PORTB_PINCTRL_changed =  transmitRegisters.PORTB_PINCTRL[0] != _previousRegisters.PORTB_PINCTRL[0] ||
+                                            transmitRegisters.PORTB_PINCTRL[1] != _previousRegisters.PORTB_PINCTRL[1] ||
+                                            transmitRegisters.PORTB_PINCTRL[2] != _previousRegisters.PORTB_PINCTRL[2] ||
+                                            transmitRegisters.PORTB_PINCTRL[3] != _previousRegisters.PORTB_PINCTRL[3] ||
+                                            transmitRegisters.PORTB_PINCTRL[4] != _previousRegisters.PORTB_PINCTRL[4] ||
+                                            transmitRegisters.PORTB_PINCTRL[5] != _previousRegisters.PORTB_PINCTRL[5] ||
+                                            transmitRegisters.PORTB_PINCTRL[6] != _previousRegisters.PORTB_PINCTRL[6] ||
+                                            transmitRegisters.PORTB_PINCTRL[7] != _previousRegisters.PORTB_PINCTRL[7] ||
+                                            _first;
+        const bool PORTC_PINCTRL_changed =  transmitRegisters.PORTC_PINCTRL[0] != _previousRegisters.PORTC_PINCTRL[0] ||
+                                            transmitRegisters.PORTC_PINCTRL[1] != _previousRegisters.PORTC_PINCTRL[1] ||
+                                            transmitRegisters.PORTC_PINCTRL[2] != _previousRegisters.PORTC_PINCTRL[2] ||
+                                            transmitRegisters.PORTC_PINCTRL[3] != _previousRegisters.PORTC_PINCTRL[3] ||
+                                            transmitRegisters.PORTC_PINCTRL[4] != _previousRegisters.PORTC_PINCTRL[4] ||
+                                            transmitRegisters.PORTC_PINCTRL[5] != _previousRegisters.PORTC_PINCTRL[5] ||
+                                            _first;
         const bool PORTC_OUT_changed = transmitRegisters.PORTC_OUT != _previousRegisters.PORTC_OUT || _first;
         const bool PORTB_OUT_changed = transmitRegisters.PORTB_OUT != _previousRegisters.PORTB_OUT || _first;
         const bool PORTA_OUT_changed = transmitRegisters.PORTA_OUT != _previousRegisters.PORTA_OUT || _first;
@@ -436,6 +461,21 @@ namespace EmbeddedIOServices
                     state++;
                     break;
                 case 3:
+                    if(PORTC_PINCTRL_changed) // this probably needs to be conditional set before DIR change to output, and after DIR change to input. same with EVSYS output change
+                    {
+                        data[dataIndex++] = 0x86; //write 6 bytes to 16bit address
+                        data[dataIndex++] = 0x04; //address high
+                        data[dataIndex++] = 0x50; //address low
+                        data[dataIndex++] = transmitRegisters.PORTC_PINCTRL[0];
+                        data[dataIndex++] = transmitRegisters.PORTC_PINCTRL[1];
+                        data[dataIndex++] = transmitRegisters.PORTC_PINCTRL[2];
+                        data[dataIndex++] = transmitRegisters.PORTC_PINCTRL[3];
+                        data[dataIndex++] = transmitRegisters.PORTC_PINCTRL[4];
+                        data[dataIndex++] = transmitRegisters.PORTC_PINCTRL[5];
+                    }
+                    state++;
+                    break;
+                case 4:
                     if(PORTB_OUT_changed)
                     {
                         data[dataIndex++] = PORTC_DIR_changed? 0xE3 : 0xE1; //write 1 or 3 bytes to 8 bit address with 0 as high address byte
@@ -449,7 +489,24 @@ namespace EmbeddedIOServices
                     }
                     state++;
                     break;
-                case 4:
+                case 5:
+                    if(PORTB_PINCTRL_changed) // this probably needs to be conditional set before DIR change to output, and after DIR change to input. same with EVSYS output change
+                    {
+                        data[dataIndex++] = 0x88; //write 8 bytes to 16bit address
+                        data[dataIndex++] = 0x04; //address high
+                        data[dataIndex++] = 0x30; //address low
+                        data[dataIndex++] = transmitRegisters.PORTB_PINCTRL[0];
+                        data[dataIndex++] = transmitRegisters.PORTB_PINCTRL[1];
+                        data[dataIndex++] = transmitRegisters.PORTB_PINCTRL[2];
+                        data[dataIndex++] = transmitRegisters.PORTB_PINCTRL[3];
+                        data[dataIndex++] = transmitRegisters.PORTB_PINCTRL[4];
+                        data[dataIndex++] = transmitRegisters.PORTB_PINCTRL[5];
+                        data[dataIndex++] = transmitRegisters.PORTB_PINCTRL[6];
+                        data[dataIndex++] = transmitRegisters.PORTB_PINCTRL[7];
+                    }
+                    state++;
+                    break;
+                case 6:
                     if(PORTA_OUT_changed)
                     {
                         data[dataIndex++] = PORTB_DIR_changed? 0xE3 : 0xE1; //write 1 or 3 bytes to 8 bit address with 0 as high address byte
@@ -463,17 +520,33 @@ namespace EmbeddedIOServices
                     }
                     state++;
                     break;
-                case 5:
+                case 7:
+                    if(PORTA_PINCTRL_changed) // this probably needs to be conditional set before DIR change to output, and after DIR change to input. same with EVSYS output change
+                    {
+                        data[dataIndex++] = 0x88; //write 8 bytes to 16bit address
+                        data[dataIndex++] = 0x04; //address high
+                        data[dataIndex++] = 0x10; //address low
+                        data[dataIndex++] = transmitRegisters.PORTA_PINCTRL[0];
+                        data[dataIndex++] = transmitRegisters.PORTA_PINCTRL[1];
+                        data[dataIndex++] = transmitRegisters.PORTA_PINCTRL[2];
+                        data[dataIndex++] = transmitRegisters.PORTA_PINCTRL[3];
+                        data[dataIndex++] = transmitRegisters.PORTA_PINCTRL[4];
+                        data[dataIndex++] = transmitRegisters.PORTA_PINCTRL[5];
+                        data[dataIndex++] = transmitRegisters.PORTA_PINCTRL[6];
+                        data[dataIndex++] = transmitRegisters.PORTA_PINCTRL[7];
+                    }
+                    state++;
+                    break;
+                case 8:
                     if(PORTC_DIR_changed && !PORTB_OUT_changed)
                     {
                         data[dataIndex++] = 0xE1; //write 1 byte to 8 bit address with 0 as high address byte
                         data[dataIndex++] = 0x08; //address
                         data[dataIndex++] = transmitRegisters.PORTC_DIR; //DIR
-
                     }
                     state++;
                     break;
-                case 6:
+                case 9:
                     if(PORTB_DIR_changed && !PORTA_OUT_changed)
                     {
                         data[dataIndex++] = 0xE1; //write 1 byte to 8 bit address with 0 as high address byte
@@ -482,7 +555,7 @@ namespace EmbeddedIOServices
                     }
                     state++;
                     break;
-                case 7:
+                case 10:
                     if(PORTA_DIR_changed)
                     {
                         data[dataIndex++] = 0xE1; //write 1 byte to 8 bit address with 0 as high address byte
@@ -492,7 +565,7 @@ namespace EmbeddedIOServices
                     readGPIO = true;
                     state++;
                     break;
-                case 8:
+                case 11:
                     if(AC_CTRLA_changed)
                     {
                         data[dataIndex++] = 0x81 + (AC_MUXCTRLA_changed && AC_DACREF_changed? 4 : (AC_MUXCTRLA_changed? 2 : 0)); //write 16bit address
@@ -537,7 +610,7 @@ namespace EmbeddedIOServices
                     }
                     state++;
                     break;
-                case 9:
+                case 12:
                     if(PORTMUX_EVSYSROUTEA_changed)
                     {
                         if(PORTMUX_CCLROUTEA_changed)
@@ -565,7 +638,7 @@ namespace EmbeddedIOServices
                     }
                     state++;
                     break;
-                case 10:
+                case 13:
                     if(EVSYS_CHANNEL_changed)
                     {
                         data[dataIndex++] = 0x86; //write 16bit address
@@ -580,7 +653,7 @@ namespace EmbeddedIOServices
                     }
                     state++;
                     break;
-                case 11:
+                case 14:
                     if(EVSYS_USER_changed)
                     {
                         data[dataIndex++] = 0x87; //write 16bit address
@@ -601,7 +674,7 @@ namespace EmbeddedIOServices
                     }
                     state++;
                     break;
-                case 12:
+                case 15:
                     if(EVSYS_TCB0_changed)
                     {
                         if(EVSYS_TCB1_changed)
@@ -630,7 +703,7 @@ namespace EmbeddedIOServices
                     }
                     state++;
                     break;
-                case 13:
+                case 16:
                     if(CCL_CTRLA_changed)
                     {
                         data[dataIndex++] = 0x81;
@@ -640,7 +713,7 @@ namespace EmbeddedIOServices
                     }
                     state++;
                     break;
-                case 14:
+                case 17:
                     if(CCL_LUT0_changed)
                     {
                         data[dataIndex++] = 0x83;
@@ -656,7 +729,7 @@ namespace EmbeddedIOServices
                     }
                     state++;
                     break;
-                case 15:
+                case 18:
                     if(CCL_LUT1_changed)
                     {
                         data[dataIndex++] = 0x83;
@@ -672,7 +745,7 @@ namespace EmbeddedIOServices
                     }
                     state++;
                     break;
-                case 16:
+                case 19:
                     if(CCL_LUT2_changed)
                     {
                         data[dataIndex++] = 0x83;
@@ -688,7 +761,7 @@ namespace EmbeddedIOServices
                     }
                     state++;
                     break;
-                case 17:
+                case 20:
                     if(CCL_LUT3_changed)
                     {
                         data[dataIndex++] = 0x83;
@@ -704,7 +777,7 @@ namespace EmbeddedIOServices
                     }
                     state++;
                     break;
-                case 18:
+                case 21:
                     if(TCA_PERBUF_changed)
                     {
                         data[dataIndex++] = 0x82 + 
@@ -786,7 +859,7 @@ namespace EmbeddedIOServices
                     }
                     state++;
                     break;
-                case 19:
+                case 22:
                 {
                     bool highset = false;
                     if(TCA_CTRLC_changed)
