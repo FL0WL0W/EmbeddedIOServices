@@ -58,21 +58,23 @@ namespace EmbeddedIOServices
 		uint8_t AC_DACREF = 0xFF;
 		uint8_t PORTMUX_EVSYSROUTEA = 0;
 		uint8_t PORTMUX_CCLROUTEA = 0;
-		uint8_t EVSYS_CHANNEL0 = 0;
-		uint8_t EVSYS_CHANNEL1 = 0;
-		uint8_t EVSYS_CHANNEL2 = 0;
-		uint8_t EVSYS_CHANNEL3 = 0;
-		uint8_t EVSYS_CHANNEL4 = 0;
-		uint8_t EVSYS_CHANNEL5 = 0;
-		uint8_t EVSYS_CCL_LUT0A = 0;
-		uint8_t EVSYS_CCL_LUT1A = 0;
-		uint8_t EVSYS_CCL_LUT2A = 0;
-		uint8_t EVSYS_CCL_LUT3A = 0;
-		uint8_t EVSYS_EVOUTA = 0;
-		uint8_t EVSYS_EVOUTB = 0;
-		uint8_t EVSYS_EVOUTC = 0;
-		uint8_t EVSYS_TCB0_CAPT = 0;
-		uint8_t EVSYS_TCB1_CAPT = 0;
+		uint8_t EVSYS_CHANNEL[6] = { 0, 0, 0, 0, 0, 0 };
+		union
+		{
+			uint8_t EVSYS_CHANNELUSER[9];
+			struct
+			{
+				uint8_t EVSYS_CCL_LUT0A = 0;
+				uint8_t EVSYS_CCL_LUT1A = 0;
+				uint8_t EVSYS_CCL_LUT2A = 0;
+				uint8_t EVSYS_CCL_LUT3A = 0;
+				uint8_t EVSYS_EVOUTA = 0;
+				uint8_t EVSYS_EVOUTB = 0;
+				uint8_t EVSYS_EVOUTC = 0;
+				uint8_t EVSYS_TCB0_CAPT = 0;
+				uint8_t EVSYS_TCB1_CAPT = 0;
+			};
+		};
 
 		uint8_t CCL_CTRLA = 0;
 		uint8_t CCL_LUT0CTRLA = 0;
@@ -164,6 +166,132 @@ namespace EmbeddedIOServices
 
 		ATTiny427Expander_Registers() : ATTiny427Expander_Registers(UART0)
 		{
+		}
+
+		void ReassignChannel(uint8_t from, uint8_t to)
+		{
+			//TODO reassign channels
+			EVSYS_CHANNEL[to & 0x7] = 0x4 | (to >> 3);
+			for(uint8_t i = 0; i < sizeof(EVSYS_CHANNELUSER); i++)
+			{
+				if(EVSYS_CHANNELUSER[i] == from)
+					EVSYS_CHANNELUSER[i] = (to & 0x7) + 1;
+			}
+			EVSYS_CHANNEL[from] = 0;
+		}
+		int8_t GetEVSYSChannel(uint8_t inputPin, int8_t depth = 0)
+		{
+			if(inputPin < 8)
+			{
+				if(EVSYS_CHANNEL[0] == 0 || EVSYS_CHANNEL[0] == ((inputPin & 0x7) | 0x40))
+					return ((inputPin & 0x7) << 3) | 0;
+				if(EVSYS_CHANNEL[1] == 0 || EVSYS_CHANNEL[1] == ((inputPin & 0x7) | 0x40))
+					return ((inputPin & 0x7) << 3) | 1;
+				if(EVSYS_CHANNEL[2] == 0 || EVSYS_CHANNEL[2] == ((inputPin & 0x7) | 0x48))
+					return (((inputPin & 0x7) | 0x8) << 3) | 2;
+				if(EVSYS_CHANNEL[3] == 0 || EVSYS_CHANNEL[3] == ((inputPin & 0x7) | 0x48))
+					return (((inputPin & 0x7) | 0x8) << 3) | 3;
+				if(depth > 1)
+					return -1;
+				const int8_t channel0ReassignTo = GetEVSYSChannel(EVSYS_CHANNEL[0] & 0xF, depth + 1);
+				if(channel0ReassignTo != -1)
+				{
+					ReassignChannel(0, channel0ReassignTo);
+					return GetEVSYSChannel(inputPin, depth + 1);
+				}
+				const int8_t channel1ReassignTo = GetEVSYSChannel(EVSYS_CHANNEL[1] & 0xF, depth + 1);
+				if(channel1ReassignTo != -1)
+				{
+					ReassignChannel(1, channel1ReassignTo);
+					return GetEVSYSChannel(inputPin, depth + 1);
+				}
+				const int8_t channel2ReassignTo = GetEVSYSChannel(EVSYS_CHANNEL[2] < 0x48? ((EVSYS_CHANNEL[2] & 0x7) + 16) : (EVSYS_CHANNEL[2] & 0x7), depth + 1);
+				if(channel2ReassignTo != -1)
+				{
+					ReassignChannel(2, channel2ReassignTo);
+					return GetEVSYSChannel(inputPin, depth + 1);
+				}
+				const int8_t channel3ReassignTo = GetEVSYSChannel(EVSYS_CHANNEL[3] < 0x48? ((EVSYS_CHANNEL[3] & 0x7) + 16) : (EVSYS_CHANNEL[3] & 0x7), depth + 1);
+				if(channel3ReassignTo != -1)
+				{
+					ReassignChannel(3, channel3ReassignTo);
+					return GetEVSYSChannel(inputPin, depth + 1);
+				}
+				return -1;
+			}
+			if(inputPin < 16)
+			{
+				if(EVSYS_CHANNEL[4] == 0 || EVSYS_CHANNEL[4] == ((inputPin & 0x7) | 0x40))
+					return ((inputPin & 0x7) << 3) | 4;
+				if(EVSYS_CHANNEL[5] == 0 || EVSYS_CHANNEL[5] == ((inputPin & 0x7) | 0x40))
+					return ((inputPin & 0x7) << 3) | 5;
+				if(EVSYS_CHANNEL[0] == 0 || EVSYS_CHANNEL[0] == ((inputPin & 0x7) | 0x48))
+					return (((inputPin & 0x7) + 0x8) << 3) | 0;
+				if(EVSYS_CHANNEL[1] == 0 || EVSYS_CHANNEL[1] == ((inputPin & 0x7) | 0x48))
+					return (((inputPin & 0x7) + 0x8) << 3) | 1;
+				const int8_t channel4ReassignTo = GetEVSYSChannel((EVSYS_CHANNEL[4] & 0xF) + 8, depth + 1);
+				if(channel4ReassignTo != -1)
+				{
+					ReassignChannel(4, channel4ReassignTo);
+					return GetEVSYSChannel(inputPin, depth + 1);
+				}
+				const int8_t channel5ReassignTo = GetEVSYSChannel((EVSYS_CHANNEL[5] & 0xF) + 8, depth + 1);
+				if(channel5ReassignTo != -1)
+				{
+					ReassignChannel(5, channel5ReassignTo);
+					return GetEVSYSChannel(inputPin, depth + 1);
+				}
+				const int8_t channel0ReassignTo = GetEVSYSChannel(EVSYS_CHANNEL[0] & 0xF, depth + 1);
+				if(channel0ReassignTo != -1)
+				{
+					ReassignChannel(0, channel0ReassignTo);
+					return GetEVSYSChannel(inputPin, depth + 1);
+				}
+				const int8_t channel1ReassignTo = GetEVSYSChannel(EVSYS_CHANNEL[1] & 0xF, depth + 1);
+				if(channel1ReassignTo != -1)
+				{
+					ReassignChannel(1, channel1ReassignTo);
+					return GetEVSYSChannel(inputPin, depth + 1);
+				}
+				return -1;
+			}
+			if(inputPin < 24)
+			{
+				if(EVSYS_CHANNEL[2] == 0 || EVSYS_CHANNEL[2] == ((inputPin & 0x7) | 0x40))
+					return ((inputPin & 0x7) << 3) | 2;
+				if(EVSYS_CHANNEL[3] == 0 || EVSYS_CHANNEL[3] == ((inputPin & 0x7) | 0x40))
+					return ((inputPin & 0x7) << 3) | 3;
+				if(EVSYS_CHANNEL[4] == 0 || EVSYS_CHANNEL[4] == ((inputPin & 0x7) | 0x48))
+					return (((inputPin & 0x7) + 0x8) << 3) | 4;
+				if(EVSYS_CHANNEL[5] == 0 || EVSYS_CHANNEL[5] == ((inputPin & 0x7) | 0x48))
+					return (((inputPin & 0x7) + 0x8) << 3) | 5;
+				const int8_t channel2ReassignTo = GetEVSYSChannel(EVSYS_CHANNEL[2] < 0x48? ((EVSYS_CHANNEL[2] & 0x7) + 16) : (EVSYS_CHANNEL[2] & 0x7), depth + 1);
+				if(channel2ReassignTo != -1)
+				{
+					ReassignChannel(2, channel2ReassignTo);
+					return GetEVSYSChannel(inputPin, depth + 1);
+				}
+				const int8_t channel3ReassignTo = GetEVSYSChannel(EVSYS_CHANNEL[3] < 0x48? ((EVSYS_CHANNEL[3] & 0x7) + 16) : (EVSYS_CHANNEL[3] & 0x7), depth + 1);
+				if(channel3ReassignTo != -1)
+				{
+					ReassignChannel(3, channel3ReassignTo);
+					return GetEVSYSChannel(inputPin, depth + 1);
+				}
+				const int8_t channel4ReassignTo = GetEVSYSChannel((EVSYS_CHANNEL[4] & 0xF) + 8, depth + 1);
+				if(channel4ReassignTo != -1)
+				{
+					ReassignChannel(4, channel4ReassignTo);
+					return GetEVSYSChannel(inputPin, depth + 1);
+				}
+				const int8_t channel5ReassignTo = GetEVSYSChannel((EVSYS_CHANNEL[5] & 0xF) + 8, depth + 1);
+				if(channel5ReassignTo != -1)
+				{
+					ReassignChannel(5, channel5ReassignTo);
+					return GetEVSYSChannel(inputPin, depth + 1);
+				}
+				return -1;
+			}
+			return -1;
 		}
 	};
 

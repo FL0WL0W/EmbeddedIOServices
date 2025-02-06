@@ -231,12 +231,12 @@ namespace EmbeddedIOServices
 
 		const bool PORTMUX_EVSYSROUTEA_changed = transmitRegisters.PORTMUX_EVSYSROUTEA != _previousRegisters.PORTMUX_EVSYSROUTEA || _first;
 		const bool PORTMUX_CCLROUTEA_changed = transmitRegisters.PORTMUX_CCLROUTEA != _previousRegisters.PORTMUX_CCLROUTEA || _first;
-        const bool EVSYS_CHANNEL_changed =  transmitRegisters.EVSYS_CHANNEL0 != _previousRegisters.EVSYS_CHANNEL0 ||
-                                            transmitRegisters.EVSYS_CHANNEL1 != _previousRegisters.EVSYS_CHANNEL1 ||
-                                            transmitRegisters.EVSYS_CHANNEL2 != _previousRegisters.EVSYS_CHANNEL2 ||
-                                            transmitRegisters.EVSYS_CHANNEL3 != _previousRegisters.EVSYS_CHANNEL3 ||
-                                            transmitRegisters.EVSYS_CHANNEL4 != _previousRegisters.EVSYS_CHANNEL4 ||
-                                            transmitRegisters.EVSYS_CHANNEL5 != _previousRegisters.EVSYS_CHANNEL5 ||
+        const bool EVSYS_CHANNEL_changed =  transmitRegisters.EVSYS_CHANNEL[0] != _previousRegisters.EVSYS_CHANNEL[0] ||
+                                            transmitRegisters.EVSYS_CHANNEL[1] != _previousRegisters.EVSYS_CHANNEL[1] ||
+                                            transmitRegisters.EVSYS_CHANNEL[2] != _previousRegisters.EVSYS_CHANNEL[2] ||
+                                            transmitRegisters.EVSYS_CHANNEL[3] != _previousRegisters.EVSYS_CHANNEL[3] ||
+                                            transmitRegisters.EVSYS_CHANNEL[4] != _previousRegisters.EVSYS_CHANNEL[4] ||
+                                            transmitRegisters.EVSYS_CHANNEL[5] != _previousRegisters.EVSYS_CHANNEL[5] ||
                                             _first;
 
         const bool EVSYS_USER_changed = transmitRegisters.EVSYS_CCL_LUT0A != _previousRegisters.EVSYS_CCL_LUT0A ||
@@ -571,12 +571,12 @@ namespace EmbeddedIOServices
                         data[dataIndex++] = 0x86; //write 16bit address
                         data[dataIndex++] = 0x01; //address high
                         data[dataIndex++] = 0x90; //address low
-                        data[dataIndex++] = transmitRegisters.EVSYS_CHANNEL0;
-                        data[dataIndex++] = transmitRegisters.EVSYS_CHANNEL1;
-                        data[dataIndex++] = transmitRegisters.EVSYS_CHANNEL2;
-                        data[dataIndex++] = transmitRegisters.EVSYS_CHANNEL3;
-                        data[dataIndex++] = transmitRegisters.EVSYS_CHANNEL4;
-                        data[dataIndex++] = transmitRegisters.EVSYS_CHANNEL5;
+                        data[dataIndex++] = transmitRegisters.EVSYS_CHANNEL[0];
+                        data[dataIndex++] = transmitRegisters.EVSYS_CHANNEL[1];
+                        data[dataIndex++] = transmitRegisters.EVSYS_CHANNEL[2];
+                        data[dataIndex++] = transmitRegisters.EVSYS_CHANNEL[3];
+                        data[dataIndex++] = transmitRegisters.EVSYS_CHANNEL[4];
+                        data[dataIndex++] = transmitRegisters.EVSYS_CHANNEL[5];
                     }
                     state++;
                     break;
