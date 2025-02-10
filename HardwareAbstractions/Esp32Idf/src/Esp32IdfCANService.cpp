@@ -10,6 +10,11 @@ namespace Esp32
 	{
 		for(uint8_t i = 0; i < SOC_TWAI_CONTROLLER_NUM; i++)
 		{
+			if(!configs[i].enabled)
+			{
+				_twai_handles[i] = 0;
+				continue;
+			}
 			ESP_ERROR_CHECK(twai_driver_install_v2(&configs[i].g_config, &configs[i].t_config, &configs[i].f_config, &_twai_handles[i]));
 			ESP_ERROR_CHECK(twai_start_v2(_twai_handles[i]));
 
@@ -32,6 +37,9 @@ namespace Esp32
 	
 	void Esp32IdfCANService::Send(const CANIdentifier_t identifier, const CANData_t data, const uint8_t dataLength)
 	{
+		if(_twai_handles[identifier.CANBusNumber] == 0)
+			return;
+
 		const twai_message_t message = 
 		{
 			.extd = identifier.CANIdentifier > (1 < 11),

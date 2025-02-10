@@ -10,6 +10,7 @@ namespace Esp32
 {
 	struct Esp32IdfCANServiceChannelConfig
 	{
+		bool enabled = false;
 		twai_timing_config_t t_config;
 		twai_filter_config_t f_config;
 		twai_general_config_t g_config;
