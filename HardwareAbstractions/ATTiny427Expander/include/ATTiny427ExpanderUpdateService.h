@@ -9,12 +9,12 @@ namespace EmbeddedIOServices
 {
 	enum ATTiny427Expander_Comm
 	{
-		UART0,
-		UART0Alternate,
-		UART1,
-		UART1Alternate,
-		SPI,
-		SPIAlternate
+		ATTiny427Expander_Comm_UART0,
+		ATTiny427Expander_Comm_UART0Alternate,
+		ATTiny427Expander_Comm_UART1,
+		ATTiny427Expander_Comm_UART1Alternate,
+		ATTiny427Expander_Comm_SPI,
+		ATTiny427Expander_Comm_SPIAlternate
 	};
 
 	struct ATTiny427Expander_Registers 
@@ -65,18 +65,18 @@ namespace EmbeddedIOServices
 		uint8_t EVSYS_CHANNEL[6] = { 0, 0, 0, 0, 0, 0 };
 		union
 		{
-			uint8_t EVSYS_CHANNELUSER[9];
+			uint8_t EVSYS_CHANNELUSER[9] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 			struct
 			{
-				uint8_t EVSYS_CCL_LUT0A = 0;
-				uint8_t EVSYS_CCL_LUT1A = 0;
-				uint8_t EVSYS_CCL_LUT2A = 0;
-				uint8_t EVSYS_CCL_LUT3A = 0;
-				uint8_t EVSYS_EVOUTA = 0;
-				uint8_t EVSYS_EVOUTB = 0;
-				uint8_t EVSYS_EVOUTC = 0;
-				uint8_t EVSYS_TCB0_CAPT = 0;
-				uint8_t EVSYS_TCB1_CAPT = 0;
+				uint8_t EVSYS_CCL_LUT0A;
+				uint8_t EVSYS_CCL_LUT1A;
+				uint8_t EVSYS_CCL_LUT2A;
+				uint8_t EVSYS_CCL_LUT3A;
+				uint8_t EVSYS_EVOUTA;
+				uint8_t EVSYS_EVOUTB;
+				uint8_t EVSYS_EVOUTC;
+				uint8_t EVSYS_TCB0_CAPT;
+				uint8_t EVSYS_TCB1_CAPT;
 			};
 		};
 
@@ -149,26 +149,26 @@ namespace EmbeddedIOServices
 		{
 			switch (Comm)
 			{
-				case UART0:
+				case ATTiny427Expander_Comm_UART0:
 					PORTB_DIR = 0b00000100;
 					break;
-				case UART0Alternate:
-				case UART1:
+				case ATTiny427Expander_Comm_UART0Alternate:
+				case ATTiny427Expander_Comm_UART1:
 					PORTA_DIR = 0b00000010;
 					break;
-				case UART1Alternate:
+				case ATTiny427Expander_Comm_UART1Alternate:
 					PORTC_DIR = 0b00000100;
 					break;
-				case SPI:
+				case ATTiny427Expander_Comm_SPI:
 					PORTA_DIR = 0b00000100;
 					break;
-				case SPIAlternate:
+				case ATTiny427Expander_Comm_SPIAlternate:
 					PORTC_DIR = 0b00000010;
 					break;
 			}
 		}
 
-		ATTiny427Expander_Registers() : ATTiny427Expander_Registers(UART0)
+		ATTiny427Expander_Registers() : ATTiny427Expander_Registers(ATTiny427Expander_Comm_UART0)
 		{
 		}
 
