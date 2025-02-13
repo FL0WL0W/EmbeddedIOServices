@@ -95,7 +95,7 @@ namespace EmbeddedIOServices
 			case 2:
 			{
 				//EVOUTA
-				if(_registers->Comm == SPI || _registers->Comm == UART0Alternate || _registers->Comm == UART1)
+				if(_registers->Comm == ATTiny427Expander_Comm_SPI || _registers->Comm == ATTiny427Expander_Comm_UART0Alternate || _registers->Comm == ATTiny427Expander_Comm_UART1)
 					return false;
 				if(_registers->PORTMUX_EVSYSROUTEA & 0x1 && _registers->EVSYS_EVOUTA != 0)
 					DeinitPassthrough(7);
@@ -113,7 +113,7 @@ namespace EmbeddedIOServices
 			}
 			case 4:
 				//LUT0
-				if(_registers->Comm == SPI)
+				if(_registers->Comm == ATTiny427Expander_Comm_SPI)
 					return false;
 				DeinitPassthrough(12);
 				_registers->PORTMUX_CCLROUTEA &= ~0x1;
@@ -206,7 +206,7 @@ namespace EmbeddedIOServices
 			}
 			case 7:
 			{
-				if(_registers->Comm == SPIAlternate || _registers->Comm == UART1Alternate)
+				if(_registers->Comm == ATTiny427Expander_Comm_SPIAlternate || _registers->Comm == ATTiny427Expander_Comm_UART1Alternate)
 				{
 					//LUT1
 					if(_registers->PORTMUX_CCLROUTEA & 0x2 && _registers->CCL_LUT1CTRLA != 0)
@@ -389,7 +389,7 @@ namespace EmbeddedIOServices
 			}
 			case 17:
 				//LUT1'
-				if(_registers->Comm == SPIAlternate || _registers->Comm == UART1Alternate)
+				if(_registers->Comm == ATTiny427Expander_Comm_SPIAlternate || _registers->Comm == ATTiny427Expander_Comm_UART1Alternate)
 					return false;
 				_registers->PORTMUX_CCLROUTEA |= 0x2;
 				_registers->CCL_LUT1TRUTH = inverted? 0x1 : 0xFE;
@@ -423,7 +423,7 @@ namespace EmbeddedIOServices
 				return true;
 			case 18:
 			{
-				if(_registers->Comm == SPIAlternate || _registers->Comm == UART1Alternate)
+				if(_registers->Comm == ATTiny427Expander_Comm_SPIAlternate || _registers->Comm == ATTiny427Expander_Comm_UART1Alternate)
 					return false;
 				//EVOUTC
 				const int8_t channel = _registers->GetEVSYSChannel(pinIn);
@@ -479,7 +479,7 @@ namespace EmbeddedIOServices
 		switch(pinOut)
 		{
 			case 2:
-				if(_registers->Comm == SPI || _registers->Comm == UART0Alternate || _registers->Comm == UART1)
+				if(_registers->Comm == ATTiny427Expander_Comm_SPI || _registers->Comm == ATTiny427Expander_Comm_UART0Alternate || _registers->Comm == ATTiny427Expander_Comm_UART1)
 					return;
 				//EVOUTA
 				if(!(_registers->PORTMUX_EVSYSROUTEA & 0x1))
@@ -492,7 +492,7 @@ namespace EmbeddedIOServices
 				}
 				return;
 			case 4:
-				if(_registers->Comm == SPI)
+				if(_registers->Comm == ATTiny427Expander_Comm_SPI)
 					return;
 				//LUT0
 				if(_registers->PORTMUX_CCLROUTEA & 0x1)
@@ -517,7 +517,7 @@ namespace EmbeddedIOServices
 				}
 				return;
 			case 7:
-				if(_registers->Comm == SPIAlternate || _registers->Comm == UART1Alternate)
+				if(_registers->Comm == ATTiny427Expander_Comm_SPIAlternate || _registers->Comm == ATTiny427Expander_Comm_UART1Alternate)
 				{
 					//LUT1
 					_registers->CCL_LUT1CTRLA = 0;
@@ -594,7 +594,7 @@ namespace EmbeddedIOServices
 				}
 				return;
 			case 17:
-				if(_registers->Comm == SPIAlternate || _registers->Comm == UART1Alternate)
+				if(_registers->Comm == ATTiny427Expander_Comm_SPIAlternate || _registers->Comm == ATTiny427Expander_Comm_UART1Alternate)
 					return;
 				//LUT1'
 				_registers->CCL_LUT1CTRLA = 0;
@@ -605,7 +605,7 @@ namespace EmbeddedIOServices
 				}
 				return;
 			case 18:
-				if(_registers->Comm == SPIAlternate || _registers->Comm == UART1Alternate)
+				if(_registers->Comm == ATTiny427Expander_Comm_SPIAlternate || _registers->Comm == ATTiny427Expander_Comm_UART1Alternate)
 					return;
 				//EVOUTC
 				if(_registers->EVSYS_EVOUTC > 0)

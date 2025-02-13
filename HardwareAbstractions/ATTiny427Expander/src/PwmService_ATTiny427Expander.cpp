@@ -1,5 +1,4 @@
 #include "PwmService_ATTiny427Expander.h"
-#include "esp_log.h"
 
 namespace EmbeddedIOServices
 {

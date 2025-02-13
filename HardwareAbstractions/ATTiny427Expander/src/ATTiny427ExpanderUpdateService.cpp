@@ -186,27 +186,27 @@ namespace EmbeddedIOServices
         //make sure we don't lock ourselves out
         switch(transmitRegisters.Comm)
         {
-            case UART0:
+            case ATTiny427Expander_Comm_UART0:
                 transmitRegisters.PORTB_DIR &= 0b11110011;
                 transmitRegisters.PORTB_DIR |= 0b00000100;
                 break;
-            case UART0Alternate:
-            case UART1:
+            case ATTiny427Expander_Comm_UART0Alternate:
+            case ATTiny427Expander_Comm_UART1:
                 transmitRegisters.PORTA_DIR &= 0b11111000;
                 transmitRegisters.PORTA_DIR |= 0b00000010;
                 transmitRegisters.AnalogEnable &= 0xFFF8;
                 break;
-            case UART1Alternate:
+            case ATTiny427Expander_Comm_UART1Alternate:
                 transmitRegisters.PORTC_DIR &= 0b11110011;
                 transmitRegisters.PORTC_DIR |= 0b00000100;
                 transmitRegisters.AnalogEnable &= 0xFFCF;
                 break;
-            case SPI:
+            case ATTiny427Expander_Comm_SPI:
                 transmitRegisters.PORTA_DIR &= 0b11100000;
                 transmitRegisters.PORTA_DIR |= 0b00000100;
                 transmitRegisters.AnalogEnable &= 0xFFE0;
                 break;
-            case SPIAlternate:
+            case ATTiny427Expander_Comm_SPIAlternate:
                 transmitRegisters.PORTC_DIR &= 0b11110000;
                 transmitRegisters.PORTC_DIR |= 0b00000010;
                 transmitRegisters.AnalogEnable &= 0x0FFE;
@@ -918,7 +918,7 @@ namespace EmbeddedIOServices
             }
         }
 
-        if(dataIndex > 0 && (transmitRegisters.Comm == SPI || transmitRegisters.Comm== SPIAlternate))
+        if(dataIndex > 0 && (transmitRegisters.Comm == ATTiny427Expander_Comm_SPI || transmitRegisters.Comm== ATTiny427Expander_Comm_SPIAlternate))
         {
             std::memset(&data[dataIndex], 0, 2);
             dataIndex += 2;

@@ -1,24 +1,6 @@
 #include "ICommunicationService.h"
 #include "Fifo.h"
-#include "wm_regs.h"
-
-#define UART_WORDLENGTH_5B 		UART_LC_DATAL_5BIT
-#define UART_WORDLENGTH_6B 		UART_LC_DATAL_6BIT
-#define UART_WORDLENGTH_7B 		UART_LC_DATAL_7BIT
-#define UART_WORDLENGTH_8B 		UART_LC_DATAL_8BIT
-#define UART_STOPBITS_1         0x0
-#define UART_STOPBITS_2         UART_LC_STOP
-#define UART_PARITY_NONE        0x0
-#define UART_PARITY_EVEN        UART_LC_PCE
-#define UART_PARITY_ODD         (UART_LC_PCE | UART_LC_PS)
-#define UART_HWCONTROL_NONE     0x00000000U
-#define UART_HWCONTROL_RTS      ((uint32_t)UART_FC_AFCE)
-#define UART_HWCONTROL_CTS      ((uint32_t)UART_FC_AFCE)
-#define UART_HWCONTROL_RTS_CTS  ((uint32_t)UART_FC_AFCE)
-#define UART_MODE_RX            ((uint32_t)UART_LC_RE)
-#define UART_MODE_TX            ((uint32_t)UART_LC_TE)
-#define UART_MODE_TX_RX         ((uint32_t)(UART_LC_RE | UART_LC_TE))
-#define UART_FIFO_FULL 			32
+#include "wm_uart.h"
 
 #ifndef COMMUNICATIONSERVICE_W80XUART_H
 #define COMMUNICATIONSERVICE_W80XUART_H
