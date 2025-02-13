@@ -8,7 +8,7 @@ namespace EmbeddedIOServices
     {
 		_previousRegisters = *_registers; 
     }
-    void ATTiny427ExpanderUpdateService::Receive(uint8_t *data, size_t size)
+    void ATTiny427ExpanderUpdateService::Receive(const uint8_t *data, size_t size)
     {
         size_t dataIndex = 0;
         while(dataIndex < size)

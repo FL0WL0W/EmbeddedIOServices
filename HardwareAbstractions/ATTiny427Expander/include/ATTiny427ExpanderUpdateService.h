@@ -325,7 +325,7 @@ namespace EmbeddedIOServices
 		};
 	public:
 		ATTiny427ExpanderUpdateService(ATTiny427Expander_Registers *registers);
-		void Receive(uint8_t *data, size_t size);
+		void Receive(const uint8_t *data, size_t size);
 		size_t Transmit(uint8_t data[1024]);
 	};
 }

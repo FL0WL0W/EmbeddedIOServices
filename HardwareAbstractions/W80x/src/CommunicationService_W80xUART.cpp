@@ -44,8 +44,8 @@ namespace EmbeddedIOServices
 			GPIOB->AF_SEL |= ((1<<19) | (1<<20));
 			GPIOB->AF_S0 &= ~((1<<19) | (1<<20));
 			GPIOB->AF_S1 &= ~((1<<19) | (1<<20));
-			csi_vic_enable_irq(UART0_IRQn);
 			csi_vic_set_prio(UART0_IRQn, 3);
+			csi_vic_enable_irq(UART0_IRQn);
 			break;
 		case 1:
 			if(CommunicationService_W80xUART1 != 0)
@@ -111,7 +111,7 @@ namespace EmbeddedIOServices
 			return ret;
 		}
 
-		ret->_uart = ((USART_TypeDef *)UART0_BASE + 0x200 * uart);
+		ret->_uart = ((USART_TypeDef *)(UART0_BASE + 0x200 * uart));
 		uint32_t apbclk = (480 / (0xFF & RCC->CLK_DIV)) / (0xFF & (RCC->CLK_DIV >> 16));
 		apbclk = apbclk * 1000000;
 		uint32_t value = (apbclk / (16 * baud) - 1) |
@@ -187,21 +187,23 @@ namespace EmbeddedIOServices
 	}
 	void CommunicationService_W80xUART::UART0_IRQHandler()
 	{
-		CommunicationService_W80xUART0->Interrupt();
+		if(CommunicationService_W80xUART0 != 0)
+			CommunicationService_W80xUART0->Interrupt();
 	}
 	void CommunicationService_W80xUART::UART1_IRQHandler()
 	{
-		CommunicationService_W80xUART1->Interrupt();
+		if(CommunicationService_W80xUART1 != 0)
+			CommunicationService_W80xUART1->Interrupt();
 	}
 	void CommunicationService_W80xUART::UART2_5_IRQHandler()
 	{
-		if(CommunicationService_W80xUART2->_uart->INTS != 0)
+		if(CommunicationService_W80xUART2 != 0 && CommunicationService_W80xUART2->_uart->INTS != 0)
 			CommunicationService_W80xUART2->Interrupt();
-		if(CommunicationService_W80xUART3->_uart->INTS != 0)
+		if(CommunicationService_W80xUART3 != 0 && CommunicationService_W80xUART3->_uart->INTS != 0)
 			CommunicationService_W80xUART3->Interrupt();
-		if(CommunicationService_W80xUART4->_uart->INTS != 0)
+		if(CommunicationService_W80xUART4 != 0 && CommunicationService_W80xUART4->_uart->INTS != 0)
 			CommunicationService_W80xUART4->Interrupt();
-		if(CommunicationService_W80xUART5->_uart->INTS != 0)
+		if(CommunicationService_W80xUART5 != 0 && CommunicationService_W80xUART5->_uart->INTS != 0)
 			CommunicationService_W80xUART5->Interrupt();
 	}
 }
