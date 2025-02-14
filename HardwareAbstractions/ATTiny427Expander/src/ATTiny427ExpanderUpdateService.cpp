@@ -716,9 +716,14 @@ namespace EmbeddedIOServices
                 case 17:
                     if(CCL_LUT0_changed)
                     {
-                        data[dataIndex++] = 0x83;
+                        data[dataIndex++] = 0x81;
                         data[dataIndex++] = 0x01; //address high
-                        data[dataIndex++] = 0xC9; //address low
+                        data[dataIndex++] = 0xC0; //address low
+                        data[dataIndex++] = 0;
+
+                        data[dataIndex++] = 0xC4;
+                        data[dataIndex++] = 0xC8; //address low
+                        data[dataIndex++] = 0;
                         data[dataIndex++] = transmitRegisters.CCL_LUT0CTRLB;
                         data[dataIndex++] = transmitRegisters.CCL_LUT0CTRLC;
                         data[dataIndex++] = transmitRegisters.CCL_LUT0TRUTH;
@@ -726,15 +731,24 @@ namespace EmbeddedIOServices
                         data[dataIndex++] = 0xC1;
                         data[dataIndex++] = 0xC8; //address low
                         data[dataIndex++] = transmitRegisters.CCL_LUT0CTRLA;
+
+                        data[dataIndex++] = 0xC1;
+                        data[dataIndex++] = 0xC0; //address low
+                        data[dataIndex++] = transmitRegisters.CCL_CTRLA;
                     }
                     state++;
                     break;
                 case 18:
                     if(CCL_LUT1_changed)
                     {
-                        data[dataIndex++] = 0x83;
+                        data[dataIndex++] = 0x81;
                         data[dataIndex++] = 0x01; //address high
-                        data[dataIndex++] = 0xCD; //address low
+                        data[dataIndex++] = 0xC0; //address low
+                        data[dataIndex++] = 0;
+
+                        data[dataIndex++] = 0xC4;
+                        data[dataIndex++] = 0xCC; //address low
+                        data[dataIndex++] = 0;
                         data[dataIndex++] = transmitRegisters.CCL_LUT1CTRLB;
                         data[dataIndex++] = transmitRegisters.CCL_LUT1CTRLC;
                         data[dataIndex++] = transmitRegisters.CCL_LUT1TRUTH;
@@ -742,15 +756,24 @@ namespace EmbeddedIOServices
                         data[dataIndex++] = 0xC1;
                         data[dataIndex++] = 0xCC; //address low
                         data[dataIndex++] = transmitRegisters.CCL_LUT1CTRLA;
+
+                        data[dataIndex++] = 0xC1;
+                        data[dataIndex++] = 0xC0; //address low
+                        data[dataIndex++] = transmitRegisters.CCL_CTRLA;
                     }
                     state++;
                     break;
                 case 19:
                     if(CCL_LUT2_changed)
                     {
-                        data[dataIndex++] = 0x83;
+                        data[dataIndex++] = 0x81;
                         data[dataIndex++] = 0x01; //address high
-                        data[dataIndex++] = 0xD1; //address low
+                        data[dataIndex++] = 0xC0; //address low
+                        data[dataIndex++] = 0;
+
+                        data[dataIndex++] = 0xC4;
+                        data[dataIndex++] = 0xD0; //address low
+                        data[dataIndex++] = 0;
                         data[dataIndex++] = transmitRegisters.CCL_LUT2CTRLB;
                         data[dataIndex++] = transmitRegisters.CCL_LUT2CTRLC;
                         data[dataIndex++] = transmitRegisters.CCL_LUT2TRUTH;
@@ -758,22 +781,35 @@ namespace EmbeddedIOServices
                         data[dataIndex++] = 0xC1;
                         data[dataIndex++] = 0xD0; //address low
                         data[dataIndex++] = transmitRegisters.CCL_LUT2CTRLA;
+
+                        data[dataIndex++] = 0xC1;
+                        data[dataIndex++] = 0xC0; //address low
+                        data[dataIndex++] = transmitRegisters.CCL_CTRLA;
                     }
                     state++;
                     break;
                 case 20:
                     if(CCL_LUT3_changed)
                     {
-                        data[dataIndex++] = 0x83;
+                        data[dataIndex++] = 0x81;
                         data[dataIndex++] = 0x01; //address high
-                        data[dataIndex++] = 0xD5; //address low
+                        data[dataIndex++] = 0xC0; //address low
+                        data[dataIndex++] = 0;
+
+                        data[dataIndex++] = 0xC4;
+                        data[dataIndex++] = 0xD4; //address low
+                        data[dataIndex++] = transmitRegisters.CCL_LUT3CTRLA;
                         data[dataIndex++] = transmitRegisters.CCL_LUT3CTRLB;
                         data[dataIndex++] = transmitRegisters.CCL_LUT3CTRLC;
                         data[dataIndex++] = transmitRegisters.CCL_LUT3TRUTH;
 
                         data[dataIndex++] = 0xC1;
                         data[dataIndex++] = 0xD4; //address low
-                        data[dataIndex++] = transmitRegisters.CCL_LUT3CTRLA;
+                        data[dataIndex++] = 0;
+
+                        data[dataIndex++] = 0xC1;
+                        data[dataIndex++] = 0xC0; //address low
+                        data[dataIndex++] = transmitRegisters.CCL_CTRLA;
                     }
                     state++;
                     break;

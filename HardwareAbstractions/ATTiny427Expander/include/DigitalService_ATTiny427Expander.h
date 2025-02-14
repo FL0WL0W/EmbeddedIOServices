@@ -42,7 +42,7 @@ namespace EmbeddedIOServices
 		void WritePin(digitalpin_t pin, bool value);
 		void AttachInterrupt(digitalpin_t pin, callback_t callBack);
 		void DetachInterrupt(digitalpin_t pin);
-		bool InitPassthrough(digitalpin_t pinIn, digitalpin_t pinOut, bool inverted);
+		bool InitPassthrough(digitalpin_t pinIn, digitalpin_t pinOut, bool inverted, bool useAC = false);
 		void DeinitPassthrough(digitalpin_t pinOut);
 		void Update();
 

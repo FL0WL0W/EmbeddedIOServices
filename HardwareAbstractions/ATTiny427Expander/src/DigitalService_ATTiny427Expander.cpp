@@ -87,8 +87,30 @@ namespace EmbeddedIOServices
 		const DigitalPin_ATTiny427Expander DigitalPin = PinToDigitalPin(pin);
 		_interruptList.remove_if([DigitalPort, DigitalPin](const DigitalInterrupt_ATTiny427Expander& interrupt) { return interrupt.DigitalPort == DigitalPort && interrupt.DigitalPin == DigitalPin; });
 	}
-	bool DigitalService_ATTiny427Expander::InitPassthrough(digitalpin_t pinIn, digitalpin_t pinOut, bool inverted)
+	bool DigitalService_ATTiny427Expander::InitPassthrough(digitalpin_t pinIn, digitalpin_t pinOut, bool inverted, bool useAC)
 	{
+		if(!(pinIn == 7 || pinIn == 13 || pinIn == 9 || pinIn == 14))
+			useAC = false;
+
+		if(useAC)
+		{
+			_registers->AC_DACREF = 0x85;
+			_registers->AC_MUXCTRLA = 0x3;
+			switch(pinIn)
+			{
+				case 13:
+					_registers->AC_MUXCTRLA |= 0x1 << 3;;
+					break;
+				case 9:
+					_registers->AC_MUXCTRLA |= 0x2 << 3;
+					break;
+				case 14:
+					_registers->AC_MUXCTRLA |= 0x3 << 3;
+					break;
+			}
+			_registers->AC_CTRLA = (_registers->AC_CTRLA & 0b11000111) | 0b10000111; //enable with large hysteresis
+		}
+
 		DeinitPassthrough(pinIn);
 		switch(pinOut)
 		{
@@ -99,16 +121,16 @@ namespace EmbeddedIOServices
 					return false;
 				if(_registers->PORTMUX_EVSYSROUTEA & 0x1 && _registers->EVSYS_EVOUTA != 0)
 					DeinitPassthrough(7);
-				const int8_t channel = _registers->GetEVSYSChannel(pinIn);
-				if(channel == -1)
+				const ATTiny427Expander_EVSysChannel channel = useAC? _registers->FirstOpenChannel(0x20) : _registers->GetEVSYSChannel(pinIn);
+				if(channel.channel == -1)
 					return false;
-				_registers->EVSYS_CHANNEL[channel & 0x7] = 0x4 | (channel >> 3);
+				_registers->EVSYS_CHANNEL[channel.channel] = channel.generator;
 				_registers->PORTMUX_EVSYSROUTEA &= ~0x1;
 				if(inverted)
 					_registers->PORTA_PINCTRL[2] |= 0x80;
 				else 
 					_registers->PORTA_PINCTRL[2] &= ~0x80;
-				_registers->EVSYS_EVOUTA = (channel & 0x7) + 1;
+				_registers->EVSYS_EVOUTA = channel.channel + 1;
 				return true;
 			}
 			case 4:
@@ -118,59 +140,53 @@ namespace EmbeddedIOServices
 				DeinitPassthrough(12);
 				_registers->PORTMUX_CCLROUTEA &= ~0x1;
 				_registers->CCL_LUT0TRUTH = inverted? 0x1 : 0xFE;
-				switch(pinIn)
+				if(useAC)
 				{
-					case 0: 
-						_registers->CCL_LUT0CTRLB = 0x05;
-						_registers->CCL_LUT0CTRLC = 0x00;
-						break;
-					case 1:
-						_registers->CCL_LUT0CTRLB = 0x50;
-						_registers->CCL_LUT0CTRLC = 0x00;
-						break;
-					case 2:
-						_registers->CCL_LUT0CTRLB = 0x00;
-						_registers->CCL_LUT0CTRLC = 0x05;
-						break;
-					default:
+					_registers->CCL_LUT0CTRLB = 0x60;
+					_registers->CCL_LUT0CTRLC = 0x00;
+				}
+				else
+				{
+					switch(pinIn)
 					{
-						_registers->CCL_LUT0CTRLB = 0x03;
-						_registers->CCL_LUT0CTRLC = 0x00;
-						const int8_t channel = _registers->GetEVSYSChannel(pinIn);
-						if(channel == -1)
-							return false;
-						_registers->EVSYS_CHANNEL[channel & 0x7] = 0x4 | (channel >> 3);
-						_registers->EVSYS_CCL_LUT0A = (channel & 0x7) + 1;
-						break;
+						case 0: 
+							_registers->CCL_LUT0CTRLB = 0x05;
+							_registers->CCL_LUT0CTRLC = 0x00;
+							break;
+						case 1:
+							_registers->CCL_LUT0CTRLB = 0x50;
+							_registers->CCL_LUT0CTRLC = 0x00;
+							break;
+						case 2:
+							_registers->CCL_LUT0CTRLB = 0x00;
+							_registers->CCL_LUT0CTRLC = 0x05;
+							break;
+						default:
+						{
+							_registers->CCL_LUT0CTRLB = 0x30;
+							_registers->CCL_LUT0CTRLC = 0x00;
+							const ATTiny427Expander_EVSysChannel channel = _registers->GetEVSYSChannel(pinIn);
+							if(channel.channel == -1)
+								return false;
+							_registers->EVSYS_CHANNEL[channel.channel] = channel.generator;
+							_registers->EVSYS_CCL_LUT0A = channel.channel + 1;
+							break;
+						}
 					}
 				}
 				_registers->CCL_LUT0CTRLA = 0x41;
+				_registers->CCL_CTRLA = 0x41;
 				return true;
 			case 5:
 			{
 				//primarily use ACOUT since it does not have any alternates and doesn't use any EventChannels
-				if(pinIn == 7 || pinIn == 13 || pinIn == 9 || pinIn == 14)
+				if(useAC)
 				{
-					_registers->AC_DACREF = 0x85;
-					_registers->AC_MUXCTRLA = (inverted? 0b10000000 : 0) | 0x3;
-					switch(pinIn)
-					{
-						case 13:
-							_registers->AC_MUXCTRLA |= 0x1 << 3;;
-							break;
-						case 9:
-							_registers->AC_MUXCTRLA |= 0x2 << 3;
-							break;
-						case 14:
-							_registers->AC_MUXCTRLA |= 0x3 << 3;
-							break;
-					}
-					_registers->AC_CTRLA = 0b01000111; //enable with large hysteresis and output
+					_registers->AC_CTRLA != 0b01000000; //enable output
+					_registers->AC_MUXCTRLA |= (inverted? 0b10000000 : 0);
 					return true;
 				}
 				//otherwise use LUT3', if LUT3 was already being used, it will be overwritten
-				//disable AC if it is enabled
-				_registers->AC_CTRLA = 0;
 
 				DeinitPassthrough(20);
 				_registers->PORTMUX_CCLROUTEA |= 0x8;
@@ -193,15 +209,16 @@ namespace EmbeddedIOServices
 					{
 						_registers->CCL_LUT3CTRLB = 0x03;
 						_registers->CCL_LUT3CTRLC = 0x00;
-						const int8_t channel = _registers->GetEVSYSChannel(pinIn);
-						if(channel == -1)
+						const ATTiny427Expander_EVSysChannel channel = _registers->GetEVSYSChannel(pinIn);
+						if(channel.channel == -1)
 							return false;
-						_registers->EVSYS_CHANNEL[channel & 0x7] = 0x4 | (channel >> 3);
-						_registers->EVSYS_CCL_LUT3A = (channel & 0x7) + 1;
+						_registers->EVSYS_CHANNEL[channel.channel] = channel.generator;
+						_registers->EVSYS_CCL_LUT3A = channel.channel + 1;
 						break;
 					}
 				}
 				_registers->CCL_LUT3CTRLA = 0x41;
+				_registers->CCL_CTRLA = 0x41;
 				return true;
 			}
 			case 7:
@@ -213,6 +230,229 @@ namespace EmbeddedIOServices
 						DeinitPassthrough(17);
 					_registers->PORTMUX_CCLROUTEA |= 0x2;
 					_registers->CCL_LUT1TRUTH = inverted? 0x1 : 0xFE;
+					if(useAC)
+					{
+						_registers->CCL_LUT1CTRLB = 0x66;
+						_registers->CCL_LUT1CTRLC = 0x06;
+					}
+					else
+					{
+						switch(pinIn)
+						{
+							case 19: 
+								_registers->CCL_LUT1CTRLB = 0x05;
+								_registers->CCL_LUT1CTRLC = 0x00;
+								break;
+							case 20:
+								_registers->CCL_LUT1CTRLB = 0x50;
+								_registers->CCL_LUT1CTRLC = 0x00;
+								break;
+							case 21:
+								_registers->CCL_LUT1CTRLB = 0x00;
+								_registers->CCL_LUT1CTRLC = 0x05;
+								break;
+							default:
+							{
+								_registers->CCL_LUT1CTRLB = 0x03;
+								_registers->CCL_LUT1CTRLC = 0x00;
+								const ATTiny427Expander_EVSysChannel channel = _registers->GetEVSYSChannel(pinIn);
+								if(channel.channel == -1)
+									return false;
+								_registers->EVSYS_CHANNEL[channel.channel] = channel.generator;
+								_registers->EVSYS_CCL_LUT1A = channel.channel + 1;
+								break;
+							}
+						}
+					}
+					_registers->CCL_LUT1CTRLA = 0x41;
+					_registers->CCL_CTRLA = 0x41;
+					return true;
+				}
+				//EVOUTA'
+				DeinitPassthrough(2);
+				const ATTiny427Expander_EVSysChannel channel = useAC? _registers->FirstOpenChannel(0x20) : _registers->GetEVSYSChannel(pinIn);
+				if(channel.channel == -1)
+					return false;
+				_registers->EVSYS_CHANNEL[channel.channel] = channel.generator;
+				_registers->PORTMUX_EVSYSROUTEA |= 0x1;
+				if(inverted)
+					_registers->PORTA_PINCTRL[7] |= 0x80;
+				else 
+					_registers->PORTA_PINCTRL[7] &= ~0x80;
+				_registers->EVSYS_EVOUTA = channel.channel + 1;
+				return true;
+			}
+			case 10:
+			{
+				//EVOUTB
+				DeinitPassthrough(15);
+				const ATTiny427Expander_EVSysChannel channel = useAC? _registers->FirstOpenChannel(0x20) : _registers->GetEVSYSChannel(pinIn);
+				if(channel.channel == -1)
+					return false;
+				_registers->EVSYS_CHANNEL[channel.channel] = channel.generator;
+				_registers->PORTMUX_EVSYSROUTEA &= ~0x2;
+				if(inverted)
+					_registers->PORTB_PINCTRL[2] |= 0x80;
+				else 
+					_registers->PORTB_PINCTRL[2] &= ~0x80;
+				_registers->EVSYS_EVOUTB = channel.channel + 1;
+				return true;
+			}
+			case 11:
+				//LUT2
+				DeinitPassthrough(14);
+				_registers->PORTMUX_CCLROUTEA &= ~0x4;
+				_registers->CCL_LUT2TRUTH = inverted? 0x1 : 0xFE;
+				if(useAC)
+				{
+					_registers->CCL_LUT2CTRLB = 0x66;
+					_registers->CCL_LUT2CTRLC = 0x06;
+				}
+				else
+				{
+					switch(pinIn)
+					{
+						case 8: 
+							_registers->CCL_LUT2CTRLB = 0x05;
+							_registers->CCL_LUT2CTRLC = 0x00;
+							break;
+						case 9:
+							_registers->CCL_LUT2CTRLB = 0x50;
+							_registers->CCL_LUT2CTRLC = 0x00;
+							break;
+						case 10:
+							_registers->CCL_LUT2CTRLB = 0x00;
+							_registers->CCL_LUT2CTRLC = 0x05;
+							break;
+						default:
+						{
+							_registers->CCL_LUT2CTRLB = 0x03;
+							_registers->CCL_LUT2CTRLC = 0x00;
+							const ATTiny427Expander_EVSysChannel channel = _registers->GetEVSYSChannel(pinIn);
+							if(channel.channel == -1)
+								return false;
+							_registers->EVSYS_CHANNEL[channel.channel] = channel.generator;
+							_registers->EVSYS_CCL_LUT2A = channel.channel + 1;
+							break;
+						}
+					}
+				}
+				_registers->CCL_LUT2CTRLA = 0x41;
+				_registers->CCL_CTRLA = 0x41;
+				return true;
+			case 12:
+				//LUT0'
+				DeinitPassthrough(4);
+				_registers->PORTMUX_CCLROUTEA |= 0x1;
+				_registers->CCL_LUT0TRUTH = inverted? 0x1 : 0xFE;
+				if(useAC)
+				{
+					_registers->CCL_LUT0CTRLB = 0x66;
+					_registers->CCL_LUT0CTRLC = 0x06;
+				}
+				else
+				{
+					switch(pinIn)
+					{
+						case 0: 
+							_registers->CCL_LUT0CTRLB = 0x05;
+							_registers->CCL_LUT0CTRLC = 0x00;
+							break;
+						case 1:
+							_registers->CCL_LUT0CTRLB = 0x50;
+							_registers->CCL_LUT0CTRLC = 0x00;
+							break;
+						case 2:
+							_registers->CCL_LUT0CTRLB = 0x00;
+							_registers->CCL_LUT0CTRLC = 0x05;
+							break;
+						default:
+						{
+							_registers->CCL_LUT0CTRLB = 0x03;
+							_registers->CCL_LUT0CTRLC = 0x00;
+							const ATTiny427Expander_EVSysChannel channel = _registers->GetEVSYSChannel(pinIn);
+							if(channel.channel == -1)
+								return false;
+							_registers->EVSYS_CHANNEL[channel.channel] = channel.generator;
+							_registers->EVSYS_CCL_LUT0A = channel.channel + 1;
+							break;
+						}
+					}
+				}
+				_registers->CCL_LUT0CTRLA = 0x41;
+				_registers->CCL_CTRLA = 0x41;
+				return true;
+			case 14:
+				//LUT2'
+				DeinitPassthrough(11);
+				_registers->PORTMUX_CCLROUTEA |= 0x4;
+				_registers->CCL_LUT2TRUTH = inverted? 0x1 : 0xFE;
+				if(useAC)
+				{
+					_registers->CCL_LUT2CTRLB = 0x66;
+					_registers->CCL_LUT2CTRLC = 0x06;
+				}
+				else
+				{
+					switch(pinIn)
+					{
+						case 8: 
+							_registers->CCL_LUT2CTRLB = 0x05;
+							_registers->CCL_LUT2CTRLC = 0x00;
+							break;
+						case 9:
+							_registers->CCL_LUT2CTRLB = 0x50;
+							_registers->CCL_LUT2CTRLC = 0x00;
+							break;
+						case 10:
+							_registers->CCL_LUT2CTRLB = 0x00;
+							_registers->CCL_LUT2CTRLC = 0x05;
+							break;
+						default:
+						{
+							_registers->CCL_LUT2CTRLB = 0x03;
+							_registers->CCL_LUT2CTRLC = 0x00;
+							const ATTiny427Expander_EVSysChannel channel = _registers->GetEVSYSChannel(pinIn);
+							if(channel.channel == -1)
+								return false;
+							_registers->EVSYS_CHANNEL[channel.channel] = channel.generator;
+							_registers->EVSYS_CCL_LUT2A = channel.channel + 1;
+							break;
+						}
+					}
+				}
+				_registers->CCL_LUT2CTRLA = 0x41;
+				_registers->CCL_CTRLA = 0x41;
+				return true;
+			case 15:
+			{
+				//EVOUTB'
+				DeinitPassthrough(10);
+				const ATTiny427Expander_EVSysChannel channel = useAC? _registers->FirstOpenChannel(0x20) : _registers->GetEVSYSChannel(pinIn);
+				if(channel.channel == -1)
+					return false;
+				_registers->EVSYS_CHANNEL[channel.channel] = channel.generator;
+				_registers->PORTMUX_EVSYSROUTEA |= 0x2;
+				if(inverted)
+					_registers->PORTB_PINCTRL[7] |= 0x80;
+				else 
+					_registers->PORTB_PINCTRL[7] &= ~0x80;
+				_registers->EVSYS_EVOUTB = channel.channel + 1;
+				return true;
+			}
+			case 17:
+				//LUT1'
+				if(_registers->Comm == ATTiny427Expander_Comm_SPIAlternate || _registers->Comm == ATTiny427Expander_Comm_UART1Alternate)
+					return false;
+				_registers->PORTMUX_CCLROUTEA |= 0x2;
+				_registers->CCL_LUT1TRUTH = inverted? 0x1 : 0xFE;
+				if(useAC)
+				{
+					_registers->CCL_LUT1CTRLB = 0x66;
+					_registers->CCL_LUT1CTRLC = 0x06;
+				}
+				else
+				{
 					switch(pinIn)
 					{
 						case 19: 
@@ -231,210 +471,32 @@ namespace EmbeddedIOServices
 						{
 							_registers->CCL_LUT1CTRLB = 0x03;
 							_registers->CCL_LUT1CTRLC = 0x00;
-							const int8_t channel = _registers->GetEVSYSChannel(pinIn);
-							if(channel == -1)
+							const ATTiny427Expander_EVSysChannel channel = _registers->GetEVSYSChannel(pinIn);
+							if(channel.channel == -1)
 								return false;
-							_registers->EVSYS_CHANNEL[channel & 0x7] = 0x4 | (channel >> 3);
-							_registers->EVSYS_CCL_LUT1A = (channel & 0x7) + 1;
+							_registers->EVSYS_CHANNEL[channel.channel] = channel.generator;
+							_registers->EVSYS_CCL_LUT1A = channel.channel + 1;
 							break;
 						}
 					}
-					_registers->CCL_LUT1CTRLA = 0x41;
-					return true;
-				}
-				//EVOUTA'
-				DeinitPassthrough(2);
-				const int8_t channel = _registers->GetEVSYSChannel(pinIn);
-				if(channel == -1)
-					return false;
-				_registers->EVSYS_CHANNEL[channel & 0x7] = 0x4 | (channel >> 3);
-				_registers->PORTMUX_EVSYSROUTEA |= 0x1;
-				if(inverted)
-					_registers->PORTA_PINCTRL[7] |= 0x80;
-				else 
-					_registers->PORTA_PINCTRL[7] &= ~0x80;
-				_registers->EVSYS_EVOUTA = (channel & 0x7) + 1;
-				return true;
-			}
-			case 10:
-			{
-				//EVOUTB
-				DeinitPassthrough(15);
-				const int8_t channel = _registers->GetEVSYSChannel(pinIn);
-				if(channel == -1)
-					return false;
-				_registers->EVSYS_CHANNEL[channel & 0x7] = 0x4 | (channel >> 3);
-				_registers->PORTMUX_EVSYSROUTEA &= ~0x2;
-				if(inverted)
-					_registers->PORTB_PINCTRL[2] |= 0x80;
-				else 
-					_registers->PORTB_PINCTRL[2] &= ~0x80;
-				_registers->EVSYS_EVOUTB = (channel & 0x7) + 1;
-				return true;
-			}
-			case 11:
-				//LUT2
-				DeinitPassthrough(14);
-				_registers->PORTMUX_CCLROUTEA &= ~0x4;
-				_registers->CCL_LUT2TRUTH = inverted? 0x1 : 0xFE;
-				switch(pinIn)
-				{
-					case 8: 
-						_registers->CCL_LUT2CTRLB = 0x05;
-						_registers->CCL_LUT2CTRLC = 0x00;
-						break;
-					case 9:
-						_registers->CCL_LUT2CTRLB = 0x50;
-						_registers->CCL_LUT2CTRLC = 0x00;
-						break;
-					case 10:
-						_registers->CCL_LUT2CTRLB = 0x00;
-						_registers->CCL_LUT2CTRLC = 0x05;
-						break;
-					default:
-					{
-						_registers->CCL_LUT2CTRLB = 0x03;
-						_registers->CCL_LUT2CTRLC = 0x00;
-						const int8_t channel = _registers->GetEVSYSChannel(pinIn);
-						if(channel == -1)
-							return false;
-						_registers->EVSYS_CHANNEL[channel & 0x7] = 0x4 | (channel >> 3);
-						_registers->EVSYS_CCL_LUT2A = (channel & 0x7) + 1;
-						break;
-					}
-				}
-				_registers->CCL_LUT2CTRLA = 0x41;
-				return true;
-			case 12:
-				//LUT0'
-				DeinitPassthrough(4);
-				_registers->PORTMUX_CCLROUTEA |= 0x1;
-				_registers->CCL_LUT0TRUTH = inverted? 0x1 : 0xFE;
-				switch(pinIn)
-				{
-					case 0: 
-						_registers->CCL_LUT0CTRLB = 0x05;
-						_registers->CCL_LUT0CTRLC = 0x00;
-						break;
-					case 1:
-						_registers->CCL_LUT0CTRLB = 0x50;
-						_registers->CCL_LUT0CTRLC = 0x00;
-						break;
-					case 2:
-						_registers->CCL_LUT0CTRLB = 0x00;
-						_registers->CCL_LUT0CTRLC = 0x05;
-						break;
-					default:
-					{
-						_registers->CCL_LUT0CTRLB = 0x03;
-						_registers->CCL_LUT0CTRLC = 0x00;
-						const int8_t channel = _registers->GetEVSYSChannel(pinIn);
-						if(channel == -1)
-							return false;
-						_registers->EVSYS_CHANNEL[channel & 0x7] = 0x4 | (channel >> 3);
-						_registers->EVSYS_CCL_LUT0A = (channel & 0x7) + 1;
-						break;
-					}
-				}
-				_registers->CCL_LUT0CTRLA = 0x41;
-				return true;
-			case 14:
-				//LUT2'
-				DeinitPassthrough(11);
-				_registers->PORTMUX_CCLROUTEA |= 0x4;
-				_registers->CCL_LUT2TRUTH = inverted? 0x1 : 0xFE;
-				switch(pinIn)
-				{
-					case 8: 
-						_registers->CCL_LUT2CTRLB = 0x05;
-						_registers->CCL_LUT2CTRLC = 0x00;
-						break;
-					case 9:
-						_registers->CCL_LUT2CTRLB = 0x50;
-						_registers->CCL_LUT2CTRLC = 0x00;
-						break;
-					case 10:
-						_registers->CCL_LUT2CTRLB = 0x00;
-						_registers->CCL_LUT2CTRLC = 0x05;
-						break;
-					default:
-					{
-						_registers->CCL_LUT2CTRLB = 0x03;
-						_registers->CCL_LUT2CTRLC = 0x00;
-						const int8_t channel = _registers->GetEVSYSChannel(pinIn);
-						if(channel == -1)
-							return false;
-						_registers->EVSYS_CHANNEL[channel & 0x7] = 0x4 | (channel >> 3);
-						_registers->EVSYS_CCL_LUT2A = (channel & 0x7) + 1;
-						break;
-					}
-				}
-				_registers->CCL_LUT2CTRLA = 0x41;
-				return true;
-			case 15:
-			{
-				//EVOUTB'
-				DeinitPassthrough(10);
-				const int8_t channel = _registers->GetEVSYSChannel(pinIn);
-				if(channel == -1)
-					return false;
-				_registers->EVSYS_CHANNEL[channel & 0x7] = 0x4 | (channel >> 3);
-				_registers->PORTMUX_EVSYSROUTEA |= 0x2;
-				if(inverted)
-					_registers->PORTB_PINCTRL[7] |= 0x80;
-				else 
-					_registers->PORTB_PINCTRL[7] &= ~0x80;
-				_registers->EVSYS_EVOUTB = (channel & 0x7) + 1;
-				return true;
-			}
-			case 17:
-				//LUT1'
-				if(_registers->Comm == ATTiny427Expander_Comm_SPIAlternate || _registers->Comm == ATTiny427Expander_Comm_UART1Alternate)
-					return false;
-				_registers->PORTMUX_CCLROUTEA |= 0x2;
-				_registers->CCL_LUT1TRUTH = inverted? 0x1 : 0xFE;
-				switch(pinIn)
-				{
-					case 19: 
-						_registers->CCL_LUT1CTRLB = 0x05;
-						_registers->CCL_LUT1CTRLC = 0x00;
-						break;
-					case 20:
-						_registers->CCL_LUT1CTRLB = 0x50;
-						_registers->CCL_LUT1CTRLC = 0x00;
-						break;
-					case 21:
-						_registers->CCL_LUT1CTRLB = 0x00;
-						_registers->CCL_LUT1CTRLC = 0x05;
-						break;
-					default:
-					{
-						_registers->CCL_LUT1CTRLB = 0x03;
-						_registers->CCL_LUT1CTRLC = 0x00;
-						const int8_t channel = _registers->GetEVSYSChannel(pinIn);
-						if(channel == -1)
-							return false;
-						_registers->EVSYS_CHANNEL[channel & 0x7] = 0x4 | (channel >> 3);
-						_registers->EVSYS_CCL_LUT1A = (channel & 0x7) + 1;
-						break;
-					}
 				}
 				_registers->CCL_LUT1CTRLA = 0x41;
+				_registers->CCL_CTRLA = 0x41;
 				return true;
 			case 18:
 			{
 				if(_registers->Comm == ATTiny427Expander_Comm_SPIAlternate || _registers->Comm == ATTiny427Expander_Comm_UART1Alternate)
 					return false;
 				//EVOUTC
-				const int8_t channel = _registers->GetEVSYSChannel(pinIn);
-				if(channel == -1)
+				const ATTiny427Expander_EVSysChannel channel = useAC? _registers->FirstOpenChannel(0x20) : _registers->GetEVSYSChannel(pinIn);
+				if(channel.channel == -1)
 					return false;
-				_registers->EVSYS_CHANNEL[channel & 0x7] = 0x4 | (channel >> 3);
+				_registers->EVSYS_CHANNEL[channel.channel] = channel.generator;
 				if(inverted)
 					_registers->PORTC_PINCTRL[2] |= 0x80;
 				else 
 					_registers->PORTC_PINCTRL[2] &= ~0x80;
-				_registers->EVSYS_EVOUTC = (channel & 0x7) + 1;
+				_registers->EVSYS_EVOUTC = channel.channel + 1;
 				return true;
 			}
 			case 20:
@@ -443,33 +505,42 @@ namespace EmbeddedIOServices
 					DeinitPassthrough(5);
 				_registers->PORTMUX_CCLROUTEA &= ~0x8;
 				_registers->CCL_LUT3TRUTH = inverted? 0x1 : 0xFE;
-				switch(pinIn)
+				if(useAC)
 				{
-					case 16: 
-						_registers->CCL_LUT3CTRLB = 0x05;
-						_registers->CCL_LUT3CTRLC = 0x00;
-						break;
-					case 17:
-						_registers->CCL_LUT3CTRLB = 0x50;
-						_registers->CCL_LUT3CTRLC = 0x00;
-						break;
-					case 18:
-						_registers->CCL_LUT3CTRLB = 0x00;
-						_registers->CCL_LUT3CTRLC = 0x05;
-						break;
-					default:
+					_registers->CCL_LUT3CTRLB = 0x66;
+					_registers->CCL_LUT3CTRLC = 0x06;
+				}
+				else
+				{
+					switch(pinIn)
 					{
-						_registers->CCL_LUT3CTRLB = 0x03;
-						_registers->CCL_LUT3CTRLC = 0x00;
-						const int8_t channel = _registers->GetEVSYSChannel(pinIn);
-						if(channel == -1)
-							return false;
-						_registers->EVSYS_CHANNEL[channel & 0x7] = 0x4 | (channel >> 3);
-						_registers->EVSYS_CCL_LUT3A = (channel & 0x7) + 1;
-						break;
+						case 16: 
+							_registers->CCL_LUT3CTRLB = 0x05;
+							_registers->CCL_LUT3CTRLC = 0x00;
+							break;
+						case 17:
+							_registers->CCL_LUT3CTRLB = 0x50;
+							_registers->CCL_LUT3CTRLC = 0x00;
+							break;
+						case 18:
+							_registers->CCL_LUT3CTRLB = 0x00;
+							_registers->CCL_LUT3CTRLC = 0x05;
+							break;
+						default:
+						{
+							_registers->CCL_LUT3CTRLB = 0x03;
+							_registers->CCL_LUT3CTRLC = 0x00;
+							const ATTiny427Expander_EVSysChannel channel = _registers->GetEVSYSChannel(pinIn);
+							if(channel.channel == -1)
+								return false;
+							_registers->EVSYS_CHANNEL[channel.channel] = channel.generator;
+							_registers->EVSYS_CCL_LUT3A = channel.channel + 1;
+							break;
+						}
 					}
 				}
 				_registers->CCL_LUT3CTRLA = 0x41;
+				_registers->CCL_CTRLA = 0x41;
 				return true;
 		}
 		return false;
@@ -486,9 +557,15 @@ namespace EmbeddedIOServices
 					return;
 				if(_registers->EVSYS_EVOUTA > 0)
 				{
-					_registers->EVSYS_CHANNEL[_registers->EVSYS_EVOUTA - 1] = 0;
-					_registers->PORTA_PINCTRL[2] &= ~0x80;
+					const uint8_t channel = _registers->EVSYS_EVOUTA;
 					_registers->EVSYS_EVOUTA = 0;
+					_registers->PORTA_PINCTRL[2] &= ~0x80;
+					for(uint8_t i = 0; i < sizeof(_registers->EVSYS_CHANNELUSER); i++)
+					{
+						if(_registers->EVSYS_CHANNELUSER[i] == channel)
+							return;
+					}
+					_registers->EVSYS_CHANNEL[channel - 1] = 0;
 				}
 				return;
 			case 4:
@@ -500,20 +577,32 @@ namespace EmbeddedIOServices
 				_registers->CCL_LUT0CTRLA = 0;
 				if(_registers->EVSYS_CCL_LUT0A > 0)
 				{
-					_registers->EVSYS_CHANNEL[_registers->EVSYS_CCL_LUT0A - 1] = 0;
+					const uint8_t channel = _registers->EVSYS_CCL_LUT0A;
 					_registers->EVSYS_CCL_LUT0A = 0;
+					for(uint8_t i = 0; i < sizeof(_registers->EVSYS_CHANNELUSER); i++)
+					{
+						if(_registers->EVSYS_CHANNELUSER[i] == channel)
+							return;
+					}
+					_registers->EVSYS_CHANNEL[channel - 1] = 0;
 				}
 				return;
 			case 5:
-				//disable AC if it is enabled
-				_registers->AC_CTRLA = 0;
+				//disable AC OUT
+				_registers->AC_CTRLA &= ~0b01000000;
 				if(!(_registers->PORTMUX_CCLROUTEA & 0x8))
 					return;
 				_registers->CCL_LUT3CTRLA = 0;
 				if(_registers->EVSYS_CCL_LUT3A > 0)
 				{
-					_registers->EVSYS_CHANNEL[_registers->EVSYS_CCL_LUT3A - 1] = 0;
+					const uint8_t channel = _registers->EVSYS_CCL_LUT3A;
 					_registers->EVSYS_CCL_LUT3A = 0;
+					for(uint8_t i = 0; i < sizeof(_registers->EVSYS_CHANNELUSER); i++)
+					{
+						if(_registers->EVSYS_CHANNELUSER[i] == channel)
+							return;
+					}
+					_registers->EVSYS_CHANNEL[channel - 1] = 0;
 				}
 				return;
 			case 7:
@@ -523,8 +612,14 @@ namespace EmbeddedIOServices
 					_registers->CCL_LUT1CTRLA = 0;
 					if(_registers->EVSYS_CCL_LUT1A > 0)
 					{
-						_registers->EVSYS_CHANNEL[_registers->EVSYS_CCL_LUT1A - 1] = 0;
+						const uint8_t channel = _registers->EVSYS_CCL_LUT1A;
 						_registers->EVSYS_CCL_LUT1A = 0;
+						for(uint8_t i = 0; i < sizeof(_registers->EVSYS_CHANNELUSER); i++)
+						{
+							if(_registers->EVSYS_CHANNELUSER[i] == channel)
+								return;
+						}
+						_registers->EVSYS_CHANNEL[channel - 1] = 0;
 					}
 					return;
 				}
@@ -533,9 +628,15 @@ namespace EmbeddedIOServices
 					return;
 				if(_registers->EVSYS_EVOUTA > 0)
 				{
-					_registers->EVSYS_CHANNEL[_registers->EVSYS_EVOUTA - 1] = 0;
+					const uint8_t channel = _registers->EVSYS_EVOUTA;
 					_registers->EVSYS_EVOUTA = 0;
 					_registers->PORTA_PINCTRL[7] &= ~0x80;
+					for(uint8_t i = 0; i < sizeof(_registers->EVSYS_CHANNELUSER); i++)
+					{
+						if(_registers->EVSYS_CHANNELUSER[i] == channel)
+							return;
+					}
+					_registers->EVSYS_CHANNEL[channel - 1] = 0;
 				}
 				return;
 			case 10:
@@ -544,9 +645,15 @@ namespace EmbeddedIOServices
 					return;
 				if(_registers->EVSYS_EVOUTB > 0)
 				{
-					_registers->EVSYS_CHANNEL[_registers->EVSYS_EVOUTB - 1] = 0;
+					const uint8_t channel = _registers->EVSYS_EVOUTB;
 					_registers->EVSYS_EVOUTB = 0;
 					_registers->PORTB_PINCTRL[2] &= ~0x80;
+					for(uint8_t i = 0; i < sizeof(_registers->EVSYS_CHANNELUSER); i++)
+					{
+						if(_registers->EVSYS_CHANNELUSER[i] == channel)
+							return;
+					}
+					_registers->EVSYS_CHANNEL[channel - 1] = 0;
 				}
 				return;
 			case 11:
@@ -556,8 +663,14 @@ namespace EmbeddedIOServices
 				_registers->CCL_LUT2CTRLA = 0;
 				if(_registers->EVSYS_CCL_LUT2A > 0)
 				{
-					_registers->EVSYS_CHANNEL[_registers->EVSYS_CCL_LUT2A - 1] = 0;
+					const uint8_t channel = _registers->EVSYS_CCL_LUT2A;
 					_registers->EVSYS_CCL_LUT2A = 0;
+					for(uint8_t i = 0; i < sizeof(_registers->EVSYS_CHANNELUSER); i++)
+					{
+						if(_registers->EVSYS_CHANNELUSER[i] == channel)
+							return;
+					}
+					_registers->EVSYS_CHANNEL[channel - 1] = 0;
 				}
 				return;
 			case 12:
@@ -567,8 +680,14 @@ namespace EmbeddedIOServices
 				_registers->CCL_LUT0CTRLA = 0;
 				if(_registers->EVSYS_CCL_LUT0A > 0)
 				{
-					_registers->EVSYS_CHANNEL[_registers->EVSYS_CCL_LUT0A - 1] = 0;
+					const uint8_t channel = _registers->EVSYS_CCL_LUT0A;
 					_registers->EVSYS_CCL_LUT0A = 0;
+					for(uint8_t i = 0; i < sizeof(_registers->EVSYS_CHANNELUSER); i++)
+					{
+						if(_registers->EVSYS_CHANNELUSER[i] == channel)
+							return;
+					}
+					_registers->EVSYS_CHANNEL[channel - 1] = 0;
 				}
 				return;
 			case 14:
@@ -578,8 +697,14 @@ namespace EmbeddedIOServices
 				_registers->CCL_LUT2CTRLA = 0;
 				if(_registers->EVSYS_CCL_LUT2A > 0)
 				{
-					_registers->EVSYS_CHANNEL[_registers->EVSYS_CCL_LUT2A - 1] = 0;
+					const uint8_t channel = _registers->EVSYS_CCL_LUT2A;
 					_registers->EVSYS_CCL_LUT2A = 0;
+					for(uint8_t i = 0; i < sizeof(_registers->EVSYS_CHANNELUSER); i++)
+					{
+						if(_registers->EVSYS_CHANNELUSER[i] == channel)
+							return;
+					}
+					_registers->EVSYS_CHANNEL[channel - 1] = 0;
 				}
 				return;
 			case 15:
@@ -588,9 +713,15 @@ namespace EmbeddedIOServices
 					return;
 				if(_registers->EVSYS_EVOUTB > 0)
 				{
-					_registers->EVSYS_CHANNEL[_registers->EVSYS_EVOUTB - 1] = 0;
+					const uint8_t channel = _registers->EVSYS_EVOUTB;
 					_registers->EVSYS_EVOUTB = 0;
 					_registers->PORTB_PINCTRL[7] &= ~0x80;
+					for(uint8_t i = 0; i < sizeof(_registers->EVSYS_CHANNELUSER); i++)
+					{
+						if(_registers->EVSYS_CHANNELUSER[i] == channel)
+							return;
+					}
+					_registers->EVSYS_CHANNEL[channel - 1] = 0;
 				}
 				return;
 			case 17:
@@ -600,8 +731,14 @@ namespace EmbeddedIOServices
 				_registers->CCL_LUT1CTRLA = 0;
 				if(_registers->EVSYS_CCL_LUT1A > 0)
 				{
-					_registers->EVSYS_CHANNEL[_registers->EVSYS_CCL_LUT1A - 1] = 0;
+					const uint8_t channel = _registers->EVSYS_CCL_LUT1A;
 					_registers->EVSYS_CCL_LUT1A = 0;
+					for(uint8_t i = 0; i < sizeof(_registers->EVSYS_CHANNELUSER); i++)
+					{
+						if(_registers->EVSYS_CHANNELUSER[i] == channel)
+							return;
+					}
+					_registers->EVSYS_CHANNEL[channel - 1] = 0;
 				}
 				return;
 			case 18:
@@ -610,9 +747,15 @@ namespace EmbeddedIOServices
 				//EVOUTC
 				if(_registers->EVSYS_EVOUTC > 0)
 				{
-					_registers->EVSYS_CHANNEL[_registers->EVSYS_EVOUTC - 1] = 0;
+					const uint8_t channel = _registers->EVSYS_EVOUTC;
 					_registers->EVSYS_EVOUTC = 0;
 					_registers->PORTC_PINCTRL[2] &= ~0x80;
+					for(uint8_t i = 0; i < sizeof(_registers->EVSYS_CHANNELUSER); i++)
+					{
+						if(_registers->EVSYS_CHANNELUSER[i] == channel)
+							return;
+					}
+					_registers->EVSYS_CHANNEL[channel - 1] = 0;
 				}
 				return;
 			case 20:
@@ -621,8 +764,14 @@ namespace EmbeddedIOServices
 					return;
 				if(_registers->EVSYS_CCL_LUT3A > 0)
 				{
-					_registers->EVSYS_CHANNEL[_registers->EVSYS_CCL_LUT3A - 1] = 0;
+					const uint8_t channel = _registers->EVSYS_CCL_LUT3A;
 					_registers->EVSYS_CCL_LUT3A = 0;
+					for(uint8_t i = 0; i < sizeof(_registers->EVSYS_CHANNELUSER); i++)
+					{
+						if(_registers->EVSYS_CHANNELUSER[i] == channel)
+							return;
+					}
+					_registers->EVSYS_CHANNEL[channel - 1] = 0;
 				}
 				return;
 		}
