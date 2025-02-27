@@ -203,13 +203,13 @@ namespace EmbeddedIOServices
 			if(inputPin < 8)
 			{
 				if(EVSYS_CHANNEL[0] == 0 || EVSYS_CHANNEL[0] == ((inputPin & 0x7) | 0x40))
-					return { 0, (inputPin & 0x7) | 0x40 };
+					return { 0, (uint8_t)((inputPin & 0x7) | 0x40) };
 				if(EVSYS_CHANNEL[1] == 0 || EVSYS_CHANNEL[1] == ((inputPin & 0x7) | 0x40))
-					return { 1, (inputPin & 0x7) | 0x40 };
+					return { 1, (uint8_t)((inputPin & 0x7) | 0x40) };
 				if(EVSYS_CHANNEL[2] == 0 || EVSYS_CHANNEL[2] == ((inputPin & 0x7) | 0x48))
-					return { 2, (inputPin & 0x7) | 0x48 };
+					return { 2, (uint8_t)((inputPin & 0x7) | 0x48) };
 				if(EVSYS_CHANNEL[3] == 0 || EVSYS_CHANNEL[3] == ((inputPin & 0x7) | 0x48))
-					return { 3, (inputPin & 0x7) | 0x48 };
+					return { 3, (uint8_t)((inputPin & 0x7) | 0x48) };
 				if(depth > 1)
 					return { -1 };
 				const ATTiny427Expander_EVSysChannel channel0ReassignTo = (EVSYS_CHANNEL[0] & 0xF0) == 0x40? 
@@ -250,13 +250,13 @@ namespace EmbeddedIOServices
 			if(inputPin < 16)
 			{
 				if(EVSYS_CHANNEL[4] == 0 || EVSYS_CHANNEL[4] == ((inputPin & 0x7) | 0x40))
-					return { 4, (inputPin & 0x7) | 0x40 };
+					return { 4, (uint8_t)((inputPin & 0x7) | 0x40) };
 				if(EVSYS_CHANNEL[5] == 0 || EVSYS_CHANNEL[5] == ((inputPin & 0x7) | 0x40))
-					return { 5, (inputPin & 0x7) | 0x40 };
+					return { 5, (uint8_t)((inputPin & 0x7) | 0x40) };
 				if(EVSYS_CHANNEL[0] == 0 || EVSYS_CHANNEL[0] == ((inputPin & 0x7) | 0x48))
-					return { 0, (inputPin & 0x7) | 0x48 };
+					return { 0, (uint8_t)((inputPin & 0x7) | 0x48) };
 				if(EVSYS_CHANNEL[1] == 0 || EVSYS_CHANNEL[1] == ((inputPin & 0x7) | 0x48))
-					return { 1, (inputPin & 0x7) | 0x48 };
+					return { 1, (uint8_t)((inputPin & 0x7) | 0x48) };
 				if(depth > 1)
 					return { -1 };
 				const ATTiny427Expander_EVSysChannel channel4ReassignTo = (EVSYS_CHANNEL[4] & 0xF0) == 0x40? 
@@ -296,13 +296,13 @@ namespace EmbeddedIOServices
 			if(inputPin < 24)
 			{
 				if(EVSYS_CHANNEL[2] == 0 || EVSYS_CHANNEL[2] == ((inputPin & 0x7) | 0x40))
-					return { 2, (inputPin & 0x7) | 0x40 };
+					return { 2, (uint8_t)((inputPin & 0x7) | 0x40) };
 				if(EVSYS_CHANNEL[3] == 0 || EVSYS_CHANNEL[3] == ((inputPin & 0x7) | 0x40))
-					return { 3, (inputPin & 0x7) | 0x40 };
+					return { 3, (uint8_t)((inputPin & 0x7) | 0x40) };
 				if(EVSYS_CHANNEL[4] == 0 || EVSYS_CHANNEL[4] == ((inputPin & 0x7) | 0x48))
-					return { 4, (inputPin & 0x7) | 0x48 };
+					return { 4, (uint8_t)((inputPin & 0x7) | 0x48) };
 				if(EVSYS_CHANNEL[5] == 0 || EVSYS_CHANNEL[5] == ((inputPin & 0x7) | 0x48))
-					return { 5, (inputPin & 0x7) | 0x48 };
+					return { 5, (uint8_t)((inputPin & 0x7) | 0x48) };
 				if(depth > 1)
 					return { -1 };
 				const ATTiny427Expander_EVSysChannel channel2ReassignTo = (EVSYS_CHANNEL[2] & 0xF0) == 0x40? 

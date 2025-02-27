@@ -182,7 +182,7 @@ namespace EmbeddedIOServices
 				//primarily use ACOUT since it does not have any alternates and doesn't use any EventChannels
 				if(useAC)
 				{
-					_registers->AC_CTRLA != 0b01000000; //enable output
+					_registers->AC_CTRLA |= 0b01000000; //enable output
 					_registers->AC_MUXCTRLA |= (inverted? 0b10000000 : 0);
 					return true;
 				}
