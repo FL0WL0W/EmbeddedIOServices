@@ -67,16 +67,37 @@ namespace Esp32
 		if (pin == 0xFFFF)
 			return;
 
+		if(value.Period == std::numeric_limits<float>::quiet_NaN() || value.PulseWidth == std::numeric_limits<float>::quiet_NaN())
+			return;
+
 		auto handleIterator = _pinHandleMap.find(pin);
 
 		if(handleIterator != _pinHandleMap.end()) 
 		{
 			const int frequency = 1 / value.Period;
-			const int duty_resolution = ledc_find_suitable_duty_resolution(80000000, frequency);
-			const uint32_t duty = (value.PulseWidth / value.Period) * pow(2, duty_resolution);
-			ledc_timer_set(LEDC_LOW_SPEED_MODE, (ledc_timer_t)handleIterator->second.Timer, frequency, duty_resolution, LEDC_SCLK);
-			ledc_set_duty(LEDC_LOW_SPEED_MODE, (ledc_channel_t)handleIterator->second.Channel, duty);
-			ledc_update_duty(LEDC_LOW_SPEED_MODE, (ledc_channel_t)handleIterator->second.Channel);
+			//this is kinda hacky but it handle edgecase where output should be high
+			if(value.PulseWidth < 0 || value.PulseWidth == std::numeric_limits<float>::infinity())
+			{
+				ledc_timer_set(LEDC_LOW_SPEED_MODE, (ledc_timer_t)handleIterator->second.Timer, 1, 1, LEDC_SCLK);
+				ledc_set_duty(LEDC_LOW_SPEED_MODE, (ledc_channel_t)handleIterator->second.Channel, 2);
+				ledc_update_duty(LEDC_LOW_SPEED_MODE, (ledc_channel_t)handleIterator->second.Channel);
+			}
+			else if(frequency < 1)
+			{
+				ledc_timer_set(LEDC_LOW_SPEED_MODE, (ledc_timer_t)handleIterator->second.Timer, 1, 1, LEDC_SCLK);
+				ledc_set_duty(LEDC_LOW_SPEED_MODE, (ledc_channel_t)handleIterator->second.Channel, 0);
+				ledc_update_duty(LEDC_LOW_SPEED_MODE, (ledc_channel_t)handleIterator->second.Channel);
+			}
+			else
+			{
+				const int duty_resolution = ledc_find_suitable_duty_resolution(80000000, frequency);
+				const uint32_t precision = 1 << duty_resolution;
+				const uint32_t div_param = (((uint64_t) 80000000 << 8) + frequency * precision / 2) / (frequency * precision);
+				const uint32_t duty = (value.PulseWidth / value.Period) * precision;
+				ledc_timer_set(LEDC_LOW_SPEED_MODE, (ledc_timer_t)handleIterator->second.Timer, div_param, duty_resolution, LEDC_SCLK);
+				ledc_set_duty(LEDC_LOW_SPEED_MODE, (ledc_channel_t)handleIterator->second.Channel, duty);
+				ledc_update_duty(LEDC_LOW_SPEED_MODE, (ledc_channel_t)handleIterator->second.Channel);
+			}
 		}
 	}
 }
