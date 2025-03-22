@@ -43,8 +43,8 @@ namespace EmbeddedIOServices
 				CommunicationService_W80xUART0 = ret = new CommunicationService_W80xUART(rxFifoSize, txFifoSize);
 
     		RCC->CLK_EN |= RCC_CLK_EN_UART0 | RCC_CLK_EN_GPIO;
-			__HAL_AFIO_REMAP_UART0_TX((pinTX > 32? GPIOB : GPIOA), 1 << (pinTX % 32));
-			__HAL_AFIO_REMAP_UART0_RX((pinRX > 32? GPIOB : GPIOA), 1 << (pinRX % 32));
+			__HAL_AFIO_REMAP_UART0_TX((pinTX > 32? GPIOB : GPIOA), 1u << (pinTX % 32));
+			__HAL_AFIO_REMAP_UART0_RX((pinRX > 32? GPIOB : GPIOA), 1u << (pinRX % 32));
 			csi_vic_set_prio(UART0_IRQn, 3);
 			csi_vic_enable_irq(UART0_IRQn);
 			break;
@@ -54,8 +54,8 @@ namespace EmbeddedIOServices
 			else
 				CommunicationService_W80xUART1 = ret = new CommunicationService_W80xUART(rxFifoSize, txFifoSize);
     		RCC->CLK_EN |= RCC_CLK_EN_UART1 | RCC_CLK_EN_GPIO;
-			__HAL_AFIO_REMAP_UART1_TX((pinTX > 32? GPIOB : GPIOA), 1 << (pinTX % 32));
-			__HAL_AFIO_REMAP_UART1_RX((pinRX > 32? GPIOB : GPIOA), 1 << (pinRX % 32));
+			__HAL_AFIO_REMAP_UART1_TX((pinTX > 32? GPIOB : GPIOA), 1u << (pinTX % 32));
+			__HAL_AFIO_REMAP_UART1_RX((pinRX > 32? GPIOB : GPIOA), 1u << (pinRX % 32));
 			csi_vic_set_prio(UART1_IRQn, 3);
 			csi_vic_enable_irq(UART1_IRQn);
 			break;
@@ -65,8 +65,8 @@ namespace EmbeddedIOServices
 			else
 				CommunicationService_W80xUART2 = ret = new CommunicationService_W80xUART(rxFifoSize, txFifoSize);
     		RCC->CLK_EN |= RCC_CLK_EN_UART2 | RCC_CLK_EN_GPIO;
-			__HAL_AFIO_REMAP_UART2_TX((pinTX > 32? GPIOB : GPIOA), 1 << (pinTX % 32));
-			__HAL_AFIO_REMAP_UART2_RX((pinRX > 32? GPIOB : GPIOA), 1 << (pinRX % 32));
+			__HAL_AFIO_REMAP_UART2_TX((pinTX > 32? GPIOB : GPIOA), 1u << (pinTX % 32));
+			__HAL_AFIO_REMAP_UART2_RX((pinRX > 32? GPIOB : GPIOA), 1u << (pinRX % 32));
 			csi_vic_set_prio(UART2_5_IRQn, 3);
 			csi_vic_enable_irq(UART2_5_IRQn);
 			break;
@@ -76,8 +76,8 @@ namespace EmbeddedIOServices
 			else
 				CommunicationService_W80xUART3 = ret = new CommunicationService_W80xUART(rxFifoSize, txFifoSize);
     		RCC->CLK_EN |= RCC_CLK_EN_UART3 | RCC_CLK_EN_GPIO;
-			__HAL_AFIO_REMAP_UART3_TX((pinTX > 32? GPIOB : GPIOA), 1 << (pinTX % 32));
-			__HAL_AFIO_REMAP_UART3_RX((pinRX > 32? GPIOB : GPIOA), 1 << (pinRX % 32));
+			__HAL_AFIO_REMAP_UART3_TX((pinTX > 32? GPIOB : GPIOA), 1u << (pinTX % 32));
+			__HAL_AFIO_REMAP_UART3_RX((pinRX > 32? GPIOB : GPIOA), 1u << (pinRX % 32));
 			csi_vic_set_prio(UART2_5_IRQn, 3);
 			csi_vic_enable_irq(UART2_5_IRQn);
 			break;
@@ -87,8 +87,8 @@ namespace EmbeddedIOServices
 			else
 				CommunicationService_W80xUART4 = ret = new CommunicationService_W80xUART(rxFifoSize, txFifoSize);
     		RCC->CLK_EN |= RCC_CLK_EN_UART4 | RCC_CLK_EN_GPIO;
-			__HAL_AFIO_REMAP_UART4_TX((pinTX > 32? GPIOB : GPIOA), 1 << (pinTX % 32));
-			__HAL_AFIO_REMAP_UART4_RX((pinRX > 32? GPIOB : GPIOA), 1 << (pinRX % 32));
+			__HAL_AFIO_REMAP_UART4_TX((pinTX > 32? GPIOB : GPIOA), 1u << (pinTX % 32));
+			__HAL_AFIO_REMAP_UART4_RX((pinRX > 32? GPIOB : GPIOA), 1u << (pinRX % 32));
 			csi_vic_set_prio(UART2_5_IRQn, 3);
 			csi_vic_enable_irq(UART2_5_IRQn);
 			break;
@@ -98,8 +98,8 @@ namespace EmbeddedIOServices
 			else
 				CommunicationService_W80xUART5 = ret = new CommunicationService_W80xUART(rxFifoSize, txFifoSize);
     		RCC->CLK_EN |= RCC_CLK_EN_UART5 | RCC_CLK_EN_GPIO;
-			__HAL_AFIO_REMAP_UART5_TX((pinTX > 32? GPIOB : GPIOA), 1 << (pinTX % 32));
-			__HAL_AFIO_REMAP_UART5_RX((pinRX > 32? GPIOB : GPIOA), 1 << (pinRX % 32));
+			__HAL_AFIO_REMAP_UART5_TX((pinTX > 32? GPIOB : GPIOA), 1u << (pinTX % 32));
+			__HAL_AFIO_REMAP_UART5_RX((pinRX > 32? GPIOB : GPIOA), 1u << (pinRX % 32));
 			csi_vic_set_prio(UART2_5_IRQn, 3);
 			csi_vic_enable_irq(UART2_5_IRQn);
 			break;
