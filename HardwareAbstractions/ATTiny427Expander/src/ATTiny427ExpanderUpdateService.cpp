@@ -180,8 +180,10 @@ namespace EmbeddedIOServices
             }
         }
     }
-    size_t ATTiny427ExpanderUpdateService::Transmit(uint8_t data[1024])
+    size_t ATTiny427ExpanderUpdateService::Transmit(uint8_t data[1024], bool first)
     {
+        if(_first)
+            first = true;
         ATTiny427Expander_Registers transmitRegisters = *_registers;
         //make sure we don't lock ourselves out
         switch(transmitRegisters.Comm)
@@ -213,12 +215,12 @@ namespace EmbeddedIOServices
                 break;
         }
 
-        const bool resetAccumulate = transmitRegisters.AnalogAccumulate != _previousRegisters.AnalogAccumulate || transmitRegisters.AnalogEnable != _previousRegisters.AnalogEnable || _first;
-        const bool analogStop = transmitRegisters.AnalogEnable == 0 && (_analogRunning || _first);
-        const bool analogStart = transmitRegisters.AnalogEnable != 0 && (!_analogRunning || _first);
-        const bool GPIOR0_changed = transmitRegisters.GPIOR0 != _previousRegisters.GPIOR0 || _first;
-        const bool GPIOR1_changed = transmitRegisters.GPIOR1 != _previousRegisters.GPIOR1 || _first;
-        const bool GPIOR2_changed = transmitRegisters.GPIOR2 != _previousRegisters.GPIOR2 || _first;
+        const bool resetAccumulate = transmitRegisters.AnalogAccumulate != _previousRegisters.AnalogAccumulate || transmitRegisters.AnalogEnable != _previousRegisters.AnalogEnable || first;
+        const bool analogStop = transmitRegisters.AnalogEnable == 0 && (_analogRunning || first);
+        const bool analogStart = transmitRegisters.AnalogEnable != 0 && (!_analogRunning || first);
+        const bool GPIOR0_changed = transmitRegisters.GPIOR0 != _previousRegisters.GPIOR0 || first;
+        const bool GPIOR1_changed = transmitRegisters.GPIOR1 != _previousRegisters.GPIOR1 || first;
+        const bool GPIOR2_changed = transmitRegisters.GPIOR2 != _previousRegisters.GPIOR2 || first;
         const bool PORTA_PINCTRL_changed =  transmitRegisters.PORTA_PINCTRL[0] != _previousRegisters.PORTA_PINCTRL[0] ||
                                             transmitRegisters.PORTA_PINCTRL[1] != _previousRegisters.PORTA_PINCTRL[1] ||
                                             transmitRegisters.PORTA_PINCTRL[2] != _previousRegisters.PORTA_PINCTRL[2] ||
@@ -227,7 +229,7 @@ namespace EmbeddedIOServices
                                             transmitRegisters.PORTA_PINCTRL[5] != _previousRegisters.PORTA_PINCTRL[5] ||
                                             transmitRegisters.PORTA_PINCTRL[6] != _previousRegisters.PORTA_PINCTRL[6] ||
                                             transmitRegisters.PORTA_PINCTRL[7] != _previousRegisters.PORTA_PINCTRL[7] ||
-                                            _first;
+                                            first;
         const bool PORTB_PINCTRL_changed =  transmitRegisters.PORTB_PINCTRL[0] != _previousRegisters.PORTB_PINCTRL[0] ||
                                             transmitRegisters.PORTB_PINCTRL[1] != _previousRegisters.PORTB_PINCTRL[1] ||
                                             transmitRegisters.PORTB_PINCTRL[2] != _previousRegisters.PORTB_PINCTRL[2] ||
@@ -236,33 +238,33 @@ namespace EmbeddedIOServices
                                             transmitRegisters.PORTB_PINCTRL[5] != _previousRegisters.PORTB_PINCTRL[5] ||
                                             transmitRegisters.PORTB_PINCTRL[6] != _previousRegisters.PORTB_PINCTRL[6] ||
                                             transmitRegisters.PORTB_PINCTRL[7] != _previousRegisters.PORTB_PINCTRL[7] ||
-                                            _first;
+                                            first;
         const bool PORTC_PINCTRL_changed =  transmitRegisters.PORTC_PINCTRL[0] != _previousRegisters.PORTC_PINCTRL[0] ||
                                             transmitRegisters.PORTC_PINCTRL[1] != _previousRegisters.PORTC_PINCTRL[1] ||
                                             transmitRegisters.PORTC_PINCTRL[2] != _previousRegisters.PORTC_PINCTRL[2] ||
                                             transmitRegisters.PORTC_PINCTRL[3] != _previousRegisters.PORTC_PINCTRL[3] ||
                                             transmitRegisters.PORTC_PINCTRL[4] != _previousRegisters.PORTC_PINCTRL[4] ||
                                             transmitRegisters.PORTC_PINCTRL[5] != _previousRegisters.PORTC_PINCTRL[5] ||
-                                            _first;
-        const bool PORTC_OUT_changed = transmitRegisters.PORTC_OUT != _previousRegisters.PORTC_OUT || _first;
-        const bool PORTB_OUT_changed = transmitRegisters.PORTB_OUT != _previousRegisters.PORTB_OUT || _first;
-        const bool PORTA_OUT_changed = transmitRegisters.PORTA_OUT != _previousRegisters.PORTA_OUT || _first;
-        const bool PORTC_DIR_changed = transmitRegisters.PORTC_DIR != _previousRegisters.PORTC_DIR || _first;
-        const bool PORTB_DIR_changed = transmitRegisters.PORTB_DIR != _previousRegisters.PORTB_DIR || _first;
-        const bool PORTA_DIR_changed = transmitRegisters.PORTA_DIR != _previousRegisters.PORTA_DIR || _first;
-        const bool AC_CTRLA_changed = transmitRegisters.AC_CTRLA != _previousRegisters.AC_CTRLA || _first;
-        const bool AC_MUXCTRLA_changed = transmitRegisters.AC_MUXCTRLA != _previousRegisters.AC_MUXCTRLA || _first;
-        const bool AC_DACREF_changed = transmitRegisters.AC_DACREF != _previousRegisters.AC_DACREF || _first;
+                                            first;
+        const bool PORTC_OUT_changed = transmitRegisters.PORTC_OUT != _previousRegisters.PORTC_OUT || first;
+        const bool PORTB_OUT_changed = transmitRegisters.PORTB_OUT != _previousRegisters.PORTB_OUT || first;
+        const bool PORTA_OUT_changed = transmitRegisters.PORTA_OUT != _previousRegisters.PORTA_OUT || first;
+        const bool PORTC_DIR_changed = transmitRegisters.PORTC_DIR != _previousRegisters.PORTC_DIR || first;
+        const bool PORTB_DIR_changed = transmitRegisters.PORTB_DIR != _previousRegisters.PORTB_DIR || first;
+        const bool PORTA_DIR_changed = transmitRegisters.PORTA_DIR != _previousRegisters.PORTA_DIR || first;
+        const bool AC_CTRLA_changed = transmitRegisters.AC_CTRLA != _previousRegisters.AC_CTRLA || first;
+        const bool AC_MUXCTRLA_changed = transmitRegisters.AC_MUXCTRLA != _previousRegisters.AC_MUXCTRLA || first;
+        const bool AC_DACREF_changed = transmitRegisters.AC_DACREF != _previousRegisters.AC_DACREF || first;
 
-		const bool PORTMUX_EVSYSROUTEA_changed = transmitRegisters.PORTMUX_EVSYSROUTEA != _previousRegisters.PORTMUX_EVSYSROUTEA || _first;
-		const bool PORTMUX_CCLROUTEA_changed = transmitRegisters.PORTMUX_CCLROUTEA != _previousRegisters.PORTMUX_CCLROUTEA || _first;
+		const bool PORTMUX_EVSYSROUTEA_changed = transmitRegisters.PORTMUX_EVSYSROUTEA != _previousRegisters.PORTMUX_EVSYSROUTEA || first;
+		const bool PORTMUX_CCLROUTEA_changed = transmitRegisters.PORTMUX_CCLROUTEA != _previousRegisters.PORTMUX_CCLROUTEA || first;
         const bool EVSYS_CHANNEL_changed =  transmitRegisters.EVSYS_CHANNEL[0] != _previousRegisters.EVSYS_CHANNEL[0] ||
                                             transmitRegisters.EVSYS_CHANNEL[1] != _previousRegisters.EVSYS_CHANNEL[1] ||
                                             transmitRegisters.EVSYS_CHANNEL[2] != _previousRegisters.EVSYS_CHANNEL[2] ||
                                             transmitRegisters.EVSYS_CHANNEL[3] != _previousRegisters.EVSYS_CHANNEL[3] ||
                                             transmitRegisters.EVSYS_CHANNEL[4] != _previousRegisters.EVSYS_CHANNEL[4] ||
                                             transmitRegisters.EVSYS_CHANNEL[5] != _previousRegisters.EVSYS_CHANNEL[5] ||
-                                            _first;
+                                            first;
 
         const bool EVSYS_USER_changed = transmitRegisters.EVSYS_CCL_LUT0A != _previousRegisters.EVSYS_CCL_LUT0A ||
                                         transmitRegisters.EVSYS_CCL_LUT1A != _previousRegisters.EVSYS_CCL_LUT1A ||
@@ -271,41 +273,41 @@ namespace EmbeddedIOServices
                                         transmitRegisters.EVSYS_EVOUTA != _previousRegisters.EVSYS_EVOUTA ||
                                         transmitRegisters.EVSYS_EVOUTB != _previousRegisters.EVSYS_EVOUTB ||
                                         transmitRegisters.EVSYS_EVOUTC != _previousRegisters.EVSYS_EVOUTC ||
-                                        _first;
+                                        first;
                                             
-        const bool EVSYS_TCB0_changed = transmitRegisters.EVSYS_TCB0_CAPT != _previousRegisters.EVSYS_TCB0_CAPT || _first;
-        const bool EVSYS_TCB1_changed = transmitRegisters.EVSYS_TCB1_CAPT != _previousRegisters.EVSYS_TCB1_CAPT || _first;
+        const bool EVSYS_TCB0_changed = transmitRegisters.EVSYS_TCB0_CAPT != _previousRegisters.EVSYS_TCB0_CAPT || first;
+        const bool EVSYS_TCB1_changed = transmitRegisters.EVSYS_TCB1_CAPT != _previousRegisters.EVSYS_TCB1_CAPT || first;
 
-        const bool CCL_CTRLA_changed = transmitRegisters.CCL_CTRLA != _previousRegisters.CCL_CTRLA || _first;
+        const bool CCL_CTRLA_changed = transmitRegisters.CCL_CTRLA != _previousRegisters.CCL_CTRLA || first;
 
         const bool CCL_LUT0_changed =   transmitRegisters.CCL_LUT0CTRLA != _previousRegisters.CCL_LUT0CTRLA ||
                                         transmitRegisters.CCL_LUT0CTRLB != _previousRegisters.CCL_LUT0CTRLB ||
                                         transmitRegisters.CCL_LUT0CTRLC != _previousRegisters.CCL_LUT0CTRLC ||
                                         transmitRegisters.CCL_LUT0TRUTH != _previousRegisters.CCL_LUT0TRUTH ||
-                                        _first;
+                                        first;
         const bool CCL_LUT1_changed =   transmitRegisters.CCL_LUT1CTRLA != _previousRegisters.CCL_LUT1CTRLA ||
                                         transmitRegisters.CCL_LUT1CTRLB != _previousRegisters.CCL_LUT1CTRLB ||
                                         transmitRegisters.CCL_LUT1CTRLC != _previousRegisters.CCL_LUT1CTRLC ||
                                         transmitRegisters.CCL_LUT1TRUTH != _previousRegisters.CCL_LUT1TRUTH ||
-                                        _first;
+                                        first;
         const bool CCL_LUT2_changed =   transmitRegisters.CCL_LUT2CTRLA != _previousRegisters.CCL_LUT2CTRLA ||
                                         transmitRegisters.CCL_LUT2CTRLB != _previousRegisters.CCL_LUT2CTRLB ||
                                         transmitRegisters.CCL_LUT2CTRLC != _previousRegisters.CCL_LUT2CTRLC ||
                                         transmitRegisters.CCL_LUT2TRUTH != _previousRegisters.CCL_LUT2TRUTH ||
-                                        _first;
+                                        first;
         const bool CCL_LUT3_changed =   transmitRegisters.CCL_LUT3CTRLA != _previousRegisters.CCL_LUT3CTRLA ||
                                         transmitRegisters.CCL_LUT3CTRLB != _previousRegisters.CCL_LUT3CTRLB ||
                                         transmitRegisters.CCL_LUT3CTRLC != _previousRegisters.CCL_LUT3CTRLC ||
                                         transmitRegisters.CCL_LUT3TRUTH != _previousRegisters.CCL_LUT3TRUTH ||
-                                        _first;
-        const bool TCA_CTRLA_changed = transmitRegisters.TCA_CTRLA != _previousRegisters.TCA_CTRLA || _first;
-        const bool TCA_CTRLB_changed = transmitRegisters.TCA_CTRLB != _previousRegisters.TCA_CTRLB || _first;
-        const bool TCA_CTRLC_changed = transmitRegisters.TCA_CTRLC != _previousRegisters.TCA_CTRLC || _first;
-        const bool TCA_CTRLD_changed = transmitRegisters.TCA_CTRLD != _previousRegisters.TCA_CTRLD || _first;
-        const bool TCA_PERBUF_changed = transmitRegisters.TCA_PERBUF != _previousRegisters.TCA_PERBUF || _first;
-        const bool TCA_CMP0BUF_changed = transmitRegisters.TCA_CMP0BUF != _previousRegisters.TCA_CMP0BUF || _first;
-        const bool TCA_CMP1BUF_changed = transmitRegisters.TCA_CMP1BUF != _previousRegisters.TCA_CMP1BUF || _first;
-        const bool TCA_CMP2BUF_changed = transmitRegisters.TCA_CMP2BUF != _previousRegisters.TCA_CMP2BUF || _first;
+                                        first;
+        const bool TCA_CTRLA_changed = transmitRegisters.TCA_CTRLA != _previousRegisters.TCA_CTRLA || first;
+        const bool TCA_CTRLB_changed = transmitRegisters.TCA_CTRLB != _previousRegisters.TCA_CTRLB || first;
+        const bool TCA_CTRLC_changed = transmitRegisters.TCA_CTRLC != _previousRegisters.TCA_CTRLC || first;
+        const bool TCA_CTRLD_changed = transmitRegisters.TCA_CTRLD != _previousRegisters.TCA_CTRLD || first;
+        const bool TCA_PERBUF_changed = transmitRegisters.TCA_PERBUF != _previousRegisters.TCA_PERBUF || first;
+        const bool TCA_CMP0BUF_changed = transmitRegisters.TCA_CMP0BUF != _previousRegisters.TCA_CMP0BUF || first;
+        const bool TCA_CMP1BUF_changed = transmitRegisters.TCA_CMP1BUF != _previousRegisters.TCA_CMP1BUF || first;
+        const bool TCA_CMP2BUF_changed = transmitRegisters.TCA_CMP2BUF != _previousRegisters.TCA_CMP2BUF || first;
 
         uint16_t dataIndex = 0;
         uint16_t currentReadFinishedIndex = 0;

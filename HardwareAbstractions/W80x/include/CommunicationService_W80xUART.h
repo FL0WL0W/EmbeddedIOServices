@@ -32,6 +32,8 @@ namespace EmbeddedIOServices
 
 		static CommunicationService_W80xUART *Create(
 			uint8_t uart, 
+			uint8_t pinTX,
+			uint8_t pinRX,
 			size_t rxFifoSize,
 			size_t txFifoSize,
 			uint32_t baud, 
