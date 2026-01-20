@@ -92,98 +92,48 @@ namespace EmbeddedIOServices
 
 	void ITimerService::ScheduleTask(Task *task, tick_t tick)
 	{
-#ifdef ALLOW_TASK_TO_SCHEDULE_IN_CALLBACK
-		_scheduleRequestList.push_front(ScheduleRequest(task, tick));
-#ifndef DO_NOT_FLUSH_ON_SCHEDULE
-		FlushScheduleRequests();
-#endif
-	}
+		//remove all unscheduled tasks and get begin and end
+		const TaskList::iterator begin = RemoveUnscheduledTasksAndReturnBegin();
+		const TaskList::iterator end = _taskList.end();
 
-	void ITimerService::FlushScheduleRequests()
-	{
-		//only flush schedule request if a flush schedule request is not already running somewhere else. if it is running somewhere else, they will flush it for us
-		if(!_scheduleLock)
+		//find current location 
+		const TaskList::iterator currentLocation = std::find(begin, end, task);
+
+		//find new location
+		const TaskList::iterator newLocation = std::find_if(begin, end, [tick](Task *taskFind) {
+			return TickLessThanTick(tick, taskFind->ScheduledTick);
+		});
+
+		//reschedule
+		if(currentLocation != end)
 		{
-			_scheduleLock = true;
-
-			RemoveRequestList::iterator removeRequest;
-			while((removeRequest = _removeRequestList.begin()) != _removeRequestList.end())
+			TaskList::iterator afterCurrentLocation = currentLocation;
+			afterCurrentLocation++;
+			if(newLocation != currentLocation && newLocation != afterCurrentLocation)
 			{
-				_taskList.remove(*removeRequest);
-				_removeRequestList.pop_front();
-				(*removeRequest)->Scheduled = false;
-			}
-
-			ScheduleRequestList::iterator scheduleRequest;
-			while((scheduleRequest = _scheduleRequestList.begin()) != _scheduleRequestList.end())
-			{
-				Task * const task = scheduleRequest->TaskToSchedule;
-				const tick_t tick = scheduleRequest->Tick;
-#endif
-				//remove all unscheduled tasks and get begin and end
-				const TaskList::iterator begin = RemoveUnscheduledTasksAndReturnBegin();
-				const TaskList::iterator end = _taskList.end();
-
-				//find current location 
-				const TaskList::iterator currentLocation = std::find(begin, end, task);
-
-				//find new location
-				const TaskList::iterator newLocation = std::find_if(begin, end, [tick](Task *taskFind) {
-					return TickLessThanTick(tick, taskFind->ScheduledTick);
-				});
-
-				//reschedule
-				if(currentLocation != end)
-				{
-					TaskList::iterator afterCurrentLocation = currentLocation;
-					afterCurrentLocation++;
-					if(newLocation != currentLocation && newLocation != afterCurrentLocation)
-					{
-						if(TickLessThanTick(tick, task->ScheduledTick))
-							task->ScheduledTick = tick;
-						_taskList.insert(newLocation, task);
-						_taskList.erase(currentLocation);
-					}
+				if(TickLessThanTick(tick, task->ScheduledTick))
 					task->ScheduledTick = tick;
-				}
-				//schedule
-				else
-				{
-					task->ScheduledTick = tick;
-					task->Scheduled = true;
-					_taskList.insert(newLocation, task);
-				}
-				
-#ifdef ALLOW_TASK_TO_SCHEDULE_IN_CALLBACK
-				_scheduleRequestList.pop_front();
+				_taskList.insert(newLocation, task);
+				_taskList.erase(currentLocation);
 			}
-
-#endif
-			ScheduleCallBack((*_taskList.begin())->ScheduledTick - _latency);
-#ifdef ALLOW_TASK_TO_SCHEDULE_IN_CALLBACK
-
-			_scheduleLock = false;
-
-			//make sure we scheduled all tasks. if we interrupted after the while loop, there is a possibility a new task was added
-			if(_scheduleRequestList.begin() != _scheduleRequestList.end() || _removeRequestList.begin() != _removeRequestList.end())
-				FlushScheduleRequests();
+			task->ScheduledTick = tick;
 		}
-#endif
+		//schedule
+		else
+		{
+			task->ScheduledTick = tick;
+			task->Scheduled = true;
+			_taskList.insert(newLocation, task);
+		}
+		ScheduleCallBack((*_taskList.begin())->ScheduledTick - _latency);
 	}
 
 	void ITimerService::UnScheduleTask(Task *task)
 	{
-#ifdef ALLOW_TASK_TO_SCHEDULE_IN_CALLBACK
-		_removeRequestList.push_front(task);
-#ifndef DO_NOT_FLUSH_ON_SCHEDULE
-		FlushScheduleRequests();
-#endif
-#else
 		_taskList.remove(task);
 		task->Scheduled = false;
 		if(_taskList.size() > 0)
 			ScheduleCallBack((*_taskList.begin())->ScheduledTick - _latency);
-#endif
 	}
 }
 #endif

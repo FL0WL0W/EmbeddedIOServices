@@ -42,39 +42,11 @@ namespace EmbeddedIOServices
 
 	};
 
-#ifdef ALLOW_TASK_TO_SCHEDULE_IN_CALLBACK
-	/**
-	 * @brief Structure that contains the pointer to the task and the Tick at which to schedule it
-	 */
-	struct ScheduleRequest
-	{
-		public:
-		//// pointer to the task to be scheduled/unscheduled
-		Task *TaskToSchedule;
-		//// tick when the task is to be scheduled to
-		tick_t Tick;
-
-		//// Constructor that sets up the 2 variables
-		ScheduleRequest(Task *task, tick_t tick) : TaskToSchedule(task), Tick(tick) { }
-	};
-
-	typedef std::forward_list<ScheduleRequest> ScheduleRequestList;
-	typedef std::forward_list<Task *> RemoveRequestList;
-#endif
-
 	typedef std::list<Task *> TaskList;
 
 	class ITimerService
 	{
 	private:
-#ifdef ALLOW_TASK_TO_SCHEDULE_IN_CALLBACK
-		//// stores the schedule task requests for the next time the schedul is unlocked
-		ScheduleRequestList _scheduleRequestList;
-		//// stores the remove task requests for the next time the schedul is unlocked
-		RemoveRequestList _removeRequestList;
-		//// if reading the list then the schedule is locked
-		bool _scheduleLock = false;
-#endif
 		//// the latency it takes between when a task is scheduled and what is sent to the timer
 		uint16_t _latency = 0;
 		//// the minimum time it takes to execute a task after scheduling
@@ -146,14 +118,6 @@ namespace EmbeddedIOServices
 		 * @param task pointer to the task to be unscheduled
 		 */
 		void UnScheduleTask(Task *);
-
-#ifdef ALLOW_TASK_TO_SCHEDULE_IN_CALLBACK
-		/**
-		 * @brief Flush the schedule requests list. This is used whenever tasks are allowed to be scheduled during a callback.
-		 * This function incorporates some locking features to allow safe memory modifications of the lists.
-		 */
-		void FlushScheduleRequests();
-#endif
 	
 		/**
 		 * @brief This function is to compare if one tick is less than another in terms of its execution time.
