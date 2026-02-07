@@ -1,8 +1,17 @@
 #include "PwmService_ATTiny427Expander.h"
+#include "DigitalService_ATTiny427Expander.h"
 
 namespace EmbeddedIOServices
 {
-	PwmService_ATTiny427Expander::PwmService_ATTiny427Expander(ATTiny427Expander_Registers *registers) : _registers(registers)
+	PwmService_ATTiny427Expander::PwmService_ATTiny427Expander(ATTiny427_ExpanderService *aTTiny427ExpanderService) : 
+		_TCA_CTRLA(aTTiny427ExpanderService->GetRegister(ADDRESS_TCA_CTRLA)),
+		_TCA_CTRLB(aTTiny427ExpanderService->GetRegister(ADDRESS_TCA_CTRLB)),
+		_TCA_PERBUF(aTTiny427ExpanderService->GetRegister(ADDRESS_TCA_PERBUF)),
+		_TCA_CMP0BUF(aTTiny427ExpanderService->GetRegister(ADDRESS_TCA_CMP0BUF)),
+		_TCA_CMP1BUF(aTTiny427ExpanderService->GetRegister(ADDRESS_TCA_CMP1BUF)),
+		_TCA_CMP2BUF(aTTiny427ExpanderService->GetRegister(ADDRESS_TCA_CMP2BUF)),
+		_PORTMUX_TCAROUTEA(aTTiny427ExpanderService->GetRegister(ADDRESS_PORTMUX_TCAROUTEA)),
+		_VPORTB_DIR(aTTiny427ExpanderService->GetRegister(ADDRESS_VPORTB_DIR))
     {
     }
 
@@ -52,7 +61,7 @@ namespace EmbeddedIOServices
 				div = 2;
 			}
 			uint16_t divCurrent = 1;
-			switch(_registers->TCA_CTRLA & 0xE)
+			switch(_TCA_CTRLA & 0xE)
 			{
 				case (1 << 1):
 					divCurrent = 2;
@@ -76,12 +85,11 @@ namespace EmbeddedIOServices
 					divCurrent = 1024;
 					break;
 			}
-			_registers->TCA_CTRLA = (_registers->TCA_CTRLA & 0xF1) | (clksel << 1);
-			_registers->TCA_PERBUF = static_cast<uint32_t>(_registers->TCA_PERBUF) * divCurrent / div;
-			_registers->TCA_CMP0BUF = static_cast<uint32_t>(_registers->TCA_CMP0BUF) * divCurrent / div;
-			_registers->TCA_CMP1BUF = static_cast<uint32_t>(_registers->TCA_CMP1BUF) * divCurrent / div;
-			_registers->TCA_CMP2BUF = static_cast<uint32_t>(_registers->TCA_CMP2BUF) * divCurrent / div;
-
+			_TCA_CTRLA = (_TCA_CTRLA & 0xF1) | (clksel << 1);
+			_TCA_PERBUF = static_cast<uint32_t>(_TCA_PERBUF) * divCurrent / div;
+			_TCA_CMP0BUF = static_cast<uint32_t>(_TCA_CMP0BUF) * divCurrent / div;
+			_TCA_CMP1BUF = static_cast<uint32_t>(_TCA_CMP1BUF) * divCurrent / div;
+			_TCA_CMP2BUF = static_cast<uint32_t>(_TCA_CMP2BUF) * divCurrent / div;
 			switch(pin)
 			{
 				// TODO: All the ones that are commented out. the below is all i need right now for expander
@@ -91,24 +99,39 @@ namespace EmbeddedIOServices
 				// 	break;
 				// case 5: //TCAWO5 or TCB0WO
 				// 	break;
-				// case 8: //TCAWO0
-				// 	break;
+				case 8: //TCAWO0
+					_TCA_CTRLA |= 0x1; 
+					_TCA_CTRLB = (_TCA_CTRLB & 0xF0) | 0x13; 
+					_VPORTB_DIR |= 0x01;
+					break;
 				case 9: //TCAWO1
-					_registers->TCA_CTRLA |= 0x1; 
-					_registers->TCA_CTRLB = (_registers->TCA_CTRLB & 0xF0) | 0x23; 
-					_registers->PORTB_DIR |= 0x02;
+					_TCA_CTRLA |= 0x1; 
+					_TCA_CTRLB = (_TCA_CTRLB & 0xF0) | 0x23; 
+					_VPORTB_DIR |= 0x02;
 					break;
 				case 10: //TCAWO2
-					_registers->TCA_CTRLA |= 0x1;
-					_registers->TCA_CTRLB = (_registers->TCA_CTRLB & 0xF0) | 0x43; 
-					_registers->PORTB_DIR |= 0x04;
+					_TCA_CTRLA |= 0x1;
+					_TCA_CTRLB = (_TCA_CTRLB & 0xF0) | 0x43; 
+					_VPORTB_DIR |= 0x04;
 					break;
-				// case 11: //TCAWO0'
-				// 	break;
-				// case 12: //TCAWO1'
-				// 	break;
-				// case 13: //TCAWO2'
-				// 	break;
+				case 11: //TCAWO0
+					_TCA_CTRLA |= 0x1; 
+					_TCA_CTRLB = (_TCA_CTRLB & 0xF0) | 0x13; 
+					_PORTMUX_TCAROUTEA |= 0x1; //set TCA WO0 to PB3
+					_VPORTB_DIR |= 0x08;
+					break;
+				case 12: //TCAWO1
+					_TCA_CTRLA |= 0x1; 
+					_TCA_CTRLB = (_TCA_CTRLB & 0xF0) | 0x23; 
+					_PORTMUX_TCAROUTEA |= 0x2; //set TCA WO1 to PB4
+					_VPORTB_DIR |= 0x10;
+					break;
+				case 13: //TCAWO2
+					_TCA_CTRLA |= 0x1;
+					_TCA_CTRLB = (_TCA_CTRLB & 0xF0) | 0x43; 
+					_PORTMUX_TCAROUTEA |= 0x4; //set TCA WO2 to PB5
+					_VPORTB_DIR |= 0x20;
+					break;
 				// case 16: //TCB0WO'
 				// 	break;
 				// case 19: //TCAWO3`
@@ -141,7 +164,7 @@ namespace EmbeddedIOServices
 			return;
 
 		uint16_t divCurrent = 1;
-		switch(_registers->TCA_CTRLA & 0xE)
+		switch(_TCA_CTRLA & 0xE)
 		{
 			case (1 << 1):
 				divCurrent = 2;
@@ -175,22 +198,30 @@ namespace EmbeddedIOServices
 			// 	break;
 			// case 5: //TCAWO5 or TCB0WO
 			// 	break;
-			// case 8: //TCAWO0
-			// 	break;
+			case 8: //TCAWO0
+				_TCA_PERBUF = value.Period * 20000000 / divCurrent;
+				_TCA_CMP0BUF = value.PulseWidth * 20000000 / divCurrent;
+				break;
 			case 9: //TCAWO1
-				_registers->TCA_PERBUF = value.Period * 20000000 / divCurrent;
-				_registers->TCA_CMP1BUF = value.PulseWidth * 20000000 / divCurrent;
+				_TCA_PERBUF = value.Period * 20000000 / divCurrent;
+				_TCA_CMP1BUF = value.PulseWidth * 20000000 / divCurrent;
 				break;
 			case 10: //TCAWO2
-				_registers->TCA_PERBUF = value.Period * 20000000 / divCurrent;
-				_registers->TCA_CMP2BUF = value.PulseWidth * 20000000 / divCurrent;
+				_TCA_PERBUF = value.Period * 20000000 / divCurrent;
+				_TCA_CMP2BUF = value.PulseWidth * 20000000 / divCurrent;
 				break;
-			// case 11: //TCAWO0'
-			// 	break;
-			// case 12: //TCAWO1'
-			// 	break;
-			// case 13: //TCAWO2'
-			// 	break;
+			case 11: //TCAWO0'
+				_TCA_PERBUF = value.Period * 20000000 / divCurrent;
+				_TCA_CMP0BUF = value.PulseWidth * 20000000 / divCurrent;
+				break;
+			case 12: //TCAWO1'
+				_TCA_PERBUF = value.Period * 20000000 / divCurrent;
+				_TCA_CMP1BUF = value.PulseWidth * 20000000 / divCurrent;
+				break;
+			case 13: //TCAWO2'
+				_TCA_PERBUF = value.Period * 20000000 / divCurrent;
+				_TCA_CMP2BUF = value.PulseWidth * 20000000 / divCurrent;
+				break;
 			// case 16: //TCB0WO'
 			// 	break;
 			// case 19: //TCAWO3`

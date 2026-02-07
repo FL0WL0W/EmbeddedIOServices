@@ -1,19 +1,42 @@
 #include "IAnalogService.h"
-#include "ATTiny427ExpanderUpdateService.h"
+#include "ATTiny427_ExpanderService.h"
 #include "stddef.h"
 
 #ifndef ANALOGSERVICE_ATTINY427EXPANDER_H
 #define ANALOGSERVICE_ATTINY427EXPANDER_H
+
+#define ADDRESS_ANALOG_ENABLE_LOW	0x1C
+#define ADDRESS_ANALOG_ENABLE_HIGH	0x1D
+#define ADDRESS_ANALOG_ACCUMULATE	0x1E
+#define ADDRESS_ANALOG_VALUE_START	0x340D
+
+#define OFFSET_ADC0 			0x600
+#define ADDRESS_ADC0_CTRLA 		(OFFSET_ADC0 + 0x00)
+#define ADDRESS_ADC0_CTRLB 		(OFFSET_ADC0 + 0x01)
+#define ADDRESS_ADC0_CTRLC 		(OFFSET_ADC0 + 0x02)
+#define ADDRESS_ADC0_INTCTRL	(OFFSET_ADC0 + 0x04)
+#define ADDRESS_ADC0_CTRLE 		(OFFSET_ADC0 + 0x08)
+#define ADDRESS_ADC0_CTRLF 		(OFFSET_ADC0 + 0x09)
+#define ADDRESS_ADC0_COMMAND 	(OFFSET_ADC0 + 0x0A)
+
 namespace EmbeddedIOServices
 {
-	typedef uint8_t AnalogChannel_ATTiny427Expander;
+	typedef int8_t AnalogChannel_ATTiny427Expander;
 	
 	class AnalogService_ATTiny427Expander : public IAnalogService
 	{
 	protected:
-		ATTiny427Expander_Registers *_registers;
+		ATTiny427_ExpanderService * const _aTTiny427ExpanderService;
+		ATTiny427_ExpanderService::ATTiny427_ExpanderPoller * const _poller;
+		ATTiny427_ExpanderService::Attiny427_ExpanderRegister & _accumulate;
+		ATTiny427_ExpanderService::Attiny427_ExpanderRegister & _analogEnableLow;
+		ATTiny427_ExpanderService::Attiny427_ExpanderRegister & _analogEnableHigh;
+		volatile uint16_t _analogValues[15] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+		volatile uint8_t _seq = 0;
+
 	public:
-		AnalogService_ATTiny427Expander(ATTiny427Expander_Registers *registers);
+		AnalogService_ATTiny427Expander(ATTiny427_ExpanderService *aTTiny427ExpanderService, uint8_t accumulate);
+		~AnalogService_ATTiny427Expander();
 		void InitPin(analogpin_t pin);
 		float ReadPin(analogpin_t pin);
 

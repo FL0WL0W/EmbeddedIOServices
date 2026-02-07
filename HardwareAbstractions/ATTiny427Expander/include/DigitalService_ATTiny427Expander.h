@@ -1,9 +1,25 @@
 #include "IDigitalService.h"
-#include "ATTiny427ExpanderUpdateService.h"
+#include "ATTiny427_ExpanderService.h"
 #include <forward_list>
 
 #ifndef DIGITALSERVICE_ATTINY427EXPANDER_H
 #define DIGITALSERVICE_ATTINY427EXPANDER_H
+
+#define OFFSET_VPORTA 		0x0000
+#define ADDRESS_VPORTA_DIR 	(OFFSET_VPORTA + 0x00)
+#define ADDRESS_VPORTA_OUT 	(OFFSET_VPORTA + 0x01)
+#define ADDRESS_VPORTA_IN  	(OFFSET_VPORTA + 0x03)
+
+#define OFFSET_VPORTB 		0x0004
+#define ADDRESS_VPORTB_DIR 	(OFFSET_VPORTB + 0x00)
+#define ADDRESS_VPORTB_OUT 	(OFFSET_VPORTB + 0x01)
+#define ADDRESS_VPORTB_IN  	(OFFSET_VPORTB + 0x03)
+
+#define OFFSET_VPORTC 		0x0008
+#define ADDRESS_VPORTC_DIR 	(OFFSET_VPORTC + 0x00)
+#define ADDRESS_VPORTC_OUT 	(OFFSET_VPORTC + 0x01)
+#define ADDRESS_VPORTC_IN  	(OFFSET_VPORTC + 0x03)
+
 namespace EmbeddedIOServices
 {
 	enum DigitalPort_ATTiny427Expander : uint8_t
@@ -17,11 +33,10 @@ namespace EmbeddedIOServices
 	
 	struct DigitalInterrupt_ATTiny427Expander
 	{
-		DigitalPort_ATTiny427Expander DigitalPort;
 		DigitalPin_ATTiny427Expander DigitalPin;
 		callback_t CallBack;
 
-		DigitalInterrupt_ATTiny427Expander(DigitalPort_ATTiny427Expander digitalPort, DigitalPin_ATTiny427Expander digitalPin, callback_t callBack) : DigitalPort(digitalPort), DigitalPin(digitalPin), CallBack(callBack) { }
+		DigitalInterrupt_ATTiny427Expander(DigitalPin_ATTiny427Expander digitalPin, callback_t callBack) : DigitalPin(digitalPin), CallBack(callBack) { }
 	};
 
 	typedef std::forward_list<DigitalInterrupt_ATTiny427Expander> DigitalInterruptList_ATTiny427Expander;
@@ -29,22 +44,30 @@ namespace EmbeddedIOServices
 	class DigitalService_ATTiny427Expander : public IDigitalService
 	{
 	protected:
-		DigitalInterruptList_ATTiny427Expander _interruptList;
-		ATTiny427Expander_Registers *_registers;
-
-		uint8_t _previousPORTA_IN = 0b00000000;
-		uint8_t _previousPORTB_IN = 0b00000000;
-		uint8_t _previousPORTC_IN = 0b00000000;
+		ATTiny427_ExpanderService::Attiny427_ExpanderRegister & _VPORTA_DIR;
+		ATTiny427_ExpanderService::Attiny427_ExpanderRegister & _VPORTB_DIR;
+		ATTiny427_ExpanderService::Attiny427_ExpanderRegister & _VPORTC_DIR;
+		ATTiny427_ExpanderService::Attiny427_ExpanderRegister & _VPORTA_OUT;
+		ATTiny427_ExpanderService::Attiny427_ExpanderRegister & _VPORTB_OUT;
+		ATTiny427_ExpanderService::Attiny427_ExpanderRegister & _VPORTC_OUT;
+		ATTiny427_ExpanderService::ATTiny427_ExpanderPoller * const _PORTA_Poller;
+		ATTiny427_ExpanderService::ATTiny427_ExpanderPoller * const _PORTB_Poller;
+		ATTiny427_ExpanderService::ATTiny427_ExpanderPoller * const _PORTC_Poller;
+		DigitalInterruptList_ATTiny427Expander _PORTAInterruptList;
+		DigitalInterruptList_ATTiny427Expander _PORTBInterruptList;
+		DigitalInterruptList_ATTiny427Expander _PORTCInterruptList;
+		
+		uint8_t _PORTA_IN = 0b00000000;
+		uint8_t _PORTB_IN = 0b00000000;
+		uint8_t _PORTC_IN = 0b00000000;
 	public:
-		DigitalService_ATTiny427Expander(ATTiny427Expander_Registers *registers);
+		DigitalService_ATTiny427Expander(ATTiny427_ExpanderService *aTTiny427ExpanderService);
+		~DigitalService_ATTiny427Expander();
 		void InitPin(digitalpin_t pin, PinDirection direction);
 		bool ReadPin(digitalpin_t pin);
 		void WritePin(digitalpin_t pin, bool value);
 		void AttachInterrupt(digitalpin_t pin, callback_t callBack);
 		void DetachInterrupt(digitalpin_t pin);
-		bool InitPassthrough(digitalpin_t pinIn, digitalpin_t pinOut, bool inverted, bool useAC = false);
-		void DeinitPassthrough(digitalpin_t pinOut);
-		void Update();
 
 		static inline DigitalPin_ATTiny427Expander PinToDigitalPin(digitalpin_t pin)
 		{

@@ -2,5 +2,9 @@
     "testMate.cpp.test.advancedExecutables": [
         "${command:cmake.buildDirectory}/test/EmbeddedIOServicesUnitTests"
     ],
-    "cmake.ctest.testExplorerIntegrationEnabled": false
+    "cmake.ctest.testExplorerIntegrationEnabled": false,
+    "gtest-adapter-new.debugConfig": [
+        "Launch EmbeddedIOServicesUnitTests"
+    ],
+    "gtest-adapter-new.supportLocation": true
 }

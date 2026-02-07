@@ -27,9 +27,9 @@ namespace UnitTests
 	TEST_F(CANServiceTests, CanRegisterAndUnRegisterReceiveCallBack)
 	{
 		auto id1 = _canService.RegisterReceiveCallBack({0, 0x1}, [](can_send_callback_t send, const CANData_t data, const uint8_t dataLength) {  });
-		auto id2 = _canService.RegisterReceiveCallBack({0, 0x2}, [](can_send_callback_t send, const CANData_t data, const uint8_t dataLength) {  });
+		_canService.RegisterReceiveCallBack({0, 0x2}, [](can_send_callback_t send, const CANData_t data, const uint8_t dataLength) {  });
 		auto id3 = _canService.RegisterReceiveCallBack({0, 0x1}, {0, 0x1}, [](can_send_callback_t send, const CANIdentifier_t identifier, const CANData_t data, const uint8_t dataLength) {  });
-		auto id4 = _canService.RegisterReceiveCallBack({0, 0x2}, {0, 0x2}, [](can_send_callback_t send, const CANIdentifier_t identifier, const CANData_t data, const uint8_t dataLength) {  });
+		_canService.RegisterReceiveCallBack({0, 0x2}, {0, 0x2}, [](can_send_callback_t send, const CANIdentifier_t identifier, const CANData_t data, const uint8_t dataLength) {  });
 
 		_canService.UnRegisterReceiveCallBack(id1);
 		_canService.UnRegisterReceiveCallBack({0, 0x2});
