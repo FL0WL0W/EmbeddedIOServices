@@ -27,7 +27,7 @@ namespace EmbeddedIOServices
 	void ATTiny427_PassthroughService::_setupACPassthrough(digitalpin_t pinIn, digitalpin_t pinOut, bool inverted)
 	{
 		_aTTiny427ExpanderService->Write(ADDRESS_AC0_DACREF, 0x85);
-		uint8_t AC_MUXCTRLA;
+		uint8_t AC_MUXCTRLA ;
 		uint8_t AC_CTRLA = 0b10000111;
 		switch(pinIn)
 		{
@@ -40,6 +40,8 @@ namespace EmbeddedIOServices
 			case 14:
 				AC_MUXCTRLA = 0x03 | (0x3 << 3);
 				break;
+			default:
+				return;
 		}
 		if(pinOut == 5)
 		{

@@ -32,7 +32,7 @@ namespace EmbeddedIOServices
             if(*EVSYS_CHANNEL[i] == 0 || *EVSYS_CHANNEL[i] == generator)
                 return { i, generator };
         }
-        return { -1 };
+        return { -1, 0 };
     }
     void ATTiny427_EVSYSService::_reassignChannel(uint8_t channel, ATTiny427_EVSYSChannel to)
     {
@@ -51,7 +51,7 @@ namespace EmbeddedIOServices
 		if(useAC == true)
 			return _firstOpenChannel(0x20);
 		if(inputPin >= 22)
-			return { -1 };
+			return { -1, 0 };
 
 		if(inputPin < 8)
 		{
@@ -64,7 +64,7 @@ namespace EmbeddedIOServices
 			if(*EVSYS_CHANNEL[3] == 0 || (depth == 0 && *EVSYS_CHANNEL[3] == ((inputPin & 0x7) | 0x48)))
 				return { 3, (uint8_t)((inputPin & 0x7) | 0x48) };
 			if(depth > 1)
-				return { -1 };
+				return { -1, 0 };
 			const ATTiny427_EVSYSChannel channel0ReassignTo = (*EVSYS_CHANNEL[0] & 0xF0) == 0x40? 
 																			_getEVSYSChannel(*EVSYS_CHANNEL[0] & 0xF, false, depth + 1) : 
 																			_firstOpenChannel(*EVSYS_CHANNEL[0]);
@@ -98,7 +98,7 @@ namespace EmbeddedIOServices
 				_reassignChannel(3, channel3ReassignTo);
 				return _getEVSYSChannel(inputPin, false, depth + 1);
 			}
-			return { -1 };
+			return { -1, 0 };
 		}
 		if(inputPin < 16)
 		{
@@ -111,7 +111,7 @@ namespace EmbeddedIOServices
 			if(*EVSYS_CHANNEL[1] == 0 || (depth == 0 && *EVSYS_CHANNEL[1] == ((inputPin & 0x7) | 0x48)))
 				return { 1, (uint8_t)((inputPin & 0x7) | 0x48) };
 			if(depth > 1)
-				return { -1 };
+				return { -1, 0 };
 			const ATTiny427_EVSYSChannel channel4ReassignTo = (*EVSYS_CHANNEL[4] & 0xF0) == 0x40? 
 																			_getEVSYSChannel((*EVSYS_CHANNEL[4] & 0xF) + 8, false, depth + 1) : 
 																			_firstOpenChannel(*EVSYS_CHANNEL[4]);
@@ -144,7 +144,7 @@ namespace EmbeddedIOServices
 				_reassignChannel(1, channel1ReassignTo);
 				return _getEVSYSChannel(inputPin, false, depth + 1);
 			}
-			return { -1 };
+			return { -1, 0 };
 		}
 		if(*EVSYS_CHANNEL[2] == 0 || (depth == 0 && *EVSYS_CHANNEL[2] == ((inputPin & 0x7) | 0x40)))
 			return { 2, (uint8_t)((inputPin & 0x7) | 0x40) };
@@ -155,7 +155,7 @@ namespace EmbeddedIOServices
 		if(*EVSYS_CHANNEL[5] == 0 || (depth == 0 && *EVSYS_CHANNEL[5] == ((inputPin & 0x7) | 0x48)))
 			return { 5, (uint8_t)((inputPin & 0x7) | 0x48) };
 		if(depth > 1)
-			return { -1 };
+			return { -1, 0 };
 		const ATTiny427_EVSYSChannel channel2ReassignTo = (*EVSYS_CHANNEL[2] & 0xF0) == 0x40? 
 																		_getEVSYSChannel(*EVSYS_CHANNEL[2] < 0x48? ((*EVSYS_CHANNEL[2] & 0x7) + 16) : (*EVSYS_CHANNEL[2] & 0x7), false, depth + 1) : 
 																		_firstOpenChannel(*EVSYS_CHANNEL[2]);
@@ -189,7 +189,7 @@ namespace EmbeddedIOServices
 			_reassignChannel(5, channel5ReassignTo);
 			return _getEVSYSChannel(inputPin, false, depth + 1);
 		}
-		return { -1 };
+		return { -1, 0 };
 	}
 
 	bool ATTiny427_EVSYSService::InitEVSYSUser(ATTiny427_ExpanderService::Attiny427_ExpanderRegister &userRegister, uint8_t inputPin, bool useAC)

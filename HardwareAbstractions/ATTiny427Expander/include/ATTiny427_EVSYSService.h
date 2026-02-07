@@ -32,7 +32,6 @@ namespace EmbeddedIOServices
         ATTiny427_EVSYSChannel _getEVSYSChannel(uint8_t inputPin, bool useAC = false, int8_t depth = 0);
 
 	public:
-        ATTiny427_ExpanderService::Attiny427_ExpanderRegister * const EVSYS_CHANNEL[6];
         union 
         {
             ATTiny427_ExpanderService::Attiny427_ExpanderRegister * const EVSYS_USER[9];
@@ -49,6 +48,7 @@ namespace EmbeddedIOServices
                 ATTiny427_ExpanderService::Attiny427_ExpanderRegister * const EVSYS_TCB1_CAPT;
             };
         };
+        ATTiny427_ExpanderService::Attiny427_ExpanderRegister * const EVSYS_CHANNEL[6];
         
         ATTiny427_EVSYSService(ATTiny427_ExpanderService *aTTiny427ExpanderService);
 

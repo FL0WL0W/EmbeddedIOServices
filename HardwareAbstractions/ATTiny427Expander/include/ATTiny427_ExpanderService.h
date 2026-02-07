@@ -9,20 +9,6 @@
 #ifndef ATTINY427_EXPANDERSERVICE_H
 #define ATTINY427_EXPANDERSERVICE_H
 
-#define OFFSET_EVSYS					0x180
-#define ADDRESS_EVSYS_CHANNEL(i)		(OFFSET_EVSYS + 0x10 + i)
-#define ADDRESS_EVSYS_CHANNELUSER(i)	(OFFSET_EVSYS + 0x20 + i)
-#define ADDRESS_EVSYS_CCL_LUT0A			ADDRESS_EVSYS_CHANNELUSER(0x00)
-#define ADDRESS_EVSYS_CCL_LUT1A			ADDRESS_EVSYS_CHANNELUSER(0x02)
-#define ADDRESS_EVSYS_CCL_LUT2A			ADDRESS_EVSYS_CHANNELUSER(0x04)
-#define ADDRESS_EVSYS_CCL_LUT3A			ADDRESS_EVSYS_CHANNELUSER(0x06)
-#define ADDRESS_EVSYS_EVOUTA			ADDRESS_EVSYS_CHANNELUSER(0x09)
-#define ADDRESS_EVSYS_EVOUTB			ADDRESS_EVSYS_CHANNELUSER(0x0A)
-#define ADDRESS_EVSYS_EVOUTC			ADDRESS_EVSYS_CHANNELUSER(0x0B)
-#define ADDRESS_EVSYS_TCB0_CAPT			ADDRESS_EVSYS_CHANNELUSER(0x11)
-#define ADDRESS_EVSYS_TCB1_CAPT			ADDRESS_EVSYS_CHANNELUSER(0x13)
-#define ADDRESS_EVSYS_CHANNELUSER_COUNT 0x15
-
 namespace EmbeddedIOServices
 {
     //c++ 2011 and below don't include std::index_sequence_for<T...>; and std::index_sequence<Ints...>;
@@ -81,10 +67,9 @@ namespace EmbeddedIOServices
 	public:
 		class Attiny427_ExpanderRegister
 		{
-			protected:
+		protected:
 			union
 			{
-				ATTiny427_ExpanderService* const _expanderService;
 				struct
 				{
 					union 
@@ -97,12 +82,13 @@ namespace EmbeddedIOServices
 							uint16_t _reservedAddress15 :1;
 						};
 					};
-					const uint8_t _index;
 					uint8_t _data;
+					uint8_t _index;
 				};
+				ATTiny427_ExpanderService* _expanderService;
 			};
 
-			inline ATTiny427_ExpanderService* const getExpanderService() const
+			inline ATTiny427_ExpanderService* getExpanderService() const
 			{
 				return (this - (_index + 1))->_expanderService;
 			}

@@ -11,8 +11,8 @@ namespace EmbeddedIOServices
 	}
 	ATTiny427_ExpanderService::Attiny427_ExpanderRegister::Attiny427_ExpanderRegister(uint8_t index) :
 		_address(0x33FF),
-		_index(index),
-		_data(0)
+		_data(0),
+		_index(index)
 	{
 	}
 	ATTiny427_ExpanderService::Attiny427_ExpanderRegister& ATTiny427_ExpanderService::Attiny427_ExpanderRegister::operator=(uint8_t value)
@@ -24,8 +24,8 @@ namespace EmbeddedIOServices
 
 	ATTiny427_ExpanderService::ATTiny427_ExpanderPoller::ATTiny427_ExpanderPoller(ATTiny427_ExpanderService* expanderService, uint16_t address, uint8_t maxLength, ATTiny427_ExpanderPoller_callback_t callback) :
 		_expanderService(expanderService),
-		_address(address & 0xBFFF), //clear enable bit
 		_callback(callback),
+		_address(address & 0xBFFF), //clear enable bit
 		_maxLength(maxLength),
 		_buffer(new uint8_t[maxLength])
 	{
@@ -80,8 +80,8 @@ namespace EmbeddedIOServices
 	}
 
 	ATTiny427_ExpanderService::ATTiny427_ExpanderService(ATTiny427_ExpanderComm comm) : 
-		Comm(comm),
-		_writeIdx((comm == ATTiny427_ExpanderComm_SPI || comm == ATTiny427_ExpanderComm_SPIAlternate) ? 2 : 0)
+		_writeIdx((comm == ATTiny427_ExpanderComm_SPI || comm == ATTiny427_ExpanderComm_SPIAlternate) ? 2 : 0),
+		Comm(comm)
 	{
 	}
 	size_t ATTiny427_ExpanderService::Transmit(uint8_t data[256])

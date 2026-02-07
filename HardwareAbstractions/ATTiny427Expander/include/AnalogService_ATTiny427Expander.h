@@ -27,10 +27,10 @@ namespace EmbeddedIOServices
 	{
 	protected:
 		ATTiny427_ExpanderService * const _aTTiny427ExpanderService;
-		ATTiny427_ExpanderService::ATTiny427_ExpanderPoller * const _poller;
-		ATTiny427_ExpanderService::Attiny427_ExpanderRegister & _accumulate;
 		ATTiny427_ExpanderService::Attiny427_ExpanderRegister & _analogEnableLow;
 		ATTiny427_ExpanderService::Attiny427_ExpanderRegister & _analogEnableHigh;
+		ATTiny427_ExpanderService::Attiny427_ExpanderRegister & _accumulate;
+		ATTiny427_ExpanderService::ATTiny427_ExpanderPoller * const _poller;
 		volatile uint16_t _analogValues[15] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 		volatile uint8_t _seq = 0;
 
