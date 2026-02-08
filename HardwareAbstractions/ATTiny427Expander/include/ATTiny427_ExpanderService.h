@@ -172,15 +172,17 @@ namespace EmbeddedIOServices
 				if(IsEnabled() == false)
 					return;
 
+				//calculate start indexes
+				const size_t bufferIdxStart = ((readIdx - _readIdx) & (0x1 << (sizeof(size_t) * 8 - 1))) ? 0 : readIdx - _readIdx;
+				const size_t dataIdxStart = ((_readIdx - readIdx) & (0x1 << (sizeof(size_t) * 8 - 1))) ? 0 : _readIdx - readIdx;
+
 				//if past data, skip
-				if((_readIdx - (readIdx + size)) < (0x1 << (sizeof(size_t)*8 - 1)))
+				if(bufferIdxStart >= _length || dataIdxStart >= size)
 					return;
 
-				//copy data to buffer
-				const size_t bufferIdxStart = readIdx > _readIdx ? readIdx - _readIdx : 0;
-				const size_t dataIdxStart = _readIdx > readIdx ? _readIdx - readIdx : 0;
 				const size_t dataLength = size > dataIdxStart ? std::min<size_t>(_length - bufferIdxStart, size - dataIdxStart) : 0;
 
+				//copy data to buffer
 				std::memcpy(&_buffer[bufferIdxStart], &data[dataIdxStart], dataLength);
 
 				//if full, call callback

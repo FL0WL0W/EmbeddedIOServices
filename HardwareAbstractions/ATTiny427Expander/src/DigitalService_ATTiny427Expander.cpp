@@ -22,7 +22,6 @@ namespace EmbeddedIOServices
 				const uint8_t DigitalPin = interrupt->DigitalPin;
 				if(pORTA_IN_Toggle & DigitalPin)
 					interrupt->CallBack();
-				break;
 			}
 		})),
 		_PORTB_Poller(new ATTiny427_ExpanderService::ATTiny427_ExpanderPoller(aTTiny427ExpanderService, ADDRESS_VPORTB_IN, 1, [this](uint8_t *data)
@@ -37,7 +36,6 @@ namespace EmbeddedIOServices
 				const uint8_t DigitalPin = interrupt->DigitalPin;
 				if(pORTB_IN_Toggle & DigitalPin)
 					interrupt->CallBack();
-				break;
 			}
 		})),
 		_PORTC_Poller(new ATTiny427_ExpanderService::ATTiny427_ExpanderPoller(aTTiny427ExpanderService, ADDRESS_VPORTC_IN, 1, [this](uint8_t *data)
@@ -52,7 +50,6 @@ namespace EmbeddedIOServices
 				const uint8_t DigitalPin = interrupt->DigitalPin;
 				if(pORTC_IN_Toggle & DigitalPin)
 					interrupt->CallBack();
-				break;
 			}
 		}))
     {        

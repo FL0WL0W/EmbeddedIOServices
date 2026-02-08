@@ -67,7 +67,7 @@ namespace EmbeddedIOServices
 		//grab a command slot. while loop make sures an isr adding commands wont cause issues
 		const uint8_t originalTailMinus1 = _expanderService->_commandTail - 1;
 		uint8_t tail;
-		while(_expanderService->_commands[tail = (_expanderService->_commandTail)++].Type != ATTiny427_ExpanderCommandType_Executed && originalTailMinus1 != tail);
+		while(_expanderService->_commands[tail = (_expanderService->_commandTail++)].Type != ATTiny427_ExpanderCommandType_Executed && originalTailMinus1 != tail);
 
 		//if we got a slot, queue the read. the read will enable the poller when processed
 		if(originalTailMinus1 != tail) 
@@ -225,8 +225,8 @@ namespace EmbeddedIOServices
 			{
 				// add to active pollers
 				_pollers.push_back(command.Poller);
-				if(pollerIt == _pollers.end()) 
-					pollerIt--;
+				if(pollerIt == _pollers.end())
+					pollerIt = --_pollers.end();
 			}
 			_commandHead++;
 			command.Type = ATTiny427_ExpanderCommandType_Executed;
