@@ -44,6 +44,7 @@ namespace EmbeddedIOServices
 	class DigitalService_ATTiny427Expander : public IDigitalService
 	{
 	protected:
+		const ATTiny427_ExpanderComm _comm;
 		ATTiny427_ExpanderService::Attiny427_ExpanderRegister & _VPORTA_DIR;
 		ATTiny427_ExpanderService::Attiny427_ExpanderRegister & _VPORTB_DIR;
 		ATTiny427_ExpanderService::Attiny427_ExpanderRegister & _VPORTC_DIR;

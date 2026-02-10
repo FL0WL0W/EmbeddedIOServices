@@ -4,6 +4,7 @@
 namespace EmbeddedIOServices
 {
 	PwmService_ATTiny427Expander::PwmService_ATTiny427Expander(ATTiny427_ExpanderService *aTTiny427ExpanderService) : 
+		_comm(aTTiny427ExpanderService->Comm),
 		_TCA_CTRLA(aTTiny427ExpanderService->GetRegister(ADDRESS_TCA_CTRLA)),
 		_TCA_CTRLB(aTTiny427ExpanderService->GetRegister(ADDRESS_TCA_CTRLB)),
 		_TCA_PERBUF(aTTiny427ExpanderService->GetRegister(ADDRESS_TCA_PERBUF)),
@@ -19,6 +20,24 @@ namespace EmbeddedIOServices
 	{
 		if (pin == 0xFFFF)
 			return;
+
+		switch(_comm)
+		{
+			case ATTiny427_ExpanderComm_SPI:
+				if(pin < 5 && pin > 0)
+					return;
+				break;
+			case ATTiny427_ExpanderComm_SPIAlternate:
+				if(pin > 15 && pin < 20)
+					return;
+				break;
+			case ATTiny427_ExpanderComm_UART0:
+				if(pin > 16 && pin < 19)
+					return;
+				break;
+			default:
+				break;
+		}
 
 		if(direction == Out)
 		{

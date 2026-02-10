@@ -56,6 +56,28 @@ namespace EmbeddedIOServices
 
 	void AnalogService_ATTiny427Expander::InitPin(analogpin_t pin)
 	{
+		switch(_aTTiny427ExpanderService->Comm)
+		{
+			case ATTiny427_ExpanderComm_SPI:
+				if(pin < 5 && pin > 0)
+					return;
+				break;
+			case ATTiny427_ExpanderComm_SPIAlternate:
+				if(pin > 15 && pin < 20)
+					return;
+				break;
+			case ATTiny427_ExpanderComm_UART0Alternate:
+			case ATTiny427_ExpanderComm_UART1:
+				if(pin < 3 && pin > 0)
+					return;
+				break;
+			case ATTiny427_ExpanderComm_UART1Alternate:
+				if(pin > 9 && pin < 12)
+					return;
+				break;
+			default:
+				break;
+		}
         const AnalogChannel_ATTiny427Expander analogChannel = PinToAnalogChannel(pin);
         if(analogChannel == -1)
             return;

@@ -56,10 +56,35 @@ namespace EmbeddedIOServices
 	{
 		if(pinIn >= 22 || pinOut >= 22 || pinIn == pinOut)
 			return false;
-		if(!(pinIn == 7 || pinIn == 13 || pinIn == 9 || pinIn == 14))
-			useAC = false;
 
 		const ATTiny427_ExpanderComm comm = _aTTiny427ExpanderService->Comm;
+
+		switch(comm)
+		{
+			case ATTiny427_ExpanderComm_SPI:
+				if(pinOut < 5 && pinOut > 0)
+					return false;
+				break;
+			case ATTiny427_ExpanderComm_SPIAlternate:
+				if(pinOut > 15 && pinOut < 20)
+					return false;
+				break;
+			case ATTiny427_ExpanderComm_UART0:
+				if(pinOut > 16 && pinOut < 19)
+					return false;
+				break;
+			case ATTiny427_ExpanderComm_UART0Alternate:
+			case ATTiny427_ExpanderComm_UART1:
+				if(pinOut < 3 && pinOut > 0)
+					return false;
+				break;
+			case ATTiny427_ExpanderComm_UART1Alternate:
+				if(pinOut > 9 && pinOut < 12)
+					return false;
+				break;
+		}
+		if(!(pinIn == 7 || pinIn == 13 || pinIn == 9 || pinIn == 14))
+			useAC = false;
 
 		DeinitPassthrough(pinIn);
 		switch(pinOut)

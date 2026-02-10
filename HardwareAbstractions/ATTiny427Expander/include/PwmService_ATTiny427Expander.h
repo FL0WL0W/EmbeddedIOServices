@@ -21,6 +21,7 @@ namespace EmbeddedIOServices
 	class PwmService_ATTiny427Expander : public EmbeddedIOServices::IPwmService
 	{
 	protected:
+		const ATTiny427_ExpanderComm _comm;
 		ATTiny427_ExpanderService::Attiny427_ExpanderRegister & _TCA_CTRLA;
 		ATTiny427_ExpanderService::Attiny427_ExpanderRegister & _TCA_CTRLB;
 		ATTiny427_ExpanderService::Attiny427_ExpanderRegister & _TCA_PERBUF;

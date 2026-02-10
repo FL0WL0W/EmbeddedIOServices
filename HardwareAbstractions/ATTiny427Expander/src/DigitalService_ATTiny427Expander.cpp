@@ -4,6 +4,7 @@
 namespace EmbeddedIOServices
 {
     DigitalService_ATTiny427Expander::DigitalService_ATTiny427Expander(ATTiny427_ExpanderService *aTTiny427ExpanderService) : 
+		_comm(aTTiny427ExpanderService->Comm),
 		_VPORTA_DIR(aTTiny427ExpanderService->GetRegister(ADDRESS_VPORTA_DIR)),
 		_VPORTB_DIR(aTTiny427ExpanderService->GetRegister(ADDRESS_VPORTB_DIR)),
 		_VPORTC_DIR(aTTiny427ExpanderService->GetRegister(ADDRESS_VPORTC_DIR)),
@@ -52,7 +53,26 @@ namespace EmbeddedIOServices
 					interrupt->CallBack();
 			}
 		}))
-    {        
+    {
+		switch(_comm)
+		{
+			case ATTiny427_ExpanderComm_SPI:
+				_VPORTA_DIR = (_VPORTA_DIR & ~0b00011010) | 0b00000100;
+				break;
+			case ATTiny427_ExpanderComm_SPIAlternate:
+				_VPORTC_DIR = (_VPORTC_DIR & ~0b00001101) | 0b00000010;
+				break;
+			case ATTiny427_ExpanderComm_UART0:
+				_VPORTC_DIR = (_VPORTC_DIR & ~0b00000010) | 0b00000100;
+				break;
+			case ATTiny427_ExpanderComm_UART0Alternate:
+			case ATTiny427_ExpanderComm_UART1:
+				_VPORTA_DIR = (_VPORTA_DIR & ~0b00000100) | 0b00000010;
+				break;
+			case ATTiny427_ExpanderComm_UART1Alternate:
+				_VPORTB_DIR = (_VPORTB_DIR & ~0b00001000) | 0b00000100;
+				break;
+		}
 		_PORTA_Poller->SetLength(1);
 		_PORTB_Poller->SetLength(1);
 		_PORTC_Poller->SetLength(1);
@@ -69,6 +89,30 @@ namespace EmbeddedIOServices
 
 	void DigitalService_ATTiny427Expander::InitPin(digitalpin_t pin, PinDirection direction)
 	{
+		switch(_comm)
+		{
+			case ATTiny427_ExpanderComm_SPI:
+				if(pin < 5 && pin > 0)
+					return;
+				break;
+			case ATTiny427_ExpanderComm_SPIAlternate:
+				if(pin > 15 && pin < 20)
+					return;
+				break;
+			case ATTiny427_ExpanderComm_UART0:
+				if(pin > 16 && pin < 19)
+					return;
+				break;
+			case ATTiny427_ExpanderComm_UART0Alternate:
+			case ATTiny427_ExpanderComm_UART1:
+				if(pin < 3 && pin > 0)
+					return;
+				break;
+			case ATTiny427_ExpanderComm_UART1Alternate:
+				if(pin > 9 && pin < 12)
+					return;
+				break;
+		}
 		const DigitalPort_ATTiny427Expander DigitalPort = PinToDigitalPort(pin);
 		const DigitalPin_ATTiny427Expander DigitalPin = PinToDigitalPin(pin);
 		if(direction == In)
