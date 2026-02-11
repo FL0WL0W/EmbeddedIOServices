@@ -10,8 +10,9 @@ namespace Esp32
 	protected:
 		std::list<int> _socks;
 		int _listen_sock;
+		size_t _rx_buffer_size;
 	public:
-        Esp32IdfCommunicationService_Socket(uint16_t port);
+        Esp32IdfCommunicationService_Socket(uint16_t port, size_t rx_buffer_size = 1024);
         void Send(const void *data, size_t length);
 	};
 }

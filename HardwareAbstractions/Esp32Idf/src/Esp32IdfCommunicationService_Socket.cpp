@@ -6,7 +6,8 @@ using namespace EmbeddedIOServices;
 
 namespace Esp32
 {
-	Esp32IdfCommunicationService_Socket::Esp32IdfCommunicationService_Socket(uint16_t port)
+	Esp32IdfCommunicationService_Socket::Esp32IdfCommunicationService_Socket(uint16_t port, size_t rx_buffer_size)
+		: _rx_buffer_size(rx_buffer_size)
 	{
 		struct sockaddr_storage dest_addr;
 		struct sockaddr_in *dest_addr_ip4 = (struct sockaddr_in *)&dest_addr;
@@ -88,7 +89,7 @@ namespace Esp32
 					commService->_socks.push_back(sock);
 
 					int len;
-					uint8_t rx_buffer[1024];
+				uint8_t rx_buffer[commService->_rx_buffer_size];
 					while(1)
 					{
 						len = recv(sock, rx_buffer, sizeof(rx_buffer), 0);
@@ -109,7 +110,7 @@ sock_read_cleanup:
 					vTaskDelete(NULL);
 					delete sockArg;
 
-				}, "CommunicationService_Socket_Read", 4096, sockArg, 10, NULL);
+				}, "CommunicationService_Socket_Read", commService->_rx_buffer_size + 2048, sockArg, 10, NULL);
 			}
 			
 			close(commService->_listen_sock);
