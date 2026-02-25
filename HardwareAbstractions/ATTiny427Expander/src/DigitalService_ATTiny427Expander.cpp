@@ -121,27 +121,29 @@ namespace EmbeddedIOServices
 			{
 				case PORTA:
 					_VPORTA_DIR &= ~DigitalPin;
-					return;
+					break;
 				case PORTB:
 					_VPORTB_DIR &= ~DigitalPin;
-					return;
+					break;
 				case PORTC:
 					_VPORTC_DIR &= ~DigitalPin;
-					return;
+					break;
 			}
 		}
-
-		switch(DigitalPort)
+		else
 		{
-			case PORTA:
-				_VPORTA_DIR |= DigitalPin;
-				return;
-			case PORTB:
-				_VPORTB_DIR |= DigitalPin;
-				return;
-			case PORTC:
-				_VPORTC_DIR |= DigitalPin;
-				return;
+			switch(DigitalPort)
+			{
+				case PORTA:
+					_VPORTA_DIR |= DigitalPin;
+					break;
+				case PORTB:
+					_VPORTB_DIR |= DigitalPin;
+					break;
+				case PORTC:
+					_VPORTC_DIR |= DigitalPin;
+					break;
+			}
 		}
 	}
 	bool DigitalService_ATTiny427Expander::ReadPin(digitalpin_t pin)
@@ -165,33 +167,35 @@ namespace EmbeddedIOServices
 		const DigitalPort_ATTiny427Expander DigitalPort = PinToDigitalPort(pin);
 		const DigitalPin_ATTiny427Expander DigitalPin = PinToDigitalPin(pin);
 
-		if(value == true)
+		if(value)
 		{
 			switch(DigitalPort)
 			{
 				case PORTA:
 					_VPORTA_OUT |= DigitalPin;
-					return;
+					break;
 				case PORTB:
 					_VPORTB_OUT |= DigitalPin;
-					return;
+					break;
 				case PORTC:
 					_VPORTC_OUT |= DigitalPin;
-					return;
+					break;
 			}
 		}
-
-		switch(DigitalPort)
+		else
 		{
-			case PORTA:
-				_VPORTA_OUT &= ~DigitalPin;
-				return;
-			case PORTB:
-				_VPORTB_OUT &= ~DigitalPin;
-				return;
-			case PORTC:
-				_VPORTC_OUT &= ~DigitalPin;
-				return;
+			switch(DigitalPort)
+			{
+				case PORTA:
+					_VPORTA_OUT &= ~DigitalPin;
+					break;
+				case PORTB:
+					_VPORTB_OUT &= ~DigitalPin;
+					break;
+				case PORTC:
+					_VPORTC_OUT &= ~DigitalPin;
+					break;
+			}
 		}
 	}
 	void DigitalService_ATTiny427Expander::AttachInterrupt(digitalpin_t pin, callback_t callBack)
@@ -202,13 +206,13 @@ namespace EmbeddedIOServices
 		{
 			case PORTA:
 				_PORTAInterruptList.push_front(DigitalInterrupt_ATTiny427Expander(DigitalPin, callBack));
-				return;
+				break;
 			case PORTB:
 				_PORTBInterruptList.push_front(DigitalInterrupt_ATTiny427Expander(DigitalPin, callBack));
-				return;
+				break;
 			case PORTC:
 				_PORTCInterruptList.push_front(DigitalInterrupt_ATTiny427Expander(DigitalPin, callBack));
-				return;
+				break;
 		}
 	}
 	void DigitalService_ATTiny427Expander::DetachInterrupt(digitalpin_t pin)
@@ -219,13 +223,13 @@ namespace EmbeddedIOServices
 		{
 			case PORTA:
 				_PORTAInterruptList.remove_if([DigitalPin](const DigitalInterrupt_ATTiny427Expander& interrupt) { return interrupt.DigitalPin == DigitalPin; });
-				return;
+				break;
 			case PORTB:
 				_PORTBInterruptList.remove_if([DigitalPin](const DigitalInterrupt_ATTiny427Expander& interrupt) { return interrupt.DigitalPin == DigitalPin; });
-				return;
+				break;
 			case PORTC:
 				_PORTCInterruptList.remove_if([DigitalPin](const DigitalInterrupt_ATTiny427Expander& interrupt) { return interrupt.DigitalPin == DigitalPin; });
-				return;
+				break;
 		}
 		
 	}

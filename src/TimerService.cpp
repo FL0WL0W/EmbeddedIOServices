@@ -47,7 +47,7 @@ namespace EmbeddedIOServices
 	{
 		//remove all unscheduled tasks
 		TaskList::iterator begin;
-		while((begin = _taskList.begin()) != _taskList.end() && (*begin)->Scheduled == false)
+		while((begin = _taskList.begin()) != _taskList.end() && !(*begin)->Scheduled)
 		{
 			if((*begin)->DeleteAfterExecution)
 				delete *begin;
@@ -65,7 +65,7 @@ namespace EmbeddedIOServices
 		{
 			if(next == _taskList.end())
 				return;
-			if((*next)->Scheduled == true)
+			if((*next)->Scheduled)
 				break;
 			next++;
 		}

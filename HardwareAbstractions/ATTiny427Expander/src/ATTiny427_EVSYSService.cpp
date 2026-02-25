@@ -48,7 +48,7 @@ namespace EmbeddedIOServices
     }
     ATTiny427_EVSYSChannel ATTiny427_EVSYSService::_getEVSYSChannel(uint8_t inputPin, bool useAC, int8_t depth)
 	{
-		if(useAC == true)
+		if(useAC)
 			return _firstOpenChannel(0x20);
 		if(inputPin >= 22)
 			return { -1, 0 };

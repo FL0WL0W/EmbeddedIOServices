@@ -58,7 +58,7 @@ namespace EmbeddedIOServices
 		}
 
 		//if disabling, just set flag and return
-		if(enabled == false)
+		if(!enabled)
 		{
 			_enabled = false;
 			return;
@@ -99,7 +99,7 @@ namespace EmbeddedIOServices
 
 		//remove all disabled pollers
 		auto pollerIt = _pollers.begin();
-		while(pollerIt != _pollers.end() && (*pollerIt)->IsEnabled() == false) _pollers.remove(*(pollerIt++)); 
+		while(pollerIt != _pollers.end() && !(*pollerIt)->IsEnabled()) _pollers.remove(*(pollerIt++)); 
 
 		// process queued commands and pollers
 		const size_t capacity = 256 - ((Comm == ATTiny427_ExpanderComm_SPI || Comm == ATTiny427_ExpanderComm_SPIAlternate) ? 2 : 0);
