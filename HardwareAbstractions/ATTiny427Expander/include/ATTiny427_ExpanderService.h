@@ -265,6 +265,7 @@ namespace EmbeddedIOServices
 
 		size_t Transmit(uint8_t data[256]);
 		void Receive(const uint8_t *data, size_t size);
+		bool WaitingForResponse();
 	};
 }
 #endif

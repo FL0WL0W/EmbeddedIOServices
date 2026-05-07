@@ -311,5 +311,9 @@ namespace EmbeddedIOServices
 			(*pollerIt)->Receive(data, size, _readIdx);
 		_readIdx += size;
 	}
+	bool ATTiny427_ExpanderService::WaitingForResponse()
+	{
+		return _writeIdx != _readIdx;
+	}
 }
 #endif
