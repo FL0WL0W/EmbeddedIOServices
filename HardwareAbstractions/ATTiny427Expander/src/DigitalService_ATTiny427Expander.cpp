@@ -63,14 +63,14 @@ namespace EmbeddedIOServices
 				_VPORTC_DIR = (_VPORTC_DIR & ~0b00001101) | 0b00000010;
 				break;
 			case ATTiny427_ExpanderComm_UART0:
-				_VPORTC_DIR = (_VPORTC_DIR & ~0b00000010) | 0b00000100;
+				_VPORTB_DIR = (_VPORTB_DIR & ~0b00001000) | 0b00000100;
 				break;
 			case ATTiny427_ExpanderComm_UART0Alternate:
 			case ATTiny427_ExpanderComm_UART1:
 				_VPORTA_DIR = (_VPORTA_DIR & ~0b00000100) | 0b00000010;
 				break;
 			case ATTiny427_ExpanderComm_UART1Alternate:
-				_VPORTB_DIR = (_VPORTB_DIR & ~0b00001000) | 0b00000100;
+				_VPORTC_DIR = (_VPORTC_DIR & ~0b00000010) | 0b00000100;
 				break;
 		}
 		_PORTA_Poller->SetLength(1);
