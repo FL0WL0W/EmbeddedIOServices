@@ -42,7 +42,7 @@ namespace Esp32
 
 		const twai_message_t message = 
 		{
-			.extd = identifier.CANIdentifier > (1 < 11),
+			.extd = identifier.CANIdentifier > (1 << 11),
 			.identifier = identifier.CANIdentifier,
 			.data_length_code = dataLength,
 			.data = 
