@@ -75,6 +75,46 @@ namespace ATTiny427_AnalogServiceTests
     {
         SCOPED_TRACE(testing::Message() << "Pin: " << testCase.pin << ", CommType: " << testCase.commType);
 
+		switch(testCase.commType)
+		{
+			case ATTiny427_ExpanderComm_SPI:
+				if(testCase.pin < 5)
+                {   
+                    SCOPED_TRACE(testing::Message() << "UnsupportedPin: " << testCase.commType);
+					return;
+                }
+				break;
+			case ATTiny427_ExpanderComm_SPIAlternate:
+				if(testCase.pin > 15 && testCase.pin < 20)
+                {   
+                    SCOPED_TRACE(testing::Message() << "UnsupportedPin: " << testCase.commType);
+					return;
+                }
+				break;
+			case ATTiny427_ExpanderComm_UART0:
+				if(testCase.pin == 10 || testCase.pin == 11)
+                {   
+                    SCOPED_TRACE(testing::Message() << "UnsupportedPin: " << testCase.commType);
+					return;
+                }
+				break;
+			case ATTiny427_ExpanderComm_UART0Alternate:
+			case ATTiny427_ExpanderComm_UART1:
+				if(testCase.pin < 3)
+                {   
+                    SCOPED_TRACE(testing::Message() << "UnsupportedPin: " << testCase.commType);
+					return;
+                }
+				break;
+			case ATTiny427_ExpanderComm_UART1Alternate:
+				if(testCase.pin == 17 || testCase.pin == 18)
+                {   
+                    SCOPED_TRACE(testing::Message() << "UnsupportedPin: " << testCase.commType);
+					return;
+                }
+				break;
+		}
+
         // Initialize first analog pin
         analogService->InitPin(testCase.pin);
         
@@ -121,6 +161,46 @@ namespace ATTiny427_AnalogServiceTests
     TEST_P(ATTiny427_AnalogServiceTest, WhenInitPinFirstTime_ThenAnalogEnableSet)
     {
         SCOPED_TRACE(testing::Message() << "Pin: " << testCase.pin << ", CommType: " << testCase.commType);
+
+		switch(testCase.commType)
+		{
+			case ATTiny427_ExpanderComm_SPI:
+				if(testCase.pin < 5)
+                {   
+                    SCOPED_TRACE(testing::Message() << "UnsupportedPin: " << testCase.commType);
+					return;
+                }
+				break;
+			case ATTiny427_ExpanderComm_SPIAlternate:
+				if(testCase.pin > 15 && testCase.pin < 20)
+                {   
+                    SCOPED_TRACE(testing::Message() << "UnsupportedPin: " << testCase.commType);
+					return;
+                }
+				break;
+			case ATTiny427_ExpanderComm_UART0:
+				if(testCase.pin == 10 || testCase.pin == 11)
+                {   
+                    SCOPED_TRACE(testing::Message() << "UnsupportedPin: " << testCase.commType);
+					return;
+                }
+				break;
+			case ATTiny427_ExpanderComm_UART0Alternate:
+			case ATTiny427_ExpanderComm_UART1:
+				if(testCase.pin < 3)
+                {   
+                    SCOPED_TRACE(testing::Message() << "UnsupportedPin: " << testCase.commType);
+					return;
+                }
+				break;
+			case ATTiny427_ExpanderComm_UART1Alternate:
+				if(testCase.pin == 17 || testCase.pin == 18)
+                {   
+                    SCOPED_TRACE(testing::Message() << "UnsupportedPin: " << testCase.commType);
+					return;
+                }
+				break;
+		}
 
         analogService->InitPin(testCase.pin);
         
@@ -170,6 +250,46 @@ namespace ATTiny427_AnalogServiceTests
     {
         SCOPED_TRACE(testing::Message() << "Pin: " << testCase.pin << ", CommType: " << testCase.commType);
 
+		switch(testCase.commType)
+		{
+			case ATTiny427_ExpanderComm_SPI:
+				if(testCase.pin < 5)
+                {   
+                    SCOPED_TRACE(testing::Message() << "UnsupportedPin: " << testCase.commType);
+					return;
+                }
+				break;
+			case ATTiny427_ExpanderComm_SPIAlternate:
+				if(testCase.pin > 15 && testCase.pin < 20)
+                {   
+                    SCOPED_TRACE(testing::Message() << "UnsupportedPin: " << testCase.commType);
+					return;
+                }
+				break;
+			case ATTiny427_ExpanderComm_UART0:
+				if(testCase.pin == 10 || testCase.pin == 11)
+                {   
+                    SCOPED_TRACE(testing::Message() << "UnsupportedPin: " << testCase.commType);
+					return;
+                }
+				break;
+			case ATTiny427_ExpanderComm_UART0Alternate:
+			case ATTiny427_ExpanderComm_UART1:
+				if(testCase.pin < 3)
+                {   
+                    SCOPED_TRACE(testing::Message() << "UnsupportedPin: " << testCase.commType);
+					return;
+                }
+				break;
+			case ATTiny427_ExpanderComm_UART1Alternate:
+				if(testCase.pin == 17 || testCase.pin == 18)
+                {   
+                    SCOPED_TRACE(testing::Message() << "UnsupportedPin: " << testCase.commType);
+					return;
+                }
+				break;
+		}
+
         // First initialization
         analogService->InitPin(testCase.pin);
         expanderService->Transmit(transmitBuffer);
@@ -213,6 +333,46 @@ namespace ATTiny427_AnalogServiceTests
     {
         SCOPED_TRACE(testing::Message() << "CommType: " << testCase.commType);
 
+		switch(testCase.commType)
+		{
+			case ATTiny427_ExpanderComm_SPI:
+				if(testCase.pin < 5)
+                {   
+                    SCOPED_TRACE(testing::Message() << "UnsupportedPin: " << testCase.commType);
+					return;
+                }
+				break;
+			case ATTiny427_ExpanderComm_SPIAlternate:
+				if(testCase.pin > 15 && testCase.pin < 20)
+                {   
+                    SCOPED_TRACE(testing::Message() << "UnsupportedPin: " << testCase.commType);
+					return;
+                }
+				break;
+			case ATTiny427_ExpanderComm_UART0:
+				if(testCase.pin == 10 || testCase.pin == 11)
+                {   
+                    SCOPED_TRACE(testing::Message() << "UnsupportedPin: " << testCase.commType);
+					return;
+                }
+				break;
+			case ATTiny427_ExpanderComm_UART0Alternate:
+			case ATTiny427_ExpanderComm_UART1:
+				if(testCase.pin < 3)
+                {   
+                    SCOPED_TRACE(testing::Message() << "UnsupportedPin: " << testCase.commType);
+					return;
+                }
+				break;
+			case ATTiny427_ExpanderComm_UART1Alternate:
+				if(testCase.pin == 17 || testCase.pin == 18)
+                {   
+                    SCOPED_TRACE(testing::Message() << "UnsupportedPin: " << testCase.commType);
+					return;
+                }
+				break;
+		}
+
         analogpin_t pin1 = testCase.pin;
         analogpin_t pin2 = testCase.pin + 1;
         switch(pin2)
@@ -227,6 +387,27 @@ namespace ATTiny427_AnalogServiceTests
                 pin2 = 1; //wrap around
                 break;
         }
+
+		switch(testCase.commType)
+		{
+			case ATTiny427_ExpanderComm_SPI:
+				if(pin2 < 5)
+                    pin2 = 5; //skip invalid pins
+				break;
+			case ATTiny427_ExpanderComm_SPIAlternate:
+				if(pin2 > 15 && pin2 < 20)
+                    pin2 = 1; //skip invalid pins
+				break;
+			case ATTiny427_ExpanderComm_UART0Alternate:
+			case ATTiny427_ExpanderComm_UART1:
+				if(pin2 < 3)
+                    pin2 = 3; //skip invalid pins
+				break;
+			case ATTiny427_ExpanderComm_UART1Alternate:
+				if(pin2 == 17 || pin2 == 18)
+                    pin2 = 19; //skip invalid pins
+				break;
+		}
         
         // Initialize first pin
         analogService->InitPin(pin1);
@@ -304,6 +485,46 @@ namespace ATTiny427_AnalogServiceTests
     TEST_P(ATTiny427_AnalogServiceTest, WhenReadPinAfterInit_ThenValueReadableAndCorrect)
     {
         SCOPED_TRACE(testing::Message() << "Pin: " << testCase.pin << ", CommType: " << testCase.commType);
+
+		switch(testCase.commType)
+		{
+			case ATTiny427_ExpanderComm_SPI:
+				if(testCase.pin < 5)
+                {   
+                    SCOPED_TRACE(testing::Message() << "UnsupportedPin: " << testCase.commType);
+					return;
+                }
+				break;
+			case ATTiny427_ExpanderComm_SPIAlternate:
+				if(testCase.pin > 15 && testCase.pin < 20)
+                {   
+                    SCOPED_TRACE(testing::Message() << "UnsupportedPin: " << testCase.commType);
+					return;
+                }
+				break;
+			case ATTiny427_ExpanderComm_UART0:
+				if(testCase.pin == 10 || testCase.pin == 11)
+                {   
+                    SCOPED_TRACE(testing::Message() << "UnsupportedPin: " << testCase.commType);
+					return;
+                }
+				break;
+			case ATTiny427_ExpanderComm_UART0Alternate:
+			case ATTiny427_ExpanderComm_UART1:
+				if(testCase.pin < 3)
+                {   
+                    SCOPED_TRACE(testing::Message() << "UnsupportedPin: " << testCase.commType);
+					return;
+                }
+				break;
+			case ATTiny427_ExpanderComm_UART1Alternate:
+				if(testCase.pin == 17 || testCase.pin == 18)
+                {   
+                    SCOPED_TRACE(testing::Message() << "UnsupportedPin: " << testCase.commType);
+					return;
+                }
+				break;
+		}
 
         // Initialize pin
         analogService->InitPin(testCase.pin);

@@ -31,11 +31,14 @@ namespace EmbeddedIOServices
 		uint8_t AC_CTRLA = 0b10000111;
 		switch(pinIn)
 		{
-			case 13:
-				AC_MUXCTRLA = 0x03 | (0x1 << 3);
+			case 7:
+				AC_MUXCTRLA = 0x03;
 				break;
 			case 9:
 				AC_MUXCTRLA = 0x03 | (0x2 << 3);
+				break;
+			case 13:
+				AC_MUXCTRLA = 0x03 | (0x1 << 3);
 				break;
 			case 14:
 				AC_MUXCTRLA = 0x03 | (0x3 << 3);
@@ -62,7 +65,7 @@ namespace EmbeddedIOServices
 		switch(comm)
 		{
 			case ATTiny427_ExpanderComm_SPI:
-				if(pinOut < 5 && pinOut > 0)
+				if(pinOut < 5)
 					return false;
 				break;
 			case ATTiny427_ExpanderComm_SPIAlternate:
@@ -70,16 +73,16 @@ namespace EmbeddedIOServices
 					return false;
 				break;
 			case ATTiny427_ExpanderComm_UART0:
-				if(pinOut > 16 && pinOut < 19)
+				if(pinOut == 10 || pinOut == 11)
 					return false;
 				break;
 			case ATTiny427_ExpanderComm_UART0Alternate:
 			case ATTiny427_ExpanderComm_UART1:
-				if(pinOut < 3 && pinOut > 0)
+				if(pinOut < 3)
 					return false;
 				break;
 			case ATTiny427_ExpanderComm_UART1Alternate:
-				if(pinOut > 9 && pinOut < 12)
+				if(pinOut == 17 || pinOut == 18)
 					return false;
 				break;
 		}

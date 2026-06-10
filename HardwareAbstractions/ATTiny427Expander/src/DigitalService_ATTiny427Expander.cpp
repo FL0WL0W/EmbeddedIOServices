@@ -92,7 +92,7 @@ namespace EmbeddedIOServices
 		switch(_comm)
 		{
 			case ATTiny427_ExpanderComm_SPI:
-				if(pin < 5 && pin > 0)
+				if(pin < 5)
 					return;
 				break;
 			case ATTiny427_ExpanderComm_SPIAlternate:
@@ -100,16 +100,16 @@ namespace EmbeddedIOServices
 					return;
 				break;
 			case ATTiny427_ExpanderComm_UART0:
-				if(pin > 16 && pin < 19)
+				if(pin == 10 || pin == 11)
 					return;
 				break;
 			case ATTiny427_ExpanderComm_UART0Alternate:
 			case ATTiny427_ExpanderComm_UART1:
-				if(pin < 3 && pin > 0)
+				if(pin < 3)
 					return;
 				break;
 			case ATTiny427_ExpanderComm_UART1Alternate:
-				if(pin > 9 && pin < 12)
+				if(pin == 17 || pin == 18)
 					return;
 				break;
 		}

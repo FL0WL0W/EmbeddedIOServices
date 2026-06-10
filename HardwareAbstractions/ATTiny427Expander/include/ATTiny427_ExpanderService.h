@@ -173,8 +173,8 @@ namespace EmbeddedIOServices
 					return;
 
 				//calculate start indexes
-				const size_t bufferIdxStart = ((readIdx - _readIdx) & (0x1 << (sizeof(size_t) * 8 - 1))) ? 0 : readIdx - _readIdx;
-				const size_t dataIdxStart = ((_readIdx - readIdx) & (0x1 << (sizeof(size_t) * 8 - 1))) ? 0 : _readIdx - readIdx;
+				const size_t bufferIdxStart = ((readIdx - _readIdx) & (((size_t)0x1) << (sizeof(size_t) * 8 - 1))) ? 0 : readIdx - _readIdx;
+				const size_t dataIdxStart = ((_readIdx - readIdx) & (((size_t)0x1) << (sizeof(size_t) * 8 - 1))) ? 0 : _readIdx - readIdx;
 
 				//if past data, skip
 				if(bufferIdxStart >= _length || dataIdxStart >= size)

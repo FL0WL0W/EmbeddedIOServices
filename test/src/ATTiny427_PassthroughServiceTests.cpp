@@ -66,15 +66,20 @@ namespace ATTiny427_PassthroughServiceTests
             uint8_t AC_CTRLA = 0b10000111;
             switch(testCase.pinIn)
             {
-                case 13:
-                    AC_MUXCTRLA = 0x03 | (0x1 << 3);
+                case 7:
+                    AC_MUXCTRLA = 0x03;
                     break;
                 case 9:
                     AC_MUXCTRLA = 0x03 | (0x2 << 3);
                     break;
+                case 13:
+                    AC_MUXCTRLA = 0x03 | (0x1 << 3);
+                    break;
                 case 14:
                     AC_MUXCTRLA = 0x03 | (0x3 << 3);
                     break;
+                default:
+                    return;
             }
             if(pinOut == 5)
             {
@@ -119,7 +124,17 @@ namespace ATTiny427_PassthroughServiceTests
 
     TEST_P(ATTiny427_PassthroughServiceTest, WhenInitPassthrough_InPinDeinittedCorrectly)
     {
-        const digitalpin_t pinOut = testCase.pinIn == 10? 15 : 10;
+        const digitalpin_t pinOut = testCase.pinIn == 15? 10 : 15;
+        if(pinOut == 10 && testCase.commType == ATTiny427_ExpanderComm_UART0)
+        {
+            SCOPED_TRACE(testing::Message() << "UnsupportedPassthrough: " << testCase.commType);
+            const bool result = passthroughService->InitPassthrough(testCase.pinIn, pinOut, testCase.inverted, testCase.useAC);
+            ASSERT_FALSE(result);
+
+            const size_t size = expanderService->Transmit(transmitBuffer);
+            ASSERT_EQ(size, 0);
+            return;
+        }
         //initdeinit so registers are known state
         passthroughService->InitPassthrough(testCase.pinIn, pinOut, testCase.inverted, testCase.useAC);
         passthroughService->DeinitPassthrough(pinOut);
@@ -229,23 +244,24 @@ namespace ATTiny427_PassthroughServiceTests
             return;
         }
 
-        if(testCase.commType == ATTiny427_ExpanderComm_SPI || 
-            testCase.commType == ATTiny427_ExpanderComm_UART0Alternate || 
-            testCase.commType == ATTiny427_ExpanderComm_UART1)
-        {
-            SCOPED_TRACE(testing::Message() << "UnsupportedPassthrough: " << testCase.commType);
-            return;
-        }
-
         if(testCase.pinIn > 21)
         {
             SCOPED_TRACE(testing::Message() << "InvalidPin: " << testCase.pinIn);
             return;
         }
 
-        SCOPED_TRACE(testing::Message() << "SupportedPassthrough: " << testCase.commType);
-
         bool result = passthroughService->InitPassthrough(testCase.pinIn, 2, testCase.inverted, testCase.useAC);
+
+        if(testCase.commType == ATTiny427_ExpanderComm_SPI || 
+            testCase.commType == ATTiny427_ExpanderComm_UART0Alternate || 
+            testCase.commType == ATTiny427_ExpanderComm_UART1)
+        {
+            SCOPED_TRACE(testing::Message() << "UnsupportedPassthrough: " << testCase.commType);
+            ASSERT_FALSE(result);
+            return;
+        }
+
+        SCOPED_TRACE(testing::Message() << "SupportedPassthrough: " << testCase.commType);
         ASSERT_TRUE(result);
 
         expanderService->Transmit(transmitBuffer);
@@ -411,21 +427,22 @@ namespace ATTiny427_PassthroughServiceTests
             return;
         }
 
-        if(testCase.commType == ATTiny427_ExpanderComm_SPI)
-        {
-            SCOPED_TRACE(testing::Message() << "UnsupportedPassthrough: " << testCase.commType);
-            return;
-        }
-
         if(testCase.pinIn > 21)
         {
             SCOPED_TRACE(testing::Message() << "InvalidPin: " << testCase.pinIn);
             return;
         }
 
-        SCOPED_TRACE(testing::Message() << "SupportedPassthrough: " << testCase.commType);
-
         bool result = passthroughService->InitPassthrough(testCase.pinIn, 4, testCase.inverted, testCase.useAC);
+
+        if(testCase.commType == ATTiny427_ExpanderComm_SPI)
+        {
+            SCOPED_TRACE(testing::Message() << "UnsupportedPassthrough: " << testCase.commType);
+            ASSERT_FALSE(result);
+            return;
+        }
+
+        SCOPED_TRACE(testing::Message() << "SupportedPassthrough: " << testCase.commType);
         ASSERT_TRUE(result);
 
         expanderService->Transmit(transmitBuffer);
@@ -571,12 +588,6 @@ namespace ATTiny427_PassthroughServiceTests
         if(testCase.pinIn == 5)
         {
             SCOPED_TRACE(testing::Message() << "InvalidPin: " << testCase.pinIn);
-            return;
-        }
-
-        if(testCase.commType == ATTiny427_ExpanderComm_SPI)
-        {
-            SCOPED_TRACE(testing::Message() << "UnsupportedPassthrough: " << testCase.commType);
             return;
         }
 
@@ -934,6 +945,17 @@ namespace ATTiny427_PassthroughServiceTests
             return;
         }
 
+        if(testCase.commType == ATTiny427_ExpanderComm_UART0)
+        {
+            SCOPED_TRACE(testing::Message() << "UnsupportedPassthrough: " << testCase.commType);
+            const bool result = passthroughService->InitPassthrough(testCase.pinIn, 10, testCase.inverted, testCase.useAC);
+            ASSERT_FALSE(result);
+
+            const size_t size = expanderService->Transmit(transmitBuffer);
+            ASSERT_EQ(size, 0);
+            return;
+        }
+
         if(testCase.pinIn > 21)
         {
             SCOPED_TRACE(testing::Message() << "InvalidPin: " << testCase.pinIn);
@@ -986,9 +1008,16 @@ namespace ATTiny427_PassthroughServiceTests
             return;
         }
 
-        SCOPED_TRACE(testing::Message() << "SupportedPassthrough: " << testCase.commType);
-
         bool result = passthroughService->InitPassthrough(testCase.pinIn, 10, testCase.inverted, testCase.useAC);
+
+        if(testCase.commType == ATTiny427_ExpanderComm_UART0)
+        {
+            SCOPED_TRACE(testing::Message() << "UnsupportedPassthrough: " << testCase.commType);
+            ASSERT_FALSE(result);
+            return;
+        }
+
+        SCOPED_TRACE(testing::Message() << "SupportedPassthrough: " << testCase.commType);
         ASSERT_TRUE(result);
 
         expanderService->Transmit(transmitBuffer);
@@ -1020,6 +1049,17 @@ namespace ATTiny427_PassthroughServiceTests
         if(testCase.pinIn == 11)
         {
             SCOPED_TRACE(testing::Message() << "InvalidPin: " << testCase.pinIn);
+            const bool result = passthroughService->InitPassthrough(testCase.pinIn, 11, testCase.inverted, testCase.useAC);
+            ASSERT_FALSE(result);
+
+            const size_t size = expanderService->Transmit(transmitBuffer);
+            ASSERT_EQ(size, 0);
+            return;
+        }
+
+        if(testCase.commType == ATTiny427_ExpanderComm_UART0)
+        {
+            SCOPED_TRACE(testing::Message() << "UnsupportedPassthrough: " << testCase.commType);
             const bool result = passthroughService->InitPassthrough(testCase.pinIn, 11, testCase.inverted, testCase.useAC);
             ASSERT_FALSE(result);
 
@@ -1149,9 +1189,16 @@ namespace ATTiny427_PassthroughServiceTests
             return;
         }
 
-        SCOPED_TRACE(testing::Message() << "SupportedPassthrough: " << testCase.commType);
-
         bool result = passthroughService->InitPassthrough(testCase.pinIn, 11, testCase.inverted, testCase.useAC);
+
+        if(testCase.commType == ATTiny427_ExpanderComm_UART0)
+        {
+            SCOPED_TRACE(testing::Message() << "UnsupportedPassthrough: " << testCase.commType);
+            ASSERT_FALSE(result);
+            return;
+        }
+
+        SCOPED_TRACE(testing::Message() << "SupportedPassthrough: " << testCase.commType);
         ASSERT_TRUE(result);
 
         expanderService->Transmit(transmitBuffer);
@@ -1749,21 +1796,21 @@ namespace ATTiny427_PassthroughServiceTests
             return;
         }
 
-        if(testCase.commType == ATTiny427_ExpanderComm_SPIAlternate || testCase.commType == ATTiny427_ExpanderComm_UART1Alternate)
-        {
-            SCOPED_TRACE(testing::Message() << "UnsupportedPassthrough: " << testCase.commType);
-            return;
-        }
-
         if(testCase.pinIn > 21)
         {
             SCOPED_TRACE(testing::Message() << "InvalidPin: " << testCase.pinIn);
             return;
         }
 
-        SCOPED_TRACE(testing::Message() << "SupportedPassthrough: " << testCase.commType);
-
         bool result = passthroughService->InitPassthrough(testCase.pinIn, 17, testCase.inverted, testCase.useAC);
+        if(testCase.commType == ATTiny427_ExpanderComm_SPIAlternate || testCase.commType == ATTiny427_ExpanderComm_UART1Alternate)
+        {
+            SCOPED_TRACE(testing::Message() << "UnsupportedPassthrough: " << testCase.commType);
+            ASSERT_FALSE(result);
+            return;
+        }
+
+        SCOPED_TRACE(testing::Message() << "SupportedPassthrough: " << testCase.commType);
         ASSERT_TRUE(result);
 
         expanderService->Transmit(transmitBuffer);
@@ -1861,22 +1908,23 @@ namespace ATTiny427_PassthroughServiceTests
             return;
         }
 
-        if(testCase.commType == ATTiny427_ExpanderComm_SPIAlternate || 
-            testCase.commType == ATTiny427_ExpanderComm_UART1Alternate)
-        {
-            SCOPED_TRACE(testing::Message() << "UnsupportedPassthrough: " << testCase.commType);
-            return;
-        }
-
         if(testCase.pinIn > 21)
         {
             SCOPED_TRACE(testing::Message() << "InvalidPin: " << testCase.pinIn);
             return;
         }
 
-        SCOPED_TRACE(testing::Message() << "SupportedPassthrough: " << testCase.commType);
-
         bool result = passthroughService->InitPassthrough(testCase.pinIn, 18, testCase.inverted, testCase.useAC);
+
+        if(testCase.commType == ATTiny427_ExpanderComm_SPIAlternate || 
+            testCase.commType == ATTiny427_ExpanderComm_UART1Alternate)
+        {
+            SCOPED_TRACE(testing::Message() << "UnsupportedPassthrough: " << testCase.commType);
+            ASSERT_FALSE(result);
+            return;
+        }
+
+        SCOPED_TRACE(testing::Message() << "SupportedPassthrough: " << testCase.commType);
         ASSERT_TRUE(result);
 
         expanderService->Transmit(transmitBuffer);

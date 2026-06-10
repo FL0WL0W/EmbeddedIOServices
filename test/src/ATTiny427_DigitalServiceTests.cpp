@@ -70,58 +70,90 @@ namespace ATTiny427_DigitalServiceTests
         ::testing::ValuesIn(CreateTestCases())
     );
 
-    TEST_P(ATTiny427_DigitalServiceTest, WhenInitPinInput_ThenDirectionConfiguredCorrectly)
+    TEST_P(ATTiny427_DigitalServiceTest, WhenInitPin_ThenDirectionConfiguredCorrectly)
     {
         SCOPED_TRACE(testing::Message() << "Pin: " << testCase.pin << ", CommType: " << testCase.commType);
+
+        DigitalPort_ATTiny427Expander commPort;
+        DigitalPin_ATTiny427Expander commPin;
+		switch(testCase.commType)
+		{
+			case ATTiny427_ExpanderComm_SPI:
+                commPort = PORTA;
+                commPin = 0b00000100;
+				if(testCase.pin < 5)
+                {   
+                    SCOPED_TRACE(testing::Message() << "UnsupportedPin: " << testCase.commType);
+					return;
+                }
+				break;
+			case ATTiny427_ExpanderComm_SPIAlternate:
+                commPort = PORTC;
+                commPin = 0b00000010;
+				if(testCase.pin > 15 && testCase.pin < 20)
+                {   
+                    SCOPED_TRACE(testing::Message() << "UnsupportedPin: " << testCase.commType);
+					return;
+                }
+				break;
+			case ATTiny427_ExpanderComm_UART0:
+                commPort = PORTB;
+                commPin = 0b00000100;
+				if(testCase.pin == 10 || testCase.pin == 11)
+                {   
+                    SCOPED_TRACE(testing::Message() << "UnsupportedPin: " << testCase.commType);
+					return;
+                }
+				break;
+			case ATTiny427_ExpanderComm_UART0Alternate:
+			case ATTiny427_ExpanderComm_UART1:
+                commPort = PORTA;
+                commPin = 0b00000010;
+				if(testCase.pin < 3)
+                {   
+                    SCOPED_TRACE(testing::Message() << "UnsupportedPin: " << testCase.commType);
+					return;
+                }
+				break;
+			case ATTiny427_ExpanderComm_UART1Alternate:
+                commPort = PORTC;
+                commPin = 0b00000100;
+				if(testCase.pin == 17 || testCase.pin == 18)
+                {   
+                    SCOPED_TRACE(testing::Message() << "UnsupportedPin: " << testCase.commType);
+					return;
+                }
+				break;
+		}
 
         // Initialize pin as input
-        digitalService->InitPin(testCase.pin, In);
+        digitalService->InitPin(testCase.pin, testCase.direction);
         
         const size_t size = expanderService->Transmit(transmitBuffer);
-        
-        if(testCase.direction == In)
+
+        DigitalPort_ATTiny427Expander port = DigitalService_ATTiny427Expander::PinToDigitalPort(testCase.pin);
+
+        uint16_t address;
+        switch(port)
         {
-            size_t idx = 6; // skip reads
-            uint16_t address;
-            switch(DigitalService_ATTiny427Expander::PinToDigitalPort(testCase.pin))
-            {
-                case PORTA: address = ADDRESS_VPORTA_DIR; break;
-                case PORTB: address = ADDRESS_VPORTB_DIR; break;
-                case PORTC: address = ADDRESS_VPORTC_DIR; break;
-                default: FAIL() << "Invalid pin number";
-            }
+            case PORTA: address = ADDRESS_VPORTA_DIR; break;
+            case PORTB: address = ADDRESS_VPORTB_DIR; break;
+            case PORTC: address = ADDRESS_VPORTC_DIR; break;
+            default: FAIL() << "Invalid pin number";
+        }
+        size_t idx = 6; // skip reads
+        if(port != commPort || testCase.direction != In)
+        {
             ASSERT_EQ(transmitBuffer[idx++], 0xB1); //write 1 byte with high address of 0
             ASSERT_EQ(transmitBuffer[idx++], address); //low address
-            ASSERT_EQ(transmitBuffer[idx++], 0x00); //data should be 0 for input
-            ASSERT_EQ(size, idx) << "Expected transmit data for InitPin Input";
+            ASSERT_EQ(transmitBuffer[idx++], (port == commPort? commPin : 0) | (testCase.direction == In? 0 : DigitalService_ATTiny427Expander::PinToDigitalPin(testCase.pin))); //data should be 1 for output
         }
-    }
-
-    TEST_P(ATTiny427_DigitalServiceTest, WhenInitPinOutput_ThenDirectionConfiguredCorrectly)
-    {
-        SCOPED_TRACE(testing::Message() << "Pin: " << testCase.pin << ", CommType: " << testCase.commType);
-
-        // Initialize pin as output
-        digitalService->InitPin(testCase.pin, Out);
-        
-        const size_t size = expanderService->Transmit(transmitBuffer);
-        
-        if(testCase.direction == Out)
+        else 
         {
-            size_t idx = 6; // skip reads
-            uint16_t address;
-            switch(DigitalService_ATTiny427Expander::PinToDigitalPort(testCase.pin))
-            {
-                case PORTA: address = ADDRESS_VPORTA_DIR; break;
-                case PORTB: address = ADDRESS_VPORTB_DIR; break;
-                case PORTC: address = ADDRESS_VPORTC_DIR; break;
-                default: FAIL() << "Invalid pin number";
-            }
-            ASSERT_EQ(transmitBuffer[idx++], 0xB1); //write 1 byte with high address of 0
-            ASSERT_EQ(transmitBuffer[idx++], address); //low address
-            ASSERT_EQ(transmitBuffer[idx++], DigitalService_ATTiny427Expander::PinToDigitalPin(testCase.pin)); //data should be 1 for output
-            ASSERT_EQ(size, idx) << "Expected transmit data for InitPin Output";
+            idx += testCase.commType == ATTiny427_ExpanderComm_SPI || testCase.commType == ATTiny427_ExpanderComm_SPIAlternate? 3 : 1;
         }
+
+        ASSERT_EQ(size, idx) << "Expected transmit data for InitPin";
     }
 
     TEST_P(ATTiny427_DigitalServiceTest, WhenReadPinBeforeInit_ThenReturnsZero)
