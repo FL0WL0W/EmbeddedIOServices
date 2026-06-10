@@ -391,6 +391,7 @@ namespace EmbeddedIOServices
 				break;
 			case 8: //TCAWO0
 			case 11: //TCAWO0'
+			{
 				const uint16_t per = value.Period * 20000000 / divCurrent + 0.5f;
 				const uint16_t cmp0 = value.PulseWidth * 20000000 / divCurrent + 0.5f;
 				if(_TCA_CTRLD == 0x1)
@@ -406,8 +407,10 @@ namespace EmbeddedIOServices
 					_TCA_CMP0BUFL = cmp0;
 				}
 				break;
+			}
 			case 9: //TCAWO1
 			case 12: //TCAWO1'
+			{
 				const uint16_t per = value.Period * 20000000 / divCurrent + 0.5f;
 				const uint16_t cmp1 = value.PulseWidth * 20000000 / divCurrent + 0.5f;
 				if(_TCA_CTRLD == 0x1)
@@ -423,8 +426,10 @@ namespace EmbeddedIOServices
 					_TCA_CMP1BUFL = cmp1;
 				}
 				break;
+			}
 			case 10: //TCAWO2
 			case 13: //TCAWO2'
+			{
 				const uint16_t per = value.Period * 20000000 / divCurrent + 0.5f;
 				const uint16_t cmp2 = value.PulseWidth * 20000000 / divCurrent + 0.5f;
 				if(_TCA_CTRLD == 0x1)
@@ -440,6 +445,7 @@ namespace EmbeddedIOServices
 					_TCA_CMP2BUFL = cmp2;
 				}
 				break;
+			}
 			// case 16: //TCB0WO'
 			// 	break;
 			case 19: //TCAWO3`
