@@ -26,12 +26,14 @@ namespace EmbeddedIOServices
 		auto find = _receiveCallBackMap.find(receiveCallBackId);
 		if (find != _receiveCallBackMap.end()) 
 		{
-			for (auto next = _receiveCallBackIdentifierIndex.begin(); next != _receiveCallBackIdentifierIndex.end(); ++next) 
+			for (auto next = _receiveCallBackIdentifierIndex.begin(); next != _receiveCallBackIdentifierIndex.end();) 
 			{
 				if (next->second == find->second) 
 				{
 					next = _receiveCallBackIdentifierIndex.erase(next);
+					continue;
 				}
+				++next;
 			}
 			_receiveCallBackMap.erase(find);
 		}
@@ -39,25 +41,29 @@ namespace EmbeddedIOServices
 
 	void ICANService::UnRegisterReceiveCallBack(const CANIdentifier_t identifier, const CANIdentifier_t mask)
 	{
-		for (auto next = _receiveCallBackMaskMap.begin(); next != _receiveCallBackMaskMap.end(); ++next) 
+		for (auto next = _receiveCallBackMaskMap.begin(); next != _receiveCallBackMaskMap.end();) 
 		{
 			if (next->second.Identifier == identifier && next->second.Mask == mask) 
 			{
 				next = _receiveCallBackMaskMap.erase(next);
+				continue;
 			}
+			++next;
 		}
 	}
 
 	void ICANService::UnRegisterReceiveCallBack(const CANIdentifier_t identifier)
 	{
-		for (auto find = _receiveCallBackIdentifierIndex.find(identifier); find != _receiveCallBackIdentifierIndex.end() && find->first == identifier; ++find) 
+		for (auto find = _receiveCallBackIdentifierIndex.find(identifier); find != _receiveCallBackIdentifierIndex.end() && find->first == identifier;) 
 		{
-			for (auto next = _receiveCallBackMap.begin(); next != _receiveCallBackMap.end(); ++next) 
+			for (auto next = _receiveCallBackMap.begin(); next != _receiveCallBackMap.end();) 
 			{
 				if (next->second == find->second) 
 				{
 					next = _receiveCallBackMap.erase(next);
+					continue;
 				}
+				++next;
 			}
 			find = _receiveCallBackIdentifierIndex.erase(find);
 		}
