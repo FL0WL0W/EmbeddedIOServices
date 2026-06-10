@@ -19,7 +19,7 @@ namespace EmbeddedIOServices
         };
 
         ICANService * const _canService;
-        const CANIdentifier_t* _transmitIds;
+        const CANIdentifier_t * const _transmitIds;
         const size_t _transmitIdsLength;
         std::vector<ReceiveState> _receiveStates;
 
