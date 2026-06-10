@@ -29,22 +29,21 @@ namespace EmbeddedIOServices
         _transmitIds(transmitIds),
         _transmitIdsLength(transmitIdsLength)
     {
-        _receiveCallbackIds.reserve(listenIdsLength);
         _receiveStates.resize(listenIdsLength);
 
         for(size_t i = 0; i < listenIdsLength; ++i)
         {
-            _receiveCallbackIds.push_back(_canService->RegisterReceiveCallBack(listenIds[i], [this, i](can_send_callback_t sendCallback, const CANData_t data, uint8_t dataLength) {
+            _receiveStates[i].CallbackID = _canService->RegisterReceiveCallBack(listenIds[i], [this, i](can_send_callback_t sendCallback, const CANData_t data, uint8_t dataLength) {
                 ReceiveFrame(i, sendCallback, data, dataLength);
-            }));
+            });
         }
     }
 
     CommunicationService_ISOTP::~CommunicationService_ISOTP()
     {
-        for(const auto& callbackId : _receiveCallbackIds)
+        for(const auto& state : _receiveStates)
         {
-            _canService->UnRegisterReceiveCallBack(callbackId);
+            _canService->UnRegisterReceiveCallBack(state.CallbackID);
         }
     }
 

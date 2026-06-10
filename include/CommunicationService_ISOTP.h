@@ -13,6 +13,7 @@ namespace EmbeddedIOServices
         {
             std::vector<uint8_t> Buffer;
             size_t ExpectedLength = 0;
+            can_receive_callback_id_t CallbackID;
             uint8_t NextSequenceNumber = 1;
             bool Active = false;
         };
@@ -20,7 +21,6 @@ namespace EmbeddedIOServices
         ICANService * const _canService;
         const CANIdentifier_t* _transmitIds;
         const size_t _transmitIdsLength;
-        std::vector<can_receive_callback_id_t> _receiveCallbackIds;
         std::vector<ReceiveState> _receiveStates;
 
         void ReceiveFrame(size_t index, can_send_callback_t sendCallback, const CANData_t data, uint8_t dataLength);
