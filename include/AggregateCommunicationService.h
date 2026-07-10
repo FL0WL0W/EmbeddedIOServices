@@ -23,7 +23,7 @@ namespace EmbeddedIOServices
 	public:
 		AggregateCommunicationService();
 		AggregateCommunicationService(ICommunicationService *services[], size_t servicesLength);
-		~AggregateCommunicationService();
+		~AggregateCommunicationService() override;
 
 		void AddService(ICommunicationService *service);
 		communication_send_callback_id_t RegisterSendCallBack(communication_send_callback_t sendCallBack);

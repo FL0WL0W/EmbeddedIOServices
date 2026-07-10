@@ -19,6 +19,8 @@ namespace EmbeddedIOServices
 		communication_receive_callback_id_t _nextId = 0;
 		
 	public:
+		// virtual destructor for proper cleanup through base pointer
+		virtual ~ICommunicationService() = default;
 		/**
 		 * @brief Called when the service receives data. This will loop through all of the register callbacks 
 		 * until there is either no data left to be processed, or there are no callbacks that can handle the data

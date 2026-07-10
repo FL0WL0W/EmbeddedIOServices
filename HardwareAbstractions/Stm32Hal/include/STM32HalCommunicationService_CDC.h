@@ -13,7 +13,7 @@ namespace Stm32
 		static int8_t CDCTransmitCplt(uint8_t *Buf, uint32_t *Len, uint8_t epnum);
 	public:
 		STM32HalCommunicationService_CDC();
-		~STM32HalCommunicationService_CDC();
+		~STM32HalCommunicationService_CDC() override;
 		void Send(const void *data, size_t length) override;
 		void Flush();
 	};
