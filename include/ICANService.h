@@ -2,11 +2,15 @@
 #include <functional>
 #include <memory>
 #include <map>
+#include <vector>
+#include "AggregateCommunicationService.h"
 
 #ifndef ICANSERVICE_H
 #define ICANSERVICE_H
 namespace EmbeddedIOServices
 {
+	class CommunicationService_ISOTP;
+
 	struct CANData_t 
 	{
 	public:
@@ -52,13 +56,30 @@ namespace EmbeddedIOServices
 	class ICANService
 	{
 	protected:
+		struct ISOTPServiceRegistration
+		{
+			CANIdentifier_t ListenId;
+			CommunicationService_ISOTP *Service;
+		};
+
+		struct ISOTPAggregateServiceRegistration
+		{
+			std::vector<CANIdentifier_t> ListenIds;
+			std::vector<CANIdentifier_t> TransmitIds;
+			AggregateCommunicationService *Service;
+		};
+
 		//// map of receive callback
 		std::multimap<const CANIdentifier_t, std::shared_ptr<can_receive_callback_t>> _receiveCallBackIdentifierIndex;
 		std::multimap<const can_receive_callback_id_t, std::shared_ptr<can_receive_callback_t>> _receiveCallBackMap;
 		std::multimap<const can_receive_callback_id_t, can_receive_callback_mask_t> _receiveCallBackMaskMap;
 		can_receive_callback_id_t _nextId = 0;
+		std::vector<ISOTPServiceRegistration> _isotpServices;
+		std::vector<ISOTPAggregateServiceRegistration> _isotpAggregateServices;
 		
 	public:
+		virtual ~ICANService();
+
 		/**
 		 * @brief Called when the service receives data. This will loop through all of the register callbacks 
 		 * until there is either no data left to be processed
@@ -103,6 +124,16 @@ namespace EmbeddedIOServices
 		 * @param identifier the identifier to filter for the callback function
 		 */
 		void UnRegisterReceiveCallBack(const CANIdentifier_t identifier);
+
+		/**
+		 * @brief Gets a communication service that combines ISO-TP services for the requested listen identifiers.
+		 * @param listenIds List of CAN identifiers to listen on
+		 * @param listenIdsLength Length of listenIds
+		 * @param transmitIds List of CAN identifiers to transmit on when the aggregate service sends
+		 * @param transmitIdsLength Length of transmitIds
+		 * @return Aggregate communication service for the requested identifiers
+		 */
+		ICommunicationService *GetISOTPService(const CANIdentifier_t listenIds[], const size_t listenIdsLength, const CANIdentifier_t transmitIds[], const size_t transmitIdsLength);
 
 		/**
 		 * @brief Sends data on the can bus.
