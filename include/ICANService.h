@@ -3,6 +3,7 @@
 #include <memory>
 #include <map>
 #include <vector>
+#include "ICommunicationService.h"
 
 #ifndef ICANSERVICE_H
 #define ICANSERVICE_H
