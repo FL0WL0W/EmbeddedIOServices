@@ -3,7 +3,6 @@
 #include <memory>
 #include <map>
 #include <vector>
-#include "AggregateCommunicationService.h"
 
 #ifndef ICANSERVICE_H
 #define ICANSERVICE_H
@@ -56,26 +55,12 @@ namespace EmbeddedIOServices
 	class ICANService
 	{
 	protected:
-		struct ISOTPServiceRegistration
-		{
-			CANIdentifier_t ListenId;
-			CommunicationService_ISOTP *Service;
-		};
-
-		struct ISOTPAggregateServiceRegistration
-		{
-			std::vector<CANIdentifier_t> ListenIds;
-			std::vector<CANIdentifier_t> TransmitIds;
-			AggregateCommunicationService *Service;
-		};
-
 		//// map of receive callback
 		std::multimap<const CANIdentifier_t, std::shared_ptr<can_receive_callback_t>> _receiveCallBackIdentifierIndex;
 		std::multimap<const can_receive_callback_id_t, std::shared_ptr<can_receive_callback_t>> _receiveCallBackMap;
 		std::multimap<const can_receive_callback_id_t, can_receive_callback_mask_t> _receiveCallBackMaskMap;
 		can_receive_callback_id_t _nextId = 0;
-		std::vector<ISOTPServiceRegistration> _isotpServices;
-		std::vector<ISOTPAggregateServiceRegistration> _isotpAggregateServices;
+		std::vector<CommunicationService_ISOTP*> _isotpServices;
 		
 	public:
 		virtual ~ICANService();
@@ -127,13 +112,10 @@ namespace EmbeddedIOServices
 
 		/**
 		 * @brief Gets a communication service that combines ISO-TP services for the requested listen identifiers.
-		 * @param listenIds List of CAN identifiers to listen on
-		 * @param listenIdsLength Length of listenIds
-		 * @param transmitIds List of CAN identifiers to transmit on when the aggregate service sends
-		 * @param transmitIdsLength Length of transmitIds
+		 * @param identifierPair Pair of CAN identifiers for listen and transmit
 		 * @return Aggregate communication service for the requested identifiers
 		 */
-		ICommunicationService *GetISOTPService(const CANIdentifier_t listenIds[], const size_t listenIdsLength, const CANIdentifier_t transmitIds[], const size_t transmitIdsLength);
+		ICommunicationService *GetISOTPService(const CANIdentifier_t listenId, const CANIdentifier_t transmitId);
 
 		/**
 		 * @brief Sends data on the can bus.

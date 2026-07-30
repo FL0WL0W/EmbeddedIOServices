@@ -8,14 +8,9 @@ namespace EmbeddedIOServices
 {	
 	ICANService::~ICANService()
 	{
-		for(const auto& aggregateService : _isotpAggregateServices)
-		{
-			delete aggregateService.Service;
-		}
-
 		for(const auto& service : _isotpServices)
 		{
-			delete service.Service;
+			delete service;
 		}
 	}
 
@@ -84,69 +79,26 @@ namespace EmbeddedIOServices
 		}
 	}
 
-	ICommunicationService *ICANService::GetISOTPService(const CANIdentifier_t listenIds[], const size_t listenIdsLength, const CANIdentifier_t transmitIds[], const size_t transmitIdsLength)
+	ICommunicationService *ICANService::GetISOTPService(const CANIdentifier_t listenId, const CANIdentifier_t transmitId)
 	{
-		std::vector<CANIdentifier_t> listenIdList;
-		std::vector<CANIdentifier_t> transmitIdList;
+		CommunicationService_ISOTP *isotpService = nullptr;
 
-		if(listenIds != nullptr)
+		for(const auto& service : _isotpServices)
 		{
-			listenIdList.assign(listenIds, listenIds + listenIdsLength);
-		}
-
-		if(transmitIds != nullptr)
-		{
-			transmitIdList.assign(transmitIds, transmitIds + transmitIdsLength);
-		}
-
-		for(const auto& aggregateService : _isotpAggregateServices)
-		{
-			if(aggregateService.ListenIds == listenIdList && aggregateService.TransmitIds == transmitIdList)
+			if(service->ListenId == listenId && service->TransmitId == transmitId)
 			{
-				return aggregateService.Service;
+				isotpService = service;
+				break;
 			}
 		}
 
-		ISOTPAggregateServiceRegistration aggregateService;
-		aggregateService.ListenIds = listenIdList;
-		aggregateService.TransmitIds = transmitIdList;
-		aggregateService.Service = new AggregateCommunicationService();
-
-		for(const CANIdentifier_t listenId : listenIdList)
+		if(isotpService == nullptr)
 		{
-			CommunicationService_ISOTP *isotpService = nullptr;
-
-			for(const auto& service : _isotpServices)
-			{
-				if(service.ListenId == listenId)
-				{
-					isotpService = service.Service;
-					break;
-				}
-			}
-
-			if(isotpService == nullptr)
-			{
-				const CANIdentifier_t listenIdsForService[1] = { listenId };
-				ISOTPServiceRegistration service;
-				service.ListenId = listenId;
-				service.Service = new CommunicationService_ISOTP(this, listenIdsForService, 1, nullptr, 0);
-				isotpService = service.Service;
-				_isotpServices.push_back(std::move(service));
-			}
-
-			aggregateService.Service->AddService(isotpService);
+			isotpService = new CommunicationService_ISOTP(this, listenId, transmitId);
+			_isotpServices.push_back(isotpService);
 		}
 
-		for(const CANIdentifier_t transmitId : transmitIdList)
-		{
-			aggregateService.Service->RegisterSendCallBack([this, transmitId](const void *data, size_t length) {
-				CommunicationService_ISOTP::Send(this, transmitId, data, length);
-			});
-		}
-
-		_isotpAggregateServices.push_back(std::move(aggregateService));
-		return _isotpAggregateServices.back().Service;
+		return isotpService;
 	}
 
 	void ICANService::Receive(const CANIdentifier_t identifier, const CANData_t data, const uint8_t dataLength)

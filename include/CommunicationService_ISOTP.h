@@ -6,6 +6,8 @@
 #define COMMUNICATIONSERVICE_ISOTP_H
 namespace EmbeddedIOServices
 {
+        class ICANService;
+
 	class CommunicationService_ISOTP : public EmbeddedIOServices::ICommunicationService
 	{
 	protected:
@@ -18,14 +20,23 @@ namespace EmbeddedIOServices
             bool Active = false;
         };
 
-        ICANService * const _canService;
-        const CANIdentifier_t * const _transmitIds;
-        const size_t _transmitIdsLength;
-        std::vector<ReceiveState> _receiveStates;
+        struct SendState
+        {
+            std::vector<uint8_t> Buffer;
+            size_t Offset = 0;
+            uint8_t NextSequenceNumber = 1;
+            bool Active = false;
+        };
 
-        void ReceiveFrame(size_t index, can_send_callback_t sendCallback, const CANData_t data, uint8_t dataLength);
+        ICANService * const _canService;
+        ReceiveState _receiveState;
+        SendState _sendState;
+
+        void ReceiveFrame(can_send_callback_t sendCallback, const CANData_t data, uint8_t dataLength);
 	public:
-        CommunicationService_ISOTP(ICANService * const canService, const CANIdentifier_t listenIds[], const size_t listenIdsLength, const CANIdentifier_t transmitIds[], const size_t transmitIdsLength);
+        const CANIdentifier_t ListenId;
+        const CANIdentifier_t TransmitId;
+        CommunicationService_ISOTP(ICANService * const canService, const CANIdentifier_t listenId, const CANIdentifier_t transmitId);
         ~CommunicationService_ISOTP() override;
         static void Send(ICANService * const canService, const CANIdentifier_t transmitId, const void *data, size_t length);
         void Send(const void *data, size_t length);
