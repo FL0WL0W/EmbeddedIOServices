@@ -50,6 +50,8 @@ namespace EmbeddedIOServices
 		 * @param length Length of that data to be transmitted
 		 */
         virtual void Send(const void *data, size_t length) = 0;
+
+		virtual bool Ready();
 	};
 }
 #endif

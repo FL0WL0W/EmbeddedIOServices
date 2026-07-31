@@ -38,8 +38,8 @@ namespace EmbeddedIOServices
         const CANIdentifier_t TransmitId;
         CommunicationService_ISOTP(ICANService * const canService, const CANIdentifier_t listenId, const CANIdentifier_t transmitId);
         ~CommunicationService_ISOTP() override;
-        static void Send(ICANService * const canService, const CANIdentifier_t transmitId, const void *data, size_t length);
         void Send(const void *data, size_t length);
+        bool Ready() override;
 	};
 }
 #endif

@@ -49,5 +49,9 @@ namespace EmbeddedIOServices
 		//return the amount of data handled
 		return handled;
 	}
+	bool ICommunicationService::Ready()
+	{
+		return true;
+	}
 }
 #endif

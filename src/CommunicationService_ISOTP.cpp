@@ -20,7 +20,7 @@ namespace EmbeddedIOServices
 
         void Clear(CANData_t& data)
         {
-            std::memset(data.Data, 0, sizeof(data.Data));
+            std::memset(data.Data, 0, 8);
         }
     }
 
@@ -37,50 +37,6 @@ namespace EmbeddedIOServices
     CommunicationService_ISOTP::~CommunicationService_ISOTP()
     {
         _canService->UnRegisterReceiveCallBack(_receiveState.CallbackID);
-    }
-
-    void CommunicationService_ISOTP::Send(ICANService * const canService, const CANIdentifier_t transmitId, const void *data, size_t length)
-    {
-        if(canService == nullptr || data == nullptr || length == 0 || length > ISOTP_MAX_PAYLOAD_LENGTH)
-        {
-            return;
-        }
-
-        const uint8_t * const bytes = reinterpret_cast<const uint8_t *>(data);
-
-        if(length <= ISOTP_MAX_SINGLE_FRAME_PAYLOAD_LENGTH)
-        {
-            CANData_t frame;
-            Clear(frame);
-            frame.Data[0] = static_cast<uint8_t>(ISOTP_SINGLE_FRAME | length);
-            std::memcpy(&frame.Data[1], bytes, length);
-            canService->Send(transmitId, frame, static_cast<uint8_t>(length + 1));
-            return;
-        }
-
-        CANData_t firstFrame;
-        Clear(firstFrame);
-        firstFrame.Data[0] = static_cast<uint8_t>(ISOTP_FIRST_FRAME | ((length >> 8) & 0x0F));
-        firstFrame.Data[1] = static_cast<uint8_t>(length & 0xFF);
-        std::memcpy(&firstFrame.Data[2], bytes, ISOTP_FIRST_FRAME_PAYLOAD_LENGTH);
-        canService->Send(transmitId, firstFrame, sizeof(firstFrame.Data));
-
-        size_t offset = ISOTP_FIRST_FRAME_PAYLOAD_LENGTH;
-        uint8_t sequenceNumber = 1;
-        while(offset < length)
-        {
-            CANData_t consecutiveFrame;
-            Clear(consecutiveFrame);
-            const size_t remaining = length - offset;
-            const size_t bytesThisFrame = std::min(remaining, static_cast<size_t>(ISOTP_CONSECUTIVE_FRAME_PAYLOAD_LENGTH));
-
-            consecutiveFrame.Data[0] = static_cast<uint8_t>(ISOTP_CONSECUTIVE_FRAME | (sequenceNumber & 0x0F));
-            std::memcpy(&consecutiveFrame.Data[1], bytes + offset, bytesThisFrame);
-            canService->Send(transmitId, consecutiveFrame, static_cast<uint8_t>(bytesThisFrame + 1));
-
-            offset += bytesThisFrame;
-            sequenceNumber = static_cast<uint8_t>((sequenceNumber + 1) & 0x0F);
-        }
     }
 
     void CommunicationService_ISOTP::Send(const void *data, size_t length)
@@ -113,7 +69,7 @@ namespace EmbeddedIOServices
         firstFrame.Data[0] = static_cast<uint8_t>(ISOTP_FIRST_FRAME | ((length >> 8) & 0x0F));
         firstFrame.Data[1] = static_cast<uint8_t>(length & 0xFF);
         std::memcpy(&firstFrame.Data[2], bytes, ISOTP_FIRST_FRAME_PAYLOAD_LENGTH);
-        _canService->Send(TransmitId, firstFrame, sizeof(firstFrame.Data));
+        _canService->Send(TransmitId, firstFrame, 8);
     }
 
     void CommunicationService_ISOTP::ReceiveFrame(can_send_callback_t sendCallback, const CANData_t data, uint8_t dataLength)
@@ -245,6 +201,11 @@ namespace EmbeddedIOServices
             default:
                 return;
         }
+    }
+
+    bool CommunicationService_ISOTP::Ready()
+    {
+        return !_sendState.Active;
     }
 }
 #endif
