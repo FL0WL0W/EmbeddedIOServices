@@ -190,8 +190,8 @@ namespace MPC5674F
 		mb.CS.B.CODE   = 0xC;
 	}
 
-	extern "C" void CAN_A_RXFIFO_ISR() { if (_instances[0]) PollFlexCAN(CAN_A, 0, *_instances[0]); }
-	extern "C" void CAN_B_RXFIFO_ISR() { if (_instances[1]) PollFlexCAN(CAN_B, 1, *_instances[1]); }
-	extern "C" void CAN_C_RXFIFO_ISR() { if (_instances[2]) PollFlexCAN(CAN_C, 2, *_instances[2]); }
-	extern "C" void CAN_D_RXFIFO_ISR() { if (_instances[3]) PollFlexCAN(CAN_D, 3, *_instances[3]); }
+	extern "C" void CAN_A_RXFIFO_Handler() { if (_instances[0]) PollFlexCAN(CAN_A, 0, *_instances[0]); }
+	extern "C" void CAN_B_RXFIFO_Handler() { if (_instances[1]) PollFlexCAN(CAN_B, 1, *_instances[1]); }
+	extern "C" void CAN_C_RXFIFO_Handler() { if (_instances[2]) PollFlexCAN(CAN_C, 2, *_instances[2]); }
+	extern "C" void CAN_D_RXFIFO_Handler() { if (_instances[3]) PollFlexCAN(CAN_D, 3, *_instances[3]); }
 }
