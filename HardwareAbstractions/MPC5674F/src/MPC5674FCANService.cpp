@@ -11,8 +11,18 @@ namespace MPC5674F
 
 	// TX mailbox index — use MB63 (highest priority in local priority scheme)
 	static constexpr uint8_t TX_MB = 63;
+	static constexpr uint8_t RX_FIFO_FLAG = 5;
+	static constexpr uint8_t RX_FIFO_INTERRUPT_PRIORITY = 1;
 
-	static void InitFlexCAN(volatile struct FLEXCAN2_tag &can, CANBaudRate baudRate)
+	// INTC vectors for FlexCAN BUF5, which is the RXFIFO not-empty source.
+	static constexpr uint16_t RX_FIFO_INTERRUPT_VECTORS[4] = { 160, 288, 181, 316 };
+
+	// One service instance pointer per CAN bus so ISRs can dispatch without global state.
+	// The constructor installs the pointer before InitFlexCAN enables the interrupt.
+	static MPC5674FCANService *_instances[4] = { nullptr, nullptr, nullptr, nullptr };
+
+	static void InitFlexCAN(volatile struct FLEXCAN2_tag &can, CANBaudRate baudRate,
+	                        uint16_t rxFifoInterruptVector)
 	{
 		// Enter freeze mode
 		can.MCR.B.MDIS = 0;
@@ -60,8 +70,9 @@ namespace MPC5674F
 		can.BUF[7].CS.R = 0;
 		can.BUF[7].ID.R = 0;
 
-		// Enable RXFIFO not-empty interrupt (IFRL.BUF05I, bit 5)
-		can.IMRL.R |= (1U << 5);
+		// Clear a stale RXFIFO indication before enabling BUF5 as an interrupt source.
+		can.IFRL.R = (1U << RX_FIFO_FLAG);
+		can.IMRL.R |= (1U << RX_FIFO_FLAG);
 
 		// Initialise TX mailbox (MB63) as inactive
 		can.BUF[TX_MB].CS.B.CODE = 0x8; // TX_INACTIVE
@@ -70,10 +81,11 @@ namespace MPC5674F
 		can.MCR.B.HALT = 0;
 		can.MCR.B.FRZ  = 0;
 		while (can.MCR.B.FRZACK == 1) {}
-	}
 
-	// One service instance pointer per CAN bus so ISRs can dispatch without global state
-	static MPC5674FCANService *_instances[4] = { nullptr, nullptr, nullptr, nullptr };
+		// The bootloader leaves all INTC sources except eMIOS 11 at priority zero.
+		// Raising this source above CPR=0 makes the RXFIFO interrupt deliverable.
+		INTC.PSR[rxFifoInterruptVector].B.PRI = RX_FIFO_INTERRUPT_PRIORITY;
+	}
 
 	static void PollFlexCAN(volatile struct FLEXCAN2_tag &can, uint8_t busNumber, MPC5674FCANService &service)
 	{
@@ -112,23 +124,23 @@ namespace MPC5674F
 	{
 		if (canABaudRate != CANBaudRate::Disabled)
 		{
-			InitFlexCAN(CAN_A, canABaudRate);
-			_configuredMask |= (1U << 0);
 			_instances[0] = this;
+			InitFlexCAN(CAN_A, canABaudRate, RX_FIFO_INTERRUPT_VECTORS[0]);
+			_configuredMask |= (1U << 0);
 		}
 
 		if (canBBaudRate != CANBaudRate::Disabled)
 		{
-			InitFlexCAN(CAN_B, canBBaudRate);
-			_configuredMask |= (1U << 1);
 			_instances[1] = this;
+			InitFlexCAN(CAN_B, canBBaudRate, RX_FIFO_INTERRUPT_VECTORS[1]);
+			_configuredMask |= (1U << 1);
 		}
 
 		if (canCBaudRate != CANBaudRate::Disabled)
 		{
-			InitFlexCAN(CAN_C, canCBaudRate);
-			_configuredMask |= (1U << 2);
 			_instances[2] = this;
+			InitFlexCAN(CAN_C, canCBaudRate, RX_FIFO_INTERRUPT_VECTORS[2]);
+			_configuredMask |= (1U << 2);
 		}
 
 		if (canDBaudRate != CANBaudRate::Disabled)
@@ -141,9 +153,9 @@ namespace MPC5674F
 			SIU.PCR[150].B.PA  = pa; // CAN_D RX
 			SIU.PCR[150].B.IBE = 1;  // enable input buffer for RX
 
-			InitFlexCAN(CAN_D, canDBaudRate);
-			_configuredMask |= (1U << 3);
 			_instances[3] = this;
+			InitFlexCAN(CAN_D, canDBaudRate, RX_FIFO_INTERRUPT_VECTORS[3]);
+			_configuredMask |= (1U << 3);
 		}
 	}
 
