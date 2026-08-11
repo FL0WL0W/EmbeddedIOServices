@@ -4,60 +4,57 @@ using namespace EmbeddedIOServices;
 
 namespace MPC5xxx
 {
-	// TX mailbox index — use MB63 (highest priority in local priority scheme)
+	static constexpr uint8_t RX_MB_FIRST = 0;
+	static constexpr uint8_t RX_MB_COUNT = 16;
 	static constexpr uint8_t TX_MB = 63;
-	static void InitFlexCAN(volatile struct FLEXCAN2_tag &can, CANBaudRate baudRate, const uint32_t externalCrystalHz)
+	static constexpr uint8_t RX_EMPTY = 0x4;
+	static constexpr uint8_t TX_INACTIVE = 0x8;
+	static constexpr uint8_t TX_DATA = 0xC;
+
+	static void InitFlexCAN(volatile struct FLEXCAN2_tag &can, CANBaudRate baudRate,
+		const uint32_t externalCrystalHz)
 	{
-		// Enter freeze mode
 		can.MCR.B.MDIS = 0;
 		can.MCR.B.FRZ  = 1;
 		can.MCR.B.HALT = 1;
 		while (can.MCR.B.FRZACK == 0) {}
 
-		// Configure bit timing
 		const uint32_t baudRateHz = static_cast<uint32_t>(baudRate);
 		if (baudRate == CANBaudRate::Mbps1)
 		{
-			const uint32_t presdiv = (externalCrystalHz / (baudRateHz * 8U)) - 1;
-			can.CR.B.PRESDIV = static_cast<uint8_t>(presdiv);
-			can.CR.B.PROPSEG = 1; // prop seg  = 2 Tq
-			can.CR.B.PSEG1   = 2; // phase seg1 = 3 Tq
-			can.CR.B.PSEG2   = 1; // phase seg2 = 2 Tq  => 1+2+3+2 = 8 Tq
+			can.CR.B.PRESDIV = static_cast<uint8_t>((externalCrystalHz / (baudRateHz * 8U)) - 1U);
+			can.CR.B.PROPSEG = 1;
+			can.CR.B.PSEG1   = 2;
+			can.CR.B.PSEG2   = 1;
 			can.CR.B.RJW     = 1;
 		}
 		else
 		{
-			const uint32_t presdiv = (externalCrystalHz / (baudRateHz * 16U)) - 1;
-			can.CR.B.PRESDIV = static_cast<uint8_t>(presdiv);
-			can.CR.B.PROPSEG = 5; // prop seg  = 6 Tq
-			can.CR.B.PSEG1   = 5; // phase seg1 = 6 Tq
-			can.CR.B.PSEG2   = 2; // phase seg2 = 3 Tq  => 1+6+6+3 = 16 Tq
+			can.CR.B.PRESDIV = static_cast<uint8_t>((externalCrystalHz / (baudRateHz * 16U)) - 1U);
+			can.CR.B.PROPSEG = 5;
+			can.CR.B.PSEG1   = 5;
+			can.CR.B.PSEG2   = 2;
 			can.CR.B.RJW     = 1;
 		}
-		can.CR.B.CLKSRC = 0; // external oscillator
-		can.CR.B.SMP    = 1; // three samples
+		can.CR.B.CLKSRC = 0;
+		can.CR.B.SMP    = 1;
 
-		// Enable RXFIFO (FEN=1), format A (IDAM=0: one full ID per filter entry)
-		// Disable self-reception, keep MAXMB=63 so MB63 is available for TX
-		can.MCR.B.FEN    = 1;
-		can.MCR.B.IDAM   = 0;
+		// Use MB0..MB15 as an accept-all receive queue instead of the hardware FIFO.
+		can.MCR.B.BCC    = 1; // Enable the individual RXIMR masks.
 		can.MCR.B.SRXDIS = 1;
 		can.MCR.B.MAXMB  = TX_MB;
+		can.RXGMASK.R = 0;
 
-		// Accept all frames: global RX mask = 0 (all bits don't care)
-		can.RXGMASK.R = 0x00000000;
+		for (uint8_t i = RX_MB_FIRST; i < RX_MB_COUNT; ++i)
+		{
+			can.BUF[i].CS.R = 0;
+			can.BUF[i].ID.R = 0;
+			can.RXIMR[i].R = 0; // Every identifier bit is don't-care.
+			can.BUF[i].CS.B.CODE = RX_EMPTY;
+		}
+		can.IFRL.R = 0x0000FFFFU;
+		can.BUF[TX_MB].CS.B.CODE = TX_INACTIVE;
 
-		// With FEN+IDAM=0, BUF[6] and BUF[7] hold the 8 ID filter table entries.
-		// Writing 0 with mask=0 accepts everything.
-		can.BUF[6].CS.R = 0;
-		can.BUF[6].ID.R = 0;
-		can.BUF[7].CS.R = 0;
-		can.BUF[7].ID.R = 0;
-
-		// Initialise TX mailbox (MB63) as inactive
-		can.BUF[TX_MB].CS.B.CODE = 0x8; // TX_INACTIVE
-
-		// Exit freeze mode
 		can.MCR.B.HALT = 0;
 		can.MCR.B.FRZ  = 0;
 		while (can.MCR.B.FRZACK == 1) {}
@@ -65,8 +62,8 @@ namespace MPC5xxx
 
 	void MPC5xxxFlexCAN2Service::PollFlexCAN(volatile struct FLEXCAN2_tag &can)
 	{
-		uint8_t busNumber = 0;
-		for(uint8_t i = 0; i < _numberOfCANPeripherals; ++i)
+		uint8_t busNumber = _numberOfCANPeripherals;
+		for (uint8_t i = 0; i < _numberOfCANPeripherals; ++i)
 		{
 			if (_canPeripherals[i] == &can)
 			{
@@ -74,86 +71,85 @@ namespace MPC5xxx
 				break;
 			}
 		}
-		if(busNumber >= _numberOfCANPeripherals)
+		if (busNumber >= _numberOfCANPeripherals)
 			return;
-		// Drain the RXFIFO while not-empty (IFRL.BUF05I = bit 5)
-		while (can.IFRL.R & (1U << 5))
+
+		// FlexCAN fills the first matching empty mailbox. Stop at the first empty
+		// one, then restart at MB0 after processing a batch so frames received
+		// while callbacks ran are not missed.
+		bool receivedInPass;
+		do
 		{
-			// Snapshot the RXFIFO output register (BUF[0])
-			const uint32_t cs = can.BUF[0].CS.R;
-			const uint32_t id = can.BUF[0].ID.R;
+			receivedInPass = false;
+			for (uint8_t mailbox = RX_MB_FIRST; mailbox < RX_MB_COUNT; ++mailbox)
+			{
+				const uint32_t flag = 1U << mailbox;
+				if ((can.IFRL.R & flag) == 0)
+					break;
 
-			CANData_t data;
-			for (uint8_t i = 0; i < 8; ++i)
-				data.Data[i] = can.BUF[0].DATA.B[i];
+				volatile struct canbuf_t &mb = can.BUF[mailbox];
+				const uint32_t cs = mb.CS.R; // Locks this receive mailbox.
+				const uint32_t id = mb.ID.R;
+				CANData_t data;
+				for (uint8_t i = 0; i < 8; ++i)
+					data.Data[i] = mb.DATA.B[i];
 
-			const uint8_t dlc = static_cast<uint8_t>((cs >> 16) & 0xFU);
-			const bool    ide = (cs >> 21) & 1U;
+				const uint8_t dlc = static_cast<uint8_t>((cs >> 16) & 0xFU);
+				const bool ide = ((cs >> 21) & 1U) != 0;
+				CANIdentifier_t identifier;
+				identifier.CANBusNumber = busNumber;
+				identifier.CANIdentifier = ide
+					? ((((id >> 18) & 0x7FFU) << 18) | (id & 0x3FFFFU))
+					: ((id >> 18) & 0x7FFU);
 
-			CANIdentifier_t identifier;
-			identifier.CANBusNumber = busNumber;
-			if (ide)
-				// Extended: full 29-bit = (STD_ID << 18) | EXT_ID
-				identifier.CANIdentifier = ((id >> 18) & 0x7FFU) << 18 | (id & 0x3FFFFU);
-			else
-				// Standard: 11-bit in STD_ID field
-				identifier.CANIdentifier = (id >> 18) & 0x7FFU;
-
-			// Clear RXFIFO not-empty flag before calling Receive so re-entrant frames are caught
-			can.IFRL.R = (1U << 5);
-
-			Receive(identifier, data, dlc);
-		}
+				(void)can.TIMER.R; // Unlock after reading the complete mailbox.
+				can.IFRL.R = flag;
+				mb.CS.B.CODE = RX_EMPTY;
+				receivedInPass = true;
+				Receive(identifier, data, dlc);
+			}
+		} while (receivedInPass);
 	}
 
-	MPC5xxxFlexCAN2Service::MPC5xxxFlexCAN2Service(volatile FLEXCAN2_tag *canPeripherals[], const CANBaudRate canBaudRates[], const uint8_t numberOfCANPeripherals, const uint32_t externalCrystalHz)
-		: _numberOfCANPeripherals(numberOfCANPeripherals),
-		  _canPeripherals(canPeripherals)
+	MPC5xxxFlexCAN2Service::MPC5xxxFlexCAN2Service(volatile FLEXCAN2_tag *canPeripherals[],
+		const CANBaudRate canBaudRates[], const uint8_t numberOfCANPeripherals,
+		const uint32_t externalCrystalHz)
+		: _numberOfCANPeripherals(numberOfCANPeripherals), _canPeripherals(canPeripherals)
 	{
-		for(uint8_t i = 0; i < numberOfCANPeripherals; ++i)
-		{
+		for (uint8_t i = 0; i < numberOfCANPeripherals; ++i)
 			InitFlexCAN(*canPeripherals[i], canBaudRates[i], externalCrystalHz);
-		}
 	}
 
-	void MPC5xxxFlexCAN2Service::Send(const CANIdentifier_t identifier, const CANData_t data, const uint8_t dataLength)
+	void MPC5xxxFlexCAN2Service::Send(const CANIdentifier_t identifier, const CANData_t data,
+		const uint8_t dataLength)
 	{
-		if(identifier.CANBusNumber >= _numberOfCANPeripherals)
+		if (identifier.CANBusNumber >= _numberOfCANPeripherals)
 			return;
-		volatile struct FLEXCAN2_tag &can = *_canPeripherals[identifier.CANBusNumber];
-		volatile struct canbuf_t    &mb  = can.BUF[TX_MB];
+		volatile struct canbuf_t &mb = _canPeripherals[identifier.CANBusNumber]->BUF[TX_MB];
+		while (mb.CS.B.CODE == TX_DATA || mb.CS.B.CODE == 0xE) {}
+		mb.CS.B.CODE = TX_INACTIVE;
 
-		// Wait for MB63 to be free (not actively transmitting)
-		while (mb.CS.B.CODE == 0xC || mb.CS.B.CODE == 0xE) {} //might want to turn this into a pseudo fifo using multiple mailboxes
-
-		// Lock MB by writing TX_INACTIVE
-		mb.CS.B.CODE = 0x8;
-
-		// Fill ID
 		const bool extended = identifier.CANIdentifier > 0x7FFU;
 		if (extended)
 		{
-			mb.CS.B.IDE  = 1;
-			mb.CS.B.SRR  = 1;
+			mb.CS.B.IDE = 1;
+			mb.CS.B.SRR = 1;
 			mb.ID.B.STD_ID = static_cast<uint16_t>((identifier.CANIdentifier >> 18) & 0x7FFU);
 			mb.ID.B.EXT_ID = identifier.CANIdentifier & 0x3FFFFU;
 		}
 		else
 		{
-			mb.CS.B.IDE    = 0;
-			mb.CS.B.SRR    = 0;
+			mb.CS.B.IDE = 0;
+			mb.CS.B.SRR = 0;
 			mb.ID.B.STD_ID = static_cast<uint16_t>(identifier.CANIdentifier);
 			mb.ID.B.EXT_ID = 0;
 		}
 
-		// Fill data
 		const uint8_t len = dataLength > 8 ? 8 : dataLength;
 		for (uint8_t i = 0; i < len; ++i)
 			mb.DATA.B[i] = data.Data[i];
-
-		// Trigger TX: write full CS with CODE=0xC (DATA frame)
-		mb.CS.B.RTR    = 0;
+		mb.CS.B.RTR = 0;
 		mb.CS.B.LENGTH = len;
-		mb.CS.B.CODE   = 0xC;
+		mb.CS.B.CODE = TX_DATA;
 	}
 }
