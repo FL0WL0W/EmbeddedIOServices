@@ -40,7 +40,7 @@ namespace MPC5xxx
 		can.CR.B.SMP    = 1;
 
 		// Use MB0..MB15 as an accept-all receive queue instead of the hardware FIFO.
-		can.MCR.B.BCC    = 1; // Enable the individual RXIMR masks.
+		can.MCR.R    	|= 0b00000000000000010000000000000000; // Enable the individual RXIMR masks.
 		can.MCR.B.SRXDIS = 1;
 		can.MCR.B.MAXMB  = TX_MB;
 		can.RXGMASK.R = 0;
