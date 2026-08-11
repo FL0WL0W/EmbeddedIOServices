@@ -19,9 +19,9 @@ namespace MPC5xxx
 	{
 	protected:
 		const uint8_t _numberOfCANPeripherals;
-		FLEXCAN2_tag **_canPeripherals;
+		volatile FLEXCAN2_tag **_canPeripherals;
 	public:
-		MPC5xxxFlexCAN2Service(FLEXCAN2_tag **canPeripherals, CANBaudRate *canBaudRates, const uint8_t numberOfCANPeripherals, const uint32_t externalCrystalHz, const uint32_t externalCrystalHz = 8000000);
+		MPC5xxxFlexCAN2Service(volatile FLEXCAN2_tag *canPeripherals[], const CANBaudRate canBaudRates[], const uint8_t numberOfCANPeripherals, const uint32_t externalCrystalHz = 8000000);
         void Send(const EmbeddedIOServices::CANIdentifier_t identifier, const EmbeddedIOServices::CANData_t data, const uint8_t dataLength);
 		void PollFlexCAN(volatile struct FLEXCAN2_tag &can);
 	};

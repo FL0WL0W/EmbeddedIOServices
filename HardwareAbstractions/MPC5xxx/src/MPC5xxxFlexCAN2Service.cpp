@@ -65,7 +65,7 @@ namespace MPC5xxx
 
 	void MPC5xxxFlexCAN2Service::PollFlexCAN(volatile struct FLEXCAN2_tag &can)
 	{
-		const uint8_t busNumber = 0;
+		uint8_t busNumber = 0;
 		for(uint8_t i = 0; i < _numberOfCANPeripherals; ++i)
 		{
 			if (_canPeripherals[i] == &can)
@@ -106,7 +106,7 @@ namespace MPC5xxx
 		}
 	}
 
-	MPC5xxxFlexCAN2Service::MPC5xxxFlexCAN2Service(FLEXCAN2_tag **canPeripherals, CANBaudRate *canBaudRates, const uint8_t numberOfCANPeripherals, const uint32_t externalCrystalHz, const uint32_t externalCrystalHz = 8000000)
+	MPC5xxxFlexCAN2Service::MPC5xxxFlexCAN2Service(volatile FLEXCAN2_tag *canPeripherals[], const CANBaudRate canBaudRates[], const uint8_t numberOfCANPeripherals, const uint32_t externalCrystalHz)
 		: _numberOfCANPeripherals(numberOfCANPeripherals),
 		  _canPeripherals(canPeripherals)
 	{
