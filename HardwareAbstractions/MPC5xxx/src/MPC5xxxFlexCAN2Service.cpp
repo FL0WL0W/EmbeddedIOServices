@@ -87,7 +87,7 @@ namespace MPC5xxx
 				if ((can.IFRL.R & flag) == 0)
 					break;
 
-				volatile struct canbuf_t &mb = can.BUF[mailbox];
+				volatile canbuf_t &mb = can.BUF[mailbox];
 				const uint32_t cs = mb.CS.R; // Locks this receive mailbox.
 				const uint32_t id = mb.ID.R;
 				CANData_t data;
@@ -125,7 +125,7 @@ namespace MPC5xxx
 	{
 		if (identifier.CANBusNumber >= _numberOfCANPeripherals)
 			return;
-		volatile struct canbuf_t &mb = _canPeripherals[identifier.CANBusNumber]->BUF[TX_MB];
+		volatile canbuf_t &mb = _canPeripherals[identifier.CANBusNumber]->BUF[TX_MB];
 		while (mb.CS.B.CODE == TX_DATA || mb.CS.B.CODE == 0xE) {}
 		mb.CS.B.CODE = TX_INACTIVE;
 
