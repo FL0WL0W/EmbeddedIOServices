@@ -35,7 +35,7 @@ namespace Esp32
 		}
 	}
 	
-	void Esp32IdfCANService::Send(const CANIdentifier_t identifier, const CANData_t data, onst uint8_t dataLength, can_send_completion_callback_t completion)
+	void Esp32IdfCANService::Send(const CANIdentifier_t identifier, const CANData_t data, const uint8_t dataLength, can_send_completion_callback_t completion)
 	{
 		if(_twai_handles[identifier.CANBusNumber] == 0)
 			return;
