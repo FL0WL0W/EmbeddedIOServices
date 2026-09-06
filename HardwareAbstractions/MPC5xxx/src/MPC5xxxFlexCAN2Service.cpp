@@ -165,12 +165,11 @@ namespace MPC5xxx
 	{
 		const uint8_t busNumber = BusNumberFromPeripheral(can);
 		if (busNumber >= CANPeripheralCount ||
-			!MPC5xxxSystemClockService::HasInstance() ||
-			!MPC5xxxSystemClockService::Instance().Ready())
+			!MPC5xxxSystemClockService::Ready())
 			return 0xFFU;
 
 		const uint32_t externalCrystalHz =
-			MPC5xxxSystemClockService::Instance().GetExternalCrystalFrequency();
+			MPC5xxxSystemClockService::GetExternalCrystalFrequency();
 
 		can.MCR.B.MDIS = 0;
 		can.MCR.B.FRZ  = 1;

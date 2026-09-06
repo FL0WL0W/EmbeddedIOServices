@@ -43,9 +43,7 @@ namespace MPC5xxx {
 	std::uint32_t MPC55xxSystemClockService::_referenceClockHz = 0U;
 	bool MPC55xxSystemClockService::_ready = false;
 
-	MPC55xxSystemClockService::MPC55xxSystemClockService() {
-		MPC5xxxSystemClockService::_instance = this;
-	}
+	MPC55xxSystemClockService::MPC55xxSystemClockService() = default;
 
 	bool MPC55xxSystemClockService::Initialize(std::uint32_t referenceHz,
 		std::uint32_t requestedHz, std::uint32_t timeout)
@@ -53,7 +51,7 @@ namespace MPC5xxx {
 		_referenceClockHz = referenceHz;
 		if (referenceHz < 8000000U || referenceHz > 20000000U || requestedHz == 0U || timeout == 0U)
 			return false;
-		if (FMPLL.SYNSR.B.LOCK != 0U && _instance.SystemClockHz() == requestedHz) {
+		if (FMPLL.SYNSR.B.LOCK != 0U && _instance.SystemClockHzImplementation() == requestedHz) {
 			_ready = true;
 			return true;
 		}
@@ -70,7 +68,7 @@ namespace MPC5xxx {
 		return true;
 	}
 
-	std::uint32_t MPC55xxSystemClockService::SystemClockHz() const
+	std::uint32_t MPC55xxSystemClockService::SystemClockHzImplementation() const
 	{
 		if (_referenceClockHz == 0U) return 0U;
 		return static_cast<std::uint32_t>(static_cast<std::uint64_t>(_referenceClockHz)

@@ -4,14 +4,19 @@
 namespace MPC5xxx {
 class MPC5xxxSystemClockService {
 public:
-	virtual ~MPC5xxxSystemClockService() = default;
 	static bool HasInstance();
-	static const MPC5xxxSystemClockService& Instance();
-	virtual bool Ready() const = 0;
-	virtual std::uint32_t GetExternalCrystalFrequency() const = 0;
-	virtual std::uint32_t SystemClockHz() const = 0;
-	virtual std::uint32_t PeripheralClockHz() const = 0;
+	static bool Ready();
+	static std::uint32_t GetExternalCrystalFrequency();
+	static std::uint32_t SystemClockHz();
+	static std::uint32_t PeripheralClockHz();
 protected:
+	MPC5xxxSystemClockService();
+	virtual ~MPC5xxxSystemClockService() = default;
+private:
 	static const MPC5xxxSystemClockService* _instance;
+	virtual bool ReadyImplementation() const = 0;
+	virtual std::uint32_t GetExternalCrystalFrequencyImplementation() const = 0;
+	virtual std::uint32_t SystemClockHzImplementation() const = 0;
+	virtual std::uint32_t PeripheralClockHzImplementation() const = 0;
 }; }
 #endif
