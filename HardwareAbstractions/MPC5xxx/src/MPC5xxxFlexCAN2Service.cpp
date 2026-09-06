@@ -7,12 +7,64 @@ using namespace EmbeddedIOServices;
 namespace MPC5xxx
 {
 	static constexpr uint8_t RX_MB_FIRST = 0;
-	static constexpr uint8_t RX_MB_COUNT = 16;
-	static constexpr uint8_t TX_MB = 63;
+	static constexpr uint8_t RX_MB_COUNT = 32;
 	static constexpr uint8_t RX_EMPTY = 0x4;
 	static constexpr uint8_t TX_INACTIVE = 0x8;
 	static constexpr uint8_t TX_DATA = 0xC;
-	static constexpr uint32_t TX_INTERRUPT_FLAG = 1U << (TX_MB - 32U);
+
+	static uint32_t DisableExternalInterrupts()
+	{
+		uint32_t previousMsr;
+		asm volatile(
+			"mfmsr %0\n"
+			"wrteei 0\n"
+			"isync\n"
+			: "=r"(previousMsr)
+			:
+			: "memory");
+		return previousMsr;
+	}
+
+	static void RestoreExternalInterrupts(const uint32_t previousMsr)
+	{
+		// MSR[EE] is bit 16 in PowerPC bit numbering, represented by bit 15
+		// in the integer value.
+		if ((previousMsr & 0x00008000U) != 0U)
+		{
+			asm volatile(
+				"wrteei 1\n"
+				"isync\n"
+				:
+				:
+				: "memory");
+		}
+	}
+
+	static uint32_t MailboxInterruptFlag(const uint8_t mailbox)
+	{
+		return 1UL << (mailbox & 31U);
+	}
+
+	static void ClearMailboxInterruptFlag(
+		volatile FLEXCAN2_tag &can,
+		const uint8_t mailbox)
+	{
+		const uint32_t flag = MailboxInterruptFlag(mailbox);
+		if (mailbox < 32U)
+			can.IFRL.R = flag;
+		else
+			can.IFRH.R = flag;
+	}
+
+	static bool MailboxInterruptPending(
+		volatile FLEXCAN2_tag &can,
+		const uint8_t mailbox)
+	{
+		const uint32_t flag = MailboxInterruptFlag(mailbox);
+		return mailbox < 32U
+			? (can.IFRL.R & flag) != 0U
+			: (can.IFRH.R & flag) != 0U;
+	}
 
 	static void InitFlexCAN(volatile struct FLEXCAN2_tag &can, CANBaudRate baudRate,
 		const uint32_t externalCrystalHz)
@@ -45,7 +97,7 @@ namespace MPC5xxx
 		// Use MB0..MB15 as an accept-all receive queue instead of the hardware FIFO.
 		can.MCR.R    	|= 0b00000000000000010000000000000000; // Enable the individual RXIMR masks.
 		can.MCR.B.SRXDIS = 1;
-		can.MCR.B.MAXMB  = TX_MB;
+		can.MCR.B.MAXMB  = 63U;
 		can.RXGMASK.R = 0;
 
 		for (uint8_t i = RX_MB_FIRST; i < RX_MB_COUNT; ++i)
@@ -55,9 +107,14 @@ namespace MPC5xxx
 			can.RXIMR[i].R = 0; // Every identifier bit is don't-care.
 			can.BUF[i].CS.B.CODE = RX_EMPTY;
 		}
-		can.IFRL.R = 0x0000FFFFU;
-		can.IFRH.R = TX_INTERRUPT_FLAG;
-		can.BUF[TX_MB].CS.B.CODE = TX_INACTIVE;
+		for (uint8_t mailbox = 32U; mailbox < 64U; ++mailbox)
+		{
+			can.BUF[mailbox].CS.R = 0U;
+			can.BUF[mailbox].ID.R = 0U;
+			can.BUF[mailbox].CS.B.CODE = TX_INACTIVE;
+		}
+		can.IFRL.R = 0xFFFFFFFFU;
+		can.IFRH.R = 0xFFFFFFFFU;
 
 		can.MCR.B.HALT = 0;
 		can.MCR.B.FRZ  = 0;
@@ -78,18 +135,42 @@ namespace MPC5xxx
 		if (busNumber >= _numberOfCANPeripherals)
 			return;
 
-		// The TX mailbox flag is raised only after the controller has finished
-		// transmitting the frame. Release the callback before invoking it so the
-		// callback may immediately submit the next frame.
-		if ((can.IFRH.R & TX_INTERRUPT_FLAG) != 0U)
+		// MB32..MB63 form a hardware-backed software FIFO. Frame contents live in
+		// inactive message buffers and only the queue head is activated, so CAN-ID
+		// arbitration cannot reorder queued frames.
+		TransmitQueueState &transmitQueue = _transmitQueues[busNumber];
+		can_send_completion_callback_t completion;
+		const uint32_t previousMsr = DisableExternalInterrupts();
+		if (transmitQueue.Count != 0U)
 		{
-			can.IFRH.R = TX_INTERRUPT_FLAG;
-			auto completion =
-				std::move(_transmitCompletionCallbacks[busNumber]);
-			_transmitCompletionCallbacks[busNumber] = nullptr;
-			if (completion)
-				completion();
+			const uint8_t completedSlot = transmitQueue.Head;
+			const uint8_t completedMailbox = static_cast<uint8_t>(
+				TransmitMailboxFirst + completedSlot);
+			if (MailboxInterruptPending(can, completedMailbox))
+			{
+				ClearMailboxInterruptFlag(can, completedMailbox);
+				completion = std::move(
+					transmitQueue.CompletionCallbacks[completedSlot]);
+				transmitQueue.CompletionCallbacks[completedSlot] = nullptr;
+				transmitQueue.Head = static_cast<uint8_t>(
+					(transmitQueue.Head + 1U) % TransmitMailboxCount);
+				--transmitQueue.Count;
+
+				// Start the oldest already-queued frame before running the callback.
+				// A frame submitted by that callback therefore joins the tail rather
+				// than jumping ahead of existing traffic.
+				if (transmitQueue.Count != 0U)
+				{
+					const uint8_t nextMailbox = static_cast<uint8_t>(
+						TransmitMailboxFirst + transmitQueue.Head);
+					ClearMailboxInterruptFlag(can, nextMailbox);
+					can.BUF[nextMailbox].CS.B.CODE = TX_DATA;
+				}
+			}
 		}
+		RestoreExternalInterrupts(previousMsr);
+		if (completion)
+			completion();
 
 		// FlexCAN fills the first matching empty mailbox. Stop at the first empty
 		// one, then restart at MB0 after processing a batch so frames received
@@ -133,7 +214,7 @@ namespace MPC5xxx
 		const uint32_t externalCrystalHz)
 		: _numberOfCANPeripherals(numberOfCANPeripherals),
 		  _canPeripherals(canPeripherals),
-		  _transmitCompletionCallbacks(numberOfCANPeripherals)
+		  _transmitQueues(numberOfCANPeripherals)
 	{
 		for (uint8_t i = 0; i < numberOfCANPeripherals; ++i)
 			InitFlexCAN(*canPeripherals[i], canBaudRates[i], externalCrystalHz);
@@ -147,8 +228,27 @@ namespace MPC5xxx
 	{
 		if (identifier.CANBusNumber >= _numberOfCANPeripherals)
 			return;
-		volatile canbuf_t &mb = _canPeripherals[identifier.CANBusNumber]->BUF[TX_MB];
-		while (mb.CS.B.CODE == TX_DATA || mb.CS.B.CODE == 0xE) {}
+
+		volatile FLEXCAN2_tag &can = *_canPeripherals[identifier.CANBusNumber];
+		TransmitQueueState &transmitQueue =
+			_transmitQueues[identifier.CANBusNumber];
+		const uint32_t previousMsr = DisableExternalInterrupts();
+		if (transmitQueue.Count >= TransmitMailboxCount)
+		{
+			// The ICANService contract has no failure return. Preserve nonblocking
+			// behavior and retain a diagnostic count if all 32 hardware slots are
+			// occupied. Callback-paced ISO-TP keeps at most one of its own frames
+			// outstanding, so reaching this limit indicates producer overload.
+			++transmitQueue.OverflowCount;
+			RestoreExternalInterrupts(previousMsr);
+			return;
+		}
+
+		const bool startImmediately = transmitQueue.Count == 0U;
+		const uint8_t slot = transmitQueue.Tail;
+		const uint8_t mailbox = static_cast<uint8_t>(
+			TransmitMailboxFirst + slot);
+		volatile canbuf_t &mb = can.BUF[mailbox];
 		mb.CS.B.CODE = TX_INACTIVE;
 
 		const bool extended = identifier.CANIdentifier > 0x7FFU;
@@ -172,9 +272,16 @@ namespace MPC5xxx
 			mb.DATA.B[i] = data.Data[i];
 		mb.CS.B.RTR = 0;
 		mb.CS.B.LENGTH = len;
-		_transmitCompletionCallbacks[identifier.CANBusNumber] =
-			std::move(completion);
-		_canPeripherals[identifier.CANBusNumber]->IFRH.R = TX_INTERRUPT_FLAG;
-		mb.CS.B.CODE = TX_DATA;
+		transmitQueue.CompletionCallbacks[slot] = std::move(completion);
+		transmitQueue.Tail = static_cast<uint8_t>(
+			(transmitQueue.Tail + 1U) % TransmitMailboxCount);
+		++transmitQueue.Count;
+
+		if (startImmediately)
+		{
+			ClearMailboxInterruptFlag(can, mailbox);
+			mb.CS.B.CODE = TX_DATA;
+		}
+		RestoreExternalInterrupts(previousMsr);
 	}
 }
