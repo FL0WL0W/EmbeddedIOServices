@@ -43,6 +43,7 @@ namespace EmbeddedIOServices
 		}
 	};
 	typedef std::function<void(const CANIdentifier_t identifier, const CANData_t data, const uint8_t dataLength)> can_send_callback_t;
+	typedef std::function<void()> can_send_completion_callback_t;
 	typedef std::function<void(can_send_callback_t, const CANData_t data, const uint8_t dataLength)> can_receive_callback_t;
 	typedef std::function<void(can_send_callback_t, const CANIdentifier_t identifier, const CANData_t data, const uint8_t dataLength)> can_receive_mask_callback_t;
 	struct can_receive_callback_mask_t 
@@ -123,8 +124,10 @@ namespace EmbeddedIOServices
 		 * @param identifier the identifier to send the CAN data on
 		 * @param data A 8 byte array of the data to be sent
 		 * @param dataLength Length in bytes of data
+		 * @param completion Optional callback invoked after the frame has finished
+		 * transmitting and the implementation has released its transmit resource.
 		 */
-        virtual void Send(const CANIdentifier_t identifier, const CANData_t data, const uint8_t dataLength) = 0;
+        virtual void Send(const CANIdentifier_t identifier,	const CANData_t data, const uint8_t dataLength,	can_send_completion_callback_t completion = nullptr) = 0;
 	};
 }
 #endif

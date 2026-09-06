@@ -105,8 +105,11 @@ namespace UnitTests
 		ICommunicationService * const service = _canService.GetISOTPService(listenId, transmitId);
 		const uint8_t payload[3] = { 0x22, 0xF1, 0x90 };
 
-		EXPECT_CALL(_canService, Send(transmitId, _, 4))
-			.WillOnce([](const CANIdentifier_t identifier, const CANData_t data, const uint8_t dataLength) {
+		EXPECT_CALL(_canService, Send(transmitId, _, 4, _))
+			.WillOnce([](const CANIdentifier_t identifier,
+				const CANData_t data,
+				const uint8_t dataLength,
+				can_send_completion_callback_t) {
 				EXPECT_EQ(0x03, data.Data[0]);
 				EXPECT_EQ(0x22, data.Data[1]);
 				EXPECT_EQ(0xF1, data.Data[2]);

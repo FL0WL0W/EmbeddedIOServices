@@ -20,9 +20,15 @@ namespace MPC5xxx
 	protected:
 		const uint8_t _numberOfCANPeripherals;
 		volatile FLEXCAN2_tag **_canPeripherals;
+		std::vector<EmbeddedIOServices::can_send_completion_callback_t>
+			_transmitCompletionCallbacks;
 	public:
 		MPC5xxxFlexCAN2Service(volatile FLEXCAN2_tag *canPeripherals[], const CANBaudRate canBaudRates[], const uint8_t numberOfCANPeripherals, const uint32_t externalCrystalHz = 8000000);
-        void Send(const EmbeddedIOServices::CANIdentifier_t identifier, const EmbeddedIOServices::CANData_t data, const uint8_t dataLength);
+		void Send(
+			const EmbeddedIOServices::CANIdentifier_t identifier,
+			const EmbeddedIOServices::CANData_t data,
+			const uint8_t dataLength,
+			EmbeddedIOServices::can_send_completion_callback_t completion = nullptr) override;
 		void PollFlexCAN(volatile struct FLEXCAN2_tag &can);
 	};
 }

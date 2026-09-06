@@ -21,8 +21,9 @@ namespace UnitTests
         CommunicationService_ISOTP service(&_canService, _listenId, _transmitId);
         const uint8_t payload[3] = { 0x22, 0xF1, 0x90 };
 
-        EXPECT_CALL(_canService, Send(_transmitId, _, 4))
-            .WillOnce([](const CANIdentifier_t identifier, const CANData_t data, const uint8_t dataLength) {
+        EXPECT_CALL(_canService, Send(_transmitId, _, 4, _))
+            .WillOnce([](const CANIdentifier_t identifier, const CANData_t data,
+                const uint8_t dataLength, can_send_completion_callback_t) {
                 EXPECT_EQ(0x03, data.Data[0]);
                 EXPECT_EQ(0x22, data.Data[1]);
                 EXPECT_EQ(0xF1, data.Data[2]);
@@ -38,15 +39,17 @@ namespace UnitTests
         const uint8_t payload[10] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
         InSequence sequence;
-        EXPECT_CALL(_canService, Send(_transmitId, _, 8))
-            .WillOnce([](const CANIdentifier_t identifier, const CANData_t data, const uint8_t dataLength) {
+        EXPECT_CALL(_canService, Send(_transmitId, _, 8, _))
+            .WillOnce([](const CANIdentifier_t identifier, const CANData_t data,
+                const uint8_t dataLength, can_send_completion_callback_t) {
                 EXPECT_EQ(0x10, data.Data[0]);
                 EXPECT_EQ(0x0A, data.Data[1]);
                 EXPECT_EQ(0, data.Data[2]);
                 EXPECT_EQ(5, data.Data[7]);
             });
-        EXPECT_CALL(_canService, Send(_transmitId, _, 5))
-            .WillOnce([](const CANIdentifier_t identifier, const CANData_t data, const uint8_t dataLength) {
+        EXPECT_CALL(_canService, Send(_transmitId, _, 5, _))
+            .WillOnce([](const CANIdentifier_t identifier, const CANData_t data,
+                const uint8_t dataLength, can_send_completion_callback_t) {
                 EXPECT_EQ(0x21, data.Data[0]);
                 EXPECT_EQ(6, data.Data[1]);
                 EXPECT_EQ(9, data.Data[4]);
@@ -87,8 +90,9 @@ namespace UnitTests
             return length;
         });
 
-        EXPECT_CALL(_canService, Send(_transmitId, _, 3))
-            .WillOnce([](const CANIdentifier_t identifier, const CANData_t data, const uint8_t dataLength) {
+        EXPECT_CALL(_canService, Send(_transmitId, _, 3, _))
+            .WillOnce([](const CANIdentifier_t identifier, const CANData_t data,
+                const uint8_t dataLength, can_send_completion_callback_t) {
                 EXPECT_EQ(0x30, data.Data[0]);
                 EXPECT_EQ(0x00, data.Data[1]);
                 EXPECT_EQ(0x00, data.Data[2]);
@@ -112,7 +116,7 @@ namespace UnitTests
         const uint8_t payload[10] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
         // Only first frame should be sent; consecutive frames must NOT be sent
-        EXPECT_CALL(_canService, Send(_transmitId, _, 8)).Times(1);
+        EXPECT_CALL(_canService, Send(_transmitId, _, 8, _)).Times(1);
 
         service.Send(payload, sizeof(payload));
         // Simulate overflow flow control (FS=2)

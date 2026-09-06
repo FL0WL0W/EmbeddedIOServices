@@ -35,7 +35,7 @@ namespace Esp32
 		}
 	}
 	
-	void Esp32IdfCANService::Send(const CANIdentifier_t identifier, const CANData_t data, const uint8_t dataLength)
+	void Esp32IdfCANService::Send(const CANIdentifier_t identifier, const CANData_t data, onst uint8_t dataLength, can_send_completion_callback_t completion)
 	{
 		if(_twai_handles[identifier.CANBusNumber] == 0)
 			return;
@@ -57,6 +57,7 @@ namespace Esp32
 				data.Data[7]
 			}
 		};
-		twai_transmit_v2(_twai_handles[identifier.CANBusNumber], &message, 0);
+		if (twai_transmit_v2(_twai_handles[identifier.CANBusNumber], &message, 0) == ESP_OK && completion)
+			completion();
 	}
 }

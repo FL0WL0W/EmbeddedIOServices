@@ -1,5 +1,7 @@
 #include "MPC5xxxFlexCAN2Service.h"
 
+#include <utility>
+
 using namespace EmbeddedIOServices;
 
 namespace MPC5xxx
@@ -10,6 +12,7 @@ namespace MPC5xxx
 	static constexpr uint8_t RX_EMPTY = 0x4;
 	static constexpr uint8_t TX_INACTIVE = 0x8;
 	static constexpr uint8_t TX_DATA = 0xC;
+	static constexpr uint32_t TX_INTERRUPT_FLAG = 1U << (TX_MB - 32U);
 
 	static void InitFlexCAN(volatile struct FLEXCAN2_tag &can, CANBaudRate baudRate,
 		const uint32_t externalCrystalHz)
@@ -53,6 +56,7 @@ namespace MPC5xxx
 			can.BUF[i].CS.B.CODE = RX_EMPTY;
 		}
 		can.IFRL.R = 0x0000FFFFU;
+		can.IFRH.R = TX_INTERRUPT_FLAG;
 		can.BUF[TX_MB].CS.B.CODE = TX_INACTIVE;
 
 		can.MCR.B.HALT = 0;
@@ -73,6 +77,19 @@ namespace MPC5xxx
 		}
 		if (busNumber >= _numberOfCANPeripherals)
 			return;
+
+		// The TX mailbox flag is raised only after the controller has finished
+		// transmitting the frame. Release the callback before invoking it so the
+		// callback may immediately submit the next frame.
+		if ((can.IFRH.R & TX_INTERRUPT_FLAG) != 0U)
+		{
+			can.IFRH.R = TX_INTERRUPT_FLAG;
+			auto completion =
+				std::move(_transmitCompletionCallbacks[busNumber]);
+			_transmitCompletionCallbacks[busNumber] = nullptr;
+			if (completion)
+				completion();
+		}
 
 		// FlexCAN fills the first matching empty mailbox. Stop at the first empty
 		// one, then restart at MB0 after processing a batch so frames received
@@ -114,14 +131,19 @@ namespace MPC5xxx
 	MPC5xxxFlexCAN2Service::MPC5xxxFlexCAN2Service(volatile FLEXCAN2_tag *canPeripherals[],
 		const CANBaudRate canBaudRates[], const uint8_t numberOfCANPeripherals,
 		const uint32_t externalCrystalHz)
-		: _numberOfCANPeripherals(numberOfCANPeripherals), _canPeripherals(canPeripherals)
+		: _numberOfCANPeripherals(numberOfCANPeripherals),
+		  _canPeripherals(canPeripherals),
+		  _transmitCompletionCallbacks(numberOfCANPeripherals)
 	{
 		for (uint8_t i = 0; i < numberOfCANPeripherals; ++i)
 			InitFlexCAN(*canPeripherals[i], canBaudRates[i], externalCrystalHz);
 	}
 
-	void MPC5xxxFlexCAN2Service::Send(const CANIdentifier_t identifier, const CANData_t data,
-		const uint8_t dataLength)
+	void MPC5xxxFlexCAN2Service::Send(
+		const CANIdentifier_t identifier,
+		const CANData_t data,
+		const uint8_t dataLength,
+		can_send_completion_callback_t completion)
 	{
 		if (identifier.CANBusNumber >= _numberOfCANPeripherals)
 			return;
@@ -150,6 +172,9 @@ namespace MPC5xxx
 			mb.DATA.B[i] = data.Data[i];
 		mb.CS.B.RTR = 0;
 		mb.CS.B.LENGTH = len;
+		_transmitCompletionCallbacks[identifier.CANBusNumber] =
+			std::move(completion);
+		_canPeripherals[identifier.CANBusNumber]->IFRH.R = TX_INTERRUPT_FLAG;
 		mb.CS.B.CODE = TX_DATA;
 	}
 }
