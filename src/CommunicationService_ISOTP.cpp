@@ -13,6 +13,7 @@ namespace EmbeddedIOServices
         constexpr uint8_t ISOTP_CONSECUTIVE_FRAME = 0x20;
         constexpr uint8_t ISOTP_FLOW_CONTROL = 0x30;
         constexpr uint8_t ISOTP_FLOW_STATUS_CONTINUE_TO_SEND = 0x00;
+        constexpr uint8_t ISOTP_FLOW_STATUS_WAIT = 0x01;
         constexpr uint8_t ISOTP_MAX_SINGLE_FRAME_PAYLOAD_LENGTH = 7;
         constexpr uint8_t ISOTP_FIRST_FRAME_PAYLOAD_LENGTH = 6;
         constexpr uint8_t ISOTP_CONSECUTIVE_FRAME_PAYLOAD_LENGTH = 7;
@@ -62,6 +63,10 @@ namespace EmbeddedIOServices
         _sendState.Buffer.assign(bytes, bytes + length);
         _sendState.Offset = ISOTP_FIRST_FRAME_PAYLOAD_LENGTH;
         _sendState.NextSequenceNumber = 1;
+        _sendState.BlockSize = 0;
+        _sendState.FramesRemainingInBlock = 0;
+        _sendState.WaitingForFlowControl = true;
+        _sendState.FramePending = true;
         _sendState.Active = true;
 
         CANData_t firstFrame;
@@ -69,7 +74,80 @@ namespace EmbeddedIOServices
         firstFrame.Data[0] = static_cast<uint8_t>(ISOTP_FIRST_FRAME | ((length >> 8) & 0x0F));
         firstFrame.Data[1] = static_cast<uint8_t>(length & 0xFF);
         std::memcpy(&firstFrame.Data[2], bytes, ISOTP_FIRST_FRAME_PAYLOAD_LENGTH);
-        _canService->Send(TransmitId, firstFrame, 8);
+        _canService->Send(
+            TransmitId,
+            firstFrame,
+            8,
+            [this]() { HandleTransmitComplete(); });
+    }
+
+    void CommunicationService_ISOTP::SendNextConsecutiveFrame()
+    {
+        if(!_sendState.Active || _sendState.WaitingForFlowControl ||
+            _sendState.FramePending)
+        {
+            return;
+        }
+
+        if(_sendState.Offset >= _sendState.Buffer.size())
+        {
+            _sendState.Active = false;
+            return;
+        }
+
+        CANData_t frame;
+        Clear(frame);
+        const size_t remaining = _sendState.Buffer.size() - _sendState.Offset;
+        const size_t bytesThisFrame = std::min(
+            remaining,
+            static_cast<size_t>(ISOTP_CONSECUTIVE_FRAME_PAYLOAD_LENGTH));
+
+        frame.Data[0] = static_cast<uint8_t>(
+            ISOTP_CONSECUTIVE_FRAME |
+            (_sendState.NextSequenceNumber & 0x0F));
+        std::memcpy(
+            &frame.Data[1],
+            _sendState.Buffer.data() + _sendState.Offset,
+            bytesThisFrame);
+
+        _sendState.Offset += bytesThisFrame;
+        _sendState.NextSequenceNumber = static_cast<uint8_t>(
+            (_sendState.NextSequenceNumber + 1) & 0x0F);
+        if(_sendState.BlockSize != 0)
+        {
+            --_sendState.FramesRemainingInBlock;
+        }
+        _sendState.FramePending = true;
+
+        _canService->Send(
+            TransmitId,
+            frame,
+            static_cast<uint8_t>(bytesThisFrame + 1),
+            [this]() { HandleTransmitComplete(); });
+    }
+
+    void CommunicationService_ISOTP::HandleTransmitComplete()
+    {
+        if(!_sendState.Active)
+        {
+            return;
+        }
+
+        _sendState.FramePending = false;
+        if(_sendState.Offset >= _sendState.Buffer.size())
+        {
+            _sendState.Active = false;
+            return;
+        }
+
+        if(_sendState.BlockSize != 0 &&
+            _sendState.FramesRemainingInBlock == 0)
+        {
+            _sendState.WaitingForFlowControl = true;
+            return;
+        }
+
+        SendNextConsecutiveFrame();
     }
 
     void CommunicationService_ISOTP::ReceiveFrame(can_send_callback_t sendCallback, const CANData_t data, uint8_t dataLength)
@@ -164,37 +242,29 @@ namespace EmbeddedIOServices
 
             case ISOTP_FLOW_CONTROL:
             {
-                if(!_sendState.Active || dataLength < 1)
+                if(!_sendState.Active || dataLength < 3)
                 {
                     return;
                 }
 
                 const uint8_t flowStatus = data.Data[0] & 0x0F;
+                if(flowStatus == ISOTP_FLOW_STATUS_WAIT)
+                {
+                    _sendState.WaitingForFlowControl = true;
+                    return;
+                }
+
                 if(flowStatus != ISOTP_FLOW_STATUS_CONTINUE_TO_SEND)
                 {
-                    // Abort (Wait or Overflow) — discard pending send
+                    // Overflow or a reserved flow status aborts the transfer.
                     _sendState.Active = false;
                     return;
                 }
 
-                // Send all remaining consecutive frames
-                const size_t totalLength = _sendState.Buffer.size();
-                while(_sendState.Offset < totalLength)
-                {
-                    CANData_t consecutiveFrame;
-                    Clear(consecutiveFrame);
-                    const size_t remaining = totalLength - _sendState.Offset;
-                    const size_t bytesThisFrame = std::min(remaining, static_cast<size_t>(ISOTP_CONSECUTIVE_FRAME_PAYLOAD_LENGTH));
-
-                    consecutiveFrame.Data[0] = static_cast<uint8_t>(ISOTP_CONSECUTIVE_FRAME | (_sendState.NextSequenceNumber & 0x0F));
-                    std::memcpy(&consecutiveFrame.Data[1], _sendState.Buffer.data() + _sendState.Offset, bytesThisFrame);
-                    _canService->Send(TransmitId, consecutiveFrame, static_cast<uint8_t>(bytesThisFrame + 1));
-
-                    _sendState.Offset += bytesThisFrame;
-                    _sendState.NextSequenceNumber = static_cast<uint8_t>((_sendState.NextSequenceNumber + 1) & 0x0F);
-                }
-
-                _sendState.Active = false;
+                _sendState.BlockSize = data.Data[1];
+                _sendState.FramesRemainingInBlock = data.Data[1];
+                _sendState.WaitingForFlowControl = false;
+                SendNextConsecutiveFrame();
                 return;
             }
 

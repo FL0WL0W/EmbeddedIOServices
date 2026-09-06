@@ -25,6 +25,10 @@ namespace EmbeddedIOServices
             std::vector<uint8_t> Buffer;
             size_t Offset = 0;
             uint8_t NextSequenceNumber = 1;
+            uint8_t BlockSize = 0;
+            uint8_t FramesRemainingInBlock = 0;
+            bool WaitingForFlowControl = false;
+            bool FramePending = false;
             bool Active = false;
         };
 
@@ -33,6 +37,8 @@ namespace EmbeddedIOServices
         SendState _sendState;
 
         void ReceiveFrame(can_send_callback_t sendCallback, const CANData_t data, uint8_t dataLength);
+		void SendNextConsecutiveFrame();
+		void HandleTransmitComplete();
 	public:
         const CANIdentifier_t ListenId;
         const CANIdentifier_t TransmitId;

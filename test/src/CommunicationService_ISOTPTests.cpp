@@ -41,24 +41,78 @@ namespace UnitTests
         InSequence sequence;
         EXPECT_CALL(_canService, Send(_transmitId, _, 8, _))
             .WillOnce([](const CANIdentifier_t identifier, const CANData_t data,
-                const uint8_t dataLength, can_send_completion_callback_t) {
+                const uint8_t dataLength, can_send_completion_callback_t completion) {
                 EXPECT_EQ(0x10, data.Data[0]);
                 EXPECT_EQ(0x0A, data.Data[1]);
                 EXPECT_EQ(0, data.Data[2]);
                 EXPECT_EQ(5, data.Data[7]);
+				completion();
             });
         EXPECT_CALL(_canService, Send(_transmitId, _, 5, _))
             .WillOnce([](const CANIdentifier_t identifier, const CANData_t data,
-                const uint8_t dataLength, can_send_completion_callback_t) {
+                const uint8_t dataLength, can_send_completion_callback_t completion) {
                 EXPECT_EQ(0x21, data.Data[0]);
                 EXPECT_EQ(6, data.Data[1]);
                 EXPECT_EQ(9, data.Data[4]);
+				completion();
             });
 
         service.Send(payload, sizeof(payload));
         // Simulate flow control response so consecutive frames are sent
         const CANData_t flowControl = { 0x30, 0x00, 0x00, 0, 0, 0, 0, 0 };
         _canService.Receive(_listenId, flowControl, 3);
+    }
+
+    TEST_F(CommunicationService_ISOTPTests, SendsOneConsecutiveFramePerTransmitCompletion)
+    {
+        CommunicationService_ISOTP service(&_canService, _listenId, _transmitId);
+        const uint8_t payload[20] = {
+            0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+            10, 11, 12, 13, 14, 15, 16, 17, 18, 19
+        };
+        can_send_completion_callback_t firstFrameComplete;
+        can_send_completion_callback_t firstConsecutiveFrameComplete;
+        can_send_completion_callback_t secondConsecutiveFrameComplete;
+
+        InSequence sequence;
+        EXPECT_CALL(_canService, Send(_transmitId, _, 8, _))
+            .WillOnce([&firstFrameComplete](const CANIdentifier_t,
+                const CANData_t data, const uint8_t,
+                can_send_completion_callback_t completion) {
+                EXPECT_EQ(0x10, data.Data[0]);
+                firstFrameComplete = completion;
+            });
+        EXPECT_CALL(_canService, Send(_transmitId, _, 8, _))
+            .WillOnce([&firstConsecutiveFrameComplete](const CANIdentifier_t,
+                const CANData_t data, const uint8_t,
+                can_send_completion_callback_t completion) {
+                EXPECT_EQ(0x21, data.Data[0]);
+                firstConsecutiveFrameComplete = completion;
+            });
+        EXPECT_CALL(_canService, Send(_transmitId, _, 8, _))
+            .WillOnce([&secondConsecutiveFrameComplete](const CANIdentifier_t,
+                const CANData_t data, const uint8_t,
+                can_send_completion_callback_t completion) {
+                EXPECT_EQ(0x22, data.Data[0]);
+                secondConsecutiveFrameComplete = completion;
+            });
+
+        service.Send(payload, sizeof(payload));
+        EXPECT_FALSE(service.Ready());
+        ASSERT_TRUE(firstFrameComplete);
+        firstFrameComplete();
+
+        const CANData_t flowControl = { 0x30, 0x00, 0x00, 0, 0, 0, 0, 0 };
+        _canService.Receive(_listenId, flowControl, 3);
+        ASSERT_TRUE(firstConsecutiveFrameComplete);
+        EXPECT_FALSE(secondConsecutiveFrameComplete);
+
+        firstConsecutiveFrameComplete();
+        ASSERT_TRUE(secondConsecutiveFrameComplete);
+        EXPECT_FALSE(service.Ready());
+
+        secondConsecutiveFrameComplete();
+        EXPECT_TRUE(service.Ready());
     }
 
     TEST_F(CommunicationService_ISOTPTests, ReceivesSingleFramePayload)
