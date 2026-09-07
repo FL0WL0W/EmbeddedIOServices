@@ -1,4 +1,5 @@
 #include "MPC5xxxAnalogService.h"
+#include "MPC5xxxSystemClockService.h"
 
 namespace
 {
@@ -11,9 +12,8 @@ namespace
 
 	constexpr uint16_t ADCEnable = 0x8000U;
 	constexpr uint16_t ADCExternalMultiplexerEnable = 0x0800U;
-	// Use the eQADC's maximum divide factor because this generic service does
-	// not know the platform clock selected by its application.
-	constexpr uint16_t ADCClockPrescaler = 0x001FU;
+	constexpr uint32_t TargetADCClockHz = 4000000U;
+	constexpr uint16_t MaximumADCClockPrescaler = 0x001FU;
 
 	constexpr uint16_t InvalidateFifo = 0x0200U;
 	constexpr uint16_t SingleScanSoftwareTrigger = 0x0010U;
@@ -28,6 +28,33 @@ namespace
 	constexpr float Maximum12BitResult = 4095.0F;
 	constexpr uint16_t UncalibratedResultMask = 0x3FFCU;
 	constexpr uint8_t UncalibratedResultShift = 2U;
+
+	uint16_t ADCClockPrescaler()
+	{
+		if (!MPC5xxx::MPC5xxxSystemClockService::HasInstance()
+			|| !MPC5xxx::MPC5xxxSystemClockService::Ready())
+		{
+			return MaximumADCClockPrescaler;
+		}
+
+		const uint32_t peripheralClockHz =
+			MPC5xxx::MPC5xxxSystemClockService::PeripheralClockHz();
+		if (peripheralClockHz == 0U)
+			return MaximumADCClockPrescaler;
+
+		// ADC clock = peripheral clock / (2 * (CLK_PS + 1)). Round up
+		// so the selected ADC clock does not exceed the 4 MHz target.
+		const uint32_t twiceTargetClockHz = 2U * TargetADCClockHz;
+		uint32_t divider =
+			(peripheralClockHz + twiceTargetClockHz - 1U)
+			/ twiceTargetClockHz;
+		if (divider == 0U)
+			divider = 1U;
+		if (divider > static_cast<uint32_t>(MaximumADCClockPrescaler) + 1U)
+			divider = static_cast<uint32_t>(MaximumADCClockPrescaler) + 1U;
+
+		return static_cast<uint16_t>(divider - 1U);
+	}
 }
 
 namespace MPC5xxx
@@ -87,7 +114,7 @@ namespace MPC5xxx
 
 		ExecuteCommand(commandHeader, false, unusedResult);
 
-		const uint16_t control = ADCEnable | ADCClockPrescaler
+		const uint16_t control = ADCEnable | ADCClockPrescaler()
 			| (converter == ADCConverter::ADC1
 				? ADCExternalMultiplexerEnable
 				: 0U);
