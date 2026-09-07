@@ -14,7 +14,6 @@ namespace MPC5xxx
 		bool ReadPin(EmbeddedIOServices::digitalpin_t pin) override;
 		void WritePin(EmbeddedIOServices::digitalpin_t pin, bool value) override;
 
-		// Interrupt support is intentionally deferred.
 		void AttachInterrupt(EmbeddedIOServices::digitalpin_t pin,
 			EmbeddedIOServices::callback_t callBack) override;
 		void DetachInterrupt(EmbeddedIOServices::digitalpin_t pin) override;
