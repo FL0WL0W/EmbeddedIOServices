@@ -12,7 +12,6 @@ namespace
 	constexpr std::uint32_t DecrementerInterruptEnable = 0x04000000U;
 	constexpr std::uint32_t DecrementerAutoReloadEnable = 0x00400000U;
 	constexpr std::uint32_t DecrementerInterruptStatus = 0x08000000U;
-	constexpr std::uint32_t TimeBaseClockDivider = 4U;
 
 	std::uint32_t ReadTimerControl()
 	{
@@ -84,8 +83,7 @@ namespace MPC5xxx
 
 	tick_t MPC5xxxTimerService::GetTicksPerSecond()
 	{
-		return MPC5xxxSystemClockService::SystemClockHz() /
-			TimeBaseClockDivider;
+		return MPC5xxxSystemClockService::SystemClockHz();
 	}
 
 	void MPC5xxxTimerService::ScheduleCallBack(const tick_t tick)
