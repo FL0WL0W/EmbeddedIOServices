@@ -61,12 +61,6 @@ namespace EmbeddedIOServices
 	protected:
 		//// Stores all of the scheduled tasks in order of execution
 		TaskList _taskList;
-		
-		/**
-		 * @brief Used to calibrate the latency and the minimum number of ticks that a task can be scheduled in advance.
-		 * This should be called at the end of the child abstraction's constructor after all timer setup is complete.
-		 */
-		virtual void Calibrate();
 
 		/**
 		 * @brief This should be implemented by the child abstraction to set the timer execution tick.
@@ -82,7 +76,13 @@ namespace EmbeddedIOServices
 		 */
 		void ReturnCallBack();
 
-	public:
+	public:		
+		/**
+		 * @brief Used to calibrate the latency and the minimum number of ticks that a task can be scheduled in advance.
+		 * This should be called after interrupts are enabled.
+		 */
+		virtual void Calibrate();
+
 		/**
 		 * @brief This should be implemented by the child abstraction and should return the current tick
 		 * @return tick_t of the current tick
