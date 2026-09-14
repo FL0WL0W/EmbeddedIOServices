@@ -68,8 +68,10 @@ namespace MPC5xxx
 		mutable std::uint32_t _cachedClockTransferAttributes = 0U;
 		mutable bool _clockTransferAttributesCached = false;
 
-		void FillTransmitFifo();
+		void FillTransmitFifo(std::size_t maximumFrames);
 		void StartNextQueuedTransfer();
+		static void ProcessHardware(volatile DSPI_tag& dspi);
+		static void ProcessCompletions(volatile DSPI_tag& dspi);
 		std::uint32_t BuildClockTransferAttributes(
 			const SPIFrameTiming& timing) const;
 
@@ -94,16 +96,30 @@ namespace MPC5xxx
 
 		bool Ready() override;
 
+		/**
+		 * @note Transfer() and Service() must be called from the same non-ISR
+		 * execution context. The DSPI ISR only advances the active transfer and
+		 * publishes its Completed flag.
+		 */
 		bool Transfer(
 			std::uint8_t* data,
 			std::size_t length,
 			EmbeddedIOServices::spi_transfer_callback_t completionCallback) override;
 
 		/**
-		 * @brief Service the shared queue belonging to one physical DSPI module.
-		 * This cooperative backend can later be called from that module's ISR.
+		 * @brief Drain and advance one physical DSPI queue from its RFDF ISR.
+		 * Applications normally use the processor vector handlers supplied by
+		 * this implementation and do not call this directly.
+		 */
+		static void HandleInterrupt(volatile DSPI_tag& dspi);
+
+		/**
+		 * @brief Poll and advance one physical DSPI queue.
+		 * This is the alternative backend for applications that keep interrupts
+		 * disabled, such as a RAM flash kernel.
 		 */
 		static void Service(volatile DSPI_tag& dspi);
+
 	};
 }
 

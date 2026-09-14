@@ -102,7 +102,6 @@ namespace MPC5xxx
 
 	void MPC5xxxTimerService::TimerInterrupt()
 	{
-		ClearDecrementerInterrupt();
 		if (_initialized)
 			ReturnCallBack();
 	}

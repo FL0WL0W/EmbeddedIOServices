@@ -18,7 +18,9 @@ namespace
 	constexpr std::uint32_t kClockTransferAttributeShift = 28U;
 	constexpr std::uint32_t kChipSelectShift = 16U;
 	constexpr std::uint32_t kReceiveFifoDrainFlag = 0x00020000U;
+	constexpr std::uint32_t kReceiveFifoDrainInterruptEnable = 0x00020000U;
 	constexpr std::uint32_t kStatusFlagsToClear = 0x9A0A0000U;
+	constexpr std::uint8_t kSPIInterruptPriority = 2U;
 	constexpr std::size_t kHardwareFifoDepth = 4U;
 	constexpr std::size_t kClockTransferAttributeCount = 8U;
 	constexpr std::uint16_t kBaudPrescalers[] = {2U, 3U, 5U, 7U};
@@ -37,6 +39,22 @@ namespace
 		std::uint32_t Prescaler;
 		std::uint32_t Scaler;
 	};
+
+	bool ExternalInterruptsEnabled()
+	{
+		std::uint32_t machineState;
+		asm volatile("mfmsr %0" : "=r"(machineState));
+		return (machineState & 0x00008000U) != 0U;
+	}
+
+	std::uint16_t ReceiveDrainVector(volatile DSPI_tag* dspi)
+	{
+		if (dspi == &DSPI_A) return 279U;
+		if (dspi == &DSPI_B) return 135U;
+		if (dspi == &DSPI_C) return 140U;
+		if (dspi == &DSPI_D) return 145U;
+		return 0xFFFFU;
+	}
 
 	EncodedDelay EncodeDelay(std::uint32_t nanoseconds, std::uint32_t clockHz)
 	{
@@ -72,6 +90,7 @@ namespace MPC5xxx
 		std::uint8_t* Data = nullptr;
 		std::size_t Length = 0U;
 		EmbeddedIOServices::spi_transfer_callback_t CompletionCallback;
+		volatile bool Completed = false;
 	};
 
 	struct SPIBusState
@@ -81,9 +100,9 @@ namespace MPC5xxx
 		std::size_t QueueHead = 0U;
 		std::size_t QueueTail = 0U;
 		std::size_t QueueCount = 0U;
-		std::size_t TransmitFrameIndex = 0U;
-		std::size_t ReceiveFrameIndex = 0U;
-		bool Active = false;
+		volatile std::size_t TransmitFrameIndex = 0U;
+		volatile std::size_t ReceiveFrameIndex = 0U;
+		volatile bool Active = false;
 	};
 
 	static SPIBusState buses[kMaximumBusCount];
@@ -122,6 +141,14 @@ namespace MPC5xxx
 			dspi->TCR.R = 0U;
 			dspi->RSER.R = 0U;
 			dspi->SR.R = kStatusFlagsToClear;
+			const std::uint16_t receiveDrainVector = ReceiveDrainVector(dspi);
+			if (receiveDrainVector == 0xFFFFU)
+			{
+				bus.DSPI = nullptr;
+				return nullptr;
+			}
+			INTC.PSR[receiveDrainVector].R = kSPIInterruptPriority;
+			dspi->RSER.R = kReceiveFifoDrainInterruptEnable;
 			dspi->MCR.R = moduleConfiguration;
 			return &bus;
 		}
@@ -250,7 +277,7 @@ namespace MPC5xxx
 	{
 		const std::size_t bytesPerFrame =
 			(_configuration.bitsPerWord + 7U) / 8U;
-		if (!Ready() || data == nullptr || length == 0U ||
+		if (_bus == nullptr || data == nullptr || length == 0U ||
 			(length % bytesPerFrame) != 0U)
 			return false;
 
@@ -260,28 +287,46 @@ namespace MPC5xxx
 		for (std::size_t i = 0U; i < length; ++i)
 			ownedData[i] = data[i];
 
+		if (_bus->QueueCount >= kQueueCapacity)
+		{
+			delete[] ownedData;
+			return false;
+		}
+
 		SPIQueuedTransfer& queued = _bus->Queue[_bus->QueueTail];
 		queued.Endpoint = this;
 		queued.Data = ownedData;
 		queued.Length = length;
 		queued.CompletionCallback = std::move(completionCallback);
+		queued.Completed = false;
 		_bus->QueueTail = (_bus->QueueTail + 1U) % kQueueCapacity;
 		++_bus->QueueCount;
+
 		StartNextQueuedTransfer();
 		return true;
 	}
 
 	void MPC5xxxSPIService::StartNextQueuedTransfer()
 	{
-		if (_bus == nullptr || _bus->Active || _bus->QueueCount == 0U)
+		if (_bus == nullptr)
 			return;
+
+		if (_bus->Active || _bus->QueueCount == 0U)
+			return;
+		SPIQueuedTransfer& transfer = _bus->Queue[_bus->QueueHead];
+		if (transfer.Completed)
+			return;
+
 		_bus->Active = true;
 		_bus->TransmitFrameIndex = 0U;
 		_bus->ReceiveFrameIndex = 0U;
-		_bus->Queue[_bus->QueueHead].Endpoint->FillTransmitFifo();
+		// The calling context launches one frame and returns. From its first
+		// receive onward, the ISR exclusively owns FIFO refill, so FIFO state is
+		// never manipulated by two nested FillTransmitFifo() invocations.
+		transfer.Endpoint->FillTransmitFifo(1U);
 	}
 
-	void MPC5xxxSPIService::FillTransmitFifo()
+	void MPC5xxxSPIService::FillTransmitFifo(const std::size_t maximumFrames)
 	{
 		SPIQueuedTransfer& transfer = _bus->Queue[_bus->QueueHead];
 		MPC5xxxSPIService& endpoint = *transfer.Endpoint;
@@ -292,7 +337,9 @@ namespace MPC5xxx
 		// TXCTR can drop as soon as a frame moves into the shifter. Bound the
 		// number of in-flight frames instead, so the four-entry RX FIFO cannot
 		// overflow if Service() is not called again before all four complete.
-		while (_bus->TransmitFrameIndex < frameCount &&
+		std::size_t framesFilled = 0U;
+		while (framesFilled < maximumFrames &&
+			_bus->TransmitFrameIndex < frameCount &&
 			_bus->TransmitFrameIndex - _bus->ReceiveFrameIndex <
 				kHardwareFifoDepth)
 		{
@@ -310,30 +357,40 @@ namespace MPC5xxx
 				frameIndex % kClockTransferAttributeCount;
 			_dspi->CTAR[ctarIndex].R = endpoint.BuildClockTransferAttributes(
 				endpoint.TimingForFrame(frameIndex));
-			_dspi->PUSHR.R =
+			const std::uint32_t push =
 				(frameIndex + 1U != frameCount ? kContinuousChipSelect : 0U) |
 				(static_cast<std::uint32_t>(ctarIndex) <<
 					kClockTransferAttributeShift) |
 				((1U << endpoint._configuration.chipSelect) <<
 					kChipSelectShift) |
 				transmitted;
+			// Publish software progress before starting the peripheral. Even the
+			// fastest supported SPI clock cannot complete before the following
+			// store, but this ordering also makes that invariant explicit.
 			++_bus->TransmitFrameIndex;
+			++framesFilled;
+			_dspi->PUSHR.R = push;
 		}
 	}
 
-	void MPC5xxxSPIService::Service(volatile DSPI_tag& dspi)
+	void MPC5xxxSPIService::ProcessHardware(volatile DSPI_tag& dspi)
 	{
 		SPIBusState* const bus = FindBus(&dspi);
 		if (bus == nullptr)
+		{
+			dspi.SR.R = kReceiveFifoDrainFlag;
 			return;
+		}
 		if (!bus->Active)
 		{
-			if (bus->QueueCount != 0U)
-				bus->Queue[bus->QueueHead].Endpoint->StartNextQueuedTransfer();
+			dspi.SR.R = kReceiveFifoDrainFlag;
 			return;
 		}
 		if (dspi.SR.B.RXCTR == 0U)
+		{
+			dspi.SR.R = kReceiveFifoDrainFlag;
 			return;
+		}
 
 		SPIQueuedTransfer& transfer = bus->Queue[bus->QueueHead];
 		MPC5xxxSPIService& endpoint = *transfer.Endpoint;
@@ -365,26 +422,80 @@ namespace MPC5xxx
 
 		if (bus->ReceiveFrameIndex < frameCount)
 		{
-			endpoint.FillTransmitFifo();
+			endpoint.FillTransmitFifo(kHardwareFifoDepth);
 			return;
 		}
 
-		std::uint8_t* const completedData = transfer.Data;
-		const std::size_t completedLength = transfer.Length;
-		auto completionCallback = std::move(transfer.CompletionCallback);
-		transfer.Endpoint = nullptr;
-		transfer.Data = nullptr;
-		transfer.Length = 0U;
-		transfer.CompletionCallback = nullptr;
-		bus->QueueHead = (bus->QueueHead + 1U) % kQueueCapacity;
-		--bus->QueueCount;
-		bus->TransmitFrameIndex = 0U;
-		bus->ReceiveFrameIndex = 0U;
+		// The ISR owns hardware progress only. Queue structure, callbacks, and
+		// memory remain exclusively owned by the calling context in Service().
 		bus->Active = false;
-		if (completionCallback)
-			completionCallback(completedData, completedLength);
-		delete[] completedData;
+		transfer.Completed = true;
+	}
+
+	void MPC5xxxSPIService::ProcessCompletions(volatile DSPI_tag& dspi)
+	{
+		SPIBusState* const bus = FindBus(&dspi);
+		if (bus == nullptr)
+			return;
+
+		while (bus->QueueCount != 0U)
+		{
+			SPIQueuedTransfer& transfer = bus->Queue[bus->QueueHead];
+			if (!transfer.Completed)
+				break;
+
+			std::uint8_t* const completedData = transfer.Data;
+			const std::size_t completedLength = transfer.Length;
+			auto completionCallback = std::move(transfer.CompletionCallback);
+			transfer.Endpoint = nullptr;
+			transfer.Data = nullptr;
+			transfer.Length = 0U;
+			transfer.CompletionCallback = nullptr;
+			transfer.Completed = false;
+			bus->QueueHead = (bus->QueueHead + 1U) % kQueueCapacity;
+			--bus->QueueCount;
+
+			if (completionCallback)
+				completionCallback(completedData, completedLength);
+			delete[] completedData;
+		}
+
 		if (bus->QueueCount != 0U)
 			bus->Queue[bus->QueueHead].Endpoint->StartNextQueuedTransfer();
 	}
+
+	void MPC5xxxSPIService::Service(volatile DSPI_tag& dspi)
+	{
+		// With external interrupts disabled, Service() is also the polling
+		// hardware backend used by the kernel. With interrupts enabled, the ISR
+		// owns FIFO progress and Service() only performs deferred cleanup.
+		if (!ExternalInterruptsEnabled())
+			ProcessHardware(dspi);
+		ProcessCompletions(dspi);
+	}
+
+	void MPC5xxxSPIService::HandleInterrupt(volatile DSPI_tag& dspi)
+	{
+		ProcessHardware(dspi);
+	}
+}
+
+extern "C" void DSPI_A_ReceiveDrain_Handler()
+{
+	MPC5xxx::MPC5xxxSPIService::HandleInterrupt(DSPI_A);
+}
+
+extern "C" void DSPI_B_ReceiveDrain_Handler()
+{
+	MPC5xxx::MPC5xxxSPIService::HandleInterrupt(DSPI_B);
+}
+
+extern "C" void DSPI_C_ReceiveDrain_Handler()
+{
+	MPC5xxx::MPC5xxxSPIService::HandleInterrupt(DSPI_C);
+}
+
+extern "C" void DSPI_D_ReceiveDrain_Handler()
+{
+	MPC5xxx::MPC5xxxSPIService::HandleInterrupt(DSPI_D);
 }

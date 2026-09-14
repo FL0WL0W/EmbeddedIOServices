@@ -10,7 +10,10 @@ namespace
 	constexpr std::size_t PinCount = sizeof(SIU.PCR) / sizeof(SIU.PCR[0]);
 	constexpr std::uint8_t ExternalInterruptCount = 16U;
 	constexpr std::uint8_t InvalidInterrupt = 0xFFU;
-	constexpr std::uint8_t DigitalInterruptPriority = 2U;
+	// Priority order: digital (3) > core decrementer timer ceiling (2) >
+	// DSPI (2) > CAN (1). The timer is a core exception, so its effective
+	// priority is implemented in MPC5xxxTimerService and the INTC trampoline.
+	constexpr std::uint8_t DigitalInterruptPriority = 3U;
 	constexpr std::uint16_t ExternalInterrupt0Vector = 46U;
 	constexpr std::uint16_t ExternalInterrupts4To15Vector = 50U;
 	constexpr std::uint16_t ETPUAInterrupt0Vector = 68U;
@@ -290,15 +293,15 @@ namespace MPC5xxx
 	{
 		if (!IsPinInRange(pin)) return false;
 #if defined(MPC5674F)
-		return SIU.GPDI0_511[pin].B.PDI != 0;
+		return (SIU.GPDI0_511[pin].R & 1U) != 0U;
 #else
-		return SIU.GPDI[pin].B.PDI != 0;
+		return (SIU.GPDI[pin].R & 1U) != 0U;
 #endif
 	}
 
 	void MPC5xxxDigitalService::WritePin(EmbeddedIOServices::digitalpin_t pin, bool value)
 	{
-		if (IsPinInRange(pin)) SIU.GPDO[pin].B.PDO = value;
+		if (IsPinInRange(pin)) SIU.GPDO[pin].R = value ? 1U : 0U;
 	}
 
 	void MPC5xxxDigitalService::AttachInterrupt(EmbeddedIOServices::digitalpin_t pin,
