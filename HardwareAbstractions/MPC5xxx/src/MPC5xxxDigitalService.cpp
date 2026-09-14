@@ -80,6 +80,7 @@ namespace
 	EmbeddedIOServices::callback_t SIUInterruptCallbacks[ExternalInterruptCount];
 	EmbeddedIOServices::callback_t ETPUInterruptCallbacks[2][32];
 	bool ETPUInitialized = false;
+	bool ETPUInitializationInProgress = false;
 
 	bool IsPinInRange(EmbeddedIOServices::digitalpin_t pin)
 	{
@@ -140,16 +141,29 @@ namespace
 
 	bool InitializeETPU()
 	{
-		if (ETPUInitialized) return true;
-
-		const std::uint32_t machineState = DisableExternalInterrupts();
+		if (ETPUInitialized)
+		{
+			return true;
+		}
+		std::uint32_t machineState = DisableExternalInterrupts();
+		if (ETPUInitializationInProgress)
+		{
+			RestoreExternalInterrupts(machineState);
+			return false;
+		}
+		ETPUInitializationInProgress = true;
 		ETPU.ECR_A.B.MDIS = 1U;
 		ETPU.ECR_B.B.MDIS = 1U;
+		ETPU.CIER_A.R = 0U;
+		ETPU.CIER_B.R = 0U;
+		asm volatile("mbar" ::: "memory");
+		RestoreExternalInterrupts(machineState);
+
 		std::uint32_t timeout = 100000U;
 		while ((ETPU.ECR_A.B.STF == 0U || ETPU.ECR_B.B.STF == 0U) && --timeout != 0U) {}
 		if (timeout == 0U)
 		{
-			RestoreExternalInterrupts(machineState);
+			ETPUInitializationInProgress = false;
 			return false;
 		}
 
@@ -157,7 +171,7 @@ namespace
 		const std::size_t codeRAMBytes = (static_cast<std::size_t>(ETPU.MCR.B.SCMSIZE) + 1U) * 2048U;
 		if (codeBytes > codeRAMBytes)
 		{
-			RestoreExternalInterrupts(machineState);
+			ETPUInitializationInProgress = false;
 			return false;
 		}
 
@@ -166,7 +180,7 @@ namespace
 		while (ETPU.MCR.B.VIS == 0U && --timeout != 0U) {}
 		if (timeout == 0U)
 		{
-			RestoreExternalInterrupts(machineState);
+			ETPUInitializationInProgress = false;
 			return false;
 		}
 
@@ -205,8 +219,9 @@ namespace
 
 		ETPU.MCR.B.GTBE = 1U;
 		asm volatile("mbar" ::: "memory");
+
 		ETPUInitialized = true;
-		RestoreExternalInterrupts(machineState);
+		ETPUInitializationInProgress = false;
 		return true;
 	}
 
@@ -299,10 +314,13 @@ namespace MPC5xxx
 		const std::uint8_t interrupt = PinToExternalInterrupt(pin);
 		if (interrupt != InvalidInterrupt)
 		{
-			const std::uint32_t machineState = DisableExternalInterrupts();
 			const std::uint32_t mask = 1UL << interrupt;
+			std::uint32_t machineState = DisableExternalInterrupts();
 			SIU.DIRER.R &= ~mask;
-			SIUInterruptCallbacks[interrupt] = std::move(callBack);
+			SIU.EISR.R = mask;
+			asm volatile("mbar" ::: "memory");
+			RestoreExternalInterrupts(machineState);
+
 			SIU.PCR[pin].B.PA = 2U;
 			SIU.PCR[pin].B.OBE = 0U;
 			SIU.PCR[pin].B.IBE = 1U;
@@ -314,6 +332,10 @@ namespace MPC5xxx
 			const std::uint16_t vector = interrupt < 4U
 				? static_cast<std::uint16_t>(ExternalInterrupt0Vector + interrupt)
 				: ExternalInterrupts4To15Vector;
+
+			machineState = DisableExternalInterrupts();
+			SIUInterruptCallbacks[interrupt] = std::move(callBack);
+			SIU.EISR.R = mask;
 			INTC.PSR[vector].R = DigitalInterruptPriority;
 			SIU.DIRER.R |= mask;
 			asm volatile("mbar" ::: "memory");
@@ -324,16 +346,30 @@ namespace MPC5xxx
 		const ETPUChannel channel = PinToETPUChannel(pin);
 		if (!channel.valid || !InitializeETPU()) return;
 
-		const std::uint32_t machineState = DisableExternalInterrupts();
 		const std::uint32_t mask = 1UL << channel.channel;
 		const std::size_t hardwareChannel = channel.engine == 0U ? channel.channel : channel.channel + 64U;
+		const std::uint16_t vector = ETPUVector(channel);
+		std::uint32_t machineState = DisableExternalInterrupts();
+		if (channel.engine == 0U)
+		{
+			ETPU.CIER_A.R &= ~mask;
+			ETPU.CISR_A.R = mask;
+			ETPU.CDTRSR_A.R = mask;
+		}
+		else
+		{
+			ETPU.CIER_B.R &= ~mask;
+			ETPU.CISR_B.R = mask;
+			ETPU.CDTRSR_B.R = mask;
+		}
+		INTC.PSR[vector].R = 0U;
+		asm volatile("mbar" ::: "memory");
+		RestoreExternalInterrupts(machineState);
+
 		volatile std::uint32_t* const parameters = ETPUParameterFrame(channel);
 		for (std::size_t word = 0U; word < ETPUGPIOCode::ParameterBytes / sizeof(std::uint32_t); ++word)
 			parameters[word] = 0U;
 
-		if (channel.engine == 0U) ETPU.CIER_A.R &= ~mask;
-		else ETPU.CIER_B.R &= ~mask;
-		ETPUInterruptCallbacks[channel.engine][channel.channel] = std::move(callBack);
 		SelectETPUInputPad(channel, true);
 		SIU.PCR[pin].B.PA = channel.pinAlternateFunction;
 		SIU.PCR[pin].B.OBE = 0U;
@@ -353,13 +389,18 @@ namespace MPC5xxx
 		if (timeout == 0U)
 		{
 			ETPU.CHAN[hardwareChannel].CR.B.CPR = 0U;
+			machineState = DisableExternalInterrupts();
 			ETPUInterruptCallbacks[channel.engine][channel.channel] = nullptr;
+			asm volatile("mbar" ::: "memory");
+			RestoreExternalInterrupts(machineState);
 			SelectETPUInputPad(channel, false);
 			SIU.PCR[pin].B.PA = 0U;
 			SIU.PCR[pin].B.IBE = 1U;
-			RestoreExternalInterrupts(machineState);
 			return;
 		}
+
+		machineState = DisableExternalInterrupts();
+		ETPUInterruptCallbacks[channel.engine][channel.channel] = std::move(callBack);
 		if (channel.engine == 0U)
 		{
 			ETPU.CISR_A.R = mask;
@@ -372,7 +413,7 @@ namespace MPC5xxx
 			ETPU.CDTRSR_B.R = mask;
 			ETPU.CIER_B.R |= mask;
 		}
-		INTC.PSR[ETPUVector(channel)].R = DigitalInterruptPriority;
+		INTC.PSR[vector].R = DigitalInterruptPriority;
 		asm volatile("mbar" ::: "memory");
 		RestoreExternalInterrupts(machineState);
 	}
@@ -403,16 +444,27 @@ namespace MPC5xxx
 		const std::uint32_t machineState = DisableExternalInterrupts();
 		const std::uint32_t mask = 1UL << channel.channel;
 		const std::size_t hardwareChannel = channel.engine == 0U ? channel.channel : channel.channel + 64U;
-		if (channel.engine == 0U) ETPU.CIER_A.R &= ~mask;
-		else ETPU.CIER_B.R &= ~mask;
-		ETPU.CHAN[hardwareChannel].CR.B.CPR = 0U;
-		ETPUInterruptCallbacks[channel.engine][channel.channel] = nullptr;
+		if (channel.engine == 0U)
+		{
+			ETPU.CIER_A.R &= ~mask;
+			ETPU.CISR_A.R = mask;
+			ETPU.CDTRSR_A.R = mask;
+		}
+		else
+		{
+			ETPU.CIER_B.R &= ~mask;
+			ETPU.CISR_B.R = mask;
+			ETPU.CDTRSR_B.R = mask;
+		}
 		INTC.PSR[ETPUVector(channel)].R = 0U;
+		ETPUInterruptCallbacks[channel.engine][channel.channel] = nullptr;
+		asm volatile("mbar" ::: "memory");
+		RestoreExternalInterrupts(machineState);
+
+		ETPU.CHAN[hardwareChannel].CR.B.CPR = 0U;
 		SelectETPUInputPad(channel, false);
 		SIU.PCR[pin].B.PA = 0U;
 		SIU.PCR[pin].B.IBE = 1U;
-		asm volatile("mbar" ::: "memory");
-		RestoreExternalInterrupts(machineState);
 	}
 }
 
