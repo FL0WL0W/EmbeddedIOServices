@@ -12,6 +12,24 @@ namespace
 	constexpr std::uint32_t DecrementerInterruptEnable = 0x04000000U;
 	constexpr std::uint32_t DecrementerAutoReloadEnable = 0x00400000U;
 	constexpr std::uint32_t DecrementerInterruptStatus = 0x08000000U;
+	constexpr std::uint32_t ExternalInterruptEnable = 0x00008000U;
+
+	std::uint32_t DisableExternalInterrupts()
+	{
+		std::uint32_t machineState;
+		asm volatile(
+			"mfmsr %0\n\twrteei 0\n\tisync"
+			: "=r"(machineState)
+			:
+			: "memory");
+		return machineState;
+	}
+
+	void RestoreExternalInterrupts(const std::uint32_t machineState)
+	{
+		if ((machineState & ExternalInterruptEnable) != 0U)
+			asm volatile("wrteei 1\n\tisync" ::: "memory");
+	}
 
 	std::uint32_t ReadTimerControl()
 	{
@@ -88,6 +106,9 @@ namespace MPC5xxx
 
 	void MPC5xxxTimerService::ScheduleCallBack(const tick_t tick)
 	{
+		// Keep the time-base snapshot and decrementer write together: a
+		// higher-priority ISR between them would make the delay stale.
+		const std::uint32_t machineState = DisableExternalInterrupts();
 		ClearDecrementerInterrupt();
 
 		const tick_t now = GetTick();
@@ -98,6 +119,7 @@ namespace MPC5xxx
 		if (delay == 0U || (delay & 0x80000000U) != 0U)
 			delay = 1U;
 		WriteDecrementer(delay);
+		RestoreExternalInterrupts(machineState);
 	}
 
 	void MPC5xxxTimerService::TimerInterrupt()
