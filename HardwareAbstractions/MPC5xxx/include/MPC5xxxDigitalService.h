@@ -8,7 +8,17 @@ namespace MPC5xxx
 {
 	class MPC5xxxDigitalService : public EmbeddedIOServices::IDigitalService
 	{
+	private:
+		const std::uint8_t _interruptPriority;
+
 	public:
+		/**
+		 * @param interruptPriority INTC priority used by attached SIU/eTPU
+		 * interrupts. Zero leaves the sources unavailable to the CPU so pins may
+		 * instead be sampled with ReadPin().
+		 */
+		explicit MPC5xxxDigitalService(std::uint8_t interruptPriority);
+
 		void InitPin(EmbeddedIOServices::digitalpin_t pin,
 			EmbeddedIOServices::PinDirection direction) override;
 		bool ReadPin(EmbeddedIOServices::digitalpin_t pin) override;

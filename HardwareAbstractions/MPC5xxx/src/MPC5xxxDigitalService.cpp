@@ -10,8 +10,6 @@ namespace
 	constexpr std::size_t PinCount = sizeof(SIU.PCR) / sizeof(SIU.PCR[0]);
 	constexpr std::uint8_t ExternalInterruptCount = 16U;
 	constexpr std::uint8_t InvalidInterrupt = 0xFFU;
-	// Priority order: digital (4) > eMIOS timer (3) > DSPI (2) > CAN (1).
-	constexpr std::uint8_t DigitalInterruptPriority = 4U;
 	constexpr std::uint16_t ExternalInterrupt0Vector = 46U;
 	constexpr std::uint16_t ExternalInterrupts4To15Vector = 50U;
 	constexpr std::uint16_t ETPUAInterrupt0Vector = 68U;
@@ -19,7 +17,7 @@ namespace
 	constexpr std::uint32_t GroupedExternalInterruptMask = 0xFFF0U;
 	constexpr std::size_t ETPUGlobalBytes = 16U;
 	constexpr std::uint32_t ETPUTCR1SystemClockDiv2 = 0x00008000U;
-	constexpr std::uint8_t ETPUHighPriority = 3U;
+	constexpr std::uint8_t ETPUChannelSchedulingPriority = 3U;
 
 	struct ETPUChannel
 	{
@@ -278,6 +276,12 @@ namespace
 
 namespace MPC5xxx
 {
+	MPC5xxxDigitalService::MPC5xxxDigitalService(
+		const std::uint8_t interruptPriority)
+		: _interruptPriority(interruptPriority)
+	{
+	}
+
 	void MPC5xxxDigitalService::InitPin(EmbeddedIOServices::digitalpin_t pin,
 		EmbeddedIOServices::PinDirection direction)
 	{
@@ -337,7 +341,7 @@ namespace MPC5xxx
 			machineState = DisableExternalInterrupts();
 			SIUInterruptCallbacks[interrupt] = std::move(callBack);
 			SIU.EISR.R = mask;
-			INTC.PSR[vector].R = DigitalInterruptPriority;
+			INTC.PSR[vector].R = _interruptPriority;
 			SIU.DIRER.R |= mask;
 			asm volatile("mbar" ::: "memory");
 			RestoreExternalInterrupts(machineState);
@@ -379,7 +383,7 @@ namespace MPC5xxx
 		const std::uintptr_t parameterOffset = reinterpret_cast<std::uintptr_t>(parameters) -
 			reinterpret_cast<std::uintptr_t>(&ETPU_DATA_RAM);
 		ETPU.CHAN[hardwareChannel].CR.R =
-			(static_cast<std::uint32_t>(ETPUHighPriority) << 28U) |
+			(static_cast<std::uint32_t>(ETPUChannelSchedulingPriority) << 28U) |
 			(static_cast<std::uint32_t>(ETPUGPIOCode::FunctionNumber) << 16U) |
 			static_cast<std::uint32_t>(parameterOffset >> 3U);
 		ETPU.CHAN[hardwareChannel].SCR.R = 0U;
@@ -414,7 +418,7 @@ namespace MPC5xxx
 			ETPU.CDTRSR_B.R = mask;
 			ETPU.CIER_B.R |= mask;
 		}
-		INTC.PSR[vector].R = DigitalInterruptPriority;
+		INTC.PSR[vector].R = _interruptPriority;
 		asm volatile("mbar" ::: "memory");
 		RestoreExternalInterrupts(machineState);
 	}

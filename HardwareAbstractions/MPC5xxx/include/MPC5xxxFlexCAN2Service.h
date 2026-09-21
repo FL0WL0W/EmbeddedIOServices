@@ -64,7 +64,13 @@ namespace MPC5xxx
 
 	public:
 		static MPC5xxxFlexCAN2Service& Instance();
-		static uint8_t Initialize(volatile FLEXCAN2_tag& canPeripheral, CANBaudRate baudRate);
+		/**
+		 * @param interruptPriority Priority for all mailbox vectors belonging to
+		 * this FlexCAN module. Zero disables mailbox interrupts and selects polling
+		 * through PollFlexCAN().
+		 */
+		static uint8_t Initialize(volatile FLEXCAN2_tag& canPeripheral,
+			CANBaudRate baudRate, uint8_t interruptPriority);
 		static void PollFlexCAN(volatile FLEXCAN2_tag& can);
 		void Send(EmbeddedIOServices::CANIdentifier_t identifier,
 			EmbeddedIOServices::CANData_t data, uint8_t dataLength,

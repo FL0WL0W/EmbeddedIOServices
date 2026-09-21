@@ -20,7 +20,6 @@ namespace
 	constexpr std::uint32_t kReceiveFifoDrainFlag = 0x00020000U;
 	constexpr std::uint32_t kReceiveFifoDrainInterruptEnable = 0x00020000U;
 	constexpr std::uint32_t kStatusFlagsToClear = 0x9A0A0000U;
-	constexpr std::uint8_t kSPIInterruptPriority = 2U;
 	constexpr std::size_t kHardwareFifoDepth = 4U;
 	constexpr std::size_t kClockTransferAttributeCount = 8U;
 	constexpr std::uint16_t kBaudPrescalers[] = {2U, 3U, 5U, 7U};
@@ -96,6 +95,7 @@ namespace MPC5xxx
 	struct SPIBusState
 	{
 		volatile DSPI_tag* DSPI = nullptr;
+		std::uint8_t InterruptPriority = 0U;
 		SPIQueuedTransfer Queue[kQueueCapacity];
 		std::size_t QueueHead = 0U;
 		std::size_t QueueTail = 0U;
@@ -117,17 +117,19 @@ namespace MPC5xxx
 
 	static SPIBusState* AcquireBus(
 		volatile DSPI_tag* dspi,
-		const MPC5xxxSPIServiceConfiguration& configuration)
+		const MPC5xxxSPIServiceConfiguration& configuration,
+		const std::uint8_t interruptPriority)
 	{
 		for (std::size_t i = 0U; i < kMaximumBusCount; ++i)
 		{
 			SPIBusState& bus = buses[i];
 			if (bus.DSPI == dspi)
-				return &bus;
+				return bus.InterruptPriority == interruptPriority ? &bus : nullptr;
 			if (bus.DSPI != nullptr)
 				continue;
 
 			bus.DSPI = dspi;
+			bus.InterruptPriority = interruptPriority;
 			std::uint32_t moduleConfiguration =
 				kMaster |
 				kOverwriteOnReceiveOverflow |
@@ -147,8 +149,9 @@ namespace MPC5xxx
 				bus.DSPI = nullptr;
 				return nullptr;
 			}
-			INTC.PSR[receiveDrainVector].R = kSPIInterruptPriority;
-			dspi->RSER.R = kReceiveFifoDrainInterruptEnable;
+			INTC.PSR[receiveDrainVector].R = interruptPriority;
+			if (interruptPriority != 0U)
+				dspi->RSER.R = kReceiveFifoDrainInterruptEnable;
 			dspi->MCR.R = moduleConfiguration;
 			return &bus;
 		}
@@ -173,7 +176,8 @@ namespace MPC5xxx
 
 	MPC5xxxSPIService::MPC5xxxSPIService(
 		volatile DSPI_tag* dspi,
-		const MPC5xxxSPIServiceConfiguration& configuration)
+		const MPC5xxxSPIServiceConfiguration& configuration,
+		const std::uint8_t interruptPriority)
 		: _dspi(dspi),
 		  _configuration(configuration)
 	{
@@ -181,7 +185,7 @@ namespace MPC5xxx
 			configuration.bitsPerWord < 4U ||
 			configuration.bitsPerWord > 16U)
 			return;
-		_bus = AcquireBus(dspi, configuration);
+		_bus = AcquireBus(dspi, configuration, interruptPriority);
 		if (_bus != nullptr)
 			ConfigureChipSelectPolarity(dspi, configuration);
 	}
@@ -466,10 +470,11 @@ namespace MPC5xxx
 
 	void MPC5xxxSPIService::Service(volatile DSPI_tag& dspi)
 	{
-		// With external interrupts disabled, Service() is also the polling
-		// hardware backend used by the kernel. With interrupts enabled, the ISR
-		// owns FIFO progress and Service() only performs deferred cleanup.
-		if (!ExternalInterruptsEnabled())
+		// Priority zero explicitly selects polling. Service() is also the polling
+		// fallback while external interrupts are globally disabled.
+		SPIBusState* const bus = FindBus(&dspi);
+		if (bus != nullptr &&
+			(bus->InterruptPriority == 0U || !ExternalInterruptsEnabled()))
 			ProcessHardware(dspi);
 		ProcessCompletions(dspi);
 	}

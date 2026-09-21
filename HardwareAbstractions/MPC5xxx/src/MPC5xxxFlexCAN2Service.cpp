@@ -67,6 +67,63 @@ namespace MPC5xxx
 			: (can.IFRH.R & flag) != 0U;
 	}
 
+	struct FlexCANMailboxInterruptVectors
+	{
+		uint16_t FirstIndividual;
+		uint16_t Buffers16To31;
+		uint16_t Buffers32To63;
+	};
+
+	static bool GetMailboxInterruptVectors(
+		volatile FLEXCAN2_tag& can,
+		FlexCANMailboxInterruptVectors& vectors)
+	{
+#ifdef CAN_A
+		if (&can == &CAN_A) { vectors = {155U, 171U, 172U}; return true; }
+#endif
+#ifdef CAN_B
+		if (&can == &CAN_B) { vectors = {283U, 299U, 300U}; return true; }
+#endif
+#ifdef CAN_C
+		if (&can == &CAN_C) { vectors = {176U, 192U, 193U}; return true; }
+#endif
+#ifdef CAN_D
+		if (&can == &CAN_D) { vectors = {311U, 327U, 328U}; return true; }
+#endif
+		return false;
+	}
+
+	static void ConfigureMailboxInterrupts(
+		volatile FLEXCAN2_tag& can,
+		const uint8_t interruptPriority)
+	{
+		can.IMRH.R = 0U;
+		can.IMRL.R = 0U;
+		can.CR.B.BOFFMSK = 0U;
+		can.CR.B.ERRMSK = 0U;
+		can.CR.B.TWRNMSK = 0U;
+		can.CR.B.RWRNMSK = 0U;
+		can.MCR.B.WRNEN = 0U;
+		can.IFRH.R = 0xFFFFFFFFU;
+		can.IFRL.R = 0xFFFFFFFFU;
+
+		FlexCANMailboxInterruptVectors vectors = {};
+		if (GetMailboxInterruptVectors(can, vectors))
+		{
+			for (uint16_t vector = vectors.FirstIndividual;
+				vector < vectors.FirstIndividual + 16U; ++vector)
+				INTC.PSR[vector].R = interruptPriority;
+			INTC.PSR[vectors.Buffers16To31].R = interruptPriority;
+			INTC.PSR[vectors.Buffers32To63].R = interruptPriority;
+		}
+
+		if (interruptPriority != 0U)
+		{
+			can.IMRL.R = 0xFFFFFFFFU;
+			can.IMRH.R = 0xFFFFFFFFU;
+		}
+	}
+
 	uint8_t MPC5xxxFlexCAN2Service::BusNumberFromPeripheral(volatile FLEXCAN2_tag& can)
 	{
 		for (uint8_t bus = 0U; bus < MPC5xxxFlexCAN2Service::CANPeripheralCount; ++bus)
@@ -161,7 +218,8 @@ namespace MPC5xxx
 	}
 
 	uint8_t MPC5xxxFlexCAN2Service::Initialize(
-		volatile FLEXCAN2_tag& can, const CANBaudRate baudRate)
+		volatile FLEXCAN2_tag& can, const CANBaudRate baudRate,
+		const uint8_t interruptPriority)
 	{
 		const uint8_t busNumber = BusNumberFromPeripheral(can);
 		if (busNumber >= CANPeripheralCount ||
@@ -217,6 +275,7 @@ namespace MPC5xxx
 		}
 		can.IFRL.R = 0xFFFFFFFFU;
 		can.IFRH.R = 0xFFFFFFFFU;
+		ConfigureMailboxInterrupts(can, interruptPriority);
 
 		can.MCR.B.HALT = 0;
 		can.MCR.B.FRZ  = 0;

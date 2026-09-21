@@ -90,9 +90,15 @@ namespace MPC5xxx
 		virtual SPIFrameTiming TimingForFrame(std::size_t frameIndex) const;
 
 	public:
+		/**
+		 * @param interruptPriority Priority for the physical DSPI receive-drain
+		 * interrupt. Zero selects polling through Service(). All endpoints sharing
+		 * a DSPI module must use the same priority.
+		 */
 		MPC5xxxSPIService(
 			volatile DSPI_tag* dspi,
-			const MPC5xxxSPIServiceConfiguration& configuration);
+			const MPC5xxxSPIServiceConfiguration& configuration,
+			std::uint8_t interruptPriority);
 
 		bool Ready() override;
 
