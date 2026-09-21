@@ -1,7 +1,6 @@
 #include "MPC56xxSystemClockService.h"
 #if defined(MPC5674F)
 #include "MPC5xxx.h"
-#include <algorithm>
 
 namespace {
 // MPC5674F Enhanced PLL register field masks and positions
@@ -12,6 +11,16 @@ constexpr std::uint32_t CLKCFG_MASK = 0x70000000U;   // ESYNCR1[30:28]
 
 struct Settings { std::uint8_t pre, mul, rfd; std::uint32_t hz; bool valid; };
 
+std::uint64_t CalculateIco(std::uint32_t referenceHz,
+	std::uint32_t multiplier, std::uint32_t preDivider)
+{
+	// Calculate referenceHz * multiplier / preDivider exactly without a
+	// 64-bit divide. Splitting referenceHz into quotient and remainder keeps
+	// both divisions 32-bit while the potentially >4 GHz result remains wide.
+	return static_cast<std::uint64_t>(referenceHz / preDivider) * multiplier +
+		((referenceHz % preDivider) * multiplier) / preDivider;
+}
+
 Settings FindSettings(std::uint32_t referenceHz, std::uint32_t requestedHz)
 {
 	Settings best = {0U, 0U, 0U, 0U, false};
@@ -19,26 +28,22 @@ Settings FindSettings(std::uint32_t referenceHz, std::uint32_t requestedHz)
 	for (std::uint8_t pre = 0U; pre <= 15U; ++pre) {
 		const std::uint32_t preDiv = pre + 1U;
 		if (referenceHz / preDiv < 4000000U) continue;
-		
-		// ERFD is 6 bits (0-63), actual divider is 2^ERFD
-		// For each rfd, calculate the mul needed instead of iterating all 255 values
-		for (std::uint8_t rfd = 0U; rfd < 64U; ++rfd) {
-			// Target ICO = requestedHz * 2^rfd (before final rfd division)
-			// ICO = referenceHz * (mul + 16) / preDiv
-			// Therefore: mul = (requestedHz * 2^rfd * preDiv / referenceHz) - 16
-			const std::uint64_t targetIco64 = static_cast<std::uint64_t>(requestedHz) << rfd;
-			const std::uint64_t mulTerm = (targetIco64 * preDiv) / referenceHz;
-			
-			if (mulTerm < 16U) continue;
-			
-			// EMFD is 8 bits (0-255), actual multiplier is EMFD + 16
-			std::uint8_t mul = static_cast<std::uint8_t>(std::min(mulTerm - 16U, 255ULL));
-			
-			const std::uint64_t ico = static_cast<std::uint64_t>(referenceHz) * (mul + 16U) / preDiv;
+
+		// Search the small hardware field space directly. This is performed only
+		// during clock initialization and avoids solving for EMFD with a 64-bit
+		// division.
+		for (std::uint16_t mul = 0U; mul <= 255U; ++mul) {
+			const std::uint64_t ico = CalculateIco(referenceHz, mul + 16U, preDiv);
 			if (ico < 48000000U) continue;
-			
-			const std::uint32_t hz = static_cast<std::uint32_t>(ico >> rfd);
-			if (hz <= requestedHz && hz > best.hz) best = {pre, mul, rfd, hz, true};
+
+			// ERFD is 6 bits (0-63), and its actual divider is 2^ERFD.
+			for (std::uint8_t rfd = 0U; rfd < 64U; ++rfd) {
+				const std::uint64_t divided = ico >> rfd;
+				if (divided == 0U) break;
+				if (divided <= requestedHz && divided > best.hz)
+					best = {pre, static_cast<std::uint8_t>(mul), rfd,
+						static_cast<std::uint32_t>(divided), true};
+			}
 		}
 	}
 	return best;
@@ -107,8 +112,8 @@ namespace MPC5xxx {
 		const std::uint32_t eprediv = (FMPLL.ESYNCR1.R & EPREDIV_MASK) >> 16U;
 		const std::uint32_t emfd = FMPLL.ESYNCR1.R & EMFD_MASK;
 		const std::uint32_t erfd = FMPLL.ESYNCR2.R & ERFD_MASK;
-		return static_cast<std::uint32_t>(static_cast<std::uint64_t>(_referenceClockHz)
-			* (emfd + 16U) / ((eprediv + 1U) * (1U << erfd)));
+		return static_cast<std::uint32_t>(
+			CalculateIco(_referenceClockHz, emfd + 16U, eprediv + 1U) >> erfd);
 	}
 }
 #endif
