@@ -1,5 +1,5 @@
-#ifndef MPC5XXXTIMERSERVICE_H
-#define MPC5XXXTIMERSERVICE_H
+#ifndef MPC5XXXDECREMENTTIMERSERVICE_H
+#define MPC5XXXDECREMENTTIMERSERVICE_H
 
 #include "ITimerService.h"
 
@@ -13,18 +13,18 @@ namespace MPC5xxx
 	 * There is one time base/decrementer pair per core, so this service is a
 	 * singleton.
 	 */
-	class MPC5xxxTimerService final : public EmbeddedIOServices::ITimerService
+	class MPC5xxxDecrementTimerService final : public EmbeddedIOServices::ITimerService
 	{
 	private:
-		static MPC5xxxTimerService _instance;
+		static MPC5xxxDecrementTimerService _instance;
 		static bool _initialized;
 
-		MPC5xxxTimerService() = default;
+		MPC5xxxDecrementTimerService() = default;
 
 		void ScheduleCallBack(EmbeddedIOServices::tick_t tick) override;
 
 	public:
-		static MPC5xxxTimerService& Instance();
+		static MPC5xxxDecrementTimerService& Instance();
 
 		/**
 		 * Enables the core decrementer interrupt and leaves its first expiration

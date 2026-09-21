@@ -10,10 +10,8 @@ namespace
 	constexpr std::size_t PinCount = sizeof(SIU.PCR) / sizeof(SIU.PCR[0]);
 	constexpr std::uint8_t ExternalInterruptCount = 16U;
 	constexpr std::uint8_t InvalidInterrupt = 0xFFU;
-	// Priority order: digital (3) > core decrementer timer ceiling (2) >
-	// DSPI (2) > CAN (1). The timer is a core exception, so its effective
-	// priority is implemented in MPC5xxxTimerService and the INTC trampoline.
-	constexpr std::uint8_t DigitalInterruptPriority = 3U;
+	// Priority order: digital (4) > eMIOS timer (3) > DSPI (2) > CAN (1).
+	constexpr std::uint8_t DigitalInterruptPriority = 4U;
 	constexpr std::uint16_t ExternalInterrupt0Vector = 46U;
 	constexpr std::uint16_t ExternalInterrupts4To15Vector = 50U;
 	constexpr std::uint16_t ETPUAInterrupt0Vector = 68U;

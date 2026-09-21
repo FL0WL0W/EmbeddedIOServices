@@ -1,4 +1,4 @@
-#include "MPC5xxxTimerService.h"
+#include "MPC5xxxDecrementTimerService.h"
 
 #include "MPC5xxxSystemClockService.h"
 
@@ -47,30 +47,18 @@ namespace
 	{
 		asm volatile("mtspr 22, %0" :: "r"(value) : "memory");
 	}
-
-	void ClearDecrementerInterrupt()
-	{
-		// TSR is write-one-to-clear. Do not disturb the core watchdog or FIT
-		// status bits owned by their respective services.
-		asm volatile(
-			"mtspr 336, %0"
-			:
-			: "r"(DecrementerInterruptStatus)
-			: "memory");
-	}
 }
 
 namespace MPC5xxx
 {
-	MPC5xxxTimerService MPC5xxxTimerService::_instance;
-	bool MPC5xxxTimerService::_initialized = false;
+	MPC5xxxDecrementTimerService MPC5xxxDecrementTimerService::_instance;
 
-	MPC5xxxTimerService& MPC5xxxTimerService::Instance()
+	MPC5xxxDecrementTimerService& MPC5xxxDecrementTimerService::Instance()
 	{
 		return _instance;
 	}
 
-	bool MPC5xxxTimerService::Initialize()
+	bool MPC5xxxDecrementTimerService::Initialize()
 	{
 		if (!MPC5xxxSystemClockService::Ready())
 			return false;
@@ -79,7 +67,6 @@ namespace MPC5xxx
 		// firing as soon as the application enables interrupts.
 		WriteDecrementer(static_cast<std::uint32_t>(
 			std::numeric_limits<std::int32_t>::max()));
-		ClearDecrementerInterrupt();
 
 		// Preserve the core watchdog and fixed-interval timer configuration.
 		// Scheduling is one-shot, so inherited decrementer auto-reload must be
@@ -87,29 +74,27 @@ namespace MPC5xxx
 		std::uint32_t timerControl = ReadTimerControl();
 		timerControl &= ~DecrementerAutoReloadEnable;
 		timerControl |= DecrementerInterruptEnable;
-		_initialized = true;
 		WriteTimerControl(timerControl);
 		return true;
 	}
 
-	tick_t MPC5xxxTimerService::GetTick()
+	tick_t MPC5xxxDecrementTimerService::GetTick()
 	{
 		tick_t value;
 		asm volatile("mftb %0" : "=r"(value));
 		return value;
 	}
 
-	tick_t MPC5xxxTimerService::GetTicksPerSecond()
+	tick_t MPC5xxxDecrementTimerService::GetTicksPerSecond()
 	{
 		return MPC5xxxSystemClockService::SystemClockHz();
 	}
 
-	void MPC5xxxTimerService::ScheduleCallBack(const tick_t tick)
+	void MPC5xxxDecrementTimerService::ScheduleCallBack(const tick_t tick)
 	{
 		// Keep the time-base snapshot and decrementer write together: a
 		// higher-priority ISR between them would make the delay stale.
 		const std::uint32_t machineState = DisableExternalInterrupts();
-		ClearDecrementerInterrupt();
 
 		const tick_t now = GetTick();
 		tick_t delay = tick - now;
@@ -122,14 +107,13 @@ namespace MPC5xxx
 		RestoreExternalInterrupts(machineState);
 	}
 
-	void MPC5xxxTimerService::TimerInterrupt()
+	void MPC5xxxDecrementTimerService::TimerInterrupt()
 	{
-		if (_initialized)
-			ReturnCallBack();
+		ReturnCallBack();
 	}
 }
 
 extern "C" void Decrementer_Handler()
 {
-	MPC5xxx::MPC5xxxTimerService::Instance().TimerInterrupt();
+	MPC5xxx::MPC5xxxDecrementTimerService::Instance().TimerInterrupt();
 }
