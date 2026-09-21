@@ -18,10 +18,12 @@ Settings FindSettings(std::uint32_t referenceHz, std::uint32_t requestedHz)
 	for (std::uint8_t pre = 0U; pre <= 4U; ++pre) {
 		if (referenceHz / (pre + 1U) < 4000000U) continue;
 		for (std::uint8_t mul = 0U; mul <= 31U; ++mul) {
-			const std::uint64_t ico = static_cast<std::uint64_t>(referenceHz) * (mul + 4U) / (pre + 1U);
+			// The supported 8-20 MHz references and MFD range produce at most
+			// 700 MHz here, so this calculation cannot overflow uint32_t.
+			const std::uint32_t ico = referenceHz * (mul + 4U) / (pre + 1U);
 			if (ico < 48000000U) continue;
 			for (std::uint8_t rfd = 0U; rfd < 7U; ++rfd) {
-				const std::uint32_t hz = static_cast<std::uint32_t>(ico >> rfd);
+				const std::uint32_t hz = ico >> rfd;
 				if (hz <= requestedHz && hz > best.hz) best = {pre, mul, rfd, hz, true};
 			}
 		}
@@ -71,8 +73,9 @@ namespace MPC5xxx {
 	std::uint32_t MPC55xxSystemClockService::SystemClockHzImplementation() const
 	{
 		if (_referenceClockHz == 0U) return 0U;
-		return static_cast<std::uint32_t>(static_cast<std::uint64_t>(_referenceClockHz)
-			* (FMPLL.SYNCR.B.MFD + 4U) / ((FMPLL.SYNCR.B.PREDIV + 1U) * (1U << FMPLL.SYNCR.B.RFD)));
+		// As in FindSettings(), the numerator is bounded to 700 MHz.
+		return (_referenceClockHz * (FMPLL.SYNCR.B.MFD + 4U)) /
+			((FMPLL.SYNCR.B.PREDIV + 1U) * (1U << FMPLL.SYNCR.B.RFD));
 	}
 }
 #endif

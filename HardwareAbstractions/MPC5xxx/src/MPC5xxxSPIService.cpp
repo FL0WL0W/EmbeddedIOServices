@@ -57,19 +57,24 @@ namespace
 
 	EncodedDelay EncodeDelay(std::uint32_t nanoseconds, std::uint32_t clockHz)
 	{
+		// Compare candidate delays as fractions instead of dividing each one
+		// into nanoseconds.  The common clockHz denominator does not affect
+		// their ordering, and avoiding 64-bit division keeps __udivdi3 out of
+		// small bare-metal builds.
+		const std::uint64_t requestedScaled =
+			static_cast<std::uint64_t>(nanoseconds) * clockHz;
 		std::uint64_t bestError = ~static_cast<std::uint64_t>(0U);
 		EncodedDelay best = {0U, 0U};
 		for (std::uint32_t prescaler = 0U; prescaler < 4U; ++prescaler)
 		{
 			for (std::uint32_t scaler = 0U; scaler < 16U; ++scaler)
 			{
-				const std::uint64_t actual =
+				const std::uint64_t actualScaled =
 					(static_cast<std::uint64_t>(kDelayPrescalers[prescaler]) *
-					 kDelayScalers[scaler] * 1000000000ULL) /
-					clockHz;
-				const std::uint64_t error = actual > nanoseconds
-					? actual - nanoseconds
-					: nanoseconds - actual;
+					 kDelayScalers[scaler] * 1000000000ULL);
+				const std::uint64_t error = actualScaled > requestedScaled
+					? actualScaled - requestedScaled
+					: requestedScaled - actualScaled;
 				if (error >= bestError)
 					continue;
 				bestError = error;
