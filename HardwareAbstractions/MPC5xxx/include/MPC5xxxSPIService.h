@@ -113,13 +113,6 @@ namespace MPC5xxx
 			EmbeddedIOServices::spi_transfer_callback_t completionCallback) override;
 
 		/**
-		 * @brief Drain and advance one physical DSPI queue from its RFDF ISR.
-		 * Applications normally use the processor vector handlers supplied by
-		 * this implementation and do not call this directly.
-		 */
-		static void HandleInterrupt(volatile DSPI_tag& dspi);
-
-		/**
 		 * @brief Poll and advance one physical DSPI queue.
 		 * This is the alternative backend for applications that keep interrupts
 		 * disabled, such as a RAM flash kernel.

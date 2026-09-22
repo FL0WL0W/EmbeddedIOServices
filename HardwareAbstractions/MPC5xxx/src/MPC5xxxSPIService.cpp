@@ -475,37 +475,27 @@ namespace MPC5xxx
 
 	void MPC5xxxSPIService::Service(volatile DSPI_tag& dspi)
 	{
-		// Priority zero explicitly selects polling. Service() is also the polling
-		// fallback while external interrupts are globally disabled.
-		SPIBusState* const bus = FindBus(&dspi);
-		if (bus != nullptr &&
-			(bus->InterruptPriority == 0U || !ExternalInterruptsEnabled()))
-			ProcessHardware(dspi);
-		ProcessCompletions(dspi);
-	}
-
-	void MPC5xxxSPIService::HandleInterrupt(volatile DSPI_tag& dspi)
-	{
 		ProcessHardware(dspi);
+		ProcessCompletions(dspi);
 	}
 }
 
 extern "C" void DSPI_A_ReceiveDrain_Handler()
 {
-	MPC5xxx::MPC5xxxSPIService::HandleInterrupt(DSPI_A);
+	MPC5xxx::MPC5xxxSPIService::Service(DSPI_A);
 }
 
 extern "C" void DSPI_B_ReceiveDrain_Handler()
 {
-	MPC5xxx::MPC5xxxSPIService::HandleInterrupt(DSPI_B);
+	MPC5xxx::MPC5xxxSPIService::Service(DSPI_B);
 }
 
 extern "C" void DSPI_C_ReceiveDrain_Handler()
 {
-	MPC5xxx::MPC5xxxSPIService::HandleInterrupt(DSPI_C);
+	MPC5xxx::MPC5xxxSPIService::Service(DSPI_C);
 }
 
 extern "C" void DSPI_D_ReceiveDrain_Handler()
 {
-	MPC5xxx::MPC5xxxSPIService::HandleInterrupt(DSPI_D);
+	MPC5xxx::MPC5xxxSPIService::Service(DSPI_D);
 }
