@@ -2,7 +2,7 @@
 #define MPC5XXXEMIOSTIMERSERVICE_H
 
 #include "ITimerService.h"
-
+#include "MPC5xxx.h"
 #include <cstdint>
 
 namespace MPC5xxx
@@ -17,13 +17,10 @@ namespace MPC5xxx
 	class MPC5xxxEMIOSTimerService final : public EmbeddedIOServices::ITimerService
 	{
 	private:
-		static constexpr std::uint8_t ChannelCount = 24U;
+		static constexpr std::uint8_t ChannelCount = sizeof(EMIOS.CH) / sizeof(EMIOS.CH[0]);
 		static MPC5xxxEMIOSTimerService* _instances[ChannelCount];
-		static bool _moduleInitialized;
 
 		const std::uint8_t _channel;
-		volatile bool _alarmArmed = false;
-		bool _valid = false;
 
 		void ScheduleCallBack(EmbeddedIOServices::tick_t tick) override;
 

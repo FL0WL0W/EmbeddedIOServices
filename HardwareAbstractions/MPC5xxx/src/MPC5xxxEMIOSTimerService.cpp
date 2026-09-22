@@ -1,6 +1,5 @@
 #include "MPC5xxxEMIOSTimerService.h"
 
-#include "MPC5xxx.h"
 #include "MPC5xxxSystemClockService.h"
 
 #include <cstdint>
@@ -62,7 +61,6 @@ namespace MPC5xxx
 {
 	MPC5xxxEMIOSTimerService*
 		MPC5xxxEMIOSTimerService::_instances[MPC5xxxEMIOSTimerService::ChannelCount] = {};
-	bool MPC5xxxEMIOSTimerService::_moduleInitialized = false;
 
 	MPC5xxxEMIOSTimerService::MPC5xxxEMIOSTimerService(
 		const std::uint8_t channel,
@@ -80,7 +78,7 @@ namespace MPC5xxx
 		EMIOS.CH[channel].CCR.R = 0U;
 		EMIOS.CH[channel].CSR.R = ClearChannelStatus;
 
-		if (!_moduleInitialized)
+		if(!(EMIOS.MCR.B.GPREN == 1U && EMIOS.MCR.B.MDIS == 0U && EMIOS.MCR.B.GTBE == 1U && EMIOS.MCR.B.GPRE == 0U))
 		{
 			// Configure the shared module clock once. Later timer instances can be
 			// attached without pausing channels that are already running.
@@ -89,15 +87,11 @@ namespace MPC5xxx
 			EMIOS.MCR.B.GTBE = 1U;
 			EMIOS.MCR.B.GPRE = 0U;
 			EMIOS.MCR.B.GPREN = 1U;
-			_moduleInitialized = true;
 		}
 
-		_alarmArmed = false;
 		_instances[channel] = this;
 		INTC.PSR[interruptVector].R = interruptPriority;
 		asm volatile("mbar" ::: "memory");
-
-		_valid = true;
 		RestoreExternalInterrupts(machineState);
 	}
 
@@ -113,9 +107,6 @@ namespace MPC5xxx
 
 	void MPC5xxxEMIOSTimerService::ScheduleCallBack(tick_t tick)
 	{
-		if (!_valid)
-			return;
-
 		const std::uint32_t machineState = DisableExternalInterrupts();
 		const tick_t now = ReadTimeBase();
 		tick_t delay = tick - now;
@@ -124,13 +115,11 @@ namespace MPC5xxx
 		else if (delay > MaximumCounterDelay)
 			delay = MaximumCounterDelay;
 
-		_alarmArmed = false;
 		// GPIO mode stops and clears the channel counter. The reference manual
 		// requires passing through GPIO mode before selecting another UC mode.
 		EMIOS.CH[_channel].CCR.R = 0U;
 		EMIOS.CH[_channel].CSR.R = ClearChannelStatus;
 		EMIOS.CH[_channel].CADR.R = delay;
-		_alarmArmed = true;
 		// Entering MC mode resets the counter to zero and starts the relative
 		// countdown-equivalent. A delay of one produces the earliest hardware
 		// interrupt without any already-passed absolute compare race.
@@ -143,13 +132,6 @@ namespace MPC5xxx
 	{
 		EMIOS.CH[_channel].CSR.R = ClearChannelStatus;
 		asm volatile("mbar" ::: "memory");
-		if (!_alarmArmed)
-		{
-			EMIOS.CH[_channel].CCR.R = 0U;
-			return;
-		}
-
-		_alarmArmed = false;
 		EMIOS.CH[_channel].CCR.R = 0U;
 		ReturnCallBack();
 	}
