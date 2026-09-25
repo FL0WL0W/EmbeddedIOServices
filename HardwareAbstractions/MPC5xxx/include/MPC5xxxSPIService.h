@@ -68,10 +68,7 @@ namespace MPC5xxx
 		mutable std::uint32_t _cachedClockTransferAttributes = 0U;
 		mutable bool _clockTransferAttributesCached = false;
 
-		void FillTransmitFifo(std::size_t maximumFrames);
 		void StartNextQueuedTransfer();
-		static void ProcessHardware(volatile DSPI_tag& dspi);
-		static void ProcessCompletions(volatile DSPI_tag& dspi);
 		std::uint32_t BuildClockTransferAttributes(
 			const SPIFrameTiming& timing) const;
 
@@ -91,9 +88,8 @@ namespace MPC5xxx
 
 	public:
 		/**
-		 * @param interruptPriority Priority for the physical DSPI receive-drain
-		 * interrupt. Zero selects polling through Service(). All endpoints sharing
-		 * a DSPI module must use the same priority.
+		 * @param interruptPriority Priority for the receive eDMA completion
+		 * interrupt. All endpoints sharing a DSPI module must use the same priority.
 		 */
 		MPC5xxxSPIService(
 			volatile DSPI_tag* dspi,
@@ -102,23 +98,13 @@ namespace MPC5xxx
 
 		bool Ready() override;
 
-		/**
-		 * @note Transfer() and Service() must be called from the same non-ISR
-		 * execution context. The DSPI ISR only advances the active transfer and
-		 * publishes its Completed flag.
-		 */
 		bool Transfer(
 			std::uint8_t* data,
 			std::size_t length,
 			EmbeddedIOServices::spi_transfer_callback_t completionCallback) override;
 
-		/**
-		 * @brief Poll and advance one physical DSPI queue.
-		 * This is the alternative backend for applications that keep interrupts
-		 * disabled, such as a RAM flash kernel.
-		 */
-		static void Service(volatile DSPI_tag& dspi);
-
+		/** @brief Internal eDMA vector dispatch entry. */
+		static void HandleDMAInterrupt(std::uint8_t channel);
 	};
 }
 
