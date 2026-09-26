@@ -2,6 +2,7 @@
 #include "CallBack.h"
 #include <forward_list>
 #include <list>
+#include "CircularBuffer.h"
 
 #ifndef ITIMERSERVICE_H
 #define ITIMERSERVICE_H
@@ -51,16 +52,25 @@ namespace EmbeddedIOServices
 		uint16_t _latency = 0;
 		//// the minimum time it takes to execute a task after scheduling
 		uint16_t _minTick = 0;
+		volatile bool _taskListInUse = false;
 
 		/**
 		 * @brief This is a private helper method. It is used to remove all unscheduled tasks from the beginning 
 		 * of the list and will return the new beginning of the list.
 		 */
 		TaskList::iterator RemoveUnscheduledTasksAndReturnBegin();
+		void HandleTaskUpdates();
 
 	protected:
 		//// Stores all of the scheduled tasks in order of execution
 		TaskList _taskList;
+		struct TaskUpdate
+		{
+			Task *task;
+			tick_t tick;
+		};
+
+		CircularBuffer<TaskUpdate, 8> _taskUpdateBuffer;
 
 		/**
 		 * @brief This should be implemented by the child abstraction to set the timer execution tick.

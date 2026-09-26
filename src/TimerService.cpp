@@ -60,11 +60,17 @@ namespace EmbeddedIOServices
 	void ITimerService::ReturnCallBack()
 	{
 		//skip all unscheduled tasks
+		const bool taskListWasInUse = _taskListInUse;
+		_taskListInUse = true;
 		TaskList::iterator next = _taskList.begin();
 		while(true)
 		{
 			if(next == _taskList.end())
+			{
+				_taskListInUse = taskListWasInUse;
+				HandleTaskUpdates();
 				return;
+			}
 			if((*next)->Scheduled)
 				break;
 			next++;
@@ -78,62 +84,108 @@ namespace EmbeddedIOServices
 			(*next)->CallBack();
 
 			if(++next == _taskList.end())
+			{
+				_taskListInUse = taskListWasInUse;
+				HandleTaskUpdates();
 				return;
+			}
 		}
 		ScheduleCallBack((*next)->ScheduledTick - _latency);
+		_taskListInUse = taskListWasInUse;
+		HandleTaskUpdates();
 	}
 
 	void ITimerService::ScheduleCallBack(callback_t callBack, tick_t tick)
 	{
-		Task *taskToSchedule = new Task(callBack, true);
+		Task *task = new Task(callBack, true);
 		
-		ScheduleTask(taskToSchedule, tick);
+		TaskUpdate taskUpdate = { task, tick };
+		if(_taskUpdateBuffer.Push(taskUpdate, 1U))
+			HandleTaskUpdates();
+		else
+			delete task;
 	}
 
 	void ITimerService::ScheduleTask(Task *task, tick_t tick)
 	{
-		//remove all unscheduled tasks and get begin and end
-		const TaskList::iterator begin = RemoveUnscheduledTasksAndReturnBegin();
-		const TaskList::iterator end = _taskList.end();
-
-		//find current location 
-		const TaskList::iterator currentLocation = std::find(begin, end, task);
-
-		//find new location
-		const TaskList::iterator newLocation = std::find_if(begin, end, [tick](Task *taskFind) {
-			return TickLessThanTick(tick, taskFind->ScheduledTick);
-		});
-
-		//reschedule
-		if(currentLocation != end)
-		{
-			TaskList::iterator afterCurrentLocation = currentLocation;
-			afterCurrentLocation++;
-			if(newLocation != currentLocation && newLocation != afterCurrentLocation)
-			{
-				if(TickLessThanTick(tick, task->ScheduledTick))
-					task->ScheduledTick = tick;
-				_taskList.insert(newLocation, task);
-				_taskList.erase(currentLocation);
-			}
-			task->ScheduledTick = tick;
-		}
-		//schedule
-		else
-		{
-			task->ScheduledTick = tick;
-			task->Scheduled = true;
-			_taskList.insert(newLocation, task);
-		}
-		ScheduleCallBack((*_taskList.begin())->ScheduledTick - _latency);
+		TaskUpdate taskUpdate = { task, tick };
+		_taskUpdateBuffer.Push(taskUpdate, 1U);
+		
+		HandleTaskUpdates();
 	}
 
 	void ITimerService::UnScheduleTask(Task *task)
 	{
-		_taskList.remove(task);
-		task->Scheduled = false;
-		if(_taskList.size() > 0)
-			ScheduleCallBack((*_taskList.begin())->ScheduledTick - _latency);
+		TaskUpdate taskUpdate = { task, 0 };
+		_taskUpdateBuffer.Push(taskUpdate, 2U);
+		
+		HandleTaskUpdates();
+	}
+
+	void ITimerService::HandleTaskUpdates()
+	{
+		if(_taskListInUse)
+			return;
+
+		uint8_t command;
+		TaskUpdate taskUpdate;
+		while((command = _taskUpdateBuffer.Pop(taskUpdate)) != 0U)
+		{
+			if(command == 1U)
+			{
+				_taskListInUse = true;
+
+				//remove all unscheduled tasks and get begin and end
+				const TaskList::iterator begin = RemoveUnscheduledTasksAndReturnBegin();
+				const TaskList::iterator end = _taskList.end();
+
+				//find current location 
+				const TaskList::iterator currentLocation = std::find(begin, end, taskUpdate.task);
+				
+				//find new location
+				const TaskList::iterator newLocation = std::find_if(begin, end, [taskUpdate](Task *taskFind) {
+					return TickLessThanTick(taskUpdate.tick, taskFind->ScheduledTick);
+				});
+
+				//reschedule
+				if(currentLocation != end)
+				{
+					TaskList::iterator afterCurrentLocation = currentLocation;
+					afterCurrentLocation++;
+					if(newLocation != currentLocation && newLocation != afterCurrentLocation)
+					{
+						if(TickLessThanTick(taskUpdate.tick, taskUpdate.task->ScheduledTick))
+							taskUpdate.task->ScheduledTick = taskUpdate.tick;
+						_taskList.insert(newLocation, taskUpdate.task);
+						_taskList.erase(currentLocation);
+					}
+					taskUpdate.task->ScheduledTick = taskUpdate.tick;
+				}
+				//schedule
+				else
+				{
+					taskUpdate.task->ScheduledTick = taskUpdate.tick;
+					taskUpdate.task->Scheduled = true;
+					_taskList.insert(newLocation, taskUpdate.task);
+				}
+
+				_taskListInUse = false;
+
+				ScheduleCallBack((*_taskList.begin())->ScheduledTick - _latency);
+			}
+			else if(command == 2U)
+			{
+				_taskListInUse = true;
+
+				_taskList.remove(taskUpdate.task);
+
+				_taskListInUse = false;
+				
+				taskUpdate.task->Scheduled = false;
+				if(_taskList.size() > 0)
+					ScheduleCallBack((*_taskList.begin())->ScheduledTick - _latency);
+			}
+		}
 	}
 }
 #endif
