@@ -8,6 +8,7 @@ namespace
 {
 	constexpr std::size_t kMaximumBusCount = 4U;
 	constexpr std::size_t kQueueCapacity = 8U;
+	constexpr std::size_t kDSPIHardwareFifoDepth = 4U;
 	constexpr std::size_t kClockTransferAttributeCount = 8U;
 	constexpr std::size_t kMaximumMajorLoopCount = 0x7FFFU;
 
@@ -22,6 +23,7 @@ namespace
 	constexpr std::uint32_t kClockTransferAttributeShift = 28U;
 	constexpr std::uint32_t kChipSelectShift = 16U;
 	constexpr std::uint32_t kEndOfQueueFlag = 0x10000000U;
+	constexpr std::uint32_t kEndOfQueueInterruptEnable = 0x10000000U;
 	constexpr std::uint32_t kStatusFlagsToClear = 0x9A0A0000U;
 	constexpr std::uint32_t kTransmitAndReceiveDMAEnable = 0x03030000U;
 
@@ -93,6 +95,15 @@ namespace
 			: static_cast<std::uint16_t>(179U + channel);
 	}
 
+	std::uint16_t EndOfQueueInterruptVector(volatile DSPI_tag* const dspi)
+	{
+		if (dspi == &DSPI_B) return 132U;
+		if (dspi == &DSPI_C) return 137U;
+		if (dspi == &DSPI_D) return 142U;
+		if (dspi == &DSPI_A) return 276U;
+		return 0U;
+	}
+
 	EncodedDelay EncodeDelay(
 		const std::uint32_t nanoseconds,
 		const std::uint32_t clockHz)
@@ -145,6 +156,7 @@ namespace MPC5xxx
 		volatile std::size_t QueueTail = 0U;
 		volatile std::size_t QueueCount = 0U;
 		volatile bool Active = false;
+		volatile bool UsingDMA = false;
 		std::uint32_t ClockTransferAttributes[kClockTransferAttributeCount] = {};
 		std::size_t ClockTransferAttributeCount = 0U;
 		std::size_t ProgrammedClockTransferAttributeCount = 0U;
@@ -156,6 +168,14 @@ namespace MPC5xxx
 	{
 		for (std::size_t i = 0U; i < kMaximumBusCount; ++i)
 			if (buses[i].DSPI != nullptr && buses[i].Channels.Receive == channel)
+				return &buses[i];
+		return nullptr;
+	}
+
+	static SPIBusState* FindBusByDSPI(volatile DSPI_tag* const dspi)
+	{
+		for (std::size_t i = 0U; i < kMaximumBusCount; ++i)
+			if (buses[i].DSPI == dspi)
 				return &buses[i];
 		return nullptr;
 	}
@@ -202,6 +222,7 @@ namespace MPC5xxx
 			dma.CPR[channels.Transmit].R = channels.Transmit;
 			dma.CPR[channels.Receive].R = channels.Receive;
 			INTC.PSR[DMAInterruptVector(channels.Receive)].R = interruptPriority;
+			INTC.PSR[EndOfQueueInterruptVector(dspi)].R = interruptPriority;
 			return &bus;
 		}
 		return nullptr;
@@ -434,6 +455,7 @@ namespace MPC5xxx
 		dspi.MCR.R |= kHalt;
 		asm volatile("mbar" ::: "memory");
 		while (dspi.SR.B.TXRXS != 0U) { }
+		dspi.RSER.R = 0U;
 		dspi.MCR.R |= kClearTransmitFifo | kClearReceiveFifo;
 		for (std::size_t i = _bus->ProgrammedClockTransferAttributeCount;
 			i < _bus->ClockTransferAttributeCount; ++i)
@@ -449,6 +471,21 @@ namespace MPC5xxx
 		dma.CIRQR.R = rx;
 		dma.CDSBR.R = tx;
 		dma.CDSBR.R = rx;
+
+		dspi.SR.R = kStatusFlagsToClear;
+		if (transfer.FrameCount <= kDSPIHardwareFifoDepth)
+		{
+			// The complete transaction fits in the four-entry DSPI TX/RX FIFOs.
+			// Avoid the eDMA setup cost and finish from the EOQ interrupt.
+			_bus->UsingDMA = false;
+			for (std::size_t frame = 0U; frame < transfer.FrameCount; ++frame)
+				dspi.PUSHR.R = transfer.Commands[frame];
+			dspi.RSER.R = kEndOfQueueInterruptEnable;
+			asm volatile("mbar" ::: "memory");
+			dspi.MCR.R &= ~kHalt;
+			return;
+		}
+		_bus->UsingDMA = true;
 
 		volatile EDMA_tag::tcd_t& txTCD = dma.TCD[tx];
 		txTCD.SADDR = reinterpret_cast<std::uint32_t>(transfer.Commands);
@@ -486,7 +523,6 @@ namespace MPC5xxx
 		rxTCD.D_REQ = 1U; rxTCD.INT_HALF = 0U;
 		rxTCD.INT_MAJ = 1U; rxTCD.START = 0U;
 
-		dspi.SR.R = kStatusFlagsToClear;
 		dspi.RSER.R = kTransmitAndReceiveDMAEnable;
 		asm volatile("mbar" ::: "memory");
 		dma.SERQR.R = rx;
@@ -500,7 +536,8 @@ namespace MPC5xxx
 		volatile EDMA_tag& dma = DMAController();
 		dma.CIRQR.R = channel;
 		SPIBusState* const bus = FindBusByReceiveDMAChannel(channel);
-		if (bus == nullptr || !bus->Active || bus->QueueCount == 0U)
+		if (bus == nullptr || !bus->Active || !bus->UsingDMA ||
+			bus->QueueCount == 0U)
 			return;
 
 		volatile DSPI_tag& dspi = *bus->DSPI;
@@ -508,8 +545,30 @@ namespace MPC5xxx
 		asm volatile("mbar" ::: "memory");
 		dspi.RSER.R = 0U;
 		dspi.SR.R = kEndOfQueueFlag;
+		CompleteTransfer(*bus);
+	}
 
+	void MPC5xxxSPIService::HandleEndOfQueueInterrupt(
+		volatile DSPI_tag* const dspiAddress)
+	{
+		SPIBusState* const bus = FindBusByDSPI(dspiAddress);
+		if (bus == nullptr || !bus->Active || bus->UsingDMA ||
+			bus->QueueCount == 0U)
+			return;
+
+		volatile DSPI_tag& dspi = *dspiAddress;
+		dspi.RSER.R = 0U;
 		SPIQueuedTransfer& queued = bus->Queue[bus->QueueHead];
+		for (std::size_t frame = 0U; frame < queued.FrameCount; ++frame)
+			queued.ReceivedFrames[frame] = dspi.POPR.R;
+		dspi.SR.R = kEndOfQueueFlag;
+		CompleteTransfer(*bus);
+	}
+
+	void MPC5xxxSPIService::CompleteTransfer(SPIBusState& bus)
+	{
+		SPIQueuedTransfer& queued = bus.Queue[bus.QueueHead];
+
 		MPC5xxxSPIService* const endpoint = queued.Endpoint;
 		const std::size_t bytesPerFrame =
 			(endpoint->_configuration.bitsPerWord + 7U) / 8U;
@@ -536,9 +595,10 @@ namespace MPC5xxx
 		queued = {};
 
 		const std::uint32_t machineState = DisableExternalInterrupts();
-		bus->QueueHead = (bus->QueueHead + 1U) % kQueueCapacity;
-		--bus->QueueCount;
-		bus->Active = false;
+		bus.QueueHead = (bus.QueueHead + 1U) % kQueueCapacity;
+		--bus.QueueCount;
+		bus.Active = false;
+		bus.UsingDMA = false;
 		RestoreExternalInterrupts(machineState);
 
 		if (completionCallback)
@@ -547,9 +607,29 @@ namespace MPC5xxx
 		delete[] completedCommands;
 		delete[] completedFrames;
 
-		if (bus->QueueCount != 0U)
-			bus->Queue[bus->QueueHead].Endpoint->StartNextQueuedTransfer();
+		if (bus.QueueCount != 0U)
+			bus.Queue[bus.QueueHead].Endpoint->StartNextQueuedTransfer();
 	}
+}
+
+extern "C" void DSPI_A_EndOfQueue_Handler()
+{
+	MPC5xxx::MPC5xxxSPIService::HandleEndOfQueueInterrupt(&DSPI_A);
+}
+
+extern "C" void DSPI_B_EndOfQueue_Handler()
+{
+	MPC5xxx::MPC5xxxSPIService::HandleEndOfQueueInterrupt(&DSPI_B);
+}
+
+extern "C" void DSPI_C_EndOfQueue_Handler()
+{
+	MPC5xxx::MPC5xxxSPIService::HandleEndOfQueueInterrupt(&DSPI_C);
+}
+
+extern "C" void DSPI_D_EndOfQueue_Handler()
+{
+	MPC5xxx::MPC5xxxSPIService::HandleEndOfQueueInterrupt(&DSPI_D);
 }
 
 extern "C" void EDMA_Channel13_Handler()

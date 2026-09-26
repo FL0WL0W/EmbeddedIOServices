@@ -69,6 +69,7 @@ namespace MPC5xxx
 		mutable bool _clockTransferAttributesCached = false;
 
 		void StartNextQueuedTransfer();
+		static void CompleteTransfer(SPIBusState& bus);
 		std::uint32_t BuildClockTransferAttributes(
 			const SPIFrameTiming& timing) const;
 
@@ -105,6 +106,8 @@ namespace MPC5xxx
 
 		/** @brief Internal eDMA vector dispatch entry. */
 		static void HandleDMAInterrupt(std::uint8_t channel);
+		/** @brief Internal DSPI end-of-queue vector dispatch entry. */
+		static void HandleEndOfQueueInterrupt(volatile DSPI_tag* dspi);
 	};
 }
 
