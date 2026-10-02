@@ -60,6 +60,22 @@ TEST(CircularBuffer, RejectsZeroStateWithoutConsumingCapacity)
 	EXPECT_EQ(20, value);
 }
 
+TEST(CircularBuffer, ReportsWhetherEverySlotIsOccupied)
+{
+	CircularBuffer<int, 2U> buffer;
+	int first = 10;
+	int second = 20;
+	int value = 0;
+
+	EXPECT_FALSE(buffer.Full());
+	ASSERT_TRUE(buffer.Push(first));
+	EXPECT_FALSE(buffer.Full());
+	ASSERT_TRUE(buffer.Push(second));
+	EXPECT_TRUE(buffer.Full());
+	ASSERT_NE(0U, buffer.Pop(value));
+	EXPECT_FALSE(buffer.Full());
+}
+
 TEST(CircularBuffer, MultipleConsumersClaimEveryEntryExactlyOnce)
 {
 	constexpr int entryCount = 64;

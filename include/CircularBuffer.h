@@ -95,6 +95,14 @@ namespace EmbeddedIOServices
 
 			return 0;
 		}
+
+		bool Full() const
+		{
+			for (size_t i = 0U; i < CapacityValue; ++i)
+				if (!(_slotState[i] & 0x01U))
+					return false;
+			return true;
+		}
 	};
 }
 

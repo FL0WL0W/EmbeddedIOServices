@@ -1,5 +1,6 @@
 #include "MPC5xxxSPIService.h"
 #include "MPC5xxxSystemClockService.h"
+#include "CircularBuffer.h"
 
 #include <new>
 #include <utility>
@@ -49,25 +50,6 @@ namespace
 		std::uint32_t Prescaler;
 		std::uint32_t Scaler;
 	};
-
-	std::uint32_t DisableExternalInterrupts()
-	{
-		std::uint32_t machineState;
-		asm volatile(
-			"mfmsr %0\n\t"
-			"wrteei 0\n\t"
-			"isync"
-			: "=r"(machineState)
-			:
-			: "memory");
-		return machineState;
-	}
-
-	void RestoreExternalInterrupts(const std::uint32_t machineState)
-	{
-		if ((machineState & 0x00008000U) != 0U)
-			asm volatile("wrteei 1\n\tisync" ::: "memory");
-	}
 
 	volatile EDMA_tag& DMAController()
 	{
@@ -143,6 +125,8 @@ namespace MPC5xxx
 		std::size_t FrameCount = 0U;
 		std::size_t CompletedFrameCount = 0U;
 		std::size_t BatchFrameCount = 0U;
+		std::uint32_t ClockTransferAttributes[kClockTransferAttributeCount] = {};
+		std::size_t ClockTransferAttributeCount = 0U;
 		EmbeddedIOServices::spi_transfer_callback_t CompletionCallback;
 	};
 
@@ -151,15 +135,12 @@ namespace MPC5xxx
 		volatile DSPI_tag* DSPI = nullptr;
 		DMAChannels Channels = {};
 		std::uint8_t InterruptPriority = 0U;
-		SPIQueuedTransfer Queue[kQueueCapacity];
-		volatile std::size_t QueueHead = 0U;
-		volatile std::size_t QueueTail = 0U;
-		volatile std::size_t QueueCount = 0U;
-		volatile bool Active = false;
+		EmbeddedIOServices::CircularBuffer<
+			SPIQueuedTransfer,
+			kQueueCapacity> Queue;
+		SPIQueuedTransfer ActiveTransfer;
+		volatile std::uint32_t Active = 0U;
 		volatile bool UsingDMA = false;
-		std::uint32_t ClockTransferAttributes[kClockTransferAttributeCount] = {};
-		std::size_t ClockTransferAttributeCount = 0U;
-		std::size_t ProgrammedClockTransferAttributeCount = 0U;
 	};
 
 	static SPIBusState buses[kMaximumBusCount];
@@ -360,7 +341,7 @@ namespace MPC5xxx
 
 	bool MPC5xxxSPIService::Ready()
 	{
-		return _bus != nullptr && _bus->QueueCount < kQueueCapacity;
+		return _bus != nullptr && !_bus->Queue.Full();
 	}
 
 	bool MPC5xxxSPIService::Transfer(
@@ -379,72 +360,34 @@ namespace MPC5xxx
 			_stagingFrameCapacity == 0U)
 			return false;
 
-		// CTAR selection can be relatively expensive, especially for endpoints
-		// with per-frame timing. Determine the small set of required attributes
-		// while interrupts remain enabled; only publishing them into the shared
-		// bus table needs serialization.
-		std::uint32_t requestedAttributes[kClockTransferAttributeCount] = {};
-		std::size_t requestedAttributeCount = 0U;
+		SPIQueuedTransfer transfer;
+		transfer.Endpoint = this;
+		transfer.TransmitData = txData;
+		transfer.ReceiveData = rxData;
+		transfer.FrameCount = frameCount;
+		transfer.CompletionCallback = std::move(completionCallback);
+
+		// A transaction carries the complete CTAR set it needs. Publishing it to
+		// the circular queue is atomic at the slot level, and the values are not
+		// written to hardware until this transaction exclusively owns the bus.
 		for (std::size_t frame = 0U; frame < frameCount; ++frame)
 		{
 			const std::uint32_t attributes =
 				BuildClockTransferAttributes(TimingForFrame(frame));
 			std::size_t index = 0U;
-			while (index < requestedAttributeCount &&
-				requestedAttributes[index] != attributes)
+			while (index < transfer.ClockTransferAttributeCount &&
+				transfer.ClockTransferAttributes[index] != attributes)
 				++index;
-			if (index != requestedAttributeCount)
+			if (index != transfer.ClockTransferAttributeCount)
 				continue;
-			if (requestedAttributeCount == kClockTransferAttributeCount)
+			if (transfer.ClockTransferAttributeCount ==
+				kClockTransferAttributeCount)
 				return false;
-			requestedAttributes[requestedAttributeCount++] = attributes;
+			transfer.ClockTransferAttributes[
+				transfer.ClockTransferAttributeCount++] = attributes;
 		}
-
-		const std::uint32_t machineState = DisableExternalInterrupts();
-		if (_bus->QueueCount >= kQueueCapacity)
-		{
-			RestoreExternalInterrupts(machineState);
+		if (!_bus->Queue.Push(transfer))
 			return false;
-		}
-
-		const std::size_t originalClockTransferAttributeCount =
-			_bus->ClockTransferAttributeCount;
-		for (std::size_t requested = 0U;
-			requested < requestedAttributeCount;
-			++requested)
-		{
-			const std::uint32_t frameAttributes =
-				requestedAttributes[requested];
-			std::size_t ctarIndex = 0U;
-			while (ctarIndex < _bus->ClockTransferAttributeCount &&
-				_bus->ClockTransferAttributes[ctarIndex] != frameAttributes)
-				++ctarIndex;
-			if (ctarIndex == _bus->ClockTransferAttributeCount)
-			{
-				if (_bus->ClockTransferAttributeCount ==
-					kClockTransferAttributeCount)
-				{
-					_bus->ClockTransferAttributeCount =
-						originalClockTransferAttributeCount;
-					RestoreExternalInterrupts(machineState);
-					return false;
-				}
-				_bus->ClockTransferAttributes[ctarIndex] = frameAttributes;
-				++_bus->ClockTransferAttributeCount;
-			}
-		}
-
-		SPIQueuedTransfer& transfer = _bus->Queue[_bus->QueueTail];
-		transfer.Endpoint = this;
-		transfer.TransmitData = txData;
-		transfer.ReceiveData = rxData;
-		transfer.FrameCount = frameCount;
-		transfer.CompletedFrameCount = 0U;
-		transfer.BatchFrameCount = 0U;
-		transfer.CompletionCallback = std::move(completionCallback);
-		_bus->QueueTail = (_bus->QueueTail + 1U) % kQueueCapacity;
-		++_bus->QueueCount;
-		RestoreExternalInterrupts(machineState);
 
 		StartNextQueuedTransfer();
 		return true;
@@ -454,31 +397,39 @@ namespace MPC5xxx
 	{
 		if (_bus == nullptr)
 			return;
-		const std::uint32_t machineState = DisableExternalInterrupts();
-		if (_bus->Active || _bus->QueueCount == 0U)
+		std::uint32_t expected = 0U;
+		if (!__atomic_compare_exchange_n(
+				&_bus->Active,
+				&expected,
+				1U,
+				false,
+				__ATOMIC_RELAXED,
+				__ATOMIC_RELAXED))
+			return;
+		asm volatile("" ::: "memory");
+		if (_bus->Queue.Pop(_bus->ActiveTransfer) == 0U)
 		{
-			RestoreExternalInterrupts(machineState);
+			__atomic_store_n(&_bus->Active, 0U, __ATOMIC_RELAXED);
 			return;
 		}
-		_bus->Active = true;
-		SPIQueuedTransfer& transfer = _bus->Queue[_bus->QueueHead];
-		RestoreExternalInterrupts(machineState);
+		SPIQueuedTransfer& transfer = _bus->ActiveTransfer;
+		MPC5xxxSPIService* const endpoint = transfer.Endpoint;
+		SPIBusState& bus = *_bus;
 
-		volatile DSPI_tag& dspi = *_bus->DSPI;
+		volatile DSPI_tag& dspi = *bus.DSPI;
 		dspi.MCR.R |= kHalt;
 		asm volatile("mbar" ::: "memory");
 		while (dspi.SR.B.TXRXS != 0U) { }
 		dspi.RSER.R = 0U;
 		dspi.MCR.R |= kClearTransmitFifo | kClearReceiveFifo;
-		for (std::size_t i = _bus->ProgrammedClockTransferAttributeCount;
-			i < _bus->ClockTransferAttributeCount; ++i)
-			dspi.CTAR[i].R = _bus->ClockTransferAttributes[i];
-		_bus->ProgrammedClockTransferAttributeCount =
-			_bus->ClockTransferAttributeCount;
+		for (std::size_t i = 0U;
+			i < transfer.ClockTransferAttributeCount;
+			++i)
+			dspi.CTAR[i].R = transfer.ClockTransferAttributes[i];
 
 		volatile EDMA_tag& dma = DMAController();
-		const std::uint8_t tx = _bus->Channels.Transmit;
-		const std::uint8_t rx = _bus->Channels.Receive;
+		const std::uint8_t tx = bus.Channels.Transmit;
+		const std::uint8_t rx = bus.Channels.Receive;
 		dma.CERQR.R = tx;
 		dma.CERQR.R = rx;
 		dma.CIRQR.R = rx;
@@ -490,16 +441,17 @@ namespace MPC5xxx
 		{
 			// The complete transaction fits in the four-entry DSPI TX/RX FIFOs.
 			// Avoid the eDMA setup cost and finish from the EOQ interrupt.
-			_bus->UsingDMA = false;
+			bus.UsingDMA = false;
 			transfer.BatchFrameCount = transfer.FrameCount;
 			const std::size_t bytesPerFrame =
-				(_configuration.bitsPerWord + 7U) / 8U;
+				(endpoint->_configuration.bitsPerWord + 7U) / 8U;
 			for (std::size_t frame = 0U; frame < transfer.FrameCount; ++frame)
 			{
 				const std::uint32_t attributes =
-					BuildClockTransferAttributes(TimingForFrame(frame));
+					endpoint->BuildClockTransferAttributes(
+						endpoint->TimingForFrame(frame));
 				std::size_t ctarIndex = 0U;
-				while (_bus->ClockTransferAttributes[ctarIndex] != attributes)
+				while (transfer.ClockTransferAttributes[ctarIndex] != attributes)
 					++ctarIndex;
 				std::uint16_t transmitted =
 					transfer.TransmitData[frame * bytesPerFrame];
@@ -513,7 +465,8 @@ namespace MPC5xxx
 						? kEndOfQueue : kContinuousChipSelect) |
 					(static_cast<std::uint32_t>(ctarIndex) <<
 						kClockTransferAttributeShift) |
-					((1U << _configuration.chipSelect) << kChipSelectShift) |
+					((1U << endpoint->_configuration.chipSelect) <<
+						kChipSelectShift) |
 					transmitted;
 				dspi.PUSHR.R = pushWord;
 			}
@@ -522,13 +475,13 @@ namespace MPC5xxx
 			dspi.MCR.R &= ~kHalt;
 			return;
 		}
-		_bus->UsingDMA = true;
-		StartNextDMABatch();
+		bus.UsingDMA = true;
+		endpoint->StartNextDMABatch();
 	}
 
 	void MPC5xxxSPIService::StartNextDMABatch()
 	{
-		SPIQueuedTransfer& transfer = _bus->Queue[_bus->QueueHead];
+		SPIQueuedTransfer& transfer = _bus->ActiveTransfer;
 		const std::size_t remainingFrames =
 			transfer.FrameCount - transfer.CompletedFrameCount;
 		transfer.BatchFrameCount = remainingFrames < _stagingFrameCapacity
@@ -545,7 +498,7 @@ namespace MPC5xxx
 			const std::uint32_t attributes =
 				BuildClockTransferAttributes(TimingForFrame(frame));
 			std::size_t ctarIndex = 0U;
-			while (_bus->ClockTransferAttributes[ctarIndex] != attributes)
+			while (transfer.ClockTransferAttributes[ctarIndex] != attributes)
 				++ctarIndex;
 			std::uint16_t transmitted =
 				transfer.TransmitData[frame * bytesPerFrame];
@@ -620,7 +573,7 @@ namespace MPC5xxx
 
 	void MPC5xxxSPIService::CopyReceivedDMABatch()
 	{
-		SPIQueuedTransfer& transfer = _bus->Queue[_bus->QueueHead];
+		SPIQueuedTransfer& transfer = _bus->ActiveTransfer;
 		const std::size_t bytesPerFrame =
 			(_configuration.bitsPerWord + 7U) / 8U;
 		if (transfer.ReceiveData != nullptr)
@@ -653,13 +606,12 @@ namespace MPC5xxx
 		volatile EDMA_tag& dma = DMAController();
 		dma.CIRQR.R = channel;
 		SPIBusState* const bus = FindBusByReceiveDMAChannel(channel);
-		if (bus == nullptr || !bus->Active || !bus->UsingDMA ||
-			bus->QueueCount == 0U)
+		if (bus == nullptr || bus->Active == 0U || !bus->UsingDMA)
 			return;
 
 		volatile DSPI_tag& dspi = *bus->DSPI;
 		dspi.RSER.R = 0U;
-		SPIQueuedTransfer& transfer = bus->Queue[bus->QueueHead];
+		SPIQueuedTransfer& transfer = bus->ActiveTransfer;
 		const bool finalBatch =
 			transfer.CompletedFrameCount + transfer.BatchFrameCount ==
 			transfer.FrameCount;
@@ -682,8 +634,7 @@ namespace MPC5xxx
 		volatile DSPI_tag* const dspiAddress)
 	{
 		SPIBusState* const bus = FindBusByDSPI(dspiAddress);
-		if (bus == nullptr || !bus->Active || bus->UsingDMA ||
-			bus->QueueCount == 0U)
+		if (bus == nullptr || bus->Active == 0U || bus->UsingDMA)
 			return;
 
 		volatile DSPI_tag& dspi = *dspiAddress;
@@ -694,7 +645,8 @@ namespace MPC5xxx
 
 	void MPC5xxxSPIService::CompleteTransfer(SPIBusState& bus)
 	{
-		SPIQueuedTransfer& queued = bus.Queue[bus.QueueHead];
+		SPIQueuedTransfer& queued = bus.ActiveTransfer;
+		MPC5xxxSPIService* const completedEndpoint = queued.Endpoint;
 
 		if (!bus.UsingDMA)
 		{
@@ -722,19 +674,17 @@ namespace MPC5xxx
 
 		auto completionCallback = std::move(queued.CompletionCallback);
 		queued = {};
-
-		const std::uint32_t machineState = DisableExternalInterrupts();
-		bus.QueueHead = (bus.QueueHead + 1U) % kQueueCapacity;
-		--bus.QueueCount;
-		bus.Active = false;
 		bus.UsingDMA = false;
-		RestoreExternalInterrupts(machineState);
+		asm volatile("" ::: "memory");
+		__atomic_store_n(&bus.Active, 0U, __ATOMIC_RELAXED);
 
 		if (completionCallback)
 			completionCallback();
 
-		if (bus.QueueCount != 0U)
-			bus.Queue[bus.QueueHead].Endpoint->StartNextQueuedTransfer();
+		// A callback may enqueue and start another transfer itself. The ownership
+		// claim makes this harmless: either that path wins, or this one drains the
+		// next queued transaction.
+		completedEndpoint->StartNextQueuedTransfer();
 	}
 }
 
