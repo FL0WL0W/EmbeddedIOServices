@@ -70,6 +70,15 @@ namespace
 		return true;
 	}
 
+	bool DMAInterruptPending(
+		volatile EDMA_tag& dma,
+		const std::uint8_t channel)
+	{
+		if (channel < 32U)
+			return (dma.IRQRL.R & (1UL << channel)) != 0U;
+		return (dma.IRQRH.R & (1UL << (channel - 32U))) != 0U;
+	}
+
 	std::uint16_t DMAInterruptVector(const std::uint8_t channel)
 	{
 		return channel < 32U
@@ -167,7 +176,7 @@ namespace MPC5xxx
 		const std::uint8_t interruptPriority)
 	{
 		DMAChannels channels;
-		if (!ChannelsForDSPI(dspi, channels) || interruptPriority == 0U)
+		if (!ChannelsForDSPI(dspi, channels))
 			return nullptr;
 
 		for (std::size_t i = 0U; i < kMaximumBusCount; ++i)
@@ -604,10 +613,12 @@ namespace MPC5xxx
 	void MPC5xxxSPIService::HandleDMAInterrupt(const std::uint8_t channel)
 	{
 		volatile EDMA_tag& dma = DMAController();
-		dma.CIRQR.R = channel;
 		SPIBusState* const bus = FindBusByReceiveDMAChannel(channel);
 		if (bus == nullptr || bus->Active == 0U || !bus->UsingDMA)
 			return;
+		if (!DMAInterruptPending(dma, channel))
+			return;
+		dma.CIRQR.R = channel;
 
 		volatile DSPI_tag& dspi = *bus->DSPI;
 		dspi.RSER.R = 0U;
@@ -638,6 +649,8 @@ namespace MPC5xxx
 			return;
 
 		volatile DSPI_tag& dspi = *dspiAddress;
+		if ((dspi.SR.R & kEndOfQueueFlag) == 0U)
+			return;
 		dspi.RSER.R = 0U;
 		dspi.SR.R = kEndOfQueueFlag;
 		CompleteTransfer(*bus);
@@ -685,6 +698,19 @@ namespace MPC5xxx
 		// claim makes this harmless: either that path wins, or this one drains the
 		// next queued transaction.
 		completedEndpoint->StartNextQueuedTransfer();
+	}
+
+	void MPC5xxxSPIService::Service(volatile DSPI_tag* const dspi)
+	{
+		SPIBusState* const bus = FindBusByDSPI(dspi);
+		if (bus == nullptr || bus->Active == 0U)
+			return;
+		if (bus->UsingDMA)
+		{
+			HandleDMAInterrupt(bus->Channels.Receive);
+			return;
+		}
+		HandleEndOfQueueInterrupt(dspi);
 	}
 }
 

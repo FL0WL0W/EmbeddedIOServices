@@ -119,6 +119,14 @@ namespace MPC5xxx
 			std::size_t length,
 			EmbeddedIOServices::spi_transfer_callback_t completionCallback) override;
 
+		/**
+		 * @brief Poll one DSPI module for transfer completion.
+		 *
+		 * This drives the same completion paths as the interrupt handlers without
+		 * requiring INTC interrupts. It is safe to call on every main-loop pass.
+		 */
+		static void Service(volatile DSPI_tag* dspi);
+
 		/** @brief Internal eDMA vector dispatch entry. */
 		static void HandleDMAInterrupt(std::uint8_t channel);
 		/** @brief Internal DSPI end-of-queue vector dispatch entry. */
