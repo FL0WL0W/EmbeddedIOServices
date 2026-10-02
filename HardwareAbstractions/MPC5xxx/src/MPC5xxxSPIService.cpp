@@ -138,11 +138,11 @@ namespace MPC5xxx
 	struct SPIQueuedTransfer
 	{
 		MPC5xxxSPIService* Endpoint = nullptr;
-		std::uint8_t* Data = nullptr;
-		std::uint32_t* Commands = nullptr;
-		std::uint32_t* ReceivedFrames = nullptr;
-		std::size_t Length = 0U;
+		const std::uint8_t* TransmitData = nullptr;
+		std::uint8_t* ReceiveData = nullptr;
 		std::size_t FrameCount = 0U;
+		std::size_t CompletedFrameCount = 0U;
+		std::size_t BatchFrameCount = 0U;
 		EmbeddedIOServices::spi_transfer_callback_t CompletionCallback;
 	};
 
@@ -245,16 +245,46 @@ namespace MPC5xxx
 	MPC5xxxSPIService::MPC5xxxSPIService(
 		volatile DSPI_tag* const dspi,
 		const MPC5xxxSPIServiceConfiguration& configuration,
-		const std::uint8_t interruptPriority)
+		const std::uint8_t interruptPriority,
+		const std::size_t stagingBufferSize)
 		: _dspi(dspi), _configuration(configuration)
 	{
 		if (dspi == nullptr || configuration.clockSpeedHz == 0U ||
 			configuration.bitsPerWord < 4U ||
 			configuration.bitsPerWord > 16U)
 			return;
+		const std::size_t bytesPerFrame =
+			(configuration.bitsPerWord + 7U) / 8U;
+		if (stagingBufferSize != 0U)
+		{
+			_stagingFrameCapacity = stagingBufferSize / bytesPerFrame;
+			if (_stagingFrameCapacity == 0U ||
+				_stagingFrameCapacity > kMaximumMajorLoopCount)
+				return;
+			_transmitStagingBuffer =
+				new (std::nothrow) std::uint32_t[_stagingFrameCapacity];
+			_receiveStagingBuffer =
+				new (std::nothrow) std::uint32_t[_stagingFrameCapacity];
+			if (_transmitStagingBuffer == nullptr ||
+				_receiveStagingBuffer == nullptr)
+			{
+				delete[] _transmitStagingBuffer;
+				delete[] _receiveStagingBuffer;
+				_transmitStagingBuffer = nullptr;
+				_receiveStagingBuffer = nullptr;
+				_stagingFrameCapacity = 0U;
+				return;
+			}
+		}
 		_bus = AcquireBus(dspi, configuration, interruptPriority);
 		if (_bus != nullptr)
 			ConfigureChipSelectPolarity(dspi, configuration);
+	}
+
+	MPC5xxxSPIService::~MPC5xxxSPIService()
+	{
+		delete[] _transmitStagingBuffer;
+		delete[] _receiveStagingBuffer;
 	}
 
 	SPIFrameTiming MPC5xxxSPIService::TimingForFrame(std::size_t) const
@@ -334,60 +364,60 @@ namespace MPC5xxx
 	}
 
 	bool MPC5xxxSPIService::Transfer(
-		std::uint8_t* const data,
+		const std::uint8_t* const txData,
+		std::uint8_t* const rxData,
 		const std::size_t length,
 		EmbeddedIOServices::spi_transfer_callback_t completionCallback)
 	{
 		const std::size_t bytesPerFrame =
 			(_configuration.bitsPerWord + 7U) / 8U;
-		if (_bus == nullptr || data == nullptr || length == 0U ||
+		if (_bus == nullptr || txData == nullptr || length == 0U ||
 			(length % bytesPerFrame) != 0U)
 			return false;
 		const std::size_t frameCount = length / bytesPerFrame;
-		if (frameCount > kMaximumMajorLoopCount)
+		if (frameCount > kDSPIHardwareFifoDepth &&
+			_stagingFrameCapacity == 0U)
 			return false;
 
-		std::uint8_t* const ownedData = new (std::nothrow) std::uint8_t[length];
-		std::uint32_t* const commands =
-			new (std::nothrow) std::uint32_t[frameCount];
-		std::uint32_t* const receivedFrames =
-			new (std::nothrow) std::uint32_t[frameCount];
-		std::uint32_t* const frameAttributes =
-			new (std::nothrow) std::uint32_t[frameCount];
-		if (ownedData == nullptr || commands == nullptr ||
-			receivedFrames == nullptr || frameAttributes == nullptr)
-		{
-			delete[] ownedData;
-			delete[] commands;
-			delete[] receivedFrames;
-			delete[] frameAttributes;
-			return false;
-		}
-
-		for (std::size_t i = 0U; i < length; ++i)
-			ownedData[i] = data[i];
+		// CTAR selection can be relatively expensive, especially for endpoints
+		// with per-frame timing. Determine the small set of required attributes
+		// while interrupts remain enabled; only publishing them into the shared
+		// bus table needs serialization.
+		std::uint32_t requestedAttributes[kClockTransferAttributeCount] = {};
+		std::size_t requestedAttributeCount = 0U;
 		for (std::size_t frame = 0U; frame < frameCount; ++frame)
-			frameAttributes[frame] = BuildClockTransferAttributes(
-				TimingForFrame(frame));
+		{
+			const std::uint32_t attributes =
+				BuildClockTransferAttributes(TimingForFrame(frame));
+			std::size_t index = 0U;
+			while (index < requestedAttributeCount &&
+				requestedAttributes[index] != attributes)
+				++index;
+			if (index != requestedAttributeCount)
+				continue;
+			if (requestedAttributeCount == kClockTransferAttributeCount)
+				return false;
+			requestedAttributes[requestedAttributeCount++] = attributes;
+		}
 
 		const std::uint32_t machineState = DisableExternalInterrupts();
 		if (_bus->QueueCount >= kQueueCapacity)
 		{
 			RestoreExternalInterrupts(machineState);
-			delete[] ownedData;
-			delete[] commands;
-			delete[] receivedFrames;
-			delete[] frameAttributes;
 			return false;
 		}
 
 		const std::size_t originalClockTransferAttributeCount =
 			_bus->ClockTransferAttributeCount;
-		for (std::size_t frame = 0U; frame < frameCount; ++frame)
+		for (std::size_t requested = 0U;
+			requested < requestedAttributeCount;
+			++requested)
 		{
+			const std::uint32_t frameAttributes =
+				requestedAttributes[requested];
 			std::size_t ctarIndex = 0U;
 			while (ctarIndex < _bus->ClockTransferAttributeCount &&
-				_bus->ClockTransferAttributes[ctarIndex] != frameAttributes[frame])
+				_bus->ClockTransferAttributes[ctarIndex] != frameAttributes)
 				++ctarIndex;
 			if (ctarIndex == _bus->ClockTransferAttributeCount)
 			{
@@ -397,41 +427,24 @@ namespace MPC5xxx
 					_bus->ClockTransferAttributeCount =
 						originalClockTransferAttributeCount;
 					RestoreExternalInterrupts(machineState);
-					delete[] ownedData;
-					delete[] commands;
-					delete[] receivedFrames;
-					delete[] frameAttributes;
 					return false;
 				}
-				_bus->ClockTransferAttributes[ctarIndex] = frameAttributes[frame];
+				_bus->ClockTransferAttributes[ctarIndex] = frameAttributes;
 				++_bus->ClockTransferAttributeCount;
 			}
-
-			std::uint16_t transmitted = ownedData[frame * bytesPerFrame];
-			if (bytesPerFrame == 2U)
-				transmitted = static_cast<std::uint16_t>(
-					(static_cast<std::uint16_t>(ownedData[frame * 2U]) << 8U) |
-					ownedData[frame * 2U + 1U]);
-			commands[frame] =
-				(frame + 1U == frameCount ? kEndOfQueue : kContinuousChipSelect) |
-				(static_cast<std::uint32_t>(ctarIndex) <<
-					kClockTransferAttributeShift) |
-				((1U << _configuration.chipSelect) << kChipSelectShift) |
-				transmitted;
 		}
 
 		SPIQueuedTransfer& transfer = _bus->Queue[_bus->QueueTail];
 		transfer.Endpoint = this;
-		transfer.Data = ownedData;
-		transfer.Commands = commands;
-		transfer.ReceivedFrames = receivedFrames;
-		transfer.Length = length;
+		transfer.TransmitData = txData;
+		transfer.ReceiveData = rxData;
 		transfer.FrameCount = frameCount;
+		transfer.CompletedFrameCount = 0U;
+		transfer.BatchFrameCount = 0U;
 		transfer.CompletionCallback = std::move(completionCallback);
 		_bus->QueueTail = (_bus->QueueTail + 1U) % kQueueCapacity;
 		++_bus->QueueCount;
 		RestoreExternalInterrupts(machineState);
-		delete[] frameAttributes;
 
 		StartNextQueuedTransfer();
 		return true;
@@ -478,27 +491,100 @@ namespace MPC5xxx
 			// The complete transaction fits in the four-entry DSPI TX/RX FIFOs.
 			// Avoid the eDMA setup cost and finish from the EOQ interrupt.
 			_bus->UsingDMA = false;
+			transfer.BatchFrameCount = transfer.FrameCount;
+			const std::size_t bytesPerFrame =
+				(_configuration.bitsPerWord + 7U) / 8U;
 			for (std::size_t frame = 0U; frame < transfer.FrameCount; ++frame)
-				dspi.PUSHR.R = transfer.Commands[frame];
+			{
+				const std::uint32_t attributes =
+					BuildClockTransferAttributes(TimingForFrame(frame));
+				std::size_t ctarIndex = 0U;
+				while (_bus->ClockTransferAttributes[ctarIndex] != attributes)
+					++ctarIndex;
+				std::uint16_t transmitted =
+					transfer.TransmitData[frame * bytesPerFrame];
+				if (bytesPerFrame == 2U)
+					transmitted = static_cast<std::uint16_t>(
+						(static_cast<std::uint16_t>(
+							transfer.TransmitData[frame * 2U]) << 8U) |
+						transfer.TransmitData[frame * 2U + 1U]);
+				const std::uint32_t pushWord =
+					(frame + 1U == transfer.FrameCount
+						? kEndOfQueue : kContinuousChipSelect) |
+					(static_cast<std::uint32_t>(ctarIndex) <<
+						kClockTransferAttributeShift) |
+					((1U << _configuration.chipSelect) << kChipSelectShift) |
+					transmitted;
+				dspi.PUSHR.R = pushWord;
+			}
 			dspi.RSER.R = kEndOfQueueInterruptEnable;
 			asm volatile("mbar" ::: "memory");
 			dspi.MCR.R &= ~kHalt;
 			return;
 		}
 		_bus->UsingDMA = true;
+		StartNextDMABatch();
+	}
 
+	void MPC5xxxSPIService::StartNextDMABatch()
+	{
+		SPIQueuedTransfer& transfer = _bus->Queue[_bus->QueueHead];
+		const std::size_t remainingFrames =
+			transfer.FrameCount - transfer.CompletedFrameCount;
+		transfer.BatchFrameCount = remainingFrames < _stagingFrameCapacity
+			? remainingFrames : _stagingFrameCapacity;
+		const std::size_t bytesPerFrame =
+			(_configuration.bitsPerWord + 7U) / 8U;
+
+		for (std::size_t batchFrame = 0U;
+			batchFrame < transfer.BatchFrameCount;
+			++batchFrame)
+		{
+			const std::size_t frame =
+				transfer.CompletedFrameCount + batchFrame;
+			const std::uint32_t attributes =
+				BuildClockTransferAttributes(TimingForFrame(frame));
+			std::size_t ctarIndex = 0U;
+			while (_bus->ClockTransferAttributes[ctarIndex] != attributes)
+				++ctarIndex;
+			std::uint16_t transmitted =
+				transfer.TransmitData[frame * bytesPerFrame];
+			if (bytesPerFrame == 2U)
+				transmitted = static_cast<std::uint16_t>(
+					(static_cast<std::uint16_t>(
+						transfer.TransmitData[frame * 2U]) << 8U) |
+					transfer.TransmitData[frame * 2U + 1U]);
+			_transmitStagingBuffer[batchFrame] =
+				(frame + 1U == transfer.FrameCount
+					? kEndOfQueue : kContinuousChipSelect) |
+				(static_cast<std::uint32_t>(ctarIndex) <<
+					kClockTransferAttributeShift) |
+				((1U << _configuration.chipSelect) << kChipSelectShift) |
+				transmitted;
+		}
+
+		volatile DSPI_tag& dspi = *_bus->DSPI;
+		volatile EDMA_tag& dma = DMAController();
+		const std::uint8_t tx = _bus->Channels.Transmit;
+		const std::uint8_t rx = _bus->Channels.Receive;
+		dma.CERQR.R = tx;
+		dma.CERQR.R = rx;
+		dma.CIRQR.R = rx;
+		dma.CDSBR.R = tx;
+		dma.CDSBR.R = rx;
 		volatile EDMA_tag::tcd_t& txTCD = dma.TCD[tx];
-		txTCD.SADDR = reinterpret_cast<std::uint32_t>(transfer.Commands);
+		txTCD.SADDR = reinterpret_cast<std::uint32_t>(_transmitStagingBuffer);
 		txTCD.SMOD = 0U; txTCD.SSIZE = 2U;
 		txTCD.DMOD = 0U; txTCD.DSIZE = 2U;
 		txTCD.SOFF = 4; txTCD.NBYTES = 4U;
-		txTCD.SLAST = -static_cast<std::int32_t>(transfer.FrameCount * 4U);
+		txTCD.SLAST = -static_cast<std::int32_t>(
+			transfer.BatchFrameCount * 4U);
 		txTCD.DADDR = reinterpret_cast<std::uint32_t>(&dspi.PUSHR.R);
 		txTCD.CITERE_LINK = 0U;
-		txTCD.CITER = static_cast<std::uint16_t>(transfer.FrameCount);
+		txTCD.CITER = static_cast<std::uint16_t>(transfer.BatchFrameCount);
 		txTCD.DOFF = 0; txTCD.DLAST_SGA = 0;
 		txTCD.BITERE_LINK = 0U;
-		txTCD.BITER = static_cast<std::uint16_t>(transfer.FrameCount);
+		txTCD.BITER = static_cast<std::uint16_t>(transfer.BatchFrameCount);
 		txTCD.BWC = 0U; txTCD.MAJORLINKCH = 0U;
 		txTCD.DONE = 0U; txTCD.ACTIVE = 0U;
 		txTCD.MAJORE_LINK = 0U; txTCD.E_SG = 0U;
@@ -510,13 +596,14 @@ namespace MPC5xxx
 		rxTCD.SMOD = 0U; rxTCD.SSIZE = 2U;
 		rxTCD.DMOD = 0U; rxTCD.DSIZE = 2U;
 		rxTCD.SOFF = 0; rxTCD.NBYTES = 4U; rxTCD.SLAST = 0;
-		rxTCD.DADDR = reinterpret_cast<std::uint32_t>(transfer.ReceivedFrames);
+		rxTCD.DADDR = reinterpret_cast<std::uint32_t>(_receiveStagingBuffer);
 		rxTCD.CITERE_LINK = 0U;
-		rxTCD.CITER = static_cast<std::uint16_t>(transfer.FrameCount);
+		rxTCD.CITER = static_cast<std::uint16_t>(transfer.BatchFrameCount);
 		rxTCD.DOFF = 4;
-		rxTCD.DLAST_SGA = -static_cast<std::int32_t>(transfer.FrameCount * 4U);
+		rxTCD.DLAST_SGA = -static_cast<std::int32_t>(
+			transfer.BatchFrameCount * 4U);
 		rxTCD.BITERE_LINK = 0U;
-		rxTCD.BITER = static_cast<std::uint16_t>(transfer.FrameCount);
+		rxTCD.BITER = static_cast<std::uint16_t>(transfer.BatchFrameCount);
 		rxTCD.BWC = 0U; rxTCD.MAJORLINKCH = 0U;
 		rxTCD.DONE = 0U; rxTCD.ACTIVE = 0U;
 		rxTCD.MAJORE_LINK = 0U; rxTCD.E_SG = 0U;
@@ -531,6 +618,36 @@ namespace MPC5xxx
 		dspi.MCR.R &= ~kHalt;
 	}
 
+	void MPC5xxxSPIService::CopyReceivedDMABatch()
+	{
+		SPIQueuedTransfer& transfer = _bus->Queue[_bus->QueueHead];
+		const std::size_t bytesPerFrame =
+			(_configuration.bitsPerWord + 7U) / 8U;
+		if (transfer.ReceiveData != nullptr)
+		{
+			for (std::size_t batchFrame = 0U;
+				batchFrame < transfer.BatchFrameCount;
+				++batchFrame)
+			{
+				const std::size_t frame =
+					transfer.CompletedFrameCount + batchFrame;
+				const std::uint16_t received = static_cast<std::uint16_t>(
+					_receiveStagingBuffer[batchFrame]);
+				if (bytesPerFrame == 2U)
+				{
+					transfer.ReceiveData[frame * 2U] =
+						static_cast<std::uint8_t>(received >> 8U);
+					transfer.ReceiveData[frame * 2U + 1U] =
+						static_cast<std::uint8_t>(received);
+				}
+				else
+					transfer.ReceiveData[frame] =
+						static_cast<std::uint8_t>(received);
+			}
+		}
+		transfer.CompletedFrameCount += transfer.BatchFrameCount;
+	}
+
 	void MPC5xxxSPIService::HandleDMAInterrupt(const std::uint8_t channel)
 	{
 		volatile EDMA_tag& dma = DMAController();
@@ -541,9 +658,22 @@ namespace MPC5xxx
 			return;
 
 		volatile DSPI_tag& dspi = *bus->DSPI;
-		while (dspi.SR.B.TXRXS != 0U) { }
-		asm volatile("mbar" ::: "memory");
 		dspi.RSER.R = 0U;
+		SPIQueuedTransfer& transfer = bus->Queue[bus->QueueHead];
+		const bool finalBatch =
+			transfer.CompletedFrameCount + transfer.BatchFrameCount ==
+			transfer.FrameCount;
+		if (finalBatch)
+		{
+			while (dspi.SR.B.TXRXS != 0U) { }
+			asm volatile("mbar" ::: "memory");
+		}
+		transfer.Endpoint->CopyReceivedDMABatch();
+		if (transfer.CompletedFrameCount < transfer.FrameCount)
+		{
+			transfer.Endpoint->StartNextDMABatch();
+			return;
+		}
 		dspi.SR.R = kEndOfQueueFlag;
 		CompleteTransfer(*bus);
 	}
@@ -558,9 +688,6 @@ namespace MPC5xxx
 
 		volatile DSPI_tag& dspi = *dspiAddress;
 		dspi.RSER.R = 0U;
-		SPIQueuedTransfer& queued = bus->Queue[bus->QueueHead];
-		for (std::size_t frame = 0U; frame < queued.FrameCount; ++frame)
-			queued.ReceivedFrames[frame] = dspi.POPR.R;
 		dspi.SR.R = kEndOfQueueFlag;
 		CompleteTransfer(*bus);
 	}
@@ -569,28 +696,30 @@ namespace MPC5xxx
 	{
 		SPIQueuedTransfer& queued = bus.Queue[bus.QueueHead];
 
-		MPC5xxxSPIService* const endpoint = queued.Endpoint;
-		const std::size_t bytesPerFrame =
-			(endpoint->_configuration.bitsPerWord + 7U) / 8U;
-		for (std::size_t frame = 0U; frame < queued.FrameCount; ++frame)
+		if (!bus.UsingDMA)
 		{
-			const std::uint16_t received =
-				static_cast<std::uint16_t>(queued.ReceivedFrames[frame]);
-			if (bytesPerFrame == 2U)
+			MPC5xxxSPIService* const endpoint = queued.Endpoint;
+			const std::size_t bytesPerFrame =
+				(endpoint->_configuration.bitsPerWord + 7U) / 8U;
+			for (std::size_t frame = 0U; frame < queued.FrameCount; ++frame)
 			{
-				queued.Data[frame * 2U] =
-					static_cast<std::uint8_t>(received >> 8U);
-				queued.Data[frame * 2U + 1U] =
-					static_cast<std::uint8_t>(received);
+				const std::uint16_t received =
+					static_cast<std::uint16_t>(bus.DSPI->POPR.R);
+				if (queued.ReceiveData == nullptr)
+					continue;
+				if (bytesPerFrame == 2U)
+				{
+					queued.ReceiveData[frame * 2U] =
+						static_cast<std::uint8_t>(received >> 8U);
+					queued.ReceiveData[frame * 2U + 1U] =
+						static_cast<std::uint8_t>(received);
+				}
+				else
+					queued.ReceiveData[frame] =
+						static_cast<std::uint8_t>(received);
 			}
-			else
-				queued.Data[frame] = static_cast<std::uint8_t>(received);
 		}
 
-		std::uint8_t* const completedData = queued.Data;
-		std::uint32_t* const completedCommands = queued.Commands;
-		std::uint32_t* const completedFrames = queued.ReceivedFrames;
-		const std::size_t completedLength = queued.Length;
 		auto completionCallback = std::move(queued.CompletionCallback);
 		queued = {};
 
@@ -602,10 +731,7 @@ namespace MPC5xxx
 		RestoreExternalInterrupts(machineState);
 
 		if (completionCallback)
-			completionCallback(completedData, completedLength);
-		delete[] completedData;
-		delete[] completedCommands;
-		delete[] completedFrames;
+			completionCallback();
 
 		if (bus.QueueCount != 0U)
 			bus.Queue[bus.QueueHead].Endpoint->StartNextQueuedTransfer();

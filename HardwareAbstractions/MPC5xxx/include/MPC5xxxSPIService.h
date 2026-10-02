@@ -67,8 +67,13 @@ namespace MPC5xxx
 		mutable SPIFrameTiming _cachedTiming = {};
 		mutable std::uint32_t _cachedClockTransferAttributes = 0U;
 		mutable bool _clockTransferAttributesCached = false;
+		std::size_t _stagingFrameCapacity = 0U;
+		std::uint32_t* _transmitStagingBuffer = nullptr;
+		std::uint32_t* _receiveStagingBuffer = nullptr;
 
 		void StartNextQueuedTransfer();
+		void StartNextDMABatch();
+		void CopyReceivedDMABatch();
 		static void CompleteTransfer(SPIBusState& bus);
 		std::uint32_t BuildClockTransferAttributes(
 			const SPIFrameTiming& timing) const;
@@ -91,16 +96,26 @@ namespace MPC5xxx
 		/**
 		 * @param interruptPriority Priority for the receive eDMA completion
 		 * interrupt. All endpoints sharing a DSPI module must use the same priority.
+		 * @param stagingBufferSize Maximum number of protocol bytes staged in one
+		 * eDMA batch. Larger transactions are divided into batches while PCS remains
+		 * asserted. Set to zero for a FIFO-only endpoint whose transactions never
+		 * exceed the four-entry DSPI hardware FIFO.
 		 */
 		MPC5xxxSPIService(
 			volatile DSPI_tag* dspi,
 			const MPC5xxxSPIServiceConfiguration& configuration,
-			std::uint8_t interruptPriority);
+			std::uint8_t interruptPriority,
+			std::size_t stagingBufferSize);
+		~MPC5xxxSPIService() override;
+
+		MPC5xxxSPIService(const MPC5xxxSPIService&) = delete;
+		MPC5xxxSPIService& operator=(const MPC5xxxSPIService&) = delete;
 
 		bool Ready() override;
 
 		bool Transfer(
-			std::uint8_t* data,
+			const std::uint8_t* txData,
+			std::uint8_t* rxData,
 			std::size_t length,
 			EmbeddedIOServices::spi_transfer_callback_t completionCallback) override;
 
