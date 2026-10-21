@@ -105,7 +105,8 @@ namespace EmbeddedIOServices
 	{
 		const can_send_callback_t send = [this](const CANIdentifier_t identifier, const CANData_t data, const uint8_t dataLength) { Send(identifier, data, dataLength); };
 		
-		for (auto find = _receiveCallBackIdentifierIndex.find(identifier); find != _receiveCallBackIdentifierIndex.end() && find->first == identifier; ++find) 
+		auto range = _receiveCallBackIdentifierIndex.equal_range(identifier);
+		for (auto find = range.first; find != range.second; ++find) 
 		{
 			(*find->second)(send, data, dataLength );
 		}
