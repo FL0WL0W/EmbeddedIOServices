@@ -40,8 +40,6 @@ namespace Esp32
 
 		gptimer_enable(gptimer);
 		gptimer_start(gptimer);
-
-		Calibrate();
 	}
 
 	tick_t IRAM_ATTR Esp32IdfTimerService::GetTick()
