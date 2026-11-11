@@ -11,33 +11,35 @@ namespace MPC5xxx
 
 	class MPC5xxxFlexCAN2Service : public EmbeddedIOServices::ICANService
 	{
-		static constexpr volatile FLEXCAN2_tag* const FLEXCAN_PERIPHERALS[] = {
-#ifdef CAN_A
-			&CAN_A,
-#endif
-#ifdef CAN_B
-			&CAN_B,
-#endif
-#ifdef CAN_C
-			&CAN_C,
-#endif
-#ifdef CAN_D
-			&CAN_D,
-#endif
-#ifdef CAN_E
-			&CAN_E,
-#endif
-#ifdef CAN_F
-			&CAN_F,
-#endif
-#ifdef CAN_G
-			&CAN_G,
-#endif
-#ifdef CAN_H
-			&CAN_H,
-#endif
-		};
-		static constexpr uint8_t CANPeripheralCount = sizeof(FLEXCAN_PERIPHERALS) / sizeof(FLEXCAN_PERIPHERALS[0]);
+		static constexpr uint8_t CANPeripheralCount =
+			0U
+		#ifdef CAN_A
+			+ 1U
+		#endif
+		#ifdef CAN_B
+			+ 1U
+		#endif
+		#ifdef CAN_C
+			+ 1U
+		#endif
+		#ifdef CAN_D
+			+ 1U
+		#endif
+		#ifdef CAN_E
+			+ 1U
+		#endif
+		#ifdef CAN_F
+			+ 1U
+		#endif
+		#ifdef CAN_G
+			+ 1U
+		#endif
+		#ifdef CAN_H
+			+ 1U
+		#endif
+			;
+
+		static volatile FLEXCAN2_tag* const FLEXCAN_PERIPHERALS[CANPeripheralCount];
 		static uint8_t BusNumberFromPeripheral(volatile FLEXCAN2_tag& can);
 		static_assert(CANPeripheralCount > 0U, "No FlexCAN peripheral defined");
 		static_assert(CANPeripheralCount <= 8U, "CAN bus number is three bits");

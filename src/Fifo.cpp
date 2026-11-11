@@ -1,4 +1,5 @@
 #include "Fifo.h"
+#include <cstdlib>
 
 #ifdef FIFO_H
 namespace EmbeddedIOServices

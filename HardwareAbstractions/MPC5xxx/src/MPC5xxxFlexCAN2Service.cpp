@@ -7,7 +7,32 @@ using namespace EmbeddedIOServices;
 
 namespace MPC5xxx
 {
-	constexpr volatile FLEXCAN2_tag* const MPC5xxxFlexCAN2Service::FLEXCAN_PERIPHERALS[];
+	volatile FLEXCAN2_tag* const MPC5xxxFlexCAN2Service::FLEXCAN_PERIPHERALS[CANPeripheralCount] = {
+	#ifdef CAN_A
+		&CAN_A,
+	#endif
+	#ifdef CAN_B
+		&CAN_B,
+	#endif
+	#ifdef CAN_C
+		&CAN_C,
+	#endif
+	#ifdef CAN_D
+		&CAN_D,
+	#endif
+	#ifdef CAN_E
+		&CAN_E,
+	#endif
+	#ifdef CAN_F
+		&CAN_F,
+	#endif
+	#ifdef CAN_G
+		&CAN_G,
+	#endif
+	#ifdef CAN_H
+		&CAN_H,
+	#endif
+	};
 
 	MPC5xxxFlexCAN2Service MPC5xxxFlexCAN2Service::_instance;
 	MPC5xxxFlexCAN2Service::TransmitQueueState
