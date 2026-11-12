@@ -5252,7 +5252,7 @@ extern "C" {
         union {                  /* Coefficient n Register */
             vint32_t R;
             struct {
-                vint32_t:8;
+                uint32_t:8;
                 vint32_t COEF:24;
             } B;
         } COEF[9];
@@ -5262,7 +5262,7 @@ extern "C" {
         union {                  /* TAP n Register */
             vint32_t R;
             struct {
-                vint32_t:8;
+                uint32_t:8;
                 vint32_t TAP:24;
             } B;
         } TAP[8];
