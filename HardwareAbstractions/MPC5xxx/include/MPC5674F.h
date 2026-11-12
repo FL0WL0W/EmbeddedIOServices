@@ -105,7 +105,7 @@ extern "C" {
         union {                 /* Master Privilege Control Register 1 */
             vuint32_t R;
             struct {
-            	vuint32_t:32;      /* reserved */
+            	uint32_t:32;      /* reserved */
             } B;
         } MPCR1;
         
@@ -118,13 +118,13 @@ extern "C" {
                 vuint32_t SP0:1;
                 vuint32_t WP0:1;
                 vuint32_t TP0:1;
-                vuint32_t:4;      /* Reserved */
-                vuint32_t:4;      /* Reserved */
-                vuint32_t:4;      /* Reserved */
-                vuint32_t:4;      /* Reserved */
-                vuint32_t:4;      /* Reserved */
-                vuint32_t:4;      /* Reserved */
-                vuint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
             } B;
         } PACR0;
         
@@ -153,9 +153,9 @@ extern "C" {
                 vuint32_t SP4:1;
                 vuint32_t WP4:1;
                 vuint32_t TP4:1;
-                vuint32_t:4;      /* Reserved */
-                vuint32_t:4;      /* Reserved */
-                vuint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
             } B;
         } OPACR0;
         
@@ -166,12 +166,12 @@ extern "C" {
                 vuint32_t SP0:1;
                 vuint32_t WP0:1;
                 vuint32_t TP0:1;
-                vuint32_t:4;      /* Reserved */
-                vuint32_t:4;      /* Reserved */
-                vuint32_t:4;      /* Reserved */
-                vuint32_t:4;      /* Reserved */
-                vuint32_t:4;      /* Reserved */
-                vuint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
                 vuint32_t BW7:1;  /* PMC */
                 vuint32_t SP7:1;
                 vuint32_t WP7:1;
@@ -186,7 +186,7 @@ extern "C" {
                 vuint32_t SP0:1;
                 vuint32_t WP0:1;
                 vuint32_t TP0:1;
-                vuint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
                 vuint32_t BW2:1;  /* eTPU PRAM */
                 vuint32_t SP2:1;
                 vuint32_t WP2:1;
@@ -203,25 +203,25 @@ extern "C" {
                 vuint32_t SP5:1;
                 vuint32_t WP5:1;
                 vuint32_t TP5:1;
-                vuint32_t:4;      /* Reserved */
-                vuint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
             } B;
         } OPACR2;
         
         union {                 /* Off-Platform Peripheral Access Control Register 3 */
             vuint32_t R;
             struct {
-                vuint32_t:4;      /* Reserved */
-                vuint32_t:4;      /* Reserved */
-                vuint32_t:4;      /* Reserved */
-                vuint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
                 vuint32_t BW4:1;  /* PIT/RTI  */
                 vuint32_t SP4:1;
                 vuint32_t WP4:1;
                 vuint32_t TP4:1;
-                vuint32_t:4;      /* Reserved */
-                vuint32_t:4;      /* Reserved */
-                vuint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
             } B;
         } OPACR3;
         
@@ -276,7 +276,7 @@ extern "C" {
         union {                 /* Master Privilege Control Register 1 */
             vuint32_t R;
             struct {
-               vuint32_t:32;     /* Reserved */
+               uint32_t:32;     /* Reserved */
                
             } B;
         } MPCR1;
@@ -294,27 +294,27 @@ extern "C" {
                 vuint32_t SP1:1;
                 vuint32_t WP1:1;
                 vuint32_t TP1:1;
-                vuint32_t:4;      /* Reserved */
-                vuint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
                 vuint32_t BW4:1;  /* MPU */
                 vuint32_t SP4:1;
                 vuint32_t WP4:1;
                 vuint32_t TP4:1;
-                vuint32_t:4;      /* Reserved */
-                vuint32_t:4;      /* Reserved */
-                vuint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
             } B;
         } PACR0;
         
         union {                 /* Peripheral Access Control Register 1 */
             vuint32_t R;
             struct {
-                vuint32_t:4;      /* Reserved */
-                vuint32_t:4;      /* Reserved */
-                vuint32_t:4;      /* Reserved */
-                vuint32_t:4;      /* Reserved */
-                vuint32_t:4;      /* Reserved */
-                vuint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
                 vuint32_t BW6:1;  /* SWT */
                 vuint32_t SP6:1;
                 vuint32_t WP6:1;
@@ -341,14 +341,14 @@ extern "C" {
                 vuint32_t SP2:1;
                 vuint32_t WP2:1;
                 vuint32_t TP2:1;
-                vuint32_t:4;      /* Reserved */
-                vuint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
                 vuint32_t BW5:1;  /* eDMA B */
                 vuint32_t SP5:1;
                 vuint32_t WP5:1;
                 vuint32_t TP5:1;
-                vuint32_t:4;      /* Reserved */
-                vuint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
             } B;
         } PACR2;
         
@@ -369,7 +369,7 @@ extern "C" {
                 vuint32_t SP2:1;
                 vuint32_t WP2:1;
                 vuint32_t TP2:1;
-                vuint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
                 vuint32_t BW4:1;  /* DSPI_A */
                 vuint32_t SP4:1;
                 vuint32_t WP4:1;
@@ -392,10 +392,10 @@ extern "C" {
         union {                 /* Off-Platform Peripheral Access Control Register 1 */
             vuint32_t R;
             struct {
-                vuint32_t:4;      /* Reserved */
-                vuint32_t:4;      /* Reserved */
-                vuint32_t:4;      /* Reserved */
-                vuint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
                 vuint32_t BW4:1;  /* ESCI_A */
                 vuint32_t SP4:1;
                 vuint32_t WP4:1;
@@ -408,7 +408,7 @@ extern "C" {
                 vuint32_t SP6:1;
                 vuint32_t WP6:1;
                 vuint32_t TP6:1;
-                vuint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
             } B;
         } OPACR1;
         
@@ -431,10 +431,10 @@ extern "C" {
                 vuint32_t SP3:1;
                 vuint32_t WP3:1;
                 vuint32_t TP3:1;
-                vuint32_t:4;      /* Reserved */
-                vuint32_t:4;      /* Reserved */
-                vuint32_t:4;      /* Reserved */
-                vuint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
             } B;
         } OPACR2;
         
@@ -445,15 +445,15 @@ extern "C" {
                 vuint32_t SP0:1;
                 vuint32_t WP0:1;
                 vuint32_t TP0:1;
-                vuint32_t:4;      /* Reserved */
-                vuint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
                 vuint32_t BW3:1;  /* Temp Sensor */
                 vuint32_t SP3:1;
                 vuint32_t WP3:1;
                 vuint32_t TP3:1;
-                vuint32_t:4;      /* Reserved */
-                vuint32_t:4;      /* Reserved */
-                vuint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
+                uint32_t:4;      /* Reserved */
                 vuint32_t BW7:1;  /* BAM */
                 vuint32_t SP7:1;
                 vuint32_t WP7:1;
@@ -476,7 +476,7 @@ extern "C" {
         union {                 /* FMPLL Synthesizer Status Register */
             vuint32_t R;
             struct {
-                vuint32_t:22;
+                uint32_t:22;
                 vuint32_t LOLF:1;
                 vuint32_t LOC:1;
                 vuint32_t MODE:1;
@@ -485,18 +485,18 @@ extern "C" {
                 vuint32_t LOCKS:1;
                 vuint32_t LOCK:1;
                 vuint32_t LOCF:1;
-                vuint32_t :2;
+                uint32_t :2;
             } B;
         } SYNSR;
         
         union {                 /* FMPLL Enhanced Synthesizer Control Register 1 */
             vuint32_t R;
             struct {
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t CLKCFG:3;
-                vuint32_t:8;
+                uint32_t:8;
                 vuint32_t EPREDIV:4;
-                vuint32_t :8;
+                uint32_t :8;
                 vuint32_t EMFD:8;
             } B;
         } ESYNCR1;
@@ -504,18 +504,18 @@ extern "C" {
         union {                 /* FMPLL Enhanced Synthesizer Control Register 2 */
             vuint32_t R;
             struct {
-                vuint32_t:8;
+                uint32_t:8;
                 vuint32_t LOCEN:1;
                 vuint32_t LOLRE:1;
                 vuint32_t LOCRE:1;
                 vuint32_t LOLIRQ:1;
                 vuint32_t LOCIRQ:1;
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t ERATE:2;
 				vuint32_t CLKCFG_DIS:1;
-                vuint32_t:4;
+                uint32_t:4;
                 vuint32_t EDEPTH:3;
-                vuint32_t:2;
+                uint32_t:2;
                 vuint32_t ERFD:6;
             } B;
         } ESYNCR2;
@@ -525,11 +525,11 @@ extern "C" {
 		union {                 /* FMPLL Synthesizer FM Control Register */
             vuint32_t R;
             struct {
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t FMDAC_EN:1;
-                vuint32_t:9;
+                uint32_t:9;
                 vuint32_t FMDAC_CTL:5;
-                vuint32_t :16;
+                uint32_t :16;
             } B;
         } SYNFMCR;
         
@@ -547,14 +547,14 @@ extern "C" {
             vuint32_t R;
             struct {
                 vuint32_t BA:17;
-                vuint32_t:3;
+                uint32_t:3;
                 vuint32_t PS:1;
-                vuint32_t:3;
+                uint32_t:3;
                 vuint32_t AD_MUX:1;
                 vuint32_t BL:1;
                 vuint32_t WEBS:1;
                 vuint32_t TBDIP:1;
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t SETA:1;
                 vuint32_t BI:1;
                 vuint32_t V:1;
@@ -565,11 +565,11 @@ extern "C" {
             vuint32_t R;
             struct {
                 vuint32_t AM:17;
-                vuint32_t:7;
+                uint32_t:7;
                 vuint32_t SCY:4;
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t BSCY:2;
-                vuint32_t:1;
+                uint32_t:1;
             } B;
         } OR;
     };
@@ -579,11 +579,11 @@ extern "C" {
         union {                 /* Module Configuration Register */
             vuint32_t R;
             struct {
-                vuint32_t:16;
+                uint32_t:16;
                 vuint32_t ACGE:1;
-                vuint32_t:8;
+                uint32_t:8;
                 vuint32_t MDIS:1;
-                vuint32_t:3;
+                uint32_t:3;
                 vuint32_t D16_31:1;
                 vuint32_t AD_MUX:1;
                 vuint32_t DBM:1;
@@ -595,7 +595,7 @@ extern "C" {
         union {                 /* Transfer Error Status Register */
             vuint32_t R;
             struct {
-                vuint32_t:30;
+                uint32_t:30;
                 vuint32_t TEAF:1;
                 vuint32_t BMTF:1;
             } B;
@@ -604,10 +604,10 @@ extern "C" {
         union {                 /* Bus Monitor Control Register */
             vuint32_t R;
             struct {
-                vuint32_t:16;
+                uint32_t:16;
                 vuint32_t BMT:8;
                 vuint32_t BME:1;
-                  vuint32_t:7;
+                  uint32_t:7;
             } B;
         } BMCR;
         
@@ -632,20 +632,20 @@ extern "C" {
         union {                 /* Module Configuration Register */
             vuint32_t R;
             struct {
-                vuint32_t:5;
+                uint32_t:5;
                 vuint32_t SIZE:3;
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t LAS:3;
-                vuint32_t:3;
+                uint32_t:3;
                 vuint32_t MAS:1;
                 vuint32_t EER:1;
                 vuint32_t RWE:1;
                 vuint32_t SBC:1;
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t PEAS:1;
                 vuint32_t DONE:1;
                 vuint32_t PEG:1;
-                vuint32_t:4;
+                uint32_t:4;
                 vuint32_t PGM:1;
                 vuint32_t PSUS:1;
                 vuint32_t ERS:1;
@@ -658,11 +658,11 @@ extern "C" {
             vuint32_t R;
             struct {
                 vuint32_t LME:1;
-                vuint32_t:10;
+                uint32_t:10;
                 vuint32_t SLOCK:1;
-                vuint32_t:2;
+                uint32_t:2;
                 vuint32_t MLOCK:2;
-                vuint32_t:6;
+                uint32_t:6;
                 vuint32_t LLOCK:10;
             } B;
         } LMLR; /* Legacy naming - refer to LML in Reference Manual */
@@ -671,7 +671,7 @@ extern "C" {
             vuint32_t R;
             struct {
                 vuint32_t HBE:1;
-                vuint32_t:25;
+                uint32_t:25;
                 vuint32_t HBLOCK:6; /* Legacy naming - refer to HLOCK in Reference Manual */
             } B;
         } HLR; /* Legacy naming - refer to HBL in Reference Manual */
@@ -680,11 +680,11 @@ extern "C" {
             vuint32_t R;
             struct {
                 vuint32_t SLE:1;
-                vuint32_t:10;
+                uint32_t:10;
                 vuint32_t SSLOCK:1;
-                vuint32_t:2;
+                uint32_t:2;
                 vuint32_t SMLOCK:2;
-                vuint32_t:6;
+                uint32_t:6;
                 vuint32_t SLLOCK:10;
             } B;
         } SLMLR; /* Legacy naming - refer to SLL in Reference Manual */
@@ -692,9 +692,9 @@ extern "C" {
         union {                 /* Low/Mid Address Space Block Select Register */
             vuint32_t R;
             struct {
-                vuint32_t:14;
+                uint32_t:14;
                 vuint32_t MSEL:2;
-                vuint32_t:6;
+                uint32_t:6;
                 vuint32_t LSEL:10;
             } B;
         } LMSR; /* Legacy naming - refer to LMS in Reference Manual */
@@ -702,7 +702,7 @@ extern "C" {
         union {                 /* High Address Space Block Select Register */
             vuint32_t R;
             struct {
-                vuint32_t:26;
+                uint32_t:26;
                 vuint32_t HBSEL:6; /* Legacy naming - refer to HSEL in Reference Manual */
             } B;
         } HSR; /* Legacy naming - refer to HBS in Reference Manual */
@@ -711,33 +711,33 @@ extern "C" {
             vuint32_t R;
             struct {
                 vuint32_t SAD:1;
-                vuint32_t:13;
+                uint32_t:13;
                 vuint32_t ADDR:15;
-                vuint32_t:3;
+                uint32_t:3;
             } B;
         } AR; /* Legacy naming - refer to ADR in Reference Manual */
         
         union {                 /* Platform Flash Configuration Register 1 */
             vuint32_t R;
             struct {
-                vuint32_t:7;
+                uint32_t:7;
                 vuint32_t M8PFE:1;     /* z7 Nexus */
-                vuint32_t:1;           /* EBI Testing - Reserved */
+                uint32_t:1;           /* EBI Testing - Reserved */
                 vuint32_t M6PFE:1;     /* FlexRay  */
                 vuint32_t M5PFE:1;     /* eDMA_B   */
                 vuint32_t M4PFE:1;     /* eDMA_A   */
-                vuint32_t:1;           /* Reserved */
-                vuint32_t:1;           /* Reserved */
-                vuint32_t:1;           /* Reserved */
+                uint32_t:1;           /* Reserved */
+                uint32_t:1;           /* Reserved */
+                uint32_t:1;           /* Reserved */
                 vuint32_t M0PFE:1;     /* z7 Core  */
                 vuint32_t APC:3;
                 vuint32_t WWSC:2;
                 vuint32_t RWSC:3;
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t DPFEN:1;
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t IPFEN:1;
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t PFLIM:2;
                 vuint32_t BFEN:1;
             } B;
@@ -746,15 +746,15 @@ extern "C" {
         union {                 /*Platform Flash Access Protection Register */
             vuint32_t R;
             struct {
-                vuint32_t:14;
+                uint32_t:14;
                 vuint32_t M8AP:2;     /* z7 Nexus */
-                vuint32_t:2;          /* EBI Testing - Reserved */
+                uint32_t:2;          /* EBI Testing - Reserved */
                 vuint32_t M6AP:2;     /* FlexRay  */
                 vuint32_t M5AP:2;     /* eDMA_B   */
                 vuint32_t M4AP:2;     /* eDMA_A   */
-                vuint32_t:2;          /* Reserved */
-                vuint32_t:2;          /* Reserved */
-                vuint32_t:2;          /* Reserved */
+                uint32_t:2;          /* Reserved */
+                uint32_t:2;          /* Reserved */
+                uint32_t:2;          /* Reserved */
                 vuint32_t M0AP:2;     /* z7 Core  */
             } B;
         } BIUAPR; /* Legacy naming - refer to PFAPR in Reference Manual */
@@ -763,7 +763,7 @@ extern "C" {
             vuint32_t R;
             struct {
                 vuint32_t LBCFG:2;
-                vuint32_t:30;
+                uint32_t:30;
             } B;
         } BIUCR2;
         
@@ -781,7 +781,7 @@ extern "C" {
             struct {
                 vuint32_t PARTNUM:16;
                 vuint32_t PKG:4;
-                vuint32_t:4;
+                uint32_t:4;
                 vuint32_t MAJOR_REV:4;
                 vuint32_t MINOR_REV:4;
             } B;
@@ -799,11 +799,11 @@ extern "C" {
                 vuint32_t WDRS:1;
                 vuint32_t CRS:1;
                 vuint32_t SWTRS:1;
-                vuint32_t:7;
+                uint32_t:7;
                 vuint32_t SSRS:1;
                 vuint32_t SERF:1;
                 vuint32_t WKPCFG:1;
-                vuint32_t:11;
+                uint32_t:11;
                 vuint32_t ABR:1;
                 vuint32_t BOOTCFG:2;
                 vuint32_t RGF:1;
@@ -815,7 +815,7 @@ extern "C" {
             struct {
                 vuint32_t SSR:1;
                 vuint32_t SER:1;
-                vuint32_t:30;   // Removed CRE bit
+                uint32_t:30;   // Removed CRE bit
             } B;
         } SRCR;
         
@@ -823,7 +823,7 @@ extern "C" {
             vuint32_t R;
             struct {
             	vuint32_t NMI:1;
-                vuint32_t:15;
+                uint32_t:15;
                 vuint32_t EIF15:1;
                 vuint32_t EIF14:1;
                 vuint32_t EIF13:1;
@@ -847,9 +847,9 @@ extern "C" {
             vuint32_t R;
             struct {
                 vuint32_t NMISEL8:1;
-                vuint32_t:7;
+                uint32_t:7;
                 vuint32_t NMISEL0:1;
-                vuint32_t:7;
+                uint32_t:7;
                 vuint32_t EIRE15:1;
                 vuint32_t EIRE14:1;
                 vuint32_t EIRE13:1;
@@ -872,7 +872,7 @@ extern "C" {
         union {                 /* DMA/Interrupt Request Select Register */
             vuint32_t R;
             struct {
-                vuint32_t:28;
+                uint32_t:28;
                 vuint32_t DIRS3:1;
                 vuint32_t DIRS2:1;
                 vuint32_t DIRS1:1;
@@ -883,7 +883,7 @@ extern "C" {
         union {                 /* Overrun Status Register */
             vuint32_t R;
             struct {
-                vuint32_t:16;
+                uint32_t:16;
                 vuint32_t OVF15:1;
                 vuint32_t OVF14:1;
                 vuint32_t OVF13:1;
@@ -906,7 +906,7 @@ extern "C" {
         union {                 /* Overrun Request Enable Register */
             vuint32_t R;
             struct {
-                vuint32_t:16;
+                uint32_t:16;
                 vuint32_t ORE15:1;
                 vuint32_t ORE14:1;
                 vuint32_t ORE13:1;
@@ -930,7 +930,7 @@ extern "C" {
             vuint32_t R;
             struct {
                 vuint32_t IREE_NMI8:1;
-                vuint32_t:15;
+                uint32_t:15;
                 vuint32_t IREE15:1;
                 vuint32_t IREE14:1;
                 vuint32_t IREE13:1;
@@ -954,7 +954,7 @@ extern "C" {
             vuint32_t R;
             struct {
                 vuint32_t IFEE_NMI8:1;
-                vuint32_t:15;
+                uint32_t:15;
                 vuint32_t IFEE15:1;
                 vuint32_t IFEE14:1;
                 vuint32_t IFEE13:1;
@@ -977,7 +977,7 @@ extern "C" {
         union {                 /* External IRQ Digital Filter Register */
             vuint32_t R;
             struct {
-                vuint32_t:28;
+                uint32_t:28;
                 vuint32_t DFL:4;
             } B;
         } IDFR;
@@ -1025,7 +1025,7 @@ extern "C" {
         union {                 /* Pad Configuration Registers */
             vuint16_t R;
             struct {
-                vuint16_t:3;
+                uint16_t:3;
                 vuint16_t PA:3;
                 vuint16_t OBE:1;
                 vuint16_t IBE:1;
@@ -1043,7 +1043,7 @@ extern "C" {
         union {                 /* GPIO Pin Data Output Registers */
             vuint8_t R;
             struct {
-                vuint8_t:7;
+                uint8_t:7;
                 vuint8_t PDO:1;
             } B;
         } GPDO[512];
@@ -1051,7 +1051,7 @@ extern "C" {
         union {                 /* GPIO Pin Data Input Registers */
             vuint8_t R;
             struct {
-                vuint8_t:7;
+                uint8_t:7;
                 vuint8_t PDI:1;
             } B;
         } GPDI[256];
@@ -1107,13 +1107,13 @@ extern "C" {
         union {                 /* eQADC Command FIFO Trigger Source Select - IMUX Select Registers */
             vuint32_t R;
             struct {
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t CTSEL5_0:7;
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t CTSEL4_0:7;
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t CTSEL3_0:7;
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t CTSEL2_0:7;
             } B;
         } ISEL4;
@@ -1121,24 +1121,24 @@ extern "C" {
         union {                 /* eQADC Command FIFO Trigger Source Select - IMUX Select Registers */
             vuint32_t R;
             struct {
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t CTSEL1_0:7;
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t CTSEL0_0:7;
-                vuint32_t:16;
+                uint32_t:16;
             } B;
         } ISEL5;
         
         union {                 /* eQADC Command FIFO Trigger Source Select - IMUX Select Registers */
             vuint32_t R;
             struct {
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t CTSEL5_1:7;
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t CTSEL4_1:7;
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t CTSEL3_1:7;
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t CTSEL2_1:7;
             } B;
         } ISEL6;
@@ -1146,28 +1146,28 @@ extern "C" {
         union {                 /* eQADC Command FIFO Trigger Source Select - IMUX Select Registers */
             vuint32_t R;
             struct {
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t CTSEL1_1:7;
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t CTSEL0_1:7;
-                vuint32_t:16;
+                uint32_t:16;
             } B;
         } ISEL7;
         
         union {                 /* eTPU Input Select Register */
             vuint32_t R;
             struct {
-                vuint32_t:11;
+                uint32_t:11;
                 vuint32_t ETPU29:1;
-                vuint32_t:3;
+                uint32_t:3;
                 vuint32_t ETPU28:1;
-                vuint32_t:3;
+                uint32_t:3;
                 vuint32_t ETPU27:1;
-                vuint32_t:3;
+                uint32_t:3;
                 vuint32_t ETPU26:1;
-                vuint32_t:3;
+                uint32_t:3;
                 vuint32_t ETPU25:1;
-                vuint32_t:3;
+                uint32_t:3;
                 vuint32_t ETPU24:1;
              } B;
         } ISEL8;
@@ -1175,7 +1175,7 @@ extern "C" {
         union {                 /* eQADC Advanced Trigger Select  */
             vuint32_t R;
             struct {
-                vuint32_t:27;
+                uint32_t:27;
                 vuint32_t ETSEL0A:5;
             } B;
         } ISEL9;
@@ -1214,22 +1214,22 @@ extern "C" {
         union {                 /* Chip Configuration Register Register */
             vuint32_t R;
             struct {
-                vuint32_t:14;
+                uint32_t:14;
                 vuint32_t MATCH:1;
                 vuint32_t DISNEX:1;
-                vuint32_t:16;
+                uint32_t:16;
             } B;
         } CCR;
         
         union {                 /* External Clock Configuration Register Register */
             vuint32_t R;
             struct {
-                vuint32_t:16;
+                uint32_t:16;
                 vuint32_t ENGDIV:8;
                 vuint32_t ECSS:1;
-                vuint32_t:3;
+                uint32_t:3;
                 vuint32_t EBTS:1;
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t EBDF:2;
             } B;
         } ECCR;
@@ -1267,12 +1267,12 @@ extern "C" {
         union {                 /* System Clock Register */
             vuint32_t R;
             struct {
-                vuint32_t:22;
+                uint32_t:22;
                 vuint32_t IPCLKDIV:2;
-                vuint32_t:3;
+                uint32_t:3;
                 vuint32_t BYPASS:1;
                 vuint32_t SYSCLKDIV:2;
-                vuint32_t:2;
+                uint32_t:2;
             } B;
         } SYSDIV;
         
@@ -1280,17 +1280,17 @@ extern "C" {
             vuint32_t R;
             struct {
                 vuint32_t CPUSTP:1;     /* CPU and Platform stop request  */
-                vuint32_t:4;            /* Reserved */
+                uint32_t:4;            /* Reserved */
                 vuint32_t TPUSTP:1;     /* eTPU_A stop request */
                 vuint32_t NPCSTP:1;     /* Nexus stop request */
                 vuint32_t EBISTP:1;     /* EBI stop request*/
                 vuint32_t ADCSTP:1;     /* eQADC stop request */
-                vuint32_t:1;            /* Reserved */
+                uint32_t:1;            /* Reserved */
                 vuint32_t MIOSSTP:1;    /* eMIOS stop request */
                 vuint32_t DFILSTP:1;    /* Decimation filter stop request */
-                vuint32_t:1;            /* Reserved */
+                uint32_t:1;            /* Reserved */
                 vuint32_t PITSTP:1;     /* PIT stop request */
-                vuint32_t:2;            /* Reserved */
+                uint32_t:2;            /* Reserved */
                 vuint32_t CNDSTP:1;     /* FlexCAN D stop request */
                 vuint32_t CNCSTP:1;     /* FlexCAN C stop request */
                 vuint32_t CNBSTP:1;     /* FlexCAN B stop request */
@@ -1299,7 +1299,7 @@ extern "C" {
                 vuint32_t SPICSTP:1;    /* DSPI C stop request */
                 vuint32_t SPIBSTP:1;    /* DSPI B stop request */
                 vuint32_t SPIASTP:1;    /* DSPI C stop request */
-                vuint32_t:5;            /* Reserved */
+                uint32_t:5;            /* Reserved */
 				vuint32_t SCICSTP:1;    /* eSCI C stop request */
                 vuint32_t SCIBSTP:1;    /* eSCI B stop request */
                 vuint32_t SCIASTP:1;    /* eSCI A stop request */
@@ -1310,17 +1310,17 @@ extern "C" {
             vuint32_t R;
             struct {
                 vuint32_t CPUACK:1;     /* CPU and Platform stop acknowledge  */
-                vuint32_t:4;            /* Reserved */
+                uint32_t:4;            /* Reserved */
                 vuint32_t TPUACK:1;     /* eTPU_A stop acknowledge */
                 vuint32_t NPCACK:1;     /* Nexus stop acknowledge */
                 vuint32_t EBIACK:1;     /* EBI stop acknowledge*/
                 vuint32_t ADCACK:1;     /* eQADC stop acknowledge */
-                vuint32_t:1;            /* Reserved */
+                uint32_t:1;            /* Reserved */
                 vuint32_t MIOSACK:1;    /* eMIOS stop acknowledge */
                 vuint32_t DFILACK:1;    /* Decimation filter stop acknowledge */
-                vuint32_t:1;            /* Reserved */
+                uint32_t:1;            /* Reserved */
                 vuint32_t PITACK:1;     /* PIT stop acknowledge */
-                vuint32_t:2;            /* Reserved */
+                uint32_t:2;            /* Reserved */
                 vuint32_t CNDACK:1;     /* FlexCAN D stop acknowledge */
                 vuint32_t CNCACK:1;     /* FlexCAN C stop acknowledge */
                 vuint32_t CNBACK:1;     /* FlexCAN B stop acknowledge */
@@ -1329,7 +1329,7 @@ extern "C" {
                 vuint32_t SPICACK:1;    /* DSPI C stop acknowledge */
                 vuint32_t SPIBACK:1;    /* DSPI B stop acknowledge */
                 vuint32_t SPIAACK:1;    /* DSPI C stop acknowledge */
-                vuint32_t:5;            /* Reserved */
+                uint32_t:5;            /* Reserved */
 				vuint32_t SCICACK:1;    /* eSCI C stop acknowledge */
                 vuint32_t SCIBACK:1;    /* eSCI B stop acknowledge */
                 vuint32_t SCIAACK:1;    /* eSCI A stop acknowledge */
@@ -2117,33 +2117,33 @@ extern "C" {
                 vuint32_t ETPUB18:1;
                 vuint32_t ETPUB17:1;
                 vuint32_t ETPUB16:1;
-                vuint32_t:4;
+                uint32_t:4;
                 vuint32_t ETPUB29:1;
                 vuint32_t ETPUB28:1;
                 vuint32_t ETPUB27:1;
                 vuint32_t ETPUB26:1;
                 vuint32_t ETPUB25:1;
                 vuint32_t ETPUB24:1;
-                vuint32_t:16;
+                uint32_t:16;
             } B ;
         } ETPUBD;
         
         union {               /* EMIOS D Select Register */
             vuint32_t R;
             struct {
-                vuint32_t:6;
+                uint32_t:6;
                 vuint32_t EMIOS11:1;
                 vuint32_t EMIOS10:1;
                 vuint32_t EMIOS13:1;
                 vuint32_t EMIOS12:1;
-                vuint32_t:22;
+                uint32_t:22;
             } B;
         } EMIOSD;
         
         union {             /* DSPIDH/L Select Register for DSPI D */
             vuint32_t R;
             struct {
-                vuint32_t:32;
+                uint32_t:32;
             } B;
         } DSPIDHLD;
         
@@ -2154,7 +2154,7 @@ extern "C" {
         union {                 /* GPIO Pin Data Input Registers */
             vuint8_t R;
             struct {
-                vuint8_t:7;
+                uint8_t:7;
                 vuint8_t PDI:1;
             } B;
         } GPDI0_511[512];
@@ -2171,16 +2171,16 @@ extern "C" {
         union {                  /* Module Configuration Register */
             vuint32_t R;
             struct {
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t MDIS:1;
                 vuint32_t FRZ:1;
                 vuint32_t GTBE:1;
                 vuint32_t ETB:1;
                 vuint32_t GPREN:1;
-                vuint32_t:6;
+                uint32_t:6;
                 vuint32_t SRV:4;
                 vuint32_t GPRE:8;
-                vuint32_t:8;
+                uint32_t:8;
             } B;
         } MCR;
         
@@ -2284,14 +2284,14 @@ extern "C" {
                     vuint32_t UCPRE:2;
                     vuint32_t UCPREN:1;
                     vuint32_t DMA:1;
-                    vuint32_t:1;
+                    uint32_t:1;
                     vuint32_t IF:4;
                     vuint32_t FCK:1;
                     vuint32_t FEN:1;
-                    vuint32_t:3;
+                    uint32_t:3;
                     vuint32_t FORCMA:1;
                     vuint32_t FORCMB:1;
-                    vuint32_t:1;
+                    uint32_t:1;
                     vuint32_t BSL:2;
                     vuint32_t EDSEL:1;
                     vuint32_t EDPOL:1;
@@ -2303,9 +2303,9 @@ extern "C" {
                 vuint32_t R;
                 struct {
                     vuint32_t OVR:1;
-                    vuint32_t:15;
+                    uint32_t:15;
                     vuint32_t OVFL:1;
-                    vuint32_t:12;
+                    uint32_t:12;
                     vuint32_t UCIN:1;
                     vuint32_t UCOUT:1;
                     vuint32_t FLAG:1;
@@ -2339,24 +2339,24 @@ extern "C" {
                 vuint32_t LVRE33:1;
                 vuint32_t LVREC:1;
                 vuint32_t LVREA:1;
-                vuint32_t:1;
-                vuint32_t:1;
+                uint32_t:1;
+                uint32_t:1;
                 vuint32_t LVIER:1;
                 vuint32_t LVIEH:1;
                 vuint32_t LVIE50:1;
                 vuint32_t LVIE33:1;
                 vuint32_t LVIEC:1;
                 vuint32_t LVIEA:1;
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t TLK:1;
-                vuint32_t:16;
+                uint32_t:16;
             } B;
         } MCR;                  /* Module Configuration Register */
         
         union {
             vuint32_t R;
             struct {
-                vuint32_t :8;
+                uint32_t :8;
                 vuint32_t LVDATRIM:4;
                 vuint32_t LVDREGTRIM:4;
                 vuint32_t VDD33TRIM:4;
@@ -2369,27 +2369,27 @@ extern "C" {
         union {
             vuint32_t R;
             struct {
-                vuint32_t :5;
+                uint32_t :5;
                 vuint32_t LVFSTBY:1;
                 vuint32_t BGRDY:1;
                 vuint32_t BGTS:1;
-                vuint32_t :5;
+                uint32_t :5;
                 vuint32_t LVFCSTBY:1;
-                vuint32_t :2;
+                uint32_t :2;
                 vuint32_t LVFCR:1;
                 vuint32_t LVFCH:1;
                 vuint32_t LVFC50:1;
                 vuint32_t LVFC33:1;
                 vuint32_t LVFCC:1;
                 vuint32_t LVFCA:1;
-                vuint32_t :2;
+                uint32_t :2;
                 vuint32_t LVFR:1;
                 vuint32_t LVFH:1;
                 vuint32_t LVF50:1;
                 vuint32_t LVF33:1;
                 vuint32_t LVFC:1;
                 vuint32_t LVFA:1;
-                vuint32_t :2;
+                uint32_t :2;
             } B;
         } SR;                /* status register */
         
@@ -2414,15 +2414,15 @@ extern "C" {
                 vuint32_t MGE2:1;       /* Microcode Global Exception-ETPU_B */
                 vuint32_t ILF1:1;       /* Illegal Instruction Flag-ETPU_A */
                 vuint32_t ILF2:1;       /* Illegal Instruction Flag-ETPU_B */
-                vuint32_t:3;
+                uint32_t:3;
                 vuint32_t SCMSIZE:5;    /* Shared Code Memory size */
-                vuint32_t:4;
+                uint32_t:4;
                 vuint32_t SCMMISC:1;    /* SCM MISC Complete/Clear */
                 vuint32_t SCMMISF:1;    /* SCM MISC Flag */
                 vuint32_t SCMMISEN:1;   /* SCM MISC Enable */
-                vuint32_t:2;
+                uint32_t:2;
                 vuint32_t VIS:1;        /* SCM Visability */
-                vuint32_t:5;
+                uint32_t:5;
                 vuint32_t GTBE:1;       /* Global Time Base Enable */
             } B;
         } MCR;
@@ -2461,18 +2461,18 @@ extern "C" {
             struct {
                 vuint32_t FEND:1;       /* Force END */
                 vuint32_t MDIS:1;       /* Low power Stop */
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t STF:1;        /* Stop Flag */
-                vuint32_t:4;
+                uint32_t:4;
                 vuint32_t HLTF:1;       /* Halt Mode Flag */
-                vuint32_t:3;
+                uint32_t:3;
                 vuint32_t FCSS:1;       /* Filter Clock Source Select */
                 vuint32_t FPSCK:3;      /* Filter Prescaler Clock Control */
                 vuint32_t CDFC:2;
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t ERBA:5;       /* Engine Relative Base Address */
                 vuint32_t SPPDIS:1;     /* Schedule Priority Passing Disable */
-                vuint32_t:2;
+                uint32_t:2;
                 vuint32_t ETB:5;        /* Entry Table Base */
             } B;
         } ECR_A;
@@ -2482,18 +2482,18 @@ extern "C" {
             struct {
                 vuint32_t FEND:1;       /* Force END */
                 vuint32_t MDIS:1;       /* Low power Stop */
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t STF:1;        /* Stop Flag */
-                vuint32_t:4;
+                uint32_t:4;
                 vuint32_t HLTF:1;       /* Halt Mode Flag */
-                vuint32_t:3;
+                uint32_t:3;
                 vuint32_t FCSS:1;       /* Filter Clock Source Select */
                 vuint32_t FPSCK:3;      /* Filter Prescaler Clock Control */
                 vuint32_t CDFC:2;
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t ERBA:5;       /* Engine Relative Base Address */
                 vuint32_t SPPDIS:1;     /* Schedule Priority Passing Disable */
-                vuint32_t:2;
+                uint32_t:2;
                 vuint32_t ETB:5;        /* Entry Table Base */
             } B;
         } ECR_B;
@@ -2506,11 +2506,11 @@ extern "C" {
                 vuint32_t TCR2CTL:3;     /* TCR2 Clock/Gate Control */
                 vuint32_t TCRCF:2;       /* TCRCLK Signal Filter Control */
                 vuint32_t AM:2;          /* Angle Mode */
-                vuint32_t:3;
+                uint32_t:3;
                 vuint32_t TCR2P:6;       /* TCR2 Prescaler Control */
                 vuint32_t TCR1CTL:2;     /* TCR1 Clock/Gate Control */
                 vuint32_t TCR1CS:1;      /* TCR1 Clock Source */ 
-                vuint32_t:5;
+                uint32_t:5;
                 vuint32_t TCR1P:8;       /* TCR1 Prescaler Control */
             } B;
         } TBCR_A;
@@ -2518,7 +2518,7 @@ extern "C" {
         union {                 /* ETPU_A TCR1 Visibility Register */
             vuint32_t R;
             struct {
-                vuint32_t:8;
+                uint32_t:8;
                 vuint32_t TCR1:24;
             } B;
         } TB1R_A;
@@ -2526,7 +2526,7 @@ extern "C" {
         union {                 /* ETPU_A TCR2 Visibility Register */
             vuint32_t R;
             struct {
-                vuint32_t:8;
+                uint32_t:8;
                 vuint32_t TCR2:24;
             } B;
         } TB2R_A;
@@ -2536,15 +2536,15 @@ extern "C" {
             struct {
                 vuint32_t REN1:1;       /* Resource Enable TCR1 */
                 vuint32_t RSC1:1;       /* Resource Control TCR1 */
-                vuint32_t:2;
+                uint32_t:2;
                 vuint32_t SERVER_ID1:4;   /* TCR1 Server ID */
-                vuint32_t:4;
+                uint32_t:4;
                 vuint32_t SRV1:4;       /* Resource Server Slot */
                 vuint32_t REN2:1;       /* Resource Enable TCR2 */
                 vuint32_t RSC2:1;       /* Resource Control TCR2 */
-                vuint32_t:2;
+                uint32_t:2;
                 vuint32_t SERVER_ID2:4;   /* TCR2 Server ID */
-                vuint32_t:4;
+                uint32_t:4;
                 vuint32_t SRV2:4;       /* Resource Server Slot */
             } B;
         } REDCR_A;
@@ -2557,11 +2557,11 @@ extern "C" {
                 vuint32_t TCR2CTL:3;     /* TCR2 Clock/Gate Control */
                 vuint32_t TCRCF:2;       /* TCRCLK Signal Filter Control */
                 vuint32_t AM:2;          /* Angle Mode */
-                vuint32_t:3;
+                uint32_t:3;
                 vuint32_t TCR2P:6;       /* TCR2 Prescaler Control */
                 vuint32_t TCR1CTL:2;     /* TCR1 Clock/Gate Control */
                 vuint32_t TCR1CS:1;      /* TCR1 Clock Source */ 
-                vuint32_t:5;
+                uint32_t:5;
                 vuint32_t TCR1P:8;       /* TCR1 Prescaler Control */
             } B;
         } TBCR_B;
@@ -2569,7 +2569,7 @@ extern "C" {
         union {                 /* ETPU_B TCR1 Visibility Register */
             vuint32_t R;
             struct {
-                vuint32_t:8;
+                uint32_t:8;
                 vuint32_t TCR1:24;
             } B;
         } TB1R_B;
@@ -2577,7 +2577,7 @@ extern "C" {
         union {                 /* ETPU_B TCR2 Visibility Register */
             vuint32_t R;
             struct {
-                vuint32_t:8;
+                uint32_t:8;
                 vuint32_t TCR2:24;
             } B;
         } TB2R_B;
@@ -2587,15 +2587,15 @@ extern "C" {
             struct {
                 vuint32_t REN1:1;       /* Resource Enable TCR1 */
                 vuint32_t RSC1:1;       /* Resource Control TCR1 */
-                vuint32_t:2;
+                uint32_t:2;
                 vuint32_t SERVER_ID1:4;   /* TCR1 Server ID */
-                vuint32_t:4;
+                uint32_t:4;
                 vuint32_t SRV1:4;       /* Resource Server Slot */
                 vuint32_t REN2:1;       /* Resource Enable TCR2 */
                 vuint32_t RSC2:1;       /* Resource Control TCR2 */
-                vuint32_t:2;
+                uint32_t:2;
                 vuint32_t SERVER_ID2:4;   /* TCR2 Server ID */
-                vuint32_t:4;
+                uint32_t:4;
                 vuint32_t SRV2:4;       /* Resource Server Slot */
             } B;
         } REDCR_B;
@@ -2606,7 +2606,7 @@ extern "C" {
             vuint32_t R;
             struct {
                 vuint32_t WDM:2;          /* Watchdog Mode */
-                vuint32_t:14;
+                uint32_t:14;
                 vuint32_t WDCNT:16;       /* Watchdog Count */
             } B;
         } WDTR_A;
@@ -2628,7 +2628,7 @@ extern "C" {
             vuint32_t R;
             struct {
                 vuint32_t WDM:2;          /* Watchdog Mode */
-                vuint32_t:14;
+                uint32_t:14;
                 vuint32_t WDCNT:16;       /* Watchdog Count */
             } B;
         } WDTR_B;
@@ -3362,14 +3362,14 @@ extern "C" {
                     vuint32_t CIE:1;    /* Channel Interruput Enable */
                     vuint32_t DTRE:1;   /* Data Transfer Request Enable */
                     vuint32_t CPR:2;    /* Channel Priority */
-                    vuint32_t:2;
+                    uint32_t:2;
                     vuint32_t ETPD:1;
                     vuint32_t ETCS:1;   /* Entry Table Condition Select */
-                    vuint32_t:3;
+                    uint32_t:3;
                     vuint32_t CFS:5;    /* Channel Function Select */
                     vuint32_t ODIS:1;   /* Output disable */
                     vuint32_t OPOL:1;   /* output polarity */
-                    vuint32_t:3;
+                    uint32_t:3;
                     vuint32_t CPBA:11;  /* Channel Parameter Base Address */
                 } B;
             } CR;
@@ -3379,14 +3379,14 @@ extern "C" {
                 struct {
                     vuint32_t CIS:1;    /* Channel Interruput Status */
                     vuint32_t CIOS:1;   /* Channel Interruput Overflow Status */
-                    vuint32_t:6;
+                    uint32_t:6;
                     vuint32_t DTRS:1;   /* Data Transfer Status */
                     vuint32_t DTROS:1;  /* Data Transfer Overflow Status */
-                    vuint32_t:6;
+                    uint32_t:6;
                     vuint32_t IPS:1;    /* Input Pin State */
                     vuint32_t OPS:1;    /* Output Pin State */
                     vuint32_t OBE:1;    /* Output Buffer Enable */
-                    vuint32_t:11;
+                    uint32_t:11;
                     vuint32_t FM1:1;    /* Function mode */
                     vuint32_t FM0:1;    /* Function mode */
                 } B;
@@ -3395,7 +3395,7 @@ extern "C" {
             union {    /* Channel Host Service Request Register */
                 vuint32_t R;
                 struct {
-                    vuint32_t:29;       /* Host Service Request */
+                    uint32_t:29;       /* Host Service Request */
                     vuint32_t HSR:3;
                 } B;
             } HSRR;
@@ -3416,7 +3416,7 @@ extern "C" {
         union {                  /* Module Configuration Register */
             vuint32_t R;
             struct {
-                vuint32_t:29;
+                uint32_t:29;
                 vuint32_t MDIS_RTI:1;
                 vuint32_t MDIS:1;
                 vuint32_t FRZ:1;
@@ -3437,7 +3437,7 @@ extern "C" {
             union {
                 vuint32_t R;
                 struct {
-                    vuint32_t:30;
+                    uint32_t:30;
                     vuint32_t TIE:1;
                     vuint32_t TEN:1;
                 } B;
@@ -3446,7 +3446,7 @@ extern "C" {
             union {
                 vuint32_t R;
                 struct {
-                    vuint32_t:31;
+                    uint32_t:31;
                     vuint32_t TIF:1;
                 } B;
             } TFLG;             /* Timer Flag Register */
@@ -3470,7 +3470,7 @@ extern "C" {
             union {
                 vuint32_t R;
                 struct {
-                    vuint32_t:30;
+                    uint32_t:30;
                     vuint32_t TIE:1;
                     vuint32_t TEN:1;
                 } B;
@@ -3479,7 +3479,7 @@ extern "C" {
             union {
                 vuint32_t R;
                 struct {
-                    vuint32_t:31;
+                    uint32_t:31;
                     vuint32_t TIF:1;
                 } B;
             } TFLG;
@@ -3497,21 +3497,21 @@ extern "C" {
         union {                 /* Master Priority Register for Slave Port 0 */
             vuint32_t R;
             struct {
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t MSTR7:3; /* EBI (development bus) */
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t MSTR6:3; /* FlexRay */
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t MSTR5:3; /* eDMA_B */
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t MSTR4:3; /* eDMA_A */
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t MSTR3:3; /* !!! Unsupported in Mamba !!! - Legacy FEC */
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t MSTR2:3; /* !!! Unsupported in Mamba !!! - Legacy EBI */
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t MSTR1:3; /* e200z7 core-Data, and Nexus 3 - Legacy was eDMA_A */
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t MSTR0:3; /* e200z7 core-CPU Instruction - Legacy was z6 core-Instruction/Data & Nexus */
             } B;
         } MPR0;
@@ -3522,11 +3522,11 @@ extern "C" {
             vuint32_t R;
             struct {
                 vuint32_t RO:1;
-                vuint32_t:21;
+                uint32_t:21;
                 vuint32_t ARB:2;
-                vuint32_t:2;
+                uint32_t:2;
                 vuint32_t PCTL:2;
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t PARK:3;
             } B;
         } SGPCR0;
@@ -3536,21 +3536,21 @@ extern "C" {
         union {                 /* Master Priority Register for Slave Port 1 */
             vuint32_t R;
             struct {
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t MSTR7:3; /* EBI (development bus) */
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t MSTR6:3; /* FlexRay */
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t MSTR5:3; /* eDMA_B */
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t MSTR4:3; /* eDMA_A */
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t MSTR3:3; /* !!! Unsupported in Mamba !!! - Legacy FEC */
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t MSTR2:3; /* !!! Unsupported in Mamba !!! - Legacy EBI */
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t MSTR1:3; /* e200z7 core-Data, and Nexus 3 - Legacy was eDMA_A */
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t MSTR0:3; /* e200z7 core-CPU Instruction - Legacy was z6 core-Instruction/Data & Nexus */
             } B;
         } MPR1;
@@ -3561,11 +3561,11 @@ extern "C" {
             vuint32_t R;
             struct {
                 vuint32_t RO:1;
-                vuint32_t:21;
+                uint32_t:21;
                 vuint32_t ARB:2;
-                vuint32_t:2;
+                uint32_t:2;
                 vuint32_t PCTL:2;
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t PARK:3;
             } B;
         } SGPCR1;
@@ -3575,21 +3575,21 @@ extern "C" {
         union {                 /* Master Priority Register for Slave Port 2 */
             vuint32_t R;
             struct {
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t MSTR7:3; /* EBI (development bus) */
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t MSTR6:3; /* FlexRay */
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t MSTR5:3; /* eDMA_B */
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t MSTR4:3; /* eDMA_A */
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t MSTR3:3; /* !!! Unsupported in Mamba !!! - Legacy FEC */
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t MSTR2:3; /* !!! Unsupported in Mamba !!! - Legacy EBI */
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t MSTR1:3; /* e200z7 core-Data, and Nexus 3 - Legacy was eDMA_A */
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t MSTR0:3; /* e200z7 core-CPU Instruction - Legacy was z6 core-Instruction/Data & Nexus */
             } B;
         } MPR2;
@@ -3600,11 +3600,11 @@ extern "C" {
             vuint32_t R;
             struct {
                 vuint32_t RO:1;
-                vuint32_t:21;
+                uint32_t:21;
                 vuint32_t ARB:2;
-                vuint32_t:2;
+                uint32_t:2;
                 vuint32_t PCTL:2;
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t PARK:3;
             } B;
         } SGPCR2;
@@ -3620,21 +3620,21 @@ extern "C" {
         union {                 /* Master Priority Register for Slave Port 6 */
             vuint32_t R;
             struct {
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t MSTR7:3; /* EBI (development bus) */
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t MSTR6:3; /* FlexRay */
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t MSTR5:3; /* eDMA_B */
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t MSTR4:3; /* eDMA_A */
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t MSTR3:3; /* !!! Unsupported in Mamba !!! - Legacy FEC */
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t MSTR2:3; /* !!! Unsupported in Mamba !!! - Legacy EBI */
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t MSTR1:3; /* e200z7 core-Data, and Nexus 3 - Legacy was eDMA_A */
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t MSTR0:3; /* e200z7 core-CPU Instruction - Legacy was z6 core-Instruction/Data & Nexus */
             } B;
         } MPR6;
@@ -3645,11 +3645,11 @@ extern "C" {
             vuint32_t R;
             struct {
                 vuint32_t RO:1;
-                vuint32_t:21;
+                uint32_t:21;
                 vuint32_t ARB:2;
-                vuint32_t:2;
+                uint32_t:2;
                 vuint32_t PCTL:2;
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t PARK:3;
             } B;
         } SGPCR6;
@@ -3659,21 +3659,21 @@ extern "C" {
         union {                 /* Master Priority Register for Slave Port 7 */
             vuint32_t R;
             struct {
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t MSTR7:3; /* EBI (development bus) */
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t MSTR6:3; /* FlexRay */
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t MSTR5:3; /* eDMA_B */
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t MSTR4:3; /* eDMA_A */
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t MSTR3:3; /* !!! Unsupported in Mamba !!! - Legacy FEC */
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t MSTR2:3; /* !!! Unsupported in Mamba !!! - Legacy EBI */
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t MSTR1:3; /* e200z7 core-Data, and Nexus 3 - Legacy was eDMA_A */
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t MSTR0:3; /* e200z7 core-CPU Instruction - Legacy was z6 core-Instruction/Data & Nexus */
             } B;
         } MPR7;
@@ -3684,11 +3684,11 @@ extern "C" {
             vuint32_t R;
             struct {
                 vuint32_t RO:1;
-                  vuint32_t:21;
+                  uint32_t:21;
                 vuint32_t ARB:2;
-                  vuint32_t:2;
+                  uint32_t:2;
                 vuint32_t PCTL:2;
-                  vuint32_t:1;
+                  uint32_t:1;
                 vuint32_t PARK:3;
             } B;
         } SGPCR7;               /* General Purpose Control Register for Slave Port 7 */
@@ -3708,11 +3708,11 @@ extern "C" {
             vuint32_t R;
             struct {
                 vuint32_t SPERR:8;
-                  vuint32_t:4;
+                  uint32_t:4;
                 vuint32_t HRL:4;
                 vuint32_t NSP:4;
                 vuint32_t NRGD:4;
-                  vuint32_t:7;
+                  uint32_t:7;
                 vuint32_t VLD:1;
             } B;
         } CESR;
@@ -3746,7 +3746,7 @@ extern "C" {
                 vuint32_t R;
                 struct {
                     vuint32_t SRTADDR:27;
-                    vuint32_t:5;
+                    uint32_t:5;
                 } B;
             } WORD0;
             
@@ -3754,7 +3754,7 @@ extern "C" {
                 vuint32_t R;
                 struct {
                     vuint32_t ENDADDR:27;
-                    vuint32_t:5;
+                    uint32_t:5;
                 } B;
             } WORD1;
             
@@ -3769,7 +3769,7 @@ extern "C" {
                     vuint32_t M5WE:1;
                     vuint32_t M4RE:1;
                     vuint32_t M4WE:1;
-                    vuint32_t: 18;
+                    uint32_t: 18;
                     vuint32_t M0PE:1;
                     vuint32_t M0SM:2;
                     vuint32_t M0UM:3;
@@ -3781,7 +3781,7 @@ extern "C" {
                 struct {
                     vuint32_t PID:8;
                     vuint32_t PIDMASK:8;
-                      vuint32_t:15;
+                      uint32_t:15;
                     vuint32_t VLD:1;
                 } B;
             } WORD3;
@@ -3792,7 +3792,7 @@ extern "C" {
         union {           /* Region Descriptor Alternate Access Control n */
             vuint32_t R;
             struct {
-                vuint32_t:6;
+                uint32_t:6;
                 vuint32_t M4RE:1;
                 vuint32_t M4WE:1;
                 vuint32_t M3PE:1;
@@ -3825,13 +3825,13 @@ extern "C" {
             struct {
                 vuint32_t MAP0:1;
                 vuint32_t MAP1:1;
-                vuint32_t:1;
-                vuint32_t:1;
+                uint32_t:1;
+                uint32_t:1;
                 vuint32_t MAP4:1;
                 vuint32_t MAP5:1;
                 vuint32_t MAP6:1;
                 vuint32_t MAP7:1;
-                vuint32_t:14;
+                uint32_t:14;
                 vuint32_t KEY:1;
                 vuint32_t RIA:1;
                 vuint32_t WND:1;
@@ -3848,7 +3848,7 @@ extern "C" {
         union {                /* Interrupt register */
             vuint32_t R;
             struct {
-                vuint32_t :31;
+                uint32_t :31;
                 vuint32_t TIF:1;
             } B;
         } IR;
@@ -3870,7 +3870,7 @@ extern "C" {
         union {                /* Service register */
             vuint32_t R;
             struct {
-                vuint32_t :16;
+                uint32_t :16;
                 vuint32_t WSC:16;
             } B;
         } SR;
@@ -3885,7 +3885,7 @@ extern "C" {
         union {                /* Service key register */
             vuint32_t R;
             struct {
-                vuint32_t :16;
+                uint32_t :16;
                 vuint32_t SK:16;
             } B;
         } SK;
@@ -3903,9 +3903,9 @@ extern "C" {
         union {                  /* Control Register */
             vuint32_t R;
             struct {
-                vuint32_t :16;
+                uint32_t :16;
                 vuint32_t CPS:8;
-                vuint32_t :6;
+                uint32_t :6;
                 vuint32_t FRZ:1;
                 vuint32_t TEN:1;
             } B;
@@ -3921,7 +3921,7 @@ extern "C" {
 		union {
             vuint32_t R;
             struct {
-                vuint32_t :31;
+                uint32_t :31;
              	vuint32_t CEN:1;   			
             } B;
         } CCR0;                /* Chan 0 Control Register */
@@ -3929,7 +3929,7 @@ extern "C" {
         union {
     	    vuint32_t R;
             struct {
-                vuint32_t :31;
+                uint32_t :31;
                 vuint32_t CIF:1;
         	} B;
         } CIR0;                /* Chan 0 Interrupt Register */
@@ -3944,7 +3944,7 @@ extern "C" {
 		union {
             vuint32_t R;
             struct {
-                vuint32_t :31;
+                uint32_t :31;
              	vuint32_t CEN:1;   			
             } B;
         } CCR1;                /* Chan 1 Control Register */
@@ -3952,7 +3952,7 @@ extern "C" {
         union {
     	    vuint32_t R;
             struct {
-                vuint32_t :31;
+                uint32_t :31;
                 vuint32_t CIF:1;
         	} B;
         } CIR1;                /* Chan 1 Interrupt Register */
@@ -3967,7 +3967,7 @@ extern "C" {
 		union {
             vuint32_t R;
             struct {
-                vuint32_t :31;
+                uint32_t :31;
              	vuint32_t CEN:1;   			
             } B;
         } CCR2;                /* Chan 2 Control Register */
@@ -3975,7 +3975,7 @@ extern "C" {
         union {
     	    vuint32_t R;
             struct {
-                vuint32_t :31;
+                uint32_t :31;
                 vuint32_t CIF:1;
         	} B;
         } CIR2;                /* Chan 2 Interrupt Register */
@@ -3990,7 +3990,7 @@ extern "C" {
 		union {
             vuint32_t R;
             struct {
-                vuint32_t :31;
+                uint32_t :31;
              	vuint32_t CEN:1;   			
             } B;
         } CCR3;                /* Chan 3 Control Register */
@@ -3998,7 +3998,7 @@ extern "C" {
         union {
     	    vuint32_t R;
             struct {
-                vuint32_t :31;
+                uint32_t :31;
                 vuint32_t CIF:1;
         	} B;
         } CIR3;                /* Chan 3 Interrupt Register */
@@ -4039,7 +4039,7 @@ extern "C" {
                 vuint8_t POR:1;
                 vuint8_t DIR:1;
                 vuint8_t SWTR:1;
-                vuint8_t:5;
+                uint8_t:5;
             } B;
         } MRSR;
         
@@ -4048,10 +4048,10 @@ extern "C" {
         union {                  /* ECC Configuration Register */
             vuint8_t R;
             struct {
-                vuint8_t:2;
+                uint8_t:2;
                 vuint8_t ER1BR:1;
                 vuint8_t EF1BR:1;
-                vuint8_t:2;
+                uint8_t:2;
                 vuint8_t ERNCR:1;
                 vuint8_t EFNCR:1;
             } B;
@@ -4062,10 +4062,10 @@ extern "C" {
         union {                  /* ECC Status Register */
             vuint8_t R;
             struct {
-                vuint8_t:2;
+                uint8_t:2;
                 vuint8_t R1BC:1;
                 vuint8_t F1BC:1;
-                vuint8_t:2;
+                uint8_t:2;
                 vuint8_t RNCE:1;
                 vuint8_t FNCE:1;
             } B;
@@ -4076,13 +4076,13 @@ extern "C" {
         union {                 /* ECC Error Generation Register */
             vuint16_t R;
             struct {
-                vuint16_t:2;
+                uint16_t:2;
                 vuint16_t FRC1BI:1;
                 vuint16_t FR11BI:1;
-                vuint16_t:2;
+                uint16_t:2;
                 vuint16_t FRCNCI:1;
                 vuint16_t FR1NCI:1;
-                vuint16_t:1;
+                uint16_t:1;
                 vuint16_t ERRBIT:7;
             } B;
         } EEGR;
@@ -4101,7 +4101,7 @@ extern "C" {
         union {                 /* Flash ECC Master Number Register */
             vuint8_t R;
             struct {
-                vuint8_t:4;
+                uint8_t:4;
                 vuint8_t FEMR:4;
             } B;
         } FEMR;
@@ -4151,7 +4151,7 @@ extern "C" {
         union {                 /* RAM ECC Master Number Register */
             vuint8_t R;
             struct {
-                vuint8_t:4;
+                uint8_t:4;
                 vuint8_t REMR:4;
             } B;
         } REMR;
@@ -4195,7 +4195,7 @@ extern "C" {
         union {                   /* Control Register */
             vuint32_t R;
             struct {
-                vuint32_t:14;
+                uint32_t:14;
                 vuint32_t CX:1;
                 vuint32_t ECX:1;
                 vuint32_t GRP3PRI:2;
@@ -4209,7 +4209,7 @@ extern "C" {
                 vuint32_t ERGA:1;
                 vuint32_t ERCA:1;
                 vuint32_t EDBG:1;
-                vuint32_t:1;
+                uint32_t:1;
             } B;
         } CR; /* Legacy naming - refer to MCR in Reference Manual */
         
@@ -4217,7 +4217,7 @@ extern "C" {
             vuint32_t R;
             struct {
                 vuint32_t VLD:1;
-                vuint32_t:14;
+                uint32_t:14;
                 vuint32_t ECX:1;
                 vuint32_t GPE:1;
                 vuint32_t CPE:1;
@@ -4817,9 +4817,9 @@ extern "C" {
         union {                  /* Module Configuration Register */
             vuint32_t R;
             struct {
-                vuint32_t:26;
+                uint32_t:26;
                 vuint32_t VTES:1;
-                vuint32_t:4;
+                uint32_t:4;
                 vuint32_t HVEN:1;
             } B;
         } MCR;
@@ -4829,7 +4829,7 @@ extern "C" {
         union {                  /* Current Priority Register */
             vuint32_t R;
             struct {
-                vuint32_t:28;
+                uint32_t:28;
                 vuint32_t PRI:4;
             } B;
         } CPR;
@@ -4841,7 +4841,7 @@ extern "C" {
             struct {
                 vuint32_t VTBA:21;
                 vuint32_t INTVEC:9;
-                  vuint32_t:2;
+                  uint32_t:2;
             } B;
         } IACKR;
         
@@ -4859,7 +4859,7 @@ extern "C" {
         union {             /* Software Set/Clear Interruput Register */
             vuint8_t R;
             struct {
-                vuint8_t:6;
+                uint8_t:6;
                 vuint8_t SET:1;
                 vuint8_t CLR:1;
             } B;
@@ -4870,7 +4870,7 @@ extern "C" {
         union {             /* Priority Select Registers */
             vuint8_t R;
             struct {
-                vuint8_t:4;
+                uint8_t:4;
                 vuint8_t PRI:4;
             } B;
         } PSR[480];
@@ -4888,12 +4888,12 @@ extern "C" {
         union {                  /* Module Configuration Register */
             vuint32_t R;
             struct {
-                vuint32_t:24;
+                uint32_t:24;
                 vuint32_t ICEA0:1;
                 vuint32_t ICEA1:1;
-                vuint32_t:1;
-                vuint32_t:2;
-                vuint32_t:1;
+                uint32_t:1;
+                uint32_t:2;
+                uint32_t:1;
                 vuint32_t DBG:2;
             } B;
         } MCR;
@@ -4905,7 +4905,7 @@ extern "C" {
         union {                /* External Trigger Digital Filter Register */
             vuint32_t R;
             struct {
-                vuint32_t:28;
+                uint32_t:28;
                 vuint32_t DFL:4;
             } B;
         } ETDFR;
@@ -4922,7 +4922,7 @@ extern "C" {
         union {              /* Result FIFO Pop Registers */
             vuint32_t R;
             struct {
-                vuint32_t:16;
+                uint32_t:16;
                 vuint32_t RFPOP:16;
             } B;
         } RFPR[6];
@@ -4932,12 +4932,12 @@ extern "C" {
         union {              /* CFIFO Control Registers */
             vuint16_t R;
             struct {
-                vuint16_t:3;
+                uint16_t:3;
                 vuint16_t CFEEE:1; /* ONLY valid for CFCR[0] */
                 vuint16_t STRME:1; /* ONLY valid for CFCR[0] */
                 vuint16_t SSE:1;
                 vuint16_t CFINV:1;
-                vuint16_t:1;
+                uint16_t:1;
                 vuint16_t MODE:4;
                 vuint16_t AMODE:4; /* ONLY valid for CFCR[0] */
             } B;
@@ -4953,12 +4953,12 @@ extern "C" {
                 vuint16_t PIE:1;
                 vuint16_t EOQIE:1;
                 vuint16_t CFUIE:1;
-                vuint16_t:1;
+                uint16_t:1;
                 vuint16_t CFFE:1;
                 vuint16_t CFFS:1;
-                vuint16_t:4;
+                uint16_t:4;
                 vuint16_t RFOIE:1;
-                vuint16_t:1;
+                uint16_t:1;
                 vuint16_t RFDE:1;
                 vuint16_t RFDS:1;
             } B;
@@ -4976,11 +4976,11 @@ extern "C" {
                 vuint32_t CFUF:1;
                 vuint32_t SSS:1;
                 vuint32_t CFFF:1;
-                vuint32_t:5;
+                uint32_t:5;
                 vuint32_t RFOF:1;
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t RFDF:1;
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t CFCTR:4;
                 vuint32_t TNXTPTR:4;
                 vuint32_t RFCTR:4;
@@ -4993,7 +4993,7 @@ extern "C" {
         union {             /* CFIFO Transfer Counter Registers */
             vuint16_t R;
             struct {
-                vuint16_t:5;
+                uint16_t:5;
                 vuint16_t TCCF:11; /* Legacy naming - refer to TC_CF in Reference Manual */
             } B;
         } CFTCR[6];
@@ -5009,7 +5009,7 @@ extern "C" {
                 vuint32_t CFS3:2; /* Legacy naming - refer to CFS3_TCB0 in Reference Manual */
                 vuint32_t CFS4:2; /* Legacy naming - refer to CFS4_TCB0 in Reference Manual */
                 vuint32_t CFS5:2; /* Legacy naming - refer to CFS5_TCB0 in Reference Manual */
-                vuint32_t:5;
+                uint32_t:5;
                 vuint32_t LCFTCB0:4;
                 vuint32_t TC_LCFTCB0:11;
             } B;
@@ -5024,7 +5024,7 @@ extern "C" {
                 vuint32_t CFS3:2; /* Legacy naming - refer to CFS3_TCB1 in Reference Manual */
                 vuint32_t CFS4:2; /* Legacy naming - refer to CFS4_TCB1 in Reference Manual */
                 vuint32_t CFS5:2; /* Legacy naming - refer to CFS5_TCB1 in Reference Manual */
-                vuint32_t:5;
+                uint32_t:5;
                 vuint32_t LCFTCB1:4;
                 vuint32_t TC_LCFTCB1:11;
             } B;
@@ -5039,7 +5039,7 @@ extern "C" {
                 vuint32_t CFS3:2; /* Legacy naming - refer to CFS3_TSSI in Reference Manual */
                 vuint32_t CFS4:2; /* Legacy naming - refer to CFS4_TSSI in Reference Manual */
                 vuint32_t CFS5:2; /* Legacy naming - refer to CFS5_TSSI in Reference Manual */
-                vuint32_t:4;
+                uint32_t:4;
                 vuint32_t ECBNI:1;
                 vuint32_t LCFTSSI:4;
                 vuint32_t TC_LCFTSSI:11;
@@ -5055,7 +5055,7 @@ extern "C" {
                 vuint32_t CFS3:2;
                 vuint32_t CFS4:2;
                 vuint32_t CFS5:2;
-                vuint32_t:20;
+                uint32_t:20;
             } B;
         } CFSR;
         
@@ -5068,7 +5068,7 @@ extern "C" {
         union {                 /* EQADC Red Line Client Configuration Register */
             vuint32_t R;
             struct {
-                vuint32_t:16;
+                uint32_t:16;
                 vuint32_t REDBS2:4;
                 vuint32_t SRV2:4;
                 vuint32_t REDBS1:4;
@@ -5125,16 +5125,16 @@ extern "C" {
             struct {
                 vuint32_t MDIS:1;
                 vuint32_t FREN:1;
-                vuint32_t :1;
+                uint32_t :1;
                 vuint32_t FRZ:1;
                 vuint32_t SRES:1;
                 vuint32_t CASCD:2;
                 vuint32_t IDEN:1;
                 vuint32_t ODEN:1;
                 vuint32_t ERREN:1;
-                vuint32_t :1;
+                uint32_t :1;
                 vuint32_t FTYPE:2;
-                vuint32_t :1;
+                uint32_t :1;
                 vuint32_t SCAL:2;
                 vuint32_t IDIS:1;
                 vuint32_t SAT:1;
@@ -5146,7 +5146,7 @@ extern "C" {
                 vuint32_t IBIE:1;
                 vuint32_t OBIE:1;
                 vuint32_t EDME:1;
-                vuint32_t :3;
+                uint32_t :3;
             } B;
         } MCR;
         
@@ -5154,25 +5154,25 @@ extern "C" {
             vuint32_t R;
             struct {
                 vuint32_t BSY:1;
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t DEC_COUNTER:4;
                 vuint32_t IDFC:1;
                 vuint32_t ODFC:1;
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t IBIC:1;
                 vuint32_t OBIC:1;
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t DIVRC:1;
                 vuint32_t OVFC:1;
                 vuint32_t OVRC:1;
                 vuint32_t IVRC:1;
-                vuint32_t:6;
+                uint32_t:6;
                 vuint32_t IDF:1;
                 vuint32_t ODF:1;
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t IBIF:1;
                 vuint32_t OBIF:1;
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t DIVR:1;
                 vuint32_t OVF:1;
                 vuint32_t OVR:1;
@@ -5187,17 +5187,17 @@ extern "C" {
             	vuint32_t SSIG:1;
             	vuint32_t SSAT:1;
             	vuint32_t SCSAT:1;
-            	vuint32_t:10;
+            	uint32_t:10;
                 vuint32_t SRQ:1;
                 vuint32_t SZR0:1;
                 vuint32_t SISEL:1;
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t SZROSEL:2;
-            	vuint32_t:2;
+            	uint32_t:2;
 				vuint32_t SHLTSEL:2;
-            	vuint32_t:1;
+            	uint32_t:1;
                 vuint32_t SRQSEL:3;
-            	vuint32_t:2;
+            	uint32_t:2;
 				vuint32_t SENSEL:2;
             } B;
         } MXCR;
@@ -5205,21 +5205,21 @@ extern "C" {
         union {                  /* Module Extended Status Register */
             vuint32_t R;
             struct {
-                vuint32_t:7;
+                uint32_t:7;
                 vuint32_t SDFC:1;
-                vuint32_t:2;
+                uint32_t:2;
                 vuint32_t SSEC:1;
                 vuint32_t SCEC:1;
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t SSOVFC:1;
                 vuint32_t SCOVFC:1;
                 vuint32_t SVRC:1;
-                vuint32_t:7;
+                uint32_t:7;
                 vuint32_t SDF:1;
-                vuint32_t:2;
+                uint32_t:2;
                 vuint32_t SSE:1;
                 vuint32_t SCE:1;
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t SSOVF:1;
                 vuint32_t SCOVF:1;
                 vuint32_t SVR:1;
@@ -5229,9 +5229,9 @@ extern "C" {
         union {                  /* Interface Input Buffer Register */
             vuint32_t R;
             struct {
-                vuint32_t:4;
+                uint32_t:4;
             	vuint32_t INTAG:4;
-                vuint32_t:6;
+                uint32_t:6;
                 vuint32_t PREFILL:1;
                 vuint32_t FLUSH:1;
                 vuint32_t INPBUF:16;
@@ -5241,7 +5241,7 @@ extern "C" {
         union {                  /* Interface Output Buffer Register */
             vuint32_t R;
             struct {
-                vuint32_t:12;
+                uint32_t:12;
                 vuint32_t OUTTAG:4;
                 vuint32_t OUTBUF:16;
             } B;
@@ -5272,7 +5272,7 @@ extern "C" {
         union {                  /* EDID Register */
             vuint32_t R;
             struct {
-                vuint32_t:16;
+                uint32_t:16;
                 vuint32_t SAMP_DATA:16;
             } B;
         } EDID;
@@ -5342,7 +5342,7 @@ extern "C" {
                 vuint32_t CLR_TXF:1;
                 vuint32_t CLR_RXF:1;
                 vuint32_t SMPL_PT:2;
-                vuint32_t:7;
+                uint32_t:7;
                 vuint32_t HALT:1;
             } B;
         } MCR;
@@ -5353,7 +5353,7 @@ extern "C" {
             vuint32_t R;
             struct {
                 vuint32_t TCNT:16;
-                vuint32_t:16;
+                uint32_t:16;
             } B;
         } TCR;
         
@@ -5381,16 +5381,16 @@ extern "C" {
             struct {
                 vuint32_t TCF:1;
                 vuint32_t TXRXS:1;
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t EOQF:1;
                 vuint32_t TFUF:1;
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t TFFF:1;
-                vuint32_t:5;
+                uint32_t:5;
                 vuint32_t RFOF:1;
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t RFDF:1;
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t TXCTR:4;
                 vuint32_t TXNXTPTR:4;
                 vuint32_t RXCTR:4;
@@ -5402,18 +5402,18 @@ extern "C" {
             vuint32_t R;
             struct {
                 vuint32_t TCFRE:1;
-                vuint32_t:2;
+                uint32_t:2;
                 vuint32_t EOQFRE:1;
                 vuint32_t TFUFRE:1;
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t TFFFRE:1;
                 vuint32_t TFFFDIRS:1;
-                vuint32_t:4;
+                uint32_t:4;
                 vuint32_t RFOFRE:1;
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t RFDFRE:1;
                 vuint32_t RFDFDIRS:1;
-                vuint32_t:16;
+                uint32_t:16;
             } B;
         } RSER;
         
@@ -5424,7 +5424,7 @@ extern "C" {
                 vuint32_t CTAS:3;
                 vuint32_t EOQ:1;
                 vuint32_t CTCNT:1;
-                vuint32_t:2;
+                uint32_t:2;
                 vuint32_t PCS7:1;
                 vuint32_t PCS6:1;
                 vuint32_t PCS5:1;
@@ -5440,7 +5440,7 @@ extern "C" {
         union {                 /* POP RX FIFO Register */
             vuint32_t R;
             struct {
-                vuint32_t:16;
+                uint32_t:16;
                 vuint32_t RXDATA:16;
             } B;
         } POPR;
@@ -5458,7 +5458,7 @@ extern "C" {
         union {              /* Transmit FIFO Registers */
             vuint32_t R;
             struct {
-                vuint32_t:16;
+                uint32_t:16;
                 vuint32_t RXDATA:16;
             } B;
         } RXFR[4];
@@ -5469,9 +5469,9 @@ extern "C" {
             vuint32_t R;
             struct {
                 vuint32_t MTOE:1;
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t MTOCNT:6;
-                vuint32_t:3;
+                uint32_t:3;
                 vuint32_t TSBC:1;
                 vuint32_t TXSS:1;
                 vuint32_t TPOL:1;
@@ -5479,7 +5479,7 @@ extern "C" {
                 vuint32_t CID:1;
                 vuint32_t DCONT:1;
                 vuint32_t DSICTAS:3;
-                vuint32_t:4;
+                uint32_t:4;
                 vuint32_t DPCS7:1;
                 vuint32_t DPCS6:1;
                 vuint32_t DPCS5:1;
@@ -5522,9 +5522,9 @@ extern "C" {
         union {
             vuint32_t R;
             struct {
-                vuint32_t:3;
+                uint32_t:3;
                 vuint32_t TSBCNT:5;
-                  vuint32_t:16;
+                  uint32_t:16;
                 vuint32_t DPCS1_7:1;
                 vuint32_t DPCS1_6:1;
                 vuint32_t DPCS1_5:1;
@@ -5547,10 +5547,10 @@ extern "C" {
         union {                  /* Control Register 1 */
             vuint32_t R;
             struct {
-                vuint32_t:3;
+                uint32_t:3;
                 vuint32_t SBR:13;
                 vuint32_t LOOPS:1;
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t RSRC:1;
                 vuint32_t M:1;
                 vuint32_t WAKE:1;
@@ -5597,7 +5597,7 @@ extern "C" {
                 vuint16_t RN:1;
                 vuint16_t TN:1;
                 vuint16_t ERR:1;
-                vuint16_t:1;
+                uint16_t:1;
                 vuint16_t RD_11:4;
                 vuint16_t D:8;
             } B;
@@ -5614,9 +5614,9 @@ extern "C" {
                 vuint32_t NF:1;
                 vuint32_t FE:1;
                 vuint32_t PF:1;
-                vuint32_t:3;
+                uint32_t:3;
                 vuint32_t BERR:1;
-                vuint32_t:2;
+                uint32_t:2;
                 vuint32_t TACT:1;
                 vuint32_t RAF:1;
                 vuint32_t RXRDY:1;
@@ -5627,7 +5627,7 @@ extern "C" {
                 vuint32_t CERR:1;
                 vuint32_t CKERR:1;
                 vuint32_t FRC:1;
-                vuint32_t:6;
+                uint32_t:6;
                 vuint32_t UREQ:1;
                 vuint32_t OVFL:1;
             } B;
@@ -5640,7 +5640,7 @@ extern "C" {
                 vuint32_t WU:1;
                 vuint32_t WUD0:1;
                 vuint32_t WUD1:1;
-                vuint32_t :2;
+                uint32_t :2;
                 vuint32_t PRTY:1;
                 vuint32_t LIN:1;
                 vuint32_t RXIE:1;
@@ -5651,10 +5651,10 @@ extern "C" {
                 vuint32_t CIE:1;
                 vuint32_t CKIE:1;
                 vuint32_t FCIE:1;
-                vuint32_t:6;
+                uint32_t:6;
                 vuint32_t UQIE:1;
                 vuint32_t OFIE:1;
-                vuint32_t:8;
+                uint32_t:8;
             } B;
         } LCR;
         
@@ -5683,13 +5683,13 @@ extern "C" {
         union {                  /* Control Register 3 */
             vuint16_t R;
             struct {
-                vuint16_t:3;
+                uint16_t:3;
                 vuint16_t SYNM:1;
                 vuint16_t EROE:1;
                 vuint16_t ERFE:1;
                 vuint16_t ERPE:1;
                 vuint16_t M2:1;
-                vuint16_t:8;
+                uint16_t:8;
             } B;
         } CR3;
 
@@ -5706,9 +5706,9 @@ extern "C" {
             union {
                 vuint32_t R;
                 struct {
-                    vuint32_t:4;
+                    uint32_t:4;
                     vuint32_t CODE:4;
-                    vuint32_t:1;
+                    uint32_t:1;
                     vuint32_t SRR:1;
                     vuint32_t IDE:1;
                     vuint32_t RTR:1;
@@ -5739,7 +5739,7 @@ extern "C" {
         union {
             vuint32_t R;
             struct {
-                vuint32_t:9;
+                uint32_t:9;
                 vuint32_t SRR:1;
                 vuint32_t IDE:1;
                 vuint32_t RTR:1;
@@ -5751,7 +5751,7 @@ extern "C" {
         union {
             vuint32_t R;
             struct {
-                vuint32_t:3;
+                uint32_t:3;
                 vuint32_t STD_ID:11;
                 vuint32_t EXT_ID:18;
             } B;
@@ -5781,23 +5781,23 @@ extern "C" {
                 vuint32_t FEN:1;
                 vuint32_t HALT:1;
                 vuint32_t NOTRDY:1;
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t SOFTRST:1;
                 vuint32_t FRZACK:1;
                 vuint32_t SUPV:1;
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t WRNEN:1;
                 vuint32_t MDISACK:1;
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t DOZE:1;
                 vuint32_t SRXDIS:1;
                 vuint32_t BCC:1;   /* Legacy name: Refer to MBFEN in the reference manual */
-                vuint32_t:2;
+                uint32_t:2;
                 vuint32_t LPRIO_EN:1;
                 vuint32_t AEN:1;
-                vuint32_t:2;
+                uint32_t:2;
                 vuint32_t IDAM:2;
-                vuint32_t:2;
+                uint32_t:2;
                 vuint32_t MAXMB:6;
             } B;
         } MCR;
@@ -5815,7 +5815,7 @@ extern "C" {
                 vuint32_t LPB:1;
                 vuint32_t TWRNMSK:1;
                 vuint32_t RWRNMSK:1;
-                vuint32_t:2;
+                uint32_t:2;
                 vuint32_t SMP:1;
                 vuint32_t BOFFREC:1;
                 vuint32_t TSYN:1;
@@ -5948,7 +5948,7 @@ extern "C" {
         union {                  /* Error Counter Register */
             vuint32_t R;
             struct {
-                vuint32_t:16;
+                uint32_t:16;
                 vuint32_t RXECNT:8;
                 vuint32_t TXECNT:8;
             } B;
@@ -5957,7 +5957,7 @@ extern "C" {
         union {                  /* Error and Status Register */
             vuint32_t R;
             struct {
-                vuint32_t:14;
+                uint32_t:14;
                 
                 vuint32_t TWRNINT:1;
                 vuint32_t RWRNINT:1;
@@ -5972,10 +5972,10 @@ extern "C" {
                 vuint32_t IDLE:1;
                 vuint32_t TXRX:1;
                 vuint32_t FLTCONF:2;
-                vuint32_t:1;
+                uint32_t:1;
                 vuint32_t BOFFINT:1;
                 vuint32_t ERRINT:1;
-                vuint32_t:1;
+                uint32_t:1;
             } B;
         } ESR;
         
@@ -6200,15 +6200,15 @@ extern "C" {
             vuint16_t CHB:1;    /* channel B enable */
             vuint16_t CHA:1;    /* channel A enable */
             vuint16_t SFFE:1;   /* synchronization frame filter enable */
-            vuint16_t:1;
+            uint16_t:1;
             vuint16_t R:1;      /* reserved, read as zero. system must not 
                                    write 1 to this bit */
             vuint16_t FUM:1;    /* FIFO update mode */
             vuint16_t FAM:1;    /* FIFO address mode */
-            vuint16_t:1;
+            uint16_t:1;
             vuint16_t CLKSEL:1; /* protocol engine clock source select */
             vuint16_t BITRATE:3;   /* flexray bus bitrate */
-            vuint16_t:1;
+            uint16_t:1;
         } B;
     } MCR_t;
     
@@ -6216,11 +6216,11 @@ extern "C" {
         vuint16_t R;
         struct {
             vuint16_t WMD:1;      /* write mode */
-            vuint16_t:3;
+            uint16_t:3;
             vuint16_t STBSSEL:4;  /* strobe signal select */
-            vuint16_t:3;
+            uint16_t:3;
             vuint16_t ENB:1;      /* strobe signal enable */
-            vuint16_t:2;
+            uint16_t:2;
             vuint16_t STBPSEL:2;  /* strobe port select */
         } B;
     } STBSCR_t;
@@ -6228,18 +6228,18 @@ extern "C" {
     typedef union uMBDSR {
         vuint16_t R;
         struct {
-            vuint16_t:1;
+            uint16_t:1;
             vuint16_t MBSEG2DS:7;       /* message buffer segment 2 data size */
-            vuint16_t:1;
+            uint16_t:1;
             vuint16_t MBSEG1DS:7;       /* message buffer segment 1 data size */
         } B;
     } MBDSR_t;
     typedef union uMBSSUTR {
         vuint16_t R;
         struct {
-            vuint16_t:1;
+            uint16_t:1;
             vuint16_t LAST_MB_SEG1:7;   /* last message buffer control register for message buffer segment 1 */
-            vuint16_t:1;
+            uint16_t:1;
             vuint16_t LAST_MB_UTIL:7;   /* last message buffer utilized */
         } B;
     } MBSSUTR_t;
@@ -6249,11 +6249,11 @@ extern "C" {
         vuint8_t byte[2];
         struct {
             vuint16_t WME:1;    /* write mode external correction command */
-            vuint16_t:3;
+            uint16_t:3;
             vuint16_t EOC_AP:2; /* external offset correction application */
             vuint16_t ERC_AP:2; /* external rate correction application */
             vuint16_t BSY:1;    /* command write busy / write mode command */
-            vuint16_t:3;
+            uint16_t:3;
             vuint16_t POCCMD:4; /* protocol command */
         } B;
     } POCR_t;
@@ -6311,10 +6311,10 @@ extern "C" {
             vuint16_t SSI2IF:1; /* slot status counter incremented interrupt flag */
             vuint16_t SSI1IF:1; /* slot status counter incremented interrupt flag */
             vuint16_t SSI0IF:1; /* slot status counter incremented interrupt flag */
-            vuint16_t:2;
+            uint16_t:2;
             vuint16_t EVTIF:1;  /* even cycle table written interrupt flag */
             vuint16_t ODTIF:1;  /* odd cycle table written interrupt flag */
-            vuint16_t:4;
+            uint16_t:4;
         } B;
     } PIFR1_t;
     typedef union uPIER0 {
@@ -6349,10 +6349,10 @@ extern "C" {
             vuint16_t SSI2IE:1; /* slot status counter incremented interrupt enable */
             vuint16_t SSI1IE:1; /* slot status counter incremented interrupt enable */
             vuint16_t SSI0IE:1; /* slot status counter incremented interrupt enable */
-            vuint16_t:2;
+            uint16_t:2;
             vuint16_t EVTIE:1;  /* even cycle table written interrupt enable */
             vuint16_t ODTIE:1;  /* odd cycle table written interrupt enable */
-            vuint16_t:4;
+            uint16_t:4;
         } B;
     } PIER1_t;
     typedef union uCHIERFR {
@@ -6379,9 +6379,9 @@ extern "C" {
     typedef union uMBIVEC {
         vuint16_t R;
         struct {
-            vuint16_t:1;
+            uint16_t:1;
             vuint16_t TBIVEC:7; /* transmit buffer interrupt vector */
-            vuint16_t:1;
+            uint16_t:1;
             vuint16_t RBIVEC:7; /* receive buffer interrupt vector */
         } B;
     } MBIVEC_t;
@@ -6391,10 +6391,10 @@ extern "C" {
         struct {
             vuint16_t ERRMODE:2;        /* error mode */
             vuint16_t SLOTMODE:2;       /* slot mode */
-            vuint16_t:1;
+            uint16_t:1;
             vuint16_t PROTSTATE:3;      /* protocol state */
             vuint16_t SUBSTATE:4;       /* protocol sub state *//* Legacy naming: Refer to STARTUPSTATE in the reference manual */
-            vuint16_t:1;
+            uint16_t:1;
             vuint16_t WAKEUPSTATUS:3;   /* wakeup status */
         } B;
     } PSR0_t;
@@ -6407,7 +6407,7 @@ extern "C" {
         struct {
             vuint16_t CSAA:1;   /* cold start attempt abort flag */
             vuint16_t SCP:1;    /* cold start path *//* Legacy naming: Refer to CSP in the reference manual */
-            vuint16_t:1;
+            uint16_t:1;
             vuint16_t REMCSAT:5;/* remanining coldstart attempts */
             vuint16_t CPN:1;    /* cold start noise path */
             vuint16_t HHR:1;    /* host halt request pending */
@@ -6436,14 +6436,14 @@ extern "C" {
     typedef union uPSR3 {
         vuint16_t R;
         struct {
-            vuint16_t:2;
+            uint16_t:2;
             vuint16_t WUB:1;    /* wakeup symbol received on channel B */
             vuint16_t ABVB:1;   /* aggregated boundary violation on channel B */
             vuint16_t AACB:1;   /* aggregated additional communication on channel B */
             vuint16_t ACEB:1;   /* aggregated content error on channel B */
             vuint16_t ASEB:1;   /* aggregated syntax error on channel B */
             vuint16_t AVFB:1;   /* aggregated valid frame on channel B */
-            vuint16_t:2;
+            uint16_t:2;
             vuint16_t WUA:1;    /* wakeup symbol received on channel A */
             vuint16_t ABVA:1;   /* aggregated boundary violation on channel A */
             vuint16_t AACA:1;   /* aggregated additional communication on channel A */
@@ -6455,7 +6455,7 @@ extern "C" {
     typedef union uCIFRR {
         vuint16_t R;
         struct {
-            vuint16_t:8;
+            uint16_t:8;
             vuint16_t MIFR:1;   /* module interrupt flag */
             vuint16_t PRIFR:1;  /* protocol interrupt flag */
             vuint16_t CHIFR:1;  /* CHI interrupt flag */
@@ -6470,7 +6470,7 @@ extern "C" {
     typedef union uSYMATOR {
         vuint16_t R;
         struct {
-            vuint16_t:8;
+            uint16_t:8;
             vuint16_t TIMEOUT:8;  /* system memory access time-out */
         } B;
     } SYMATOR_t;
@@ -6496,7 +6496,7 @@ extern "C" {
             vuint16_t OLKS:1;   /* odd cycle tables lock status */
             vuint16_t EVAL:1;   /* even cycle tables valid */
             vuint16_t OVAL:1;   /* odd cycle tables valid */
-            vuint16_t:1;
+            uint16_t:1;
             vuint16_t OPT:1;    /*one pair trigger */
             vuint16_t SDVEN:1;  /* sync frame deviation table enable */
             vuint16_t SIDEN:1;  /* sync frame ID table enable */
@@ -6505,7 +6505,7 @@ extern "C" {
     typedef union uSFIDRFR {
         vuint16_t R;
         struct {
-            vuint16_t:6;
+            uint16_t:6;
             vuint16_t SYNFRID:10;       /* sync frame rejection ID */
         } B;
     } SFIDRFR_t;
@@ -6513,16 +6513,16 @@ extern "C" {
     typedef union uTICCR {
         vuint16_t R;
         struct {
-            vuint16_t:2;
+            uint16_t:2;
             vuint16_t T2CFG:1;  /* timer 2 configuration */
             vuint16_t T2REP:1;  /* timer 2 repetitive mode */
-            vuint16_t:1;
+            uint16_t:1;
             vuint16_t T2SP:1;   /* timer 2 stop */
             vuint16_t T2TR:1;   /* timer 2 trigger */
             vuint16_t T2ST:1;   /* timer 2 state */
-            vuint16_t:3;
+            uint16_t:3;
             vuint16_t T1REP:1;  /* timer 1 repetitive mode */
-            vuint16_t:1;
+            uint16_t:1;
             vuint16_t T1SP:1;   /* timer 1 stop */
             vuint16_t T1TR:1;   /* timer 1 trigger */
             vuint16_t T1ST:1;   /* timer 1 state */
@@ -6531,9 +6531,9 @@ extern "C" {
     typedef union uTI1CYSR {
         vuint16_t R;
         struct {
-            vuint16_t:2;
+            uint16_t:2;
             vuint16_t TI1CYCVAL:6;      /* timer 1 cycle filter value */
-            vuint16_t:2;
+            uint16_t:2;
             vuint16_t TI1CYCMSK:6;      /* timer 1 cycle filter mask */
 
         } B;
@@ -6543,9 +6543,9 @@ extern "C" {
         vuint16_t R;
         struct {
             vuint16_t WMD:1;    /* write mode */
-            vuint16_t:1;
+            uint16_t:1;
             vuint16_t SEL:2;    /* static slot number */
-            vuint16_t:1;
+            uint16_t:1;
             vuint16_t SLOTNUMBER:11;    /* selector */
         } B;
     } SSSR_t;
@@ -6554,9 +6554,9 @@ extern "C" {
         vuint16_t R;
         struct {
             vuint16_t WMD:1;    /* write mode */
-            vuint16_t:1;
+            uint16_t:1;
             vuint16_t SEL:2;    /* selector */
-            vuint16_t:1;
+            uint16_t:1;
             vuint16_t CNTCFG:2; /* counter configuration */
             vuint16_t MCY:1;    /* multi cycle selection */
             vuint16_t VFR:1;    /* valid frame selection */
@@ -6591,9 +6591,9 @@ extern "C" {
         vuint16_t R;
         struct {
             vuint16_t MTE:1;    /* media access test symbol transmission enable */
-            vuint16_t:1;
+            uint16_t:1;
             vuint16_t CYCCNTMSK:6;      /* cycle counter mask */
-            vuint16_t:2;
+            uint16_t:2;
             vuint16_t CYCCNTVAL:6;      /* cycle counter value */
         } B;
     } MTSCFR_t;
@@ -6601,9 +6601,9 @@ extern "C" {
         vuint16_t R;
         struct {
             vuint16_t WMD:1;    /* write mode */
-            vuint16_t:1;
+            uint16_t:1;
             vuint16_t SEL:2;    /* selector */
-            vuint16_t:4;
+            uint16_t:4;
             vuint16_t RSBIDX:8; /* receive shadow buffer index */
         } B;
     } RSBIR_t;
@@ -6611,7 +6611,7 @@ extern "C" {
         vuint16_t R;
         struct {
             vuint16_t FIFODEPTH:8;      /* fifo depth */
-            vuint16_t:1;
+            uint16_t:1;
             vuint16_t ENTRYSIZE:7;      /* entry size */
         } B;
     } RFDSR_t;
@@ -6622,7 +6622,7 @@ extern "C" {
             vuint16_t WMD:1;    /* write mode */
             vuint16_t IBD:1;    /* interval boundary */
             vuint16_t SEL:2;    /* filter number */
-            vuint16_t:1;
+            uint16_t:1;
             vuint16_t SID:11;   /* slot ID */
         } B;
     } RFRFCFR_t;
@@ -6630,12 +6630,12 @@ extern "C" {
     typedef union uRFRFCTR {
         vuint16_t R;
         struct {
-            vuint16_t:4;
+            uint16_t:4;
             vuint16_t F3MD:1;   /* filter mode */
             vuint16_t F2MD:1;   /* filter mode */
             vuint16_t F1MD:1;   /* filter mode */
             vuint16_t F0MD:1;   /* filter mode */
-            vuint16_t:4;
+            uint16_t:4;
             vuint16_t F3EN:1;   /* filter enable */
             vuint16_t F2EN:1;   /* filter enable */
             vuint16_t F1EN:1;   /* filter enable */
@@ -6653,7 +6653,7 @@ extern "C" {
     typedef union uPCR1 {
         vuint16_t R;
         struct {
-            vuint16_t:2;
+            uint16_t:2;
             vuint16_t MACRO_AFTER_FIRST_STATIC_SLOT:14;
         } B;
     } PCR1_t;
@@ -6695,7 +6695,7 @@ extern "C" {
     typedef union uPCR6 {
         vuint16_t R;
         struct {
-            vuint16_t:1;
+            uint16_t:1;
             vuint16_t SYMBOL_WINDOW_AFTER_ACTION_POINT:8;
             vuint16_t MACRO_INITIAL_OFFSET_A:7;
         } B;
@@ -6826,7 +6826,7 @@ extern "C" {
     typedef union uPCR22 {
         vuint16_t R;
         struct {
-            vuint16_t:1;
+            uint16_t:1;
             vuint16_t COMP_ACCEPTED_STARTUP_RANGE_A:11;
             vuint16_t MICRO_PER_CYCLE_H:4;
         } B;
@@ -6890,7 +6890,7 @@ extern "C" {
     typedef union uPCR30 {
         vuint16_t R;
         struct {
-            vuint16_t:12;
+            uint16_t:12;
             vuint16_t SYNC_NODE_MAX:4;
         } B;
     } PCR30_t;
@@ -6906,14 +6906,14 @@ extern "C" {
         vuint16_t R;
         struct {
             vuint16_t SMBA:12;
-            vuint16_t:4;
+            uint16_t:4;
         } B;
     } RFSYMBADLR_t;
     
     typedef union uRFPTR {
         vuint16_t R;
         struct {
-            vuint16_t:2;
+            uint16_t:2;
             vuint16_t PTD:14;
         } B;
     } RFPTR_t;
@@ -6926,7 +6926,7 @@ extern "C" {
         union {
             vuint16_t R;
             struct {
-                vuint16_t:1;
+                uint16_t:1;
                 vuint16_t MCM:1;        /* message buffer commit mode */
                 vuint16_t MBT:1;        /* message buffer type */
                 vuint16_t MTD:1;        /* message buffer direction */
@@ -6934,7 +6934,7 @@ extern "C" {
                 vuint16_t EDT:1;        /* enable / disable trigger */
                 vuint16_t LCKT:1;       /* lock request trigger */
                 vuint16_t MBIE:1;       /* message buffer interrupt enable */
-                vuint16_t:3;
+                uint16_t:3;
                 vuint16_t DUP:1;        /* data updated  */
                 vuint16_t DVAL:1;       /* data valid */
                 vuint16_t EDS:1;        /* lock status */
@@ -6956,14 +6956,14 @@ extern "C" {
         union {
             vuint16_t R;
             struct {
-                vuint16_t:5;
+                uint16_t:5;
                 vuint16_t FID:11;       /* frame ID */
             } B;
         } MBFIDR;
         union {
             vuint16_t R;
             struct {
-                vuint16_t:8;
+                uint16_t:8;
                 vuint16_t MBIDX:8;      /* message buffer index */
             } B;
         } MBIDXR;
@@ -7004,14 +7004,14 @@ extern "C" {
     typedef union uSFIDAFVR {
         vuint16_t R;
         struct {
-            vuint16_t:6;
+            uint16_t:6;
             vuint16_t FVAL:10;
         } B;
     } SFIDAFVR_t;
     typedef union uSFIDAFMR {
         vuint16_t R;
         struct {
-            vuint16_t:6;
+            uint16_t:6;
             vuint16_t FMSK:10;
         } B;
     } SFIDAFMR_t;
@@ -7021,14 +7021,14 @@ extern "C" {
     typedef union uNMVLR {
         vuint16_t R;
         struct {
-            vuint16_t:12;
+            uint16_t:12;
             vuint16_t NMVL:4;
         } B;
     } NMVLR_t;
     typedef union uT1MTOR {
         vuint16_t R;
         struct {
-            vuint16_t:2;
+            uint16_t:2;
             vuint16_t T1_MTOFFSET:14;
         } B;
     } T1MTOR_t;
@@ -7045,28 +7045,28 @@ extern "C" {
         vuint16_t R;
         struct {
             vuint16_t WM:8;
-            vuint16_t:7;
+            uint16_t:7;
             vuint16_t SEL:1;
         } B;
     } RFSR_t;
     typedef union uRFSIR {
         vuint16_t R;
         struct {
-            vuint16_t:6;
+            uint16_t:6;
             vuint16_t SIDX:10;
         } B;
     } RFSIR_t;
     typedef union uRFARIR {
         vuint16_t R;
         struct {
-            vuint16_t:6;
+            uint16_t:6;
             vuint16_t RDIDX:10;
         } B;
     } RFARIR_t;
     typedef union uRFBRIR {
         vuint16_t R;
         struct {
-            vuint16_t:6;
+            uint16_t:6;
             vuint16_t RDIDX:10;
         } B;
     } RFBRIR_t;
@@ -7079,28 +7079,28 @@ extern "C" {
     typedef union uRFFIDRFVR {
         vuint16_t R;
         struct {
-            vuint16_t:5;
+            uint16_t:5;
             vuint16_t FIDRFVAL:11;
         } B;
     } RFFIDRFVR_t;
     typedef union uRFFIDRFMR {
         vuint16_t R;
         struct {
-            vuint16_t:5;
+            uint16_t:5;
             vuint16_t FIDRFMSK:11;
         } B;
     } RFFIDRFMR_t;
     typedef union uLDTXSLAR {
         vuint16_t R;
         struct {
-            vuint16_t:5;
+            uint16_t:5;
             vuint16_t LASTDYNTXSLOTA:11;
         } B;
     } LDTXSLAR_t;
     typedef union uLDTXSLBR {
         vuint16_t R;
         struct {
-            vuint16_t:5;
+            uint16_t:5;
             vuint16_t LASTDYNTXSLOTB:11;
         } B;
     } LDTXSLBR_t;
@@ -7213,17 +7213,17 @@ extern "C" {
     typedef union uF_HEADER     /* frame header */
     {
         struct {
-            vuint16_t:1;
+            uint16_t:1;
             vuint16_t PPI:1;    /* Payload Preamble Indicator */
             vuint16_t NUF:1;    /* Null Frame Indicator */
             vuint16_t SYF:1;    /* Sync Frame Indicator */
             vuint16_t SUF:1;    /* Startup Frame Indicator */
             vuint16_t FID:11;   /* Frame ID */
-            vuint16_t:2;
+            uint16_t:2;
             vuint16_t CYCCNT:6; /* Cycle Count */
-            vuint16_t:1;
+            uint16_t:1;
             vuint16_t PLDLEN:7; /* Payload Length */
-            vuint16_t:5;
+            uint16_t:5;
             vuint16_t HDCRC:11; /* Header CRC */
         } B;
         vuint16_t WORDS[3];
@@ -7246,7 +7246,7 @@ extern "C" {
             vuint16_t SEA:1;    /* Syntax Error on channel A */
             vuint16_t CEA:1;    /* Content Error on channel A */
             vuint16_t BVA:1;    /* Boundary Violation on channel A */
-              vuint16_t:1;
+              uint16_t:1;
         } RX;
         struct {
             vuint16_t VFB:1;    /* Valid Frame on channel B */
