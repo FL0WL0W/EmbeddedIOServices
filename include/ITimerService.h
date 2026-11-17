@@ -60,6 +60,20 @@ namespace EmbeddedIOServices
 		//// the minimum time it takes to execute a task after scheduling
 		uint16_t _minTick = 0;
 
+		inline void ExecuteAwaitingTasks() {
+			TaskMap::iterator next;
+			while ((next = _taskMap.begin()) != _taskMap.end() && TickLessThanEqualToTick(next->first - _minTick, GetTick()))
+			{
+				while(TickLessThanTick(next->second->ExecutedTick = GetTick(), next->first)) ;
+				next->second->Scheduled = false;
+				next->second->CallBack();
+				if((next->second)->DeleteAfterExecution)
+					delete next->second;
+
+				_taskMap.erase(next);
+			}
+		}
+
 	protected:
 		//// Stores all of the scheduled tasks in order of execution
 		TaskMap _taskMap;

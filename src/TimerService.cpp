@@ -11,9 +11,9 @@ namespace EmbeddedIOServices
 		// Startup only: interrupts must be enabled, and this timer must have no
 		// application tasks, pending updates, or other producers during calibration.
 		constexpr unsigned BackgroundTaskCount = 100; // Representative loaded task map.
-		constexpr unsigned NewTaskCount = 3;
+		constexpr unsigned NewTaskCount = 4;
 		constexpr unsigned SampleCount = 16;
-		// Four reschedules + three inserts + the probe fill the eight-slot buffer.
+		// Four reschedules + four inserts fill the eight-slot buffer.
 		constexpr unsigned RescheduleCount = 4;
 		const tick_t frequency = GetTicksPerSecond();
 		const tick_t probeLead = std::max<tick_t>(frequency / 1000U, 1U);
@@ -73,16 +73,9 @@ namespace EmbeddedIOServices
 		}
 		clearList();
 
-		// Measure a loaded request wakeup. The last request is an overdue probe,
-		// so its execution timestamp includes the preceding seven updates.
-		tick_t worstLoadedWakeup = 0;
-		for (unsigned sample = 0; sample < SampleCount; ++sample)
-		{
-			const tick_t firstTick = populateList();
-			probeComplete = false;
+		const auto queueUpdateBatch = [&](tick_t firstTick) {
 			for (unsigned i = 0; i < RescheduleCount; ++i)
 			{
-				// Move near-tail deadlines beyond the tail to exercise extract/reinsert.
 				TaskUpdate update = { background[BackgroundTaskCount - 2U - i],
 					firstTick + (BackgroundTaskCount + i) * spacing };
 				_taskUpdateBuffer.Push(update, 1U);
@@ -93,14 +86,46 @@ namespace EmbeddedIOServices
 					firstTick + (BackgroundTaskCount + RescheduleCount + i) * spacing };
 				_taskUpdateBuffer.Push(update, 1U);
 			}
-			TaskUpdate probeUpdate = { &probe, GetTick() };
-			_taskUpdateBuffer.Push(probeUpdate, 1U);
+		};
 
-			const tick_t started = GetTick();
-			ScheduleCallBack(started);
+		// Estimate the batch duration ONLY to choose deadline offsets below.
+		// This elapsed time is not used as the busy-wait window. The last insert's
+		// Scheduled flag confirms that the ISR has processed the entire batch.
+		const tick_t firstTick = populateList();
+		queueUpdateBatch(firstTick);
+		const tick_t started = GetTick();
+		ScheduleCallBack(started);
+		while (!newTasks[NewTaskCount - 1U]->Scheduled) ;
+		const tick_t batchSpan = std::max<tick_t>(GetTick() - started, 1U);
+		clearList();
+
+		// With minTick still zero, place the probe in the active map BEFORE filling
+		// the buffer. Sweep the early kick across the batch: a deadline crossed by
+		// an update is noticed by ExecuteAwaitingTasks() immediately after it.
+		// Measure execution lateness, not time spent waiting behind queued requests.
+		tick_t worstUpdateLateness = 0;
+		const tick_t deadlineLead = std::max<tick_t>(
+			probeLead, 2U * (worstWakeup + batchSpan + 1U));
+		for (unsigned sample = 0; sample < SampleCount; ++sample)
+		{
+			const tick_t firstTick = populateList();
+			probeComplete = false;
+			const tick_t deadline = GetTick() + deadlineLead;
+			ScheduleTask(&probe, deadline);
+			while (!probe.Scheduled && !probeComplete) ;
+			queueUpdateBatch(firstTick);
+
+			// Sweep from a near-immediate deadline through and beyond the batch.
+			const tick_t kickLead = 1U +
+				static_cast<tick_t>((static_cast<uint64_t>(batchSpan + worstWakeup) * sample) /
+					(SampleCount - 1U));
+			const tick_t kickAt = deadline - kickLead;
+			while (TickLessThanTick(GetTick(), kickAt)) ;
+			ScheduleCallBack(GetTick());
 			while (!probeComplete) ;
-			worstLoadedWakeup = std::max<tick_t>(
-				worstLoadedWakeup, probe.ExecutedTick - started);
+			if (TickLessThanEqualToTick(deadline, probe.ExecutedTick))
+				worstUpdateLateness = std::max<tick_t>(
+					worstUpdateLateness, probe.ExecutedTick - deadline);
 			clearList();
 		}
 
@@ -112,7 +137,7 @@ namespace EmbeddedIOServices
 		const tick_t lead = worstWakeup + 1U;
 		_latency = static_cast<uint16_t>(std::min<tick_t>(lead, 0xFFFFU));
 
-		const tick_t window = std::max<tick_t>(lead, worstLoadedWakeup);
+		const tick_t window = std::max<tick_t>(lead, worstUpdateLateness);
 		_minTick = static_cast<uint16_t>(std::min<tick_t>(
 			window + 1U, 0xFFFFU));
 		printf("Latency: %u, MinTick: %u\n", _latency, _minTick);
@@ -121,18 +146,7 @@ namespace EmbeddedIOServices
 
 	void ITimerService::ReturnCallBack()
 	{
-		//skip all unscheduled tasks
-		TaskMap::iterator next;
-		while ((next = _taskMap.begin()) != _taskMap.end() && TickLessThanEqualToTick(next->first - _minTick, GetTick()))
-		{
-			while(TickLessThanTick(next->second->ExecutedTick = GetTick(), next->first)) ;
-			next->second->Scheduled = false;
-			next->second->CallBack();
-			if((next->second)->DeleteAfterExecution)
-				delete next->second;
-
-			_taskMap.erase(next);
-		}
+		ExecuteAwaitingTasks();
 
 		//handle task updates
 		uint8_t command;
@@ -147,20 +161,6 @@ namespace EmbeddedIOServices
 			{				
 				//schedule
 				taskUpdate.task->ScheduledTick = taskUpdate.tick;
-				//check if we should go ahead and execute the task
-				if(TickLessThanEqualToTick(taskUpdate.task->ScheduledTick - _minTick, GetTick()))
-				{
-					while(TickLessThanTick(taskUpdate.task->ExecutedTick = GetTick(), taskUpdate.task->ScheduledTick)) ;
-					taskUpdate.task->Scheduled = false;
-					taskUpdate.task->CallBack();
-					if(taskUpdate.task->DeleteAfterExecution)
-						delete taskUpdate.task;
-
-					if (currentLocation != range.second)
-						_taskMap.erase(currentLocation);
-					continue;
-				}
-				//otherwise schedule it
 				taskUpdate.task->Scheduled = true;
 				if (currentLocation != range.second)
 				{
@@ -172,13 +172,15 @@ namespace EmbeddedIOServices
 				{
 					_taskMap.insert({taskUpdate.tick, taskUpdate.task});
 				}
-				continue;
 			}
-			if(command == 2U)
+			else if(command == 2U)
 			{
-				_taskMap.erase(currentLocation);
+				if (currentLocation != range.second)
+					_taskMap.erase(currentLocation);
 				taskUpdate.task->Scheduled = false;
 			}
+
+			ExecuteAwaitingTasks();
 		}
 		if(_taskMap.size() > 0)
 			ScheduleCallBack(_taskMap.begin()->first - _latency);
