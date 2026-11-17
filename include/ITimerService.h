@@ -1,7 +1,7 @@
 #include "stdint.h"
 #include "CallBack.h"
 #include <forward_list>
-#include <list>
+#include <map>
 #include "CircularBuffer.h"
 
 #ifndef ITIMERSERVICE_H
@@ -43,7 +43,14 @@ namespace EmbeddedIOServices
 
 	};
 
-	typedef std::list<Task *> TaskList;
+	struct TickCompare
+	{
+		bool operator()(tick_t a, tick_t b) const
+		{
+			return ((a - b) & 0x80000000U) != 0;
+		}
+	};
+	typedef std::multimap<tick_t, Task *, TickCompare> TaskMap;
 
 	class ITimerService
 	{
@@ -52,18 +59,10 @@ namespace EmbeddedIOServices
 		uint16_t _latency = 0;
 		//// the minimum time it takes to execute a task after scheduling
 		uint16_t _minTick = 0;
-		volatile bool _taskListInUse = false;
-
-		/**
-		 * @brief This is a private helper method. It is used to remove all unscheduled tasks from the beginning 
-		 * of the list and will return the new beginning of the list.
-		 */
-		TaskList::iterator RemoveUnscheduledTasksAndReturnBegin();
-		void HandleTaskUpdates();
 
 	protected:
 		//// Stores all of the scheduled tasks in order of execution
-		TaskList _taskList;
+		TaskMap _taskMap;
 		struct TaskUpdate
 		{
 			Task *task;
