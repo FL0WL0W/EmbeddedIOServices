@@ -1,7 +1,6 @@
 #include <algorithm>
 #include <stdint.h>
 #include "ITimerService.h"
-#include <cstdio>
 
 #ifdef ITIMERSERVICE_H
 namespace EmbeddedIOServices
@@ -140,7 +139,6 @@ namespace EmbeddedIOServices
 		const tick_t window = std::max<tick_t>(lead, worstUpdateLateness);
 		_minTick = static_cast<uint16_t>(std::min<tick_t>(
 			window + 1U, 0xFFFFU));
-		printf("Latency: %u, MinTick: %u\n", _latency, _minTick);
 		// Both fields are 16-bit: saturation means the measured budget will not fit.
 	}
 
