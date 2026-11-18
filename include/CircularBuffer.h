@@ -7,7 +7,7 @@
 namespace EmbeddedIOServices
 {
 	/**
-	 * Fixed-capacity, lock-free Multiple Producer Multiple Consumer (MPMC) circular buffer.
+	 * Fixed-capacity, lock-free Multiple Producer Single Consumer (MPSC) circular buffer.
 	 *
 	 * Producers reserve a slot by advancing _enqueuePosition, populate it, and
 	 * publish it by updating that slot's state. The Consumer performs the
@@ -26,8 +26,20 @@ namespace EmbeddedIOServices
 	template<typename T, size_t CapacityValue>
 	class CircularBuffer final
 	{
-		volatile uint32_t _enqueuePosition;
-		volatile uint32_t _dequeuePosition;
+		static constexpr size_t MaxPosition = (static_cast<size_t>(-1) / CapacityValue) * CapacityValue;
+		std::ptrdiff_t PositionDifference(size_t position, size_t reference) const
+		{
+			const size_t forward = position >= reference? position - reference : MaxPosition - (reference - position);
+
+			if (forward <= MaxPosition / 2U)
+				return static_cast<std::ptrdiff_t>(forward);
+
+			return -static_cast<std::ptrdiff_t>(MaxPosition - forward);
+		}
+
+
+		volatile size_t _enqueuePosition;
+		volatile size_t _dequeuePosition;
 		volatile uint8_t _slotState[CapacityValue];
 		T _slots[CapacityValue];
 	public:
@@ -39,59 +51,45 @@ namespace EmbeddedIOServices
 
 		bool Push(T& value, uint8_t state = 1U)
 		{
-			if(state == 0U)
+			if (state == 0U || state > 63U)
 				return false;
 				
 			state = (state << 2U) | 0x01;
 
-			const uint32_t startPosition = _enqueuePosition;
-			uint32_t position = startPosition;
+			size_t position = _enqueuePosition;
 
-			do
+			while(PositionDifference(position, _dequeuePosition) < static_cast<std::ptrdiff_t>(CapacityValue))
 			{
-				_enqueuePosition = (position + 1U) % CapacityValue;
+				_enqueuePosition = (position + 1U) % MaxPosition;
+				const size_t index = position % CapacityValue;
 
-				if(!(_slotState[position] & 0x01))
+				if(!(_slotState[index] & 0x01) && PositionDifference(position, _dequeuePosition) >= 0)
 				{
-					_slots[position] = value;
-					_slotState[position] = state;
+					_slots[index] = value;
+					_slotState[index] = state;
 					return true;
 				}
 
-				position = (position + 1U) % CapacityValue;
+				position = (position + 1U) % MaxPosition;
 			}
-			while(position != startPosition);
 
 			return false;
 		}
 
 		uint8_t Pop(T& value)
 		{
-			uint32_t position = _dequeuePosition;
-			if(position == _enqueuePosition && !(_slotState[position] & 0x01)) //check if empty
+			const size_t index = _dequeuePosition % CapacityValue;
+			const uint8_t state = _slotState[index];
+			if(_dequeuePosition == _enqueuePosition && !(state & 0x01)) //check if empty
 				return 0;
 
-			do
+			if(state & 0x01)
 			{
-				_dequeuePosition = (position + 1U) % CapacityValue;
-				const uint8_t state = _slotState[position];
-
-				if(!(state & 0x03))
-				{
-					_dequeuePosition = position;
-					return 0;
-				}
-
-				if(state & 0x01)
-				{
-					value = _slots[position];
-					_slotState[position] = 0x02;
-					return state >> 2U;
-				}
-
-				position = (position + 1U) % CapacityValue;
+				value = _slots[index];
+				_slotState[index] = 0x02;
+				_dequeuePosition = (_dequeuePosition + 1U) % MaxPosition;
+				return state >> 2U;
 			}
-			while(position != _enqueuePosition);
 
 			return 0;
 		}
