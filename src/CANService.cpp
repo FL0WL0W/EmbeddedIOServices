@@ -79,7 +79,7 @@ namespace EmbeddedIOServices
 		}
 	}
 
-	ICommunicationService *ICANService::GetISOTPService(const CANIdentifier_t listenId, const CANIdentifier_t transmitId)
+	ICommunicationService *ICANService::GetISOTPService(const CANIdentifier_t listenId, const CANIdentifier_t transmitId, ITimerService * const timerService)
 	{
 		CommunicationService_ISOTP *isotpService = nullptr;
 
@@ -94,7 +94,7 @@ namespace EmbeddedIOServices
 
 		if(isotpService == nullptr)
 		{
-			isotpService = new CommunicationService_ISOTP(this, listenId, transmitId);
+			isotpService = new CommunicationService_ISOTP(this, timerService, listenId, transmitId);
 			_isotpServices.push_back(isotpService);
 		}
 

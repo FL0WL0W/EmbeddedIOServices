@@ -1,4 +1,5 @@
 #include "ICommunicationService.h"
+#include "ITimerService.h"
 #include "ICANService.h"
 #include <vector>
 
@@ -24,6 +25,7 @@ namespace EmbeddedIOServices
         {
             std::vector<uint8_t> Buffer;
             size_t Offset = 0;
+            tick_t LastProgressTick = 0;
             uint8_t NextSequenceNumber = 1;
             uint8_t BlockSize = 0;
             uint8_t FramesRemainingInBlock = 0;
@@ -33,6 +35,8 @@ namespace EmbeddedIOServices
         };
 
         ICANService * const _canService;
+        ITimerService * const _timerService;
+        const tick_t _timeoutTicks;
         ReceiveState _receiveState;
         SendState _sendState;
 
@@ -42,7 +46,7 @@ namespace EmbeddedIOServices
 	public:
         const CANIdentifier_t ListenId;
         const CANIdentifier_t TransmitId;
-        CommunicationService_ISOTP(ICANService * const canService, const CANIdentifier_t listenId, const CANIdentifier_t transmitId);
+        CommunicationService_ISOTP(ICANService * const canService, ITimerService * const timerService, const CANIdentifier_t listenId, const CANIdentifier_t transmitId);
         ~CommunicationService_ISOTP() override;
         void Send(const void *data, size_t length);
         bool Ready() override;
