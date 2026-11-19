@@ -21,17 +21,17 @@ namespace UnitTests
 
 		CommunicationHandler_PrefixTest()
 		{
-			_communicationService.RegisterReceiveCallBack([this](communication_send_callback_t send, const void *data, size_t len) { return this->_communicationHandler_Prefix.Receive(send, data, len); });
-			_communicationHandler_Prefix.RegisterReceiveCallBack([this](communication_send_callback_t send, const void *data, size_t len) { this->handler1count++; return this->handler1return != 0? this->handler1return-- : 0; }, "a", 1);
-			_communicationHandler_Prefix.RegisterReceiveCallBack([this](communication_send_callback_t send, const void *data, size_t len) { this->handler2count++; return this->handler2return != 0? this->handler2return-- : 0; }, "b", 1);
-			_communicationHandler_Prefix.RegisterReceiveCallBack([this](communication_send_callback_t send, const void *data, size_t len) { this->handler3count++; return this->handler3return != 0? this->handler3return-- : 0; }, "b", 1);
+			_communicationService.RegisterReceiveCallBack([this](ICommunicationService *sendService, const void *data, size_t len) { return this->_communicationHandler_Prefix.Receive(send, data, len); });
+			_communicationHandler_Prefix.RegisterReceiveCallBack([this](ICommunicationService *sendService, const void *data, size_t len) { this->handler1count++; return this->handler1return != 0? this->handler1return-- : 0; }, "a", 1);
+			_communicationHandler_Prefix.RegisterReceiveCallBack([this](ICommunicationService *sendService, const void *data, size_t len) { this->handler2count++; return this->handler2return != 0? this->handler2return-- : 0; }, "b", 1);
+			_communicationHandler_Prefix.RegisterReceiveCallBack([this](ICommunicationService *sendService, const void *data, size_t len) { this->handler3count++; return this->handler3return != 0? this->handler3return-- : 0; }, "b", 1);
 		}
 	};
 
 	TEST_F(CommunicationHandler_PrefixTest, CanRegisterAndUnRegisterReceiveCallBack)
 	{
-		auto id1 = _communicationHandler_Prefix.RegisterReceiveCallBack([](communication_send_callback_t send, const void *data, size_t len) { return 1; }, "c", 1);
-		_communicationHandler_Prefix.RegisterReceiveCallBack([](communication_send_callback_t send, const void *data, size_t len) { return 1; }, "d", 1);
+		auto id1 = _communicationHandler_Prefix.RegisterReceiveCallBack([](ICommunicationService *sendService, const void *data, size_t len) { return 1; }, "c", 1);
+		_communicationHandler_Prefix.RegisterReceiveCallBack([](ICommunicationService *sendService, const void *data, size_t len) { return 1; }, "d", 1);
 		
 		_communicationHandler_Prefix.UnRegisterReceiveCallBack(id1);
 		_communicationHandler_Prefix.UnRegisterReceiveCallBack("d", 1);

@@ -36,7 +36,7 @@ namespace EmbeddedIOServices
 		 * @param length Length of that data that was received
 		 * @return size_t Number of bytes parsed from data.
 		 */
-        size_t Receive(communication_send_callback_t sendCallBack, const void *data, size_t length);
+        size_t Receive(ICommunicationService *sendService, const void *data, size_t length);
 
 		/**
 		 * @brief Register a callback with the service that will be called when the service receives data.

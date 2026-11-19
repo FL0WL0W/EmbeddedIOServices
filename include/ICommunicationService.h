@@ -6,8 +6,9 @@
 #define ICOMMUNICATIONSERVICE_H
 namespace EmbeddedIOServices
 {
-	typedef std::function<void(const void *data, size_t length)> communication_send_callback_t;
-	typedef std::function<size_t(communication_send_callback_t, const void *data, size_t length)> communication_receive_callback_t;
+	class ICommunicationService;
+	
+	typedef std::function<size_t(ICommunicationService*, const void *data, size_t length)> communication_receive_callback_t;
 	typedef uint32_t communication_receive_callback_id_t;
 
 	class ICommunicationService

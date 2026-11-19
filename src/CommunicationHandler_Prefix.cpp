@@ -1,6 +1,8 @@
 #include <algorithm>
 #include <cstring>
 #include "CommunicationHandler_Prefix.h"
+#include <vector>
+#include "CommunicationServiceShim.h"
 
 #ifdef COMMUNICATIONHANDLER_PREFIX_H
 namespace EmbeddedIOServices
@@ -41,17 +43,24 @@ namespace EmbeddedIOServices
 		}
 	}
 
-	size_t CommunicationHandler_Prefix::Receive(communication_send_callback_t sendCallBack, const void *data, size_t length)
+	size_t CommunicationHandler_Prefix::Receive(ICommunicationService *sendService, const void *data, size_t length)
 	{
 		size_t handled = 0;
 		auto next = _receiveCallBackMap.begin();
+
+		std::vector<uint8_t> response;
+		CommunicationServiceShim shim([&](const void *data, size_t length)
+		{
+			response.insert(response.end(), static_cast<const uint8_t *>(data), static_cast<const uint8_t *>(data) + length);
+		}, sendService->Ready());
+
 		while(next != _receiveCallBackMap.end() && length > handled) 
 		{
 			if(next->second.PrefixLength <= length && std::strncmp(reinterpret_cast<const char *>(data) + handled, reinterpret_cast<const char *>(next->second.Prefix), next->second.PrefixLength) == 0)
 			{
 				//call the callback
 				const size_t handledThisTime = next->second.CallBack(
-					[sendCallBack](const void *data, size_t length) { sendCallBack(data, length); },
+					&shim,
 					reinterpret_cast<const uint8_t *>(data) + handled + next->second.PrefixLength, 
 					length - handled - next->second.PrefixLength
 				);
@@ -66,6 +75,9 @@ namespace EmbeddedIOServices
 			}
 			next++;
 		}
+
+		if(!response.empty() && sendService->Ready())
+			sendService->Send(response.data(), response.size());
 
 		//return the amount of data handled
 		return handled;

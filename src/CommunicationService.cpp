@@ -30,7 +30,7 @@ namespace EmbeddedIOServices
 		{
 			//call the callback
 			const size_t handledThisTime = next->second(
-				[this](const void *data, size_t length) { Send(data, length); },
+				this,
 				reinterpret_cast<const uint8_t *>(data) + handled, 
 				length - handled
 			);

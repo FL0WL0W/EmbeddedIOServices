@@ -22,49 +22,6 @@ namespace UnitTests
 		aggregate.Send(data, sizeof(data));
 	}
 
-	TEST(AggregateCommunicationServiceTests, CallsAttachedSendCallbacksWhenSending)
-	{
-		MockCommunicationService service;
-		ICommunicationService *services[1] = { &service };
-		AggregateCommunicationService aggregate(services, 1);
-		const uint8_t data[3] = { 1, 2, 3 };
-		std::vector<uint8_t> observed;
-
-		aggregate.RegisterSendCallBack([&observed](const void *data, size_t length) {
-			const uint8_t * const bytes = reinterpret_cast<const uint8_t *>(data);
-			observed.assign(bytes, bytes + length);
-		});
-
-		EXPECT_CALL(service, Send(data, sizeof(data))).Times(1);
-
-		aggregate.Send(data, sizeof(data));
-
-		ASSERT_EQ(sizeof(data), observed.size());
-		EXPECT_EQ(1, observed[0]);
-		EXPECT_EQ(2, observed[1]);
-		EXPECT_EQ(3, observed[2]);
-	}
-
-	TEST(AggregateCommunicationServiceTests, UnRegistersAttachedSendCallbacks)
-	{
-		MockCommunicationService service;
-		AggregateCommunicationService aggregate;
-		aggregate.AddService(&service);
-		const uint8_t data[1] = { 1 };
-		int sendCallBackCount = 0;
-
-		const auto id = aggregate.RegisterSendCallBack([&sendCallBackCount](const void *data, size_t length) {
-			sendCallBackCount++;
-		});
-		aggregate.UnRegisterSendCallBack(id);
-
-		EXPECT_CALL(service, Send(data, sizeof(data))).Times(1);
-
-		aggregate.Send(data, sizeof(data));
-
-		EXPECT_EQ(0, sendCallBackCount);
-	}
-
 	TEST(AggregateCommunicationServiceTests, ReceivesDataFromChildServices)
 	{
 		MockCommunicationService service;
@@ -73,7 +30,7 @@ namespace UnitTests
 		const uint8_t data[3] = { 4, 5, 6 };
 		std::vector<uint8_t> received;
 
-		aggregate.RegisterReceiveCallBack([&received](communication_send_callback_t send, const void *data, size_t length) {
+		aggregate.RegisterReceiveCallBack([&received](ICommunicationService *sendService, const void *data, size_t length) {
 			const uint8_t * const bytes = reinterpret_cast<const uint8_t *>(data);
 			received.assign(bytes, bytes + length);
 			return length;
@@ -96,7 +53,7 @@ namespace UnitTests
 		{
 			AggregateCommunicationService aggregate;
 			aggregate.AddService(&service);
-			aggregate.RegisterReceiveCallBack([&receiveCallBackCount](communication_send_callback_t send, const void *data, size_t length) {
+			aggregate.RegisterReceiveCallBack([&receiveCallBackCount](ICommunicationService *sendService, const void *data, size_t length) {
 				receiveCallBackCount++;
 				return length;
 			});

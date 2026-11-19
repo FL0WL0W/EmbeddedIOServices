@@ -119,7 +119,7 @@ namespace UnitTests
     {
         CommunicationService_ISOTP service(&_canService, _listenId, _transmitId);
         std::vector<uint8_t> received;
-        service.RegisterReceiveCallBack([&received](communication_send_callback_t send, const void *data, size_t length) {
+        service.RegisterReceiveCallBack([&received](ICommunicationService *sendService, const void *data, size_t length) {
             const uint8_t * const bytes = reinterpret_cast<const uint8_t *>(data);
             received.assign(bytes, bytes + length);
             return length;
@@ -138,7 +138,7 @@ namespace UnitTests
     {
         CommunicationService_ISOTP service(&_canService, _listenId, _transmitId);
         std::vector<uint8_t> received;
-        service.RegisterReceiveCallBack([&received](communication_send_callback_t send, const void *data, size_t length) {
+        service.RegisterReceiveCallBack([&received](ICommunicationService *sendService, const void *data, size_t length) {
             const uint8_t * const bytes = reinterpret_cast<const uint8_t *>(data);
             received.assign(bytes, bytes + length);
             return length;

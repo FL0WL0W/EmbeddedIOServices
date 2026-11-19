@@ -31,7 +31,7 @@ namespace EmbeddedIOServices
 		}
 
 		const communication_receive_callback_id_t receiveCallBackId = service->RegisterReceiveCallBack(
-			[this](communication_send_callback_t send, const void *data, size_t length) {
+			[this](ICommunicationService *sendService, const void *data, size_t length) {
 				Receive(data, length);
 				return 0;
 			}
@@ -40,24 +40,8 @@ namespace EmbeddedIOServices
 		_services.push_back({ service, receiveCallBackId });
 	}
 
-	communication_send_callback_id_t AggregateCommunicationService::RegisterSendCallBack(communication_send_callback_t sendCallBack)
-	{
-		_sendCallBackMap.insert({ _nextSendCallBackId, sendCallBack });
-		return _nextSendCallBackId++;
-	}
-
-	void AggregateCommunicationService::UnRegisterSendCallBack(communication_send_callback_id_t sendCallBackId)
-	{
-		_sendCallBackMap.erase(sendCallBackId);
-	}
-
 	void AggregateCommunicationService::Send(const void *data, size_t length)
 	{
-		for(const auto& sendCallBack : _sendCallBackMap)
-		{
-			sendCallBack.second(data, length);
-		}
-
 		for(const auto& service : _services)
 		{
 			service.Service->Send(data, length);
