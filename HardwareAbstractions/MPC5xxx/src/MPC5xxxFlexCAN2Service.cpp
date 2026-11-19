@@ -200,18 +200,21 @@ namespace MPC5xxx
 		if (completion)
 			completion();
 
-		// FlexCAN fills the first matching empty mailbox. Stop at the first empty
-		// one, then restart at MB0 after processing a batch so frames received
-		// while callbacks ran are not missed.
-		bool receivedInPass;
-		do
+		// Snapshot all RX flags and visit only occupied mailboxes. Holes are valid;
+		// a lower empty mailbox must not hide a higher pending interrupt.
+		constexpr uint32_t receiveMailboxMask =
+			(0xFFFFFFFFU >> (32U - RX_MB_COUNT)) & (0xFFFFFFFFU << RX_MB_FIRST);
+		while (true)
 		{
-			receivedInPass = false;
-			for (uint8_t mailbox = RX_MB_FIRST; mailbox < RX_MB_COUNT; ++mailbox)
+			uint32_t pending = can.IFRL.R & receiveMailboxMask;
+			if (pending == 0U)
+				break;
+
+			while (pending != 0U)
 			{
+				const uint8_t mailbox = static_cast<uint8_t>(__builtin_ctz(pending));
 				const uint32_t flag = 1U << mailbox;
-				if ((can.IFRL.R & flag) == 0)
-					break;
+				pending &= pending - 1U;
 
 				volatile canbuf_t &mb = can.BUF[mailbox];
 				const uint32_t cs = mb.CS.R; // Locks this receive mailbox.
@@ -231,10 +234,10 @@ namespace MPC5xxx
 				(void)can.TIMER.R; // Unlock after reading the complete mailbox.
 				can.IFRL.R = flag;
 				mb.CS.B.CODE = RX_EMPTY;
-				receivedInPass = true;
 				_instance.Receive(identifier, data, dlc);
 			}
-		} while (receivedInPass);
+			// Pick up flags raised while the preceding snapshot was processed.
+		}
 	}
 
 	MPC5xxxFlexCAN2Service& MPC5xxxFlexCAN2Service::Instance()
