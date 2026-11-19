@@ -63,5 +63,15 @@ namespace EmbeddedIOServices
 			service.Service->Send(data, length);
 		}
 	}
+
+	bool AggregateCommunicationService::Ready()
+	{
+		for(const auto& service : _services)
+		{
+			if(!service.Service->Ready())
+				return false;
+		}
+		return true;
+	}
 }
 #endif

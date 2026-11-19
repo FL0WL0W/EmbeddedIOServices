@@ -44,7 +44,8 @@ namespace EmbeddedIOServices
 	size_t CommunicationHandler_Prefix::Receive(communication_send_callback_t sendCallBack, const void *data, size_t length)
 	{
 		size_t handled = 0;
-		for (auto next = _receiveCallBackMap.begin(); next != _receiveCallBackMap.end() && length > handled; ++next) 
+		auto next = _receiveCallBackMap.begin();
+		while(next != _receiveCallBackMap.end() && length > handled) 
 		{
 			if(next->second.PrefixLength <= length && std::strncmp(reinterpret_cast<const char *>(data) + handled, reinterpret_cast<const char *>(next->second.Prefix), next->second.PrefixLength) == 0)
 			{
@@ -63,6 +64,7 @@ namespace EmbeddedIOServices
 					continue;
 				}
 			}
+			next++;
 		}
 
 		//return the amount of data handled
