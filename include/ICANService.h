@@ -118,7 +118,7 @@ namespace EmbeddedIOServices
 		 * @param identifierPair Pair of CAN identifiers for listen and transmit
 		 * @return Aggregate communication service for the requested identifiers
 		 */
-		ICommunicationService *GetISOTPService(const CANIdentifier_t listenId, const CANIdentifier_t transmitId, ITimerService * const timerService);
+		ICommunicationService *GetISOTPService(const CANIdentifier_t listenId, const CANIdentifier_t transmitId, ITimerService * const timerService = nullptr);
 
 		/**
 		 * @brief Sends data on the can bus.

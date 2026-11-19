@@ -28,7 +28,7 @@ namespace EmbeddedIOServices
     CommunicationService_ISOTP::CommunicationService_ISOTP(ICANService * const canService, ITimerService * const timerService, const CANIdentifier_t listenId, const CANIdentifier_t transmitId) :
         _canService(canService),
         _timerService(timerService),
-        _timeoutTicks(timerService->GetTicksPerSecond() / 4), //250ms
+        _timeoutTicks(timerService == nullptr ? 0 : timerService->GetTicksPerSecond() / 4), //250ms
         ListenId(listenId),
         TransmitId(transmitId)
     {
@@ -135,7 +135,7 @@ namespace EmbeddedIOServices
             return;
         }
 
-        _sendState.LastProgressTick = _timerService->GetTick();
+        _sendState.LastProgressTick = _timerService == nullptr ? 0 : _timerService->GetTick();
 
         _sendState.FramePending = false;
         if(_sendState.Offset >= _sendState.Buffer.size())
@@ -251,7 +251,7 @@ namespace EmbeddedIOServices
                     return;
                 }
 
-                _sendState.LastProgressTick = _timerService->GetTick();
+                _sendState.LastProgressTick = _timerService == nullptr ? 0 : _timerService->GetTick();
 
                 const uint8_t flowStatus = data.Data[0] & 0x0F;
                 if(flowStatus == ISOTP_FLOW_STATUS_WAIT)
@@ -281,7 +281,7 @@ namespace EmbeddedIOServices
 
     bool CommunicationService_ISOTP::Ready()
     {
-        if (_sendState.Active && tick_t(_timerService->GetTick() - _sendState.LastProgressTick) >= _timeoutTicks)
+        if (_sendState.Active && (_timerService == nullptr || tick_t(_timerService->GetTick() - _sendState.LastProgressTick) >= _timeoutTicks))
             _sendState.Active = false;
 
         return !_sendState.Active;
